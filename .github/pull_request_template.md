@@ -1,7 +1,9 @@
 ### :pushpin: References
 
 * **Issue:** Closes #
-* **Metadata**: Requires #
+
+* **project-monitoring-metadata**: Requires #
+* **d2-api**: Requires #
 * **d2-ui-components**: Requires #
 
 ### :memo: Implementation
