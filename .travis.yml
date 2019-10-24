@@ -16,11 +16,8 @@ install:
     - yarn install --frozen-lockfile
     - yarn cy:verify
     - yarn build
-env:
-    - PORT=8081 REACT_APP_DHIS2_BASE_URL=http://dev2.eyeseetea.com:8083 REACT_APP_CYPRESS=true CYPRESS_EXTERNAL_API=http://dev2.eyeseetea.com:8083 CYPRESS_ROOT_URL=http://localhost:8081
-
 script:
-    - yarn start &
+    - PORT=8081 REACT_APP_DHIS2_BASE_URL=http://dev2.eyeseetea.com:8083 yarn start &
     - yarn run wait-on http-get://localhost:8081
-    - yarn cy:e2e:run --browser chrome
+    - REACT_APP_CYPRESS=true CYPRESS_EXTERNAL_API=http://dev2.eyeseetea.com:8083 CYPRESS_ROOT_URL=http://localhost:8081 yarn cy:e2e:run --browser chrome
     - kill $(jobs -p) || true
