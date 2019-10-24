@@ -50,49 +50,48 @@ const App = () => {
             const api = new D2Api({ baseUrl });
             Object.assign({ d2, api });
 
+            configI18n(data.userSettings);
             setD2(d2);
             setApi(api);
             setShowShareButton(_(appConfig).get("appearance.showShareButton") || false);
-
             initFeedbackTool(d2, appConfig);
         };
 
-        run();
-    }, []);
+        if (data) run();
+    }, [data]);
 
-    if (loading || !d2 || !api) return <div>Loading...</div>;
-
-    if (error)
+    if (error) {
         return (
-            <div>
+            <h3>
                 <a rel="noopener noreferrer" target="_blank" href={baseUrl}>
-                    {"Login"}
+                    Login
                 </a>
                 {` ${baseUrl}`}
-            </div>
+            </h3>
         );
+    } else if (loading || !d2 || !api) {
+        return <h3>Connecting to {baseUrl}...</h3>;
+    } else {
+        return (
+            <StylesProvider generateClassName={generateClassName}>
+                <MuiThemeProvider theme={muiTheme}>
+                    <OldMuiThemeProvider muiTheme={muiThemeLegacy}>
+                        <SnackbarProvider>
+                            <HeaderBar appName={"Skeleton app"} />
 
-    configI18n(data.userSettings);
+                            <div id="app" className="content">
+                                <ApiContext.Provider value={api}>
+                                    <Root />
+                                </ApiContext.Provider>
+                            </div>
 
-    return (
-        <StylesProvider generateClassName={generateClassName}>
-            <MuiThemeProvider theme={muiTheme}>
-                <OldMuiThemeProvider muiTheme={muiThemeLegacy}>
-                    <SnackbarProvider>
-                        <HeaderBar appName={"Skeleton app"} />
-
-                        <div id="app" className="content">
-                            <ApiContext.Provider value={api}>
-                                <Root />
-                            </ApiContext.Provider>
-                        </div>
-
-                        <Share visible={showShareButton} />
-                    </SnackbarProvider>
-                </OldMuiThemeProvider>
-            </MuiThemeProvider>
-        </StylesProvider>
-    );
+                            <Share visible={showShareButton} />
+                        </SnackbarProvider>
+                    </OldMuiThemeProvider>
+                </MuiThemeProvider>
+            </StylesProvider>
+        );
+    }
 };
 
 function initFeedbackTool(d2, appConfig) {

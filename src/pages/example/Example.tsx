@@ -32,6 +32,7 @@ export default function Example(props: ExampleProps) {
 
     return (
         <div>
+            <h1>Project Monitoring Metadata</h1>
             <h2 className={classes.title}>Hello {props.name}!</h2>
 
             <div>
