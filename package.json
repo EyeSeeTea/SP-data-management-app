@@ -74,6 +74,7 @@
         "@types/node": "^10.12.19",
         "@types/react": "^16.7.22",
         "@types/react-dom": "^16.0.11",
+        "@types/react-router-dom": "^5.1.0",
         "axios-mock-adapter": "^1.17.0",
         "babel-core": "7.0.0-bridge.0",
         "babel-eslint": "9.x",
@@ -89,7 +90,7 @@
         "eslint-plugin-react": "^7.12.4",
         "sinon": "^7.1.1",
         "typescript": "^3.2.4",
-        "wait-on": "^3.2.0"
+        "wait-on": "^3.3.0"
     },
     "manifest.webapp": {
         "name": "dhis2-app-skeleton",
