@@ -7,16 +7,13 @@ context("Landing page", () => {
     });
 
     it("has page title", () => {
-        cy.title().should("equal", "React App");
+        cy.title().should("equal", "Project Monitoring App");
     });
 
-    it("increments counter when button clicked", () => {
-        cy.contains("+1").click();
-        cy.contains("Value=1");
-    });
-
-    it("shows feedback when button clicked", () => {
-        cy.contains("Click to show feedback").click();
-        cy.contains("Some info");
+    it("shows the main sections of the app", () => {
+        cy.contains("Project Configuration");
+        cy.contains("Monthly Executive Report");
+        cy.contains("Data Entry");
+        cy.contains("Dashboard");
     });
 });
