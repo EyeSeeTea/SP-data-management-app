@@ -121,11 +121,9 @@ function getConfig(history: History) {
     ];
 
     const help = i18n.t(
-        `Click the blue button to create a new project or select a previously created project
-         that you may want to access.
+        `Click the blue button to create a new project or select a previously created project that you may want to access.
 
-         Click the three dots on the right side of the screen if you wish to perform an action
-         over a project.`
+         Click the three dots on the right side of the screen if you wish to perform an action over a project.`
     );
 
     return { columns, initialSorting, detailsFields, actions, help };
@@ -178,7 +176,7 @@ const CustomFilters: React.FC<{ createdByCurrentUser: boolean; onChange: () => v
     onChange,
 }) => {
     return (
-        <FormGroup style={{ paddingLeft: 30 }}>
+        <FormGroup style={{ paddingLeft: 30, display: "inline-block" }}>
             <FormControlLabel
                 control={<Checkbox checked={createdByCurrentUser} onChange={onChange} />}
                 label={i18n.t("Only my projects")}
