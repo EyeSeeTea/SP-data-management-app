@@ -1,13 +1,13 @@
 {
-    "name": "dhis2-app-skeleton",
-    "description": "DHIS2 App Skeleton",
+    "name": "project-monitoring-app",
+    "description": "DHIS2 Project Monitoring App",
     "version": "0.0.1",
     "license": "GPL-3.0",
     "author": "EyeSeeTea team",
     "homepage": ".",
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/eyeseetea/dhis2-app-skeleton.git"
+        "url": "git+https://github.com/eyeseetea/project-monitoring-app.git"
     },
     "dependencies": {
         "@dhis2/app-runtime": "^1.5.1",
