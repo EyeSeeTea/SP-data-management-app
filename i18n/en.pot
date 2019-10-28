@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2019-10-25T11:19:40.901Z\n"
-"PO-Revision-Date: 2019-10-25T11:19:40.901Z\n"
+"POT-Creation-Date: 2019-10-28T10:40:48.370Z\n"
+"PO-Revision-Date: 2019-10-28T10:40:48.370Z\n"
 
 msgid "Help"
 msgstr ""
@@ -24,15 +24,6 @@ msgid "Data Entry"
 msgstr ""
 
 msgid "Dashboard"
-msgstr ""
-
-msgid "Projects"
-msgstr ""
-
-msgid "Create Project"
-msgstr ""
-
-msgid "Only my projects"
 msgstr ""
 
 msgid "Name"
@@ -94,4 +85,13 @@ msgid ""
 "         Click the three dots on the right side of the screen if you wish "
 "to perform an action\n"
 "         over a project."
+msgstr ""
+
+msgid "Projects"
+msgstr ""
+
+msgid "Create Project"
+msgstr ""
+
+msgid "Only my projects"
 msgstr ""
