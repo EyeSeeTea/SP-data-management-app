@@ -4026,10 +4026,10 @@ cypress@^3.1.4:
     url "0.11.0"
     yauzl "2.10.0"
 
-d2-api@0.0.2-beta.0:
-  version "0.0.2-beta.0"
-  resolved "https://registry.yarnpkg.com/d2-api/-/d2-api-0.0.2-beta.0.tgz#49e8fcb9db6c33a10f6839b743016c24fc116bea"
-  integrity sha512-tmUrlYzyD+pH6VQW1E4VBiNs0XR1Nu6XUgOENW1dVXQhLhxhkkPRZbjMPAMVQYdC9cpvqJhO94oXCUXRTQaakw==
+d2-api@0.0.2-beta.1:
+  version "0.0.2-beta.1"
+  resolved "https://registry.yarnpkg.com/d2-api/-/d2-api-0.0.2-beta.1.tgz#a45848ef733d5e503f02b1d64c03ccf6e6a7cc6e"
+  integrity sha512-dr+6mPwCIhleK815Y1Gr/kmswhA6UMT145KjBzSuivXe9QObLxMAuikl7AzuxMsLR72F6MJAby0UjXnDRXmy0g==
   dependencies:
     "@babel/runtime" "^7.5.4"
     "@dhis2/d2-i18n" "^1.0.5"
@@ -4063,10 +4063,10 @@ d2-manifest@^1.0.0:
     minimist "^1.1.0"
     readline-sync "^1.4.1"
 
-d2-ui-components@0.0.29:
-  version "0.0.29"
-  resolved "https://registry.yarnpkg.com/d2-ui-components/-/d2-ui-components-0.0.29.tgz#d5ae4980ddd814ea1a0f8dcff76919c6b9f34d92"
-  integrity sha512-+Bh9MgaS8sns2HqI6Xl82gLfth+Hyj3pyYPEfLPdKAtJMT+S+DBRqJhNyvWSwPCnenHj26xrrucbvnXnTYN3qA==
+d2-ui-components@0.0.30-beta.1:
+  version "0.0.30-beta.1"
+  resolved "https://registry.yarnpkg.com/d2-ui-components/-/d2-ui-components-0.0.30-beta.1.tgz#a44bfe34ec3049d9a15de5bdbd1f99b3c52ec920"
+  integrity sha512-G0aa/N5JWCSphvzBKOp58Xw0Kzzh3DO9DiQQ95BLJA1hVMnyRjSyt8+WFe7SsGwU+8kQvBn3GmbAo3/iFHy6FQ==
   dependencies:
     "@date-io/moment" "^1.0.2"
     "@dhis2/d2-i18n" "^1.0.3"
