@@ -1,5 +1,3 @@
-/// <reference types='Cypress' />
-
 context("Landing page", () => {
     before(() => {
         cy.login("admin");
