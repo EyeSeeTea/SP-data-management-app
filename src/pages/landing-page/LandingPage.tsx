@@ -3,11 +3,11 @@ import Paper from "@material-ui/core/Paper";
 import Icon from "@material-ui/core/Icon";
 import { makeStyles } from "@material-ui/core/styles";
 import { Link } from "react-router-dom";
-import Grid from "@material-ui/core/Grid";
+import Grid, { GridSize } from "@material-ui/core/Grid";
 import ListItem from "@material-ui/core/ListItem";
 import Typography from "@material-ui/core/Typography";
 import i18n from "../../locales";
-import { sizeHeight } from "@material-ui/system";
+import { generateUrl } from "../../router";
 
 const useStyles = makeStyles({
     root: {
@@ -44,26 +44,45 @@ const useStyles = makeStyles({
     },
 });
 
-const getGridIndex = (size: number) => 12 / size;
-
-const GRID_ROW_1 = getGridIndex(2);
-const GRID_ROW_2 = getGridIndex(2);
-
 export default function LandingPage() {
     const classes = useStyles();
     const items = [
-        ["projects", i18n.t("Project Configuration"), "edit", GRID_ROW_1],
-        ["report", i18n.t("Monthly Executive Report"), "description", GRID_ROW_2],
-        ["data-entry", i18n.t("Data Entry"), "library_books", GRID_ROW_1],
-        ["dashboard", i18n.t("Dashboard"), "dashboard", GRID_ROW_2],
+        {
+            key: "projects",
+            url: generateUrl("projects"),
+            title: i18n.t("Project Configuration"),
+            icon: "edit",
+            width: 6, // GridSize: 1 to 12 (full width)
+        },
+        {
+            key: "report",
+            url: generateUrl("report"),
+            title: i18n.t("Monthly Executive Report"),
+            icon: "description",
+            width: 6,
+        },
+        {
+            key: "dataEntry",
+            url: generateUrl("dataEntry"),
+            title: i18n.t("Data Entry"),
+            icon: "library_books",
+            width: 6,
+        },
+        {
+            key: "dashboard",
+            url: generateUrl("dashboard"),
+            title: i18n.t("Dashboard"),
+            icon: "dashboard",
+            width: 6,
+        },
     ];
-    const menuItems = items.map(([key, title, icon, xs]) => (
-        <Grid item xs={xs} className={classes.item} key={key}>
+    const menuItems = items.map(({ key, url, title, icon, width }) => (
+        <Grid item xs={width as GridSize} className={classes.item} key={key}>
             <Paper>
                 <ListItem
                     data-test={`page-${key}`}
                     component={Link}
-                    to={`/${key}`}
+                    to={url}
                     className={classes.listItem}
                 >
                     <Icon className={`material-icons ${classes.icon}`}>{icon}</Icon>
