@@ -1,18 +1,19 @@
 const routes = {
-    projects: ({  }: {}) => "/projects",
-    "projects.new": ({  }: {}) => `/projects/new`,
+    projects: () => "/projects",
+    "projects.new": () => `/projects/new`,
     "projects.edit": ({ id }: { id: string }) => `/projects/${id}`,
-    report: ({  }: {}) => "/report",
-    dataEntry: ({  }: {}) => "/data-entry",
-    dashboard: ({  }: {}) => "/dashboard",
+    report: () => "/report",
+    dataEntry: () => "/data-entry",
+    dashboard: () => "/dashboard",
 };
 
 type Routes = typeof routes;
 
 export function generateUrl<Name extends keyof Routes>(
     name: Name,
-    params: Parameters<Routes[Name]>[0] = {}
+    params: Parameters<Routes[Name]>[0] = undefined
 ): string {
     const fn = routes[name];
-    return fn.call(null, params as any);
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+    return params ? fn(params as any) : fn(undefined as any);
 }

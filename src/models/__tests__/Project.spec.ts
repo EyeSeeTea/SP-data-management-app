@@ -1,5 +1,5 @@
 import Project from "../Project";
-import { D2Api, D2ApiMock, getMockApi } from "d2-api";
+import { getMockApi } from "d2-api";
 
 const dataSetsPaginated = {
     pager: {

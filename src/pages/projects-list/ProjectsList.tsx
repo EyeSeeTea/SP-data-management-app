@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { ObjectsTable } from "d2-ui-components";
-import _ from "lodash";
 
 import i18n from "../../locales";
 import PageHeader from "../../components/page-header/PageHeader";
@@ -15,59 +14,24 @@ import { Checkbox, FormControlLabel, FormGroup } from "@material-ui/core";
 
 type DataSet = DataSetForList;
 
-const ProjectsList: React.FC = () => {
-    const [byUser, setByUser] = useState<boolean>(false);
-    const history = useHistory();
-    const api = useD2Api();
-    const goToLandingPage = () => goTo(history, "/");
-    const config = getConfig(history);
+function goTo(history: History, url: string) {
+    history.push(url);
+}
 
-    const list = (_d2: unknown, filters: FiltersForList, pagination: Pagination) =>
-        Project.getList(api, filters, pagination);
+function goToNewProjectPage(history: History) {
+    history.push(generateUrl("projects.new"));
+}
 
+const Link: React.FC<{ url: string }> = ({ url }) => {
     return (
-        <React.Fragment>
-            <PageHeader
-                title={i18n.t("Projects")}
-                help={config.help}
-                onBackClick={goToLandingPage}
-            />
-
-            <ObjectsTable
-                model={{ modelValidations: {} }}
-                columns={config.columns}
-                d2={{}}
-                detailsFields={config.detailsFields}
-                initialSorting={config.initialSorting}
-                pageSize={20}
-                actions={config.actions}
-                list={list}
-                disableMultiplePageSelection={true}
-                buttonLabel={i18n.t("Create Project")}
-                customFiltersComponent={() => (
-                    <CustomFilters
-                        createdByCurrentUser={byUser}
-                        onChange={() => setByUser(!byUser)}
-                    />
-                )}
-                customFilters={{ createdByCurrentUser: byUser }}
-                onButtonClick={() => goToNewProjectPage(history)}
-            />
-        </React.Fragment>
-    );
-};
-
-const CustomFilters: React.FC<{ createdByCurrentUser: boolean; onChange: () => void }> = ({
-    createdByCurrentUser,
-    onChange,
-}) => {
-    return (
-        <FormGroup style={{ paddingLeft: 30 }}>
-            <FormControlLabel
-                control={<Checkbox checked={createdByCurrentUser} onChange={onChange} />}
-                label={i18n.t("Only my projects")}
-            />
-        </FormGroup>
+        <a
+            rel="noopener noreferrer"
+            style={{ wordBreak: "break-all", textDecoration: "none" }}
+            href={url}
+            target="_blank"
+        >
+            {url}
+        </a>
     );
 };
 
@@ -94,7 +58,9 @@ function getConfig(history: History) {
         {
             name: "href",
             text: i18n.t("API link"),
-            getValue: (dataSet: DataSet) => <Link url={dataSet.href + ".json"} />,
+            getValue: function getDataSetLink(dataSet: DataSet) {
+                return <Link url={dataSet.href + ".json"} />;
+            },
         },
     ];
 
@@ -165,24 +131,59 @@ function getConfig(history: History) {
     return { columns, initialSorting, detailsFields, actions, help };
 }
 
-function goTo(history: History, url: string) {
-    history.push(url);
-}
+const ProjectsList: React.FC = () => {
+    const [byUser, setByUser] = useState<boolean>(false);
+    const history = useHistory();
+    const api = useD2Api();
+    const goToLandingPage = () => goTo(history, "/");
+    const config = getConfig(history);
 
-function goToNewProjectPage(history: History) {
-    history.push(generateUrl("projects.new"));
-}
+    const list = (_d2: unknown, filters: FiltersForList, pagination: Pagination) =>
+        Project.getList(api, filters, pagination);
 
-const Link: React.FC<{ url: string }> = ({ url }) => {
     return (
-        <a
-            rel="noopener noreferrer"
-            style={{ wordBreak: "break-all", textDecoration: "none" }}
-            href={url}
-            target="_blank"
-        >
-            {url}
-        </a>
+        <React.Fragment>
+            <PageHeader
+                title={i18n.t("Projects")}
+                help={config.help}
+                onBackClick={goToLandingPage}
+            />
+
+            <ObjectsTable
+                model={{ modelValidations: {} }}
+                columns={config.columns}
+                d2={{}}
+                detailsFields={config.detailsFields}
+                initialSorting={config.initialSorting}
+                pageSize={20}
+                actions={config.actions}
+                list={list}
+                disableMultiplePageSelection={true}
+                buttonLabel={i18n.t("Create Project")}
+                customFiltersComponent={() => (
+                    <CustomFilters
+                        createdByCurrentUser={byUser}
+                        onChange={() => setByUser(!byUser)}
+                    />
+                )}
+                customFilters={{ createdByCurrentUser: byUser }}
+                onButtonClick={() => goToNewProjectPage(history)}
+            />
+        </React.Fragment>
+    );
+};
+
+const CustomFilters: React.FC<{ createdByCurrentUser: boolean; onChange: () => void }> = ({
+    createdByCurrentUser,
+    onChange,
+}) => {
+    return (
+        <FormGroup style={{ paddingLeft: 30 }}>
+            <FormControlLabel
+                control={<Checkbox checked={createdByCurrentUser} onChange={onChange} />}
+                label={i18n.t("Only my projects")}
+            />
+        </FormGroup>
     );
 };
 
