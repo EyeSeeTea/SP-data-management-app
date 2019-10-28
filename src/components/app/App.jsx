@@ -8,7 +8,7 @@ import _ from "lodash";
 import i18n from "@dhis2/d2-i18n";
 import { init } from "d2";
 import { SnackbarProvider } from "d2-ui-components";
-import D2Api from "d2-api";
+import { D2ApiDefault } from "d2-api";
 
 import "./App.css";
 import { muiTheme } from "./themes/dhis2.theme";
@@ -26,6 +26,18 @@ const isLangRTL = code => {
     const prefixed = langs.map(c => `${c}-`);
     return _(langs).includes(code) || prefixed.filter(c => code && code.startsWith(c)).length > 0;
 };
+
+function initFeedbackTool(d2, appConfig) {
+    const appKey = _(appConfig).get("appKey");
+
+    if (appConfig && appConfig.feedback) {
+        const feedbackOptions = {
+            ...appConfig.feedback,
+            i18nPath: "feedback-tool/i18n",
+        };
+        window.$.feedbackDhis2(d2, appKey, feedbackOptions);
+    }
+}
 
 const configI18n = ({ keyUiLocale: uiLocale }) => {
     i18n.changeLanguage(uiLocale);
@@ -47,7 +59,7 @@ const App = () => {
                 credentials: "same-origin",
             }).then(res => res.json());
             const d2 = await init({ baseUrl: baseUrl + "/api" });
-            const api = new D2Api({ baseUrl });
+            const api = new D2ApiDefault({ baseUrl });
             Object.assign({ d2, api });
 
             configI18n(data.userSettings);
@@ -94,15 +106,4 @@ const App = () => {
     }
 };
 
-function initFeedbackTool(d2, appConfig) {
-    const appKey = _(appConfig).get("appKey");
-
-    if (appConfig && appConfig.feedback) {
-        const feedbackOptions = {
-            ...appConfig.feedback,
-            i18nPath: "feedback-tool/i18n",
-        };
-        window.$.feedbackDhis2(d2, appKey, feedbackOptions);
-    }
-}
 export default App;
