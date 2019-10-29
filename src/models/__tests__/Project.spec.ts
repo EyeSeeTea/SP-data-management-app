@@ -45,6 +45,7 @@ describe("Project", () => {
                 {},
                 { page: 1, pageSize: 10, paging: true, sorting: ["displayName", "desc"] }
             );
+
             expect(pager).toEqual(dataSetsPaginated.pager);
             expect(objects).toEqual(dataSetsPaginated.dataSets);
         });
@@ -62,6 +63,7 @@ describe("Project", () => {
                 { search: "abc", createdByCurrentUser: true },
                 { page: 1, pageSize: 10, paging: true, sorting: ["displayName", "desc"] }
             );
+
             expect(pager).toEqual(dataSetsPaginated.pager);
             expect(objects).toEqual(dataSetsPaginated.dataSets);
         });

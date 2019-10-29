@@ -5,13 +5,57 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2019-10-28T10:40:48.370Z\n"
-"PO-Revision-Date: 2019-10-28T10:40:48.370Z\n"
+"POT-Creation-Date: 2019-10-29T11:07:32.777Z\n"
+"PO-Revision-Date: 2019-10-29T11:07:32.777Z\n"
 
 msgid "Help"
 msgstr ""
 
 msgid "Back"
+msgstr ""
+
+msgid "Name"
+msgstr ""
+
+msgid "Description"
+msgstr ""
+
+msgid "Code"
+msgstr ""
+
+msgid "Start Date"
+msgstr ""
+
+msgid "End Date"
+msgstr ""
+
+msgid "Award Number"
+msgstr ""
+
+msgid "Subsequent Lettering"
+msgstr ""
+
+msgid "Speed Key"
+msgstr ""
+
+msgid "Field cannot be blank"
+msgstr ""
+
+msgid "Cancel Project creation?"
+msgstr ""
+
+msgid ""
+"You are about to exit the Project creation wizard. All your changes will be "
+"lost. Are you sure you want to proceed?"
+msgstr ""
+
+msgid "Yes"
+msgstr ""
+
+msgid "No"
+msgstr ""
+
+msgid "Field {{field}} cannot be blank"
 msgstr ""
 
 msgid "Project Configuration"
@@ -26,16 +70,53 @@ msgstr ""
 msgid "Dashboard"
 msgstr ""
 
-msgid "Name"
+msgid "Cannot load project"
+msgstr ""
+
+msgid "General info"
+msgstr ""
+
+msgid ""
+"Choose a name for the project and define the period for which data entry "
+"will be enabled"
+msgstr ""
+
+msgid "TODO"
+msgstr ""
+
+msgid "Sectors & Project Funder"
+msgstr ""
+
+msgid "Organisation Units"
+msgstr ""
+
+msgid ""
+"Select the organisation unit associated with the project. At least one must "
+"be selected."
+msgstr ""
+
+msgid "Data Elements"
+msgstr ""
+
+msgid "Summary and Save"
+msgstr ""
+
+msgid "Save"
+msgstr ""
+
+msgid "Edit project"
+msgstr ""
+
+msgid "New project"
+msgstr ""
+
+msgid "Loading..."
 msgstr ""
 
 msgid "Public access"
 msgstr ""
 
 msgid "Last updated"
-msgstr ""
-
-msgid "Description"
 msgstr ""
 
 msgid "Created"
@@ -79,12 +160,10 @@ msgstr ""
 
 msgid ""
 "Click the blue button to create a new project or select a previously "
-"created project\n"
-"         that you may want to access.\n"
+"created project that you may want to access.\n"
 "\n"
 "         Click the three dots on the right side of the screen if you wish "
-"to perform an action\n"
-"         over a project."
+"to perform an action over a project."
 msgstr ""
 
 msgid "Projects"
