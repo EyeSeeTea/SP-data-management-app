@@ -5,10 +5,13 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2019-10-24T08:27:00.357Z\n"
-"PO-Revision-Date: 2019-10-24T08:27:00.357Z\n"
+"POT-Creation-Date: 2019-10-29T10:33:11.457Z\n"
+"PO-Revision-Date: 2019-10-29T10:33:11.457Z\n"
 
-msgid "Click to show feedback"
+msgid "Help"
+msgstr ""
+
+msgid "Back"
 msgstr ""
 
 msgid "Project Configuration"
@@ -21,4 +24,72 @@ msgid "Data Entry"
 msgstr ""
 
 msgid "Dashboard"
+msgstr ""
+
+msgid "Name"
+msgstr ""
+
+msgid "Public access"
+msgstr ""
+
+msgid "Last updated"
+msgstr ""
+
+msgid "Description"
+msgstr ""
+
+msgid "Created"
+msgstr ""
+
+msgid "Created By"
+msgstr ""
+
+msgid "Last update"
+msgstr ""
+
+msgid "Id"
+msgstr ""
+
+msgid "API link"
+msgstr ""
+
+msgid "Details"
+msgstr ""
+
+msgid "Go to Data Entry"
+msgstr ""
+
+msgid "Go to Dashboard"
+msgstr ""
+
+msgid "Add Target Values"
+msgstr ""
+
+msgid "Download Data"
+msgstr ""
+
+msgid "Generate / Configure MER"
+msgstr ""
+
+msgid "Edit"
+msgstr ""
+
+msgid "Delete"
+msgstr ""
+
+msgid ""
+"Click the blue button to create a new project or select a previously "
+"created project that you may want to access.\n"
+"\n"
+"         Click the three dots on the right side of the screen if you wish "
+"to perform an action over a project."
+msgstr ""
+
+msgid "Projects"
+msgstr ""
+
+msgid "Create Project"
+msgstr ""
+
+msgid "Only my projects"
 msgstr ""

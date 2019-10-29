@@ -33,3 +33,6 @@ cypress/videos/
 
 # IntelliJ
 .idea/*
+
+# Custom
+scripts/
