@@ -94,7 +94,7 @@ class ProjectWizardImpl extends React.Component<Props, State> {
             },
             {
                 key: "sectors-funders",
-                label: i18n.t("Sectors & Project Funder"),
+                label: i18n.t("Sectors & Project Funders"),
                 component: SectorsFundersStep,
                 validationKeys: ["sectors", "funders"],
             },
