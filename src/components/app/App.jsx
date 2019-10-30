@@ -60,6 +60,7 @@ const App = () => {
             configI18n(data.userSettings);
             setD2(d2);
             setApi(api);
+            Object.assign(window, { d2, api });
             setShowShareButton(_(appConfig).get("appearance.showShareButton") || false);
             initFeedbackTool(d2, appConfig);
         };
