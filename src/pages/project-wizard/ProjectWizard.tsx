@@ -13,6 +13,16 @@ import ExitWizardButton from "../../components/wizard/ExitWizardButton";
 import PageHeader from "../../components/page-header/PageHeader";
 import { useD2Api } from "../../contexts/api-context";
 import GeneralInfoStep from "../../components/steps/general-info/GeneralInfoStep";
+import SectorsFundersStep from "../../components/steps/sectors-funders/SectorsFundersStep";
+import OrgUnitsStep from "../../components/steps/org-units/OrgUnitsStep";
+import SaveStep from "../../components/steps/save/SaveStep";
+
+export interface StepProps {
+    api: D2Api;
+    project: Project;
+    onChange: (project: Project) => void;
+    onCancel: () => void;
+}
 
 interface Props {
     api: D2Api;
@@ -71,23 +81,28 @@ class ProjectWizardImpl extends React.Component<Props, State> {
                 key: "general-info",
                 label: i18n.t("General info"),
                 component: GeneralInfoStep,
-                validationKeys: ["name", "startDate", "endDate"],
+                validationKeys: [
+                    "name",
+                    "startDate",
+                    "endDate",
+                    "awardNumber",
+                    "subsequentLettering",
+                ],
                 description: i18n.t(
                     `Choose a name for the project and define the period for which data entry will be enabled`
                 ),
-                help: i18n.t(`TODO`),
             },
             {
                 key: "sectors-funders",
                 label: i18n.t("Sectors & Project Funder"),
-                component: () => <p>Sectors & Project Funder</p>,
-                validationKeys: [],
+                component: SectorsFundersStep,
+                validationKeys: ["sectors", "funders"],
             },
             {
                 key: "organisation-units",
                 label: i18n.t("Organisation Units"),
-                component: () => <p>Organisation Units</p>,
-                validationKeys: [],
+                component: OrgUnitsStep,
+                validationKeys: ["organisationUnits"],
                 description: i18n.t(
                     `Select the organisation unit associated with the project. At least one must be selected.`
                 ),
@@ -101,8 +116,13 @@ class ProjectWizardImpl extends React.Component<Props, State> {
             {
                 key: "save",
                 label: i18n.t("Summary and Save"),
-                component: () => <p>Summary and Save</p>,
-                description: i18n.t("Save"),
+                component: SaveStep,
+                description: i18n.t(
+                    'Setup of your project is complete. Click the "Save" button to save your project.'
+                ),
+                help: i18n.t(
+                    `Please review the project summary. Click the "Save" button to create the data set and all associated metadata for this project`
+                ),
             },
         ];
     }

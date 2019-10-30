@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2019-10-29T11:07:32.777Z\n"
-"PO-Revision-Date: 2019-10-29T11:07:32.777Z\n"
+"POT-Creation-Date: 2019-10-29T13:48:40.245Z\n"
+"PO-Revision-Date: 2019-10-29T13:48:40.245Z\n"
 
 msgid "Help"
 msgstr ""
@@ -39,6 +39,39 @@ msgid "Speed Key"
 msgstr ""
 
 msgid "Field cannot be blank"
+msgstr ""
+
+msgid "This user has no Data output and analytic organisation units assigned"
+msgstr ""
+
+msgid "Period dates"
+msgstr ""
+
+msgid "Sectors"
+msgstr ""
+
+msgid "Funders"
+msgstr ""
+
+msgid "Organisation Units"
+msgstr ""
+
+msgid "Cancel"
+msgstr ""
+
+msgid "Save"
+msgstr ""
+
+msgid "Loading..."
+msgstr ""
+
+msgid "[None]"
+msgstr ""
+
+msgid "[{{total}}] {{names}} and {{othersCount}} other(s)"
+msgstr ""
+
+msgid "Project funders"
 msgstr ""
 
 msgid "Cancel Project creation?"
@@ -87,9 +120,6 @@ msgstr ""
 msgid "Sectors & Project Funder"
 msgstr ""
 
-msgid "Organisation Units"
-msgstr ""
-
 msgid ""
 "Select the organisation unit associated with the project. At least one must "
 "be selected."
@@ -101,16 +131,20 @@ msgstr ""
 msgid "Summary and Save"
 msgstr ""
 
-msgid "Save"
+msgid ""
+"Setup of your project is complete. Click the \"Save\" button to save your "
+"project."
+msgstr ""
+
+msgid ""
+"Please review the project summary. Click the \"Save\" button to create the "
+"data set and all associated metadata for this project"
 msgstr ""
 
 msgid "Edit project"
 msgstr ""
 
 msgid "New project"
-msgstr ""
-
-msgid "Loading..."
 msgstr ""
 
 msgid "Public access"

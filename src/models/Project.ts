@@ -1,9 +1,50 @@
 import { Moment } from "moment";
 import _ from "lodash";
-import { D2Api, SelectedPick, D2DataSetSchema } from "d2-api";
+import { D2Api, SelectedPick, D2DataSetSchema, Id } from "d2-api";
 import { Pagination } from "./../types/ObjectsList";
 import { Pager } from "d2-api/api/models";
 import i18n from "../locales";
+
+export interface ProjectData {
+    name: string;
+    description: string;
+    code: string;
+    awardNumber: string;
+    subsequentLettering: string;
+    speedKey: string;
+    startDate?: Moment;
+    endDate?: Moment;
+    sectors: Sector[];
+    funders: Funder[];
+    organisationUnits: OrganisationUnit[];
+}
+
+interface NamedObject {
+    id: Id;
+    displayName: string;
+}
+
+export type Sector = NamedObject;
+export type Funder = NamedObject;
+
+interface OrganisationUnit {
+    id: Id;
+    path: string;
+}
+
+const defaultProjectData = {
+    name: "",
+    description: "",
+    code: "",
+    awardNumber: "",
+    subsequentLettering: "",
+    speedKey: "",
+    startDate: undefined,
+    endDate: undefined,
+    sectors: [],
+    funders: [],
+    organisationUnits: [],
+};
 
 const true_ = true as true;
 
@@ -25,49 +66,41 @@ export type FiltersForList = Partial<{
     createdByCurrentUser: boolean;
 }>;
 
-export interface ProjectData {
-    name: string;
-    description: string;
-    code: string;
-    awardNumber: string;
-    subsequentLettering: string;
-    speedKey: string;
-    startDate?: Moment;
-    endDate?: Moment;
-}
-
-const defaultProjectData = {
-    name: "",
-    description: "",
-    code: "",
-    awardNumber: "",
-    subsequentLettering: "",
-    speedKey: "",
-    startDate: undefined,
-    endDate: undefined,
-};
-
-function defineGetters(SourceObject: any, targetObject: any) {
-    Object.keys(SourceObject).forEach(function(key) {
+function defineGetters(sourceObject: any, targetObject: any) {
+    Object.keys(sourceObject).forEach(function(key) {
         Object.defineProperty(targetObject.prototype, key, {
-            get: function() {
-                return SourceObject[key];
-            },
+            get: () => sourceObject[key],
             enumerable: true,
             configurable: true,
         });
     });
 }
 
-export type ValidationKey = "name" | "startDate" | "endDate";
+export type ValidationKey =
+    | "name"
+    | "startDate"
+    | "endDate"
+    | "awardNumber"
+    | "subsequentLettering"
+    | "sectors"
+    | "funders"
+    | "organisationUnits";
+
 type ValidationError = string[];
 type Validations = { [K in ValidationKey]: () => ValidationError | Promise<ValidationError> };
 
 class Project {
     validations: Validations = {
-        name: this.validateName,
-        startDate: this.validateStartDate,
-        endDate: this.validateEndDate,
+        name: () => validatePresence(this.name, i18n.t("Name")),
+        startDate: () => validatePresence(this.startDate, i18n.t("Start Date")),
+        endDate: () => validatePresence(this.endDate, i18n.t("End Date")),
+        awardNumber: () => validatePresence(this.awardNumber, i18n.t("Award Number")),
+        subsequentLettering: () =>
+            validatePresence(this.subsequentLettering, i18n.t("Subsequent Lettering")),
+        sectors: () => validateNonEmpty(this.sectors, i18n.t("Sectors")),
+        funders: () => validateNonEmpty(this.funders, i18n.t("Funders")),
+        organisationUnits: () =>
+            validateNonEmpty(this.organisationUnits, i18n.t("Organisation Units")),
     };
 
     constructor(public api: D2Api, private data: ProjectData) {
@@ -90,18 +123,6 @@ class Project {
         return _.fromPairs(_.zip(keys, values)) as Validations;
     }
 
-    private validateName(): ValidationError {
-        return validatePresence(this.name, i18n.t("Name"));
-    }
-
-    private validateStartDate(): ValidationError {
-        return validatePresence(this.startDate, i18n.t("Start Date"));
-    }
-
-    private validateEndDate(): ValidationError {
-        return validatePresence(this.endDate, i18n.t("End Date"));
-    }
-
     static async get(api: D2Api, _id: string) {
         return new Project(api, defaultProjectData);
     }
@@ -110,12 +131,24 @@ class Project {
         return new Project(api, defaultProjectData);
     }
 
+    public async getOrganisationUnitsWithName() {
+        const ids = this.data.organisationUnits.map(ou => ou.id);
+        return this.api.models.organisationUnits
+            .get({
+                fields: { id: true, path: true, displayName: true },
+                filter: { id: { in: ids } },
+                pageSize: 20,
+            })
+            .getData();
+    }
+
     static async getList(
         api: D2Api,
         filters: FiltersForList,
         pagination: Pagination
     ): Promise<{ objects: DataSetForList[]; pager: Pager }> {
         const currentUser = await api.currrentUser.get().getData();
+        currentUser.displayName;
 
         return api.models.dataSets
             .get({
@@ -138,7 +171,16 @@ class Project {
 interface Project extends ProjectData {}
 
 function validatePresence(value: any, field: string): ValidationError {
-    return !value ? [i18n.t("Field {{field}} cannot be blank", { field })] : [];
+    const isBlank =
+        !value ||
+        (value.length !== undefined && value.length === 0) ||
+        (value.strip !== undefined && !value.strip());
+
+    return isBlank ? [i18n.t("{{field}} cannot be blank", { field })] : [];
+}
+
+function validateNonEmpty(value: any[], field: string): ValidationError {
+    return value.length == 0 ? [i18n.t("{{field}}: Select at least one item", { field })] : [];
 }
 
 export default Project;

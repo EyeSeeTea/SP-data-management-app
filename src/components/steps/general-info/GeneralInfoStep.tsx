@@ -2,25 +2,31 @@ import React from "react";
 import { Moment } from "moment";
 import { Card, CardContent } from "@material-ui/core";
 import { DatePicker } from "d2-ui-components";
-import { D2Api } from "d2-api";
 
-import Project, { ProjectData } from "../../../models/Project";
 import i18n from "../../../locales";
+import { StepProps } from "../../../pages/project-wizard/ProjectWizard";
+import Project from "../../../models/Project";
 
 /* eslint-disable @typescript-eslint/no-var-requires */
 const { TextField } = require("@dhis2/d2-ui-core");
 const { FormBuilder, Validators } = require("@dhis2/d2-ui-forms");
 
-interface Props {
-    api: D2Api;
-    project: Project;
-    onChange: (project: Project) => void;
-}
+type StringField =
+    | "name"
+    | "description"
+    | "code"
+    | "awardNumber"
+    | "subsequentLettering"
+    | "speedKey";
 
-class GeneralInfoStep extends React.Component<Props> {
+type DateField = "startDate" | "endDate";
+
+type ProjectData = Pick<Project, StringField | DateField>;
+
+class GeneralInfoStep extends React.Component<StepProps> {
     onUpdateField = <K extends keyof ProjectData>(fieldName: K, newValue: ProjectData[K]) => {
         const { project, onChange } = this.props;
-        const newProject = project.set(fieldName, newValue);
+        const newProject = project.set(fieldName, newValue as Project[K]);
         onChange(newProject);
     };
 
@@ -69,7 +75,7 @@ const validators = {
 };
 
 function getTextField(
-    name: string,
+    name: StringField,
     humanName: string,
     value: string,
     { validators, props }: { validators?: Validator<string>[]; props?: _.Dictionary<any> } = {}
@@ -88,8 +94,6 @@ function getTextField(
         validators: validators || [],
     };
 }
-
-type DateField = "startDate" | "endDate";
 
 function getDateField(
     name: DateField,
