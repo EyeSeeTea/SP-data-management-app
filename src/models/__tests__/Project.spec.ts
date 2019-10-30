@@ -1,38 +1,18 @@
 import { ProjectData } from "./../Project";
 import Project from "../Project";
-import { getMockApi, PaginatedObjects } from "d2-api";
-
-const dataSetsPaginated = {
-    pager: {
-        page: 1,
-        pageCount: 3,
-        total: 12,
-        pageSize: 5,
-    },
-    dataSets: [{ id: "1234a" }, { id: "1234b" }],
-};
+import { getMockApi } from "d2-api";
 
 const currentUser = {
     id: "xE7jOejl9FI",
     displayName: "John Traore",
 };
 
-const baseRequest = {
-    paging: true,
-    fields:
-        "created,displayDescription,displayName,href,id,lastUpdated,publicAccess,user[displayName,id]",
-    order: "displayName:idesc",
-    page: 1,
-    pageSize: 10,
-    filter: [],
-};
-
 const { api, mock } = getMockApi();
 
 async function expectFieldPresence(field: keyof ProjectData) {
     const project = Project.create(api);
-    const errors = await project.validate(["name"]);
-    expect(errors.name && errors.name.length > 0).toBeTruthy();
+    const errors = await project.validate([field]);
+    expect(errors[field] !== undefined && (errors[field] || []).length > 0).toBeTruthy();
 }
 
 describe("Project", () => {
@@ -48,7 +28,7 @@ describe("Project", () => {
     describe("get", () => {});
 
     describe("getOrganisationUnitsWithName", () => {
-        let paginatedOrgUnits = {
+        const paginatedOrgUnits = {
             pager: { page: 1, pageSize: 10, pageCount: 1, total: 0 },
             organisationUnits: [],
         };
@@ -108,6 +88,26 @@ describe("Project", () => {
     });
 
     describe("getList", () => {
+        const dataSetsPaginated = {
+            pager: {
+                page: 1,
+                pageCount: 3,
+                total: 12,
+                pageSize: 5,
+            },
+            dataSets: [{ id: "1234a" }, { id: "1234b" }],
+        };
+
+        const baseRequest = {
+            paging: true,
+            fields:
+                "created,displayDescription,displayName,href,id,lastUpdated,publicAccess,user[displayName,id]",
+            order: "displayName:idesc",
+            page: 1,
+            pageSize: 10,
+            filter: [],
+        };
+
         beforeEach(() => {
             mock.reset();
             mock.onGet("/me").reply(200, currentUser);
