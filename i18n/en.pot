@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2019-10-29T13:48:40.245Z\n"
-"PO-Revision-Date: 2019-10-29T13:48:40.245Z\n"
+"POT-Creation-Date: 2019-10-30T09:26:14.084Z\n"
+"PO-Revision-Date: 2019-10-30T09:26:14.084Z\n"
 
 msgid "Help"
 msgstr ""
@@ -88,7 +88,10 @@ msgstr ""
 msgid "No"
 msgstr ""
 
-msgid "Field {{field}} cannot be blank"
+msgid "{{field}} cannot be blank"
+msgstr ""
+
+msgid "Select at least one item for {{field}}"
 msgstr ""
 
 msgid "Project Configuration"
@@ -114,10 +117,7 @@ msgid ""
 "will be enabled"
 msgstr ""
 
-msgid "TODO"
-msgstr ""
-
-msgid "Sectors & Project Funder"
+msgid "Sectors & Project Funders"
 msgstr ""
 
 msgid ""

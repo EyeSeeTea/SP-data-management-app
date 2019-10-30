@@ -161,7 +161,7 @@ class ProjectWizardImpl extends React.Component<Props, State> {
     render() {
         const { project, dialogOpen } = this.state;
         const { api, location } = this.props;
-        if (project) (window as any).project = project;
+        if (project) Object.assign(window, { project, Project });
 
         const steps = this.getStepsBaseInfo().map(step => ({
             ...step,

@@ -8,11 +8,11 @@ describe("Projects - Create", () => {
         cy.get("[data-test=list-action-bar]").click();
     });
 
-    it("gets data from the user", () => {
+    it("gets data from the user and creates a project", () => {
         cy.contains("New project");
 
         // General Info step
-        waitForStepChange("General info");
+        waitForStep("General info");
 
         cy.contains("Next").click();
         cy.contains("Name cannot be blank");
@@ -22,24 +22,24 @@ describe("Projects - Create", () => {
         cy.contains("Subsequent Lettering cannot be blank");
 
         cy.get("[data-field='name']").type("Cypress Project");
+        cy.get("[data-field='awardNumber']").type("12345");
+        cy.get("[data-field='subsequentLettering']").type("Subsequent Lettering Value");
+
         cy.contains("Start Date").click({ force: true });
         clickDay(11);
 
         cy.contains("End Date").click({ force: true });
         clickDay(13);
 
-        cy.get("[data-field='awardNumber']").type("12345");
-        cy.get("[data-field='subsequentLettering']").type("Subsequent Lettering Value");
-
         cy.contains("Next").click();
 
         // Sectors & Funders
 
-        waitForStepChange("Sectors & Project Funders");
+        waitForStep("Sectors & Project Funders");
 
         cy.contains("Next").click();
-        cy.contains("Sectors: Select at least one item");
-        cy.contains("Funders: Select at least one item");
+        cy.contains("Select at least one item for Sectors");
+        cy.contains("Select at least one item for Funders");
 
         selectInMultiSelector("Sector1", 0);
         selectInMultiSelector("ACWME", 1);
@@ -47,22 +47,22 @@ describe("Projects - Create", () => {
 
         // Organisation Units Step
 
-        waitForStepChange("Organisation Units");
+        waitForStep("Organisation Units");
         cy.contains("Next").click();
-        cy.contains("Organisation Units: Select at least one item");
+        cy.contains("Select at least one item for Organisation Units");
 
-        selectOrgUnit("Komboya");
+        selectOrgUnit("West");
 
         cy.contains("Next").click();
 
         // Data Elements
 
-        waitForStepChange("Data Elements");
+        waitForStep("Data Elements");
         cy.contains("Next").click();
 
         // Save step
 
-        waitForStepChange("Summary and Save");
+        waitForStep("Summary and Save");
         cy.get("[data-test-current=true]").contains("Save");
 
         cy.contains("Name");
@@ -78,7 +78,6 @@ describe("Projects - Create", () => {
         cy.contains("Description");
 
         cy.contains("Organisation Units");
-        cy.contains("Komboya");
 
         cy.get("[data-wizard-contents] button")
             .contains("Save")
@@ -114,6 +113,6 @@ function selectInMultiSelector(label, index = 0) {
         .click();
 }
 
-function waitForStepChange(stepName) {
+function waitForStep(stepName) {
     cy.contains(stepName).should("have.class", "current-step");
 }

@@ -1,3 +1,43 @@
+/*
+
+Project model.
+
+* Get an existing project:
+
+    const existingProject = await Project.get(d2Api, "gr7Fzf5l9F2");
+
+* Create a new project, set fields and validate:
+
+    const project = Project.create(d2Api);
+    const projectWithNameAndCode = project
+        .set("name", "Project Name")
+        .set("code", "PR_1234")
+
+    projectWithNameAndCode.name
+    # "Project Name"
+
+    const errors = await projectWithNameAndCode.validate(["name", "code"])
+    # {name: []}
+
+    const errors = await projectWithNameAndCode.validate()
+    # {
+        "name": [],
+        "startDate": [
+            "Start Date cannot be blank"
+        ],
+        ...
+      }
+
+
+* Get paginated list of projects:
+
+    const { objects, pager } = await Project.getList(
+        d2Api,
+        { search: "abc", createdByCurrentUser: true },
+        { page: 2, pageSize: 10, sorting: ["displayName", "desc"] }
+    )
+*/
+
 import { Moment } from "moment";
 import _ from "lodash";
 import { D2Api, SelectedPick, D2DataSetSchema, Id } from "d2-api";
@@ -28,7 +68,6 @@ export type Sector = NamedObject;
 export type Funder = NamedObject;
 
 interface OrganisationUnit {
-    id: Id;
     path: string;
 }
 
@@ -68,7 +107,7 @@ export type FiltersForList = Partial<{
 
 function defineGetters(sourceObject: any, targetObject: any) {
     Object.keys(sourceObject).forEach(function(key) {
-        Object.defineProperty(targetObject.prototype, key, {
+        Object.defineProperty(targetObject, key, {
             get: () => sourceObject[key],
             enumerable: true,
             configurable: true,
@@ -76,18 +115,10 @@ function defineGetters(sourceObject: any, targetObject: any) {
     });
 }
 
-export type ValidationKey =
-    | "name"
-    | "startDate"
-    | "endDate"
-    | "awardNumber"
-    | "subsequentLettering"
-    | "sectors"
-    | "funders"
-    | "organisationUnits";
+export type ValidationKey = keyof ProjectData;
 
 type ValidationError = string[];
-type Validations = { [K in ValidationKey]: () => ValidationError | Promise<ValidationError> };
+type Validations = { [K in ValidationKey]?: () => ValidationError | Promise<ValidationError> };
 
 class Project {
     validations: Validations = {
@@ -104,7 +135,7 @@ class Project {
     };
 
     constructor(public api: D2Api, private data: ProjectData) {
-        defineGetters(data, Project);
+        defineGetters(data, this);
     }
 
     public set<K extends keyof ProjectData>(field: K, value: ProjectData[K]): Project {
@@ -132,10 +163,10 @@ class Project {
     }
 
     public async getOrganisationUnitsWithName() {
-        const ids = this.data.organisationUnits.map(ou => ou.id);
+        const ids = this.data.organisationUnits.map(ou => _.last(ou.path.split("/")) || "");
         return this.api.models.organisationUnits
             .get({
-                fields: { id: true, path: true, displayName: true },
+                fields: { id: true, displayName: true },
                 filter: { id: { in: ids } },
                 pageSize: 20,
             })
@@ -180,7 +211,7 @@ function validatePresence(value: any, field: string): ValidationError {
 }
 
 function validateNonEmpty(value: any[], field: string): ValidationError {
-    return value.length == 0 ? [i18n.t("{{field}}: Select at least one item", { field })] : [];
+    return value.length == 0 ? [i18n.t("Select at least one item for {{field}}", { field })] : [];
 }
 
 export default Project;

@@ -39,10 +39,7 @@ const OrgUnitsStep: React.FC<StepProps> = ({ api, project, onChange }) => {
     }, [d2]);
 
     const setOrgUnits = (orgUnitsPaths: string[]) => {
-        const orgUnits = orgUnitsPaths.map(path => ({
-            id: _.last(path.split("/")) || "",
-            path,
-        }));
+        const orgUnits = orgUnitsPaths.map(path => ({ path }));
         const newProject = project.set("organisationUnits", orgUnits);
         onChange(newProject);
     };
