@@ -91,12 +91,15 @@ class ProjectWizardImpl extends React.Component<Props, State> {
                 description: i18n.t(
                     `Choose a name for the project and define the period for which data entry will be enabled`
                 ),
+                help: i18n.t("TODO"),
             },
             {
                 key: "sectors-funders",
                 label: i18n.t("Sectors & Project Funders"),
                 component: SectorsFundersStep,
                 validationKeys: ["sectors", "funders"],
+                description: i18n.t(`Select sectors and funders for your project.`),
+                help: i18n.t("TODO"),
             },
             {
                 key: "organisation-units",
@@ -106,12 +109,14 @@ class ProjectWizardImpl extends React.Component<Props, State> {
                 description: i18n.t(
                     `Select the organisation unit associated with the project. At least one must be selected.`
                 ),
+                help: i18n.t("TODO"),
             },
             {
                 key: "data-elements",
                 label: i18n.t("Data Elements"),
                 component: () => <p>Data Elements</p>,
                 validationKeys: [],
+                help: i18n.t("TODO"),
             },
             {
                 key: "save",
