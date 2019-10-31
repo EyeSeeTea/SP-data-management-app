@@ -46,7 +46,7 @@
         "prestart": "yarn localize && d2-manifest package.json manifest.webapp",
         "start": "react-scripts start",
         "prebuild": "yarn localize && yarn test",
-        "build-react": "node --max_old_space_size=4096 node_modules/.bin/react-scripts build",
+        "build-react": "node --max_old_space_size=8192 node_modules/.bin/react-scripts build",
         "build": "rm -rf build/ && d2-manifest package.json manifest.webapp && yarn build-react && yarn run manifest && cp -r i18n icon.png build",
         "build-webapp": "yarn build && rm -f $npm_package_name.zip && cd build && zip -r ../$npm_package_name.zip *",
         "test": "jest",
