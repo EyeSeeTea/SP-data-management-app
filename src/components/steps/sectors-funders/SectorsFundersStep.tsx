@@ -56,19 +56,21 @@ const SectorsFundersStep: React.FC<StepProps> = ({ project, onChange }) => {
         <Card>
             <CardContent>
                 <Title>{i18n.t("Sectors")}</Title>
-                <MultiSelector
-                    d2={d2}
-                    ordered={true}
-                    height={300}
-                    onChange={(selected: string[]) =>
-                        onUpdateField("sectors", sectorOptions, selected)
-                    }
-                    options={sectorOptions}
-                    selected={project.sectors.map(sector => sector.id)}
-                />
+                <div data-test-selector="sectors">
+                    <MultiSelector
+                        d2={d2}
+                        ordered={true}
+                        height={300}
+                        onChange={(selected: string[]) =>
+                            onUpdateField("sectors", sectorOptions, selected)
+                        }
+                        options={sectorOptions}
+                        selected={project.sectors.map(sector => sector.id)}
+                    />
+                </div>
 
                 <Title style={{ marginTop: 35 }}>{i18n.t("Project funders")}</Title>
-                <div style={{ paddingRight: 40 }}>
+                <div data-test-selector="funders" style={{ paddingRight: 40 }}>
                     <MultiSelector
                         d2={d2}
                         ordered={false}

@@ -41,8 +41,8 @@ describe("Projects - Create", () => {
         cy.contains("Select at least one item for Sectors");
         cy.contains("Select at least one item for Funders");
 
-        selectInMultiSelector("Sector1", 0);
-        selectInMultiSelector("ACWME", 1);
+        selectInMultiSelector("sectors", "Sector1");
+        selectInMultiSelector("funders", "ACWME");
         cy.contains("Next").click();
 
         // Organisation Units Step
@@ -105,10 +105,10 @@ function clickDay(dayOfMonth) {
     cy.wait(100); // eslint-disable-line cypress/no-unnecessary-waiting
 }
 
-function selectInMultiSelector(label, index = 0) {
-    const prefix = `[data-multi-selector]:nth-of-type(${index + 1})`;
+function selectInMultiSelector(selectorName, label) {
+    const prefix = `[data-test-selector='${selectorName}']`;
     cy.get(prefix + " > div > div > div select:first").select(label);
-    cy.get(prefix + " > div > div > div:nth-child(2)")
+    cy.get(prefix)
         .contains("→")
         .click();
 }
