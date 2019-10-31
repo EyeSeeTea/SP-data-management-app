@@ -25,6 +25,8 @@ describe("Project", () => {
         });
     });
 
+    describe("create", () => {});
+
     describe("get", () => {});
 
     describe("getOrganisationUnitsWithName", () => {

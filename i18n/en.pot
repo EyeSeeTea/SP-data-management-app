@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2019-10-30T09:26:14.084Z\n"
-"PO-Revision-Date: 2019-10-30T09:26:14.084Z\n"
+"POT-Creation-Date: 2019-10-30T11:38:24.144Z\n"
+"PO-Revision-Date: 2019-10-30T11:38:24.144Z\n"
 
 msgid "Help"
 msgstr ""
@@ -117,7 +117,13 @@ msgid ""
 "will be enabled"
 msgstr ""
 
+msgid "TODO"
+msgstr ""
+
 msgid "Sectors & Project Funders"
+msgstr ""
+
+msgid "Select sectors and funders for your project."
 msgstr ""
 
 msgid ""
