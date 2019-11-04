@@ -156,7 +156,6 @@ const ProjectsList: React.FC = () => {
                 list={list}
                 disableMultiplePageSelection={true}
                 buttonLabel={i18n.t("Create Project")}
-                customFilters={{ createdByCurrentUser: true }}
                 onButtonClick={() => goToNewProjectPage(history)}
             />
         </React.Fragment>
