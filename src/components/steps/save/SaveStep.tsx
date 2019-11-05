@@ -48,7 +48,6 @@ const SaveStep: React.FC<StepProps> = ({ project, onCancel }) => {
                 <ul>
                     <LiEntry label={i18n.t("Name")} value={project.name} />
                     <LiEntry label={i18n.t("Description")} value={project.description} />
-                    <LiEntry label={i18n.t("Code")} value={project.code} />
                     <LiEntry label={i18n.t("Award Number")} value={project.awardNumber} />
                     <LiEntry
                         label={i18n.t("Subsequent Lettering")}
