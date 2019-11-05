@@ -127,9 +127,7 @@ const DataEntry: React.FC = () => {
     const subtitle = i18n.t(
         `Once cells turn into green, all information is saved and you can leave the Data Entry Section`
     );
-    const stylesSubtitle = {
-        marginBottom: 10, marginLeft: 15
-    };
+    const stylesSubtitle = { marginBottom: 10, marginLeft: 15 };
     return (
         <React.Fragment>
             <PageHeader
