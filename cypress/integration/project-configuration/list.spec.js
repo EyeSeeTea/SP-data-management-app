@@ -62,4 +62,24 @@ describe("Project Configuration - List page", () => {
 
         cy.contains("No results found");
     });
+
+    it("will navegate to dashboard from the actions menu", () => {
+        cy.get(".data-table__rows > :nth-child(1) button").click();
+        cy.get("span[role=menuitem]")
+            .contains("Go to Dashboard")
+            .click();
+
+        cy.get("h5").contains("Dashboard");
+        cy.url().should("include", "/dashboard");
+    });
+
+    it("will navegate to data-entry from the actions menu", () => {
+        cy.get(".data-table__rows > :nth-child(1) button").click();
+        cy.get("span[role=menuitem]")
+            .contains("Go to Data Entry")
+            .click();
+
+        cy.get("h5").contains("Data Entry");
+        cy.url().should("include", "/data-entry");
+    });
 });
