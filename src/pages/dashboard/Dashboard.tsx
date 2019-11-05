@@ -5,7 +5,7 @@ import { useHistory } from "react-router";
 import { History } from "history";
 import { generateUrl } from "../../router";
 import { DataSetForList } from "../../models/Project";
-import "./DataEntry.css";
+import "./Dashboard.css";
 
 type DataSet = DataSetForList;
 
@@ -112,34 +112,26 @@ function getConfig(history: History) {
     ];
 
     const help = i18n.t(
-        `Select a) organizational unit where vaccination was performed, b) data set, c) date of vaccination, d) team that performed vaccination
-
-        Then enter data for the fields shown in the screen.`
+        `Please click on the grey arrow next to the chart/table title if you want to modify the layout.`
     );
 
     return { columns, initialSorting, detailsFields, actions, help };
 }
 
-const DataEntry: React.FC = () => {
+const Dashboard: React.FC = () => {
     const history = useHistory();
     const goToLandingPage = () => goTo(history, "/");
     const config = getConfig(history);
-    const subtitle = i18n.t(
-        `Once cells turn into green, all information is saved and you can leave the Data Entry Section`
-    );
-    const stylesSubtitle = {
-        marginBottom: 10, marginLeft: 15
-    };
+
     return (
         <React.Fragment>
             <PageHeader
-                title={i18n.t("Data Entry")}
+                title={i18n.t("Dashboard")}
                 help={config.help}
                 onBackClick={goToLandingPage}
             />
-            <div style={stylesSubtitle}>{subtitle}</div>
         </React.Fragment>
     );
 };
 
-export default DataEntry;
+export default Dashboard;
