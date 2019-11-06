@@ -178,7 +178,9 @@ const CustomFilters: React.FC<{ createdByCurrentUser: boolean; onChange: () => v
     return (
         <FormGroup style={{ paddingLeft: 30, display: "inline-block" }}>
             <FormControlLabel
-                control={<Checkbox checked={createdByCurrentUser} onChange={onChange} />}
+                control={
+                    <Checkbox color="primary" checked={createdByCurrentUser} onChange={onChange} />
+                }
                 label={i18n.t("Only my projects")}
             />
         </FormGroup>
