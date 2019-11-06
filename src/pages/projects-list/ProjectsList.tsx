@@ -1,7 +1,5 @@
 import React from "react";
 import { OldObjectsTable } from "d2-ui-components";
-import { ObjectsTable } from "d2-ui-components";
-
 
 import i18n from "../../locales";
 import PageHeader from "../../components/page-header/PageHeader";
