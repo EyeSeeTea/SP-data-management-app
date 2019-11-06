@@ -23,7 +23,7 @@ describe("Projects - Create", () => {
 
         cy.get("[data-field='name']").type("Cypress Project");
         cy.get("[data-field='awardNumber']").type("12345");
-        cy.get("[data-field='subsequentLettering']").type("Subsequent Lettering Value");
+        cy.get("[data-field='subsequentLettering']").type("SL");
 
         cy.contains("Start Date").click({ force: true });
         clickDay(11);
@@ -74,7 +74,6 @@ describe("Projects - Create", () => {
         const expectedDataEnd = now.set("date", 13).format("LL");
         cy.contains(`${expectedDataStart} -> ${expectedDataEnd}`);
 
-        cy.contains("Code");
         cy.contains("Description");
 
         cy.contains("Organisation Units");
