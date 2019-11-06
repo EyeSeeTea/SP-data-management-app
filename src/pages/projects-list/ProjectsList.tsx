@@ -144,7 +144,6 @@ const ProjectsList: React.FC = () => {
                 onBackClick={goToLandingPage}
             />
 
-
             <OldObjectsTable
                 model={{ modelValidations: {} }}
                 columns={config.columns}
