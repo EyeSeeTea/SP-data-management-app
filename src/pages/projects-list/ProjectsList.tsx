@@ -77,14 +77,15 @@ function getConfig(history: History) {
             icon: "library_books",
             text: i18n.t("Go to Data Entry"),
             multiple: false,
-            onClick: () => history.push(generateUrl("dataEntry"/* , { id: dataSet.id } */)),
+            onClick: (dataSet: DataSet) =>
+                history.push(generateUrl("dataEntry.edit", { id: dataSet.id })),
         },
         {
             name: "dashboard",
             icon: "dashboard",
             text: i18n.t("Go to Dashboard"),
             multiple: false,
-            onClick: () => history.push(generateUrl("projects.edit"/* , { id: dataSet.id } */)),
+            onClick: () => history.push(generateUrl("dashboard")),
         },
         {
             name: "add-target-values",

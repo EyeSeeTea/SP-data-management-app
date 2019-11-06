@@ -4,6 +4,7 @@ const routes = {
     "projects.edit": ({ id }: { id: string }) => `/projects/${id}`,
     report: () => "/report",
     dataEntry: () => "/data-entry",
+    "dataEntry.edit": ({ id }: { id: string }) => `/data-entry/${id}`,
     dashboard: () => "/dashboard",
 };
 
