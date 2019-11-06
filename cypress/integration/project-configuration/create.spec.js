@@ -87,7 +87,7 @@ describe("Projects - Create", () => {
 
 function selectOrgUnit(label) {
     cy.contains(label)
-        .prev()
+        .find("input")
         .click();
     cy.contains(label)
         .should("have.css", "color")
