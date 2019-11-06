@@ -3,7 +3,6 @@ import i18n from "../../locales";
 import PageHeader from "../../components/page-header/PageHeader";
 import { useHistory } from "react-router";
 import { History } from "history";
-import "./DataEntry.css";
 
 function goTo(history: History, url: string) {
     history.push(url);

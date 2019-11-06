@@ -8,28 +8,30 @@ function goTo(history: History, url: string) {
     history.push(url);
 }
 
-function getConfig() {
-    const help = i18n.t(
-        `Please click on the grey arrow next to the chart/table title if you want to modify the layout.`
-    );
+// function getConfig() {
+//     const help = i18n.t(
+//         `Select a) organizational unit where vaccination was performed, b) data set, c) date of vaccination, d) team that performed vaccination
 
-    return { help };
-}
+//         Then enter data for the fields shown in the screen.`
+//     );
 
-const Dashboard: React.FC = () => {
+//     return { help };
+// }
+
+const Report: React.FC = () => {
     const history = useHistory();
     const goToLandingPage = () => goTo(history, "/");
-    const config = getConfig();
+    // const config = getConfig();
 
     return (
         <React.Fragment>
             <PageHeader
-                title={i18n.t("Dashboard")}
-                help={config.help}
+                title={i18n.t("Monthly Executive Report")}
+                // help={config.help}
                 onBackClick={goToLandingPage}
             />
         </React.Fragment>
     );
 };
 
-export default Dashboard;
+export default Report;
