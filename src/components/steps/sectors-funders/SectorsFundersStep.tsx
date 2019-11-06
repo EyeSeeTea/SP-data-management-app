@@ -73,6 +73,7 @@ const SectorsFundersStep: React.FC<StepProps> = ({ project, onChange }) => {
                 <div data-test-selector="funders" style={{ paddingRight: 40 }}>
                     <MultiSelector
                         d2={d2}
+                        searchFilterLabel={true}
                         ordered={false}
                         height={300}
                         onChange={(selected: string[]) =>
