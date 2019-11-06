@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { HeaderBar } from "@dhis2/ui-widgets";
 import { MuiThemeProvider } from "@material-ui/core/styles";
-import { StylesProvider, createGenerateClassName } from "@material-ui/styles";
 import OldMuiThemeProvider from "material-ui/styles/MuiThemeProvider";
 import { useDataQuery, useConfig } from "@dhis2/app-runtime";
 import _ from "lodash";
@@ -16,10 +15,6 @@ import muiThemeLegacy from "./themes/dhis2-legacy.theme";
 import Root from "../../pages/root/Root";
 import Share from "../share/Share";
 import { ApiContext } from "../../contexts/api-context";
-
-const generateClassName = createGenerateClassName({
-    productionPrefix: "c",
-});
 
 const isLangRTL = code => {
     const langs = ["ar", "fa", "ur"];
@@ -65,6 +60,7 @@ const App = () => {
             configI18n(data.userSettings);
             setD2(d2);
             setApi(api);
+            Object.assign(window, { d2, api });
             setShowShareButton(_(appConfig).get("appearance.showShareButton") || false);
             initFeedbackTool(d2, appConfig);
         };
@@ -85,23 +81,21 @@ const App = () => {
         return <h3>Connecting to {baseUrl}...</h3>;
     } else {
         return (
-            <StylesProvider generateClassName={generateClassName}>
-                <MuiThemeProvider theme={muiTheme}>
-                    <OldMuiThemeProvider muiTheme={muiThemeLegacy}>
-                        <SnackbarProvider>
-                            <HeaderBar appName={"Project Monitoring App"} />
+            <MuiThemeProvider theme={muiTheme}>
+                <OldMuiThemeProvider muiTheme={muiThemeLegacy}>
+                    <SnackbarProvider>
+                        <HeaderBar appName={"Skeleton app"} />
 
-                            <div id="app" className="content">
-                                <ApiContext.Provider value={api}>
-                                    <Root />
-                                </ApiContext.Provider>
-                            </div>
+                        <div id="app" className="content">
+                            <ApiContext.Provider value={{ d2, api }}>
+                                <Root />
+                            </ApiContext.Provider>
+                        </div>
 
-                            <Share visible={showShareButton} />
-                        </SnackbarProvider>
-                    </OldMuiThemeProvider>
-                </MuiThemeProvider>
-            </StylesProvider>
+                        <Share visible={showShareButton} />
+                    </SnackbarProvider>
+                </OldMuiThemeProvider>
+            </MuiThemeProvider>
         );
     }
 };
