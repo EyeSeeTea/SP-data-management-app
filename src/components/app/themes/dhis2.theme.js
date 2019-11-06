@@ -16,6 +16,7 @@ export const colors = {
     greyBlack: "#494949",
     grey: "#9E9E9E",
     greyLight: "#E0E0E0",
+    greyDisabled: "#8E8E8E",
     blueGrey: "#ECEFF1",
     snow: "#F4F6F8",
     white: "#FFFFFF", // Not included in palette!
@@ -32,12 +33,12 @@ export const palette = {
     },
     action: {
         active: colors.greyBlack,
-        disabled: colors.greyLight,
+        disabled: colors.greyDisabled,
     },
     text: {
         primary: colors.black,
         secondary: colors.greyBlack,
-        disabled: colors.grey,
+        disabled: colors.greyDisabled,
         hint: colors.grey,
     },
     primary: {
