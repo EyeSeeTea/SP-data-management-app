@@ -48,8 +48,7 @@ import i18n from "../locales";
 export interface ProjectData {
     name: string;
     description: string;
-    code: string;
-    awardNumber: string;
+    awardNumber: number;
     subsequentLettering: string;
     speedKey: string;
     startDate?: Moment;
@@ -75,7 +74,7 @@ const defaultProjectData = {
     name: "",
     description: "",
     code: "",
-    awardNumber: "",
+    awardNumber: 0,
     subsequentLettering: "",
     speedKey: "",
     startDate: undefined,
@@ -125,9 +124,18 @@ class Project {
         name: () => validatePresence(this.name, i18n.t("Name")),
         startDate: () => validatePresence(this.startDate, i18n.t("Start Date")),
         endDate: () => validatePresence(this.endDate, i18n.t("End Date")),
-        awardNumber: () => validatePresence(this.awardNumber, i18n.t("Award Number")),
+        awardNumber: () =>
+            _.concat(
+                validatePresence(this.awardNumber, i18n.t("Award Number")),
+                validateNumber(this.awardNumber, i18n.t("Award Number"), { min: 10000, max: 99999 })
+            ),
         subsequentLettering: () =>
-            validatePresence(this.subsequentLettering, i18n.t("Subsequent Lettering")),
+            _.concat(
+                validatePresence(this.subsequentLettering, i18n.t("Subsequent Lettering")),
+                validateSubLet(this.subsequentLettering, i18n.t("Subsequent Lettering"), {
+                    length: 2,
+                })
+            ),
         sectors: () => validateNonEmpty(this.sectors, i18n.t("Sectors")),
         funders: () => validateNonEmpty(this.funders, i18n.t("Funders")),
         organisationUnits: () =>
@@ -212,6 +220,32 @@ function validatePresence(value: any, field: string): ValidationError {
 
 function validateNonEmpty(value: any[], field: string): ValidationError {
     return value.length == 0 ? [i18n.t("Select at least one item for {{field}}", { field })] : [];
+}
+
+function validateNumber(
+    value: number,
+    field: string,
+    { min, max }: { min?: number; max?: number } = {}
+): ValidationError {
+    if (min && value < min) {
+        return [i18n.t("{{field}} must be greater than {{value}}", { field, value: min })];
+    } else if (max && value > max) {
+        return [i18n.t("{{field}} must be less than {{value}}", { field, value: max })];
+    } else {
+        return [];
+    }
+}
+
+function validateSubLet(
+    value: string,
+    field: string,
+    { length }: { length?: number } = {}
+): ValidationError {
+    if (value.length !== 2) {
+        return [i18n.t("{{field}} must have 2 characters", { field, value: length })];
+    } else {
+        return [];
+    }
 }
 
 export default Project;

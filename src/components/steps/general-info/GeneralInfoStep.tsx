@@ -35,12 +35,14 @@ class GeneralInfoStep extends React.Component<StepProps> {
             getTextField("description", i18n.t("Description"), project.description, {
                 props: { multiLine: true },
             }),
-            // getNumberField("awardNumber", i18n.t("Award Number"), project.awardNumber),
-            // getTextField(
-            //     "subsequentLettering",
-            //     i18n.t("Subsequent Lettering"),
-            //     project.subsequentLettering
-            // ),
+            getTextField("awardNumber", i18n.t("Award Number"), project.awardNumber.toString(), {
+                props: { type: "number" },
+            }),
+            getTextField(
+                "subsequentLettering",
+                i18n.t("Subsequent Lettering"),
+                project.subsequentLettering
+            ),
             getTextField("speedKey", i18n.t("Speed Key"), project.speedKey),
             getDateField("startDate", i18n.t("Start Date"), project.startDate, {
                 onUpdateField: this.onUpdateField,
@@ -89,13 +91,6 @@ function getTextField(
         validators: validators || [],
     };
 }
-
-// function getNumberField(
-//     name: NumberField,
-//     humanName: string,
-//     value: number,
-
-// )
 
 function getDateField(
     name: DateField,
