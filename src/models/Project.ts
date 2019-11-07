@@ -222,6 +222,7 @@ function validateNonEmpty(value: any[], field: string): ValidationError {
     return value.length == 0 ? [i18n.t("Select at least one item for {{field}}", { field })] : [];
 }
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
 function validateNumber(
     value: number,
     field: string,
