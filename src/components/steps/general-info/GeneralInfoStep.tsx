@@ -13,8 +13,6 @@ const { FormBuilder, Validators } = require("@dhis2/d2-ui-forms");
 
 type StringField = "name" | "description" | "awardNumber" | "subsequentLettering" | "speedKey";
 
-// type NumberField = "awardNumber";
-
 type DateField = "startDate" | "endDate";
 
 type ProjectData = Pick<Project, StringField | DateField /* | NumberField */>;
@@ -35,7 +33,7 @@ class GeneralInfoStep extends React.Component<StepProps> {
             getTextField("description", i18n.t("Description"), project.description, {
                 props: { multiLine: true },
             }),
-            getTextField("awardNumber", i18n.t("Award Number"), project.awardNumber.toString(), {
+            getTextField("awardNumber", i18n.t("Award Number"), project.awardNumber, {
                 props: { type: "number" },
             }),
             getTextField(

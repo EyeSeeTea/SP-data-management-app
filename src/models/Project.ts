@@ -48,7 +48,7 @@ import i18n from "../locales";
 export interface ProjectData {
     name: string;
     description: string;
-    awardNumber: number;
+    awardNumber: string;
     subsequentLettering: string;
     speedKey: string;
     startDate?: Moment;
@@ -74,7 +74,7 @@ const defaultProjectData = {
     name: "",
     description: "",
     code: "",
-    awardNumber: 0,
+    awardNumber: "",
     subsequentLettering: "",
     speedKey: "",
     startDate: undefined,
@@ -120,22 +120,22 @@ type ValidationError = string[];
 type Validations = { [K in ValidationKey]?: () => ValidationError | Promise<ValidationError> };
 
 class Project {
+    // TODO: create an object {[field: string]: string} with field translations to DRY code
     validations: Validations = {
         name: () => validatePresence(this.name, i18n.t("Name")),
         startDate: () => validatePresence(this.startDate, i18n.t("Start Date")),
         endDate: () => validatePresence(this.endDate, i18n.t("End Date")),
         awardNumber: () =>
-            _.concat(
-                validatePresence(this.awardNumber, i18n.t("Award Number")),
-                validateNumber(this.awardNumber, i18n.t("Award Number"), { min: 10000, max: 99999 })
+            validateRegexp(
+                this.awardNumber,
+                i18n.t("Award Number"),
+                /^\d{5}$/,
+                i18n.t("Award Number should be a number of 5 digits")
             ),
         subsequentLettering: () =>
-            _.concat(
-                validatePresence(this.subsequentLettering, i18n.t("Subsequent Lettering")),
-                validateSubLet(this.subsequentLettering, i18n.t("Subsequent Lettering"), {
-                    length: 2,
-                })
-            ),
+            validateLength(this.subsequentLettering, i18n.t("Subsequent Lettering"), {
+                length: 2,
+            }),
         sectors: () => validateNonEmpty(this.sectors, i18n.t("Sectors")),
         funders: () => validateNonEmpty(this.funders, i18n.t("Funders")),
         organisationUnits: () =>
@@ -236,13 +236,30 @@ function validateNumber(
     }
 }
 
-function validateSubLet(
+function validateRegexp(
+    value: string,
+    field: string,
+    regexp: RegExp,
+    customMsg: string
+): ValidationError {
+    return regexp.test(value)
+        ? []
+        : [
+              customMsg ||
+                  i18n.t("{{field}} does not match pattern {{pattern}}", {
+                      field,
+                      pattern: regexp.source,
+                  }),
+          ];
+}
+
+function validateLength(
     value: string,
     field: string,
     { length }: { length?: number } = {}
 ): ValidationError {
     if (value.length !== 2) {
-        return [i18n.t("{{field}} must have 2 characters", { field, value: length })];
+        return [i18n.t("{{field}} must have {{length}} characters", { field, length })];
     } else {
         return [];
     }

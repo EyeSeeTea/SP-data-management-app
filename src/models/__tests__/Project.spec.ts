@@ -15,38 +15,6 @@ async function expectFieldPresence(field: keyof ProjectData) {
     expect(errors[field] !== undefined && (errors[field] || []).length > 0).toBeTruthy();
 }
 
-async function expectNumberAwardNumber(field: keyof ProjectData) {
-    const project = Project.create(api).set(field, 22222);
-    const errors = await project.validate([field]);
-    expect(errors[field]).toHaveLength(0);
-
-    const project2 = project.set(field, 22);
-    const errors2 = await project2.validate([field]);
-    expect(errors2[field]).toHaveLength(1);
-    expect(errors2[field]).toContain("Award Number must be greater than 10000");
-
-    const project3 = project.set(field, 222222);
-    const errors3 = await project3.validate([field]);
-    expect(errors3[field]).toHaveLength(1);
-    expect(errors3[field]).toContain("Award Number must be less than 99999");
-}
-
-async function expectCharactersSubsequentLettering(field: keyof ProjectData) {
-    const project = Project.create(api).set(field, "NG");
-    const errors = await project.validate([field]);
-    expect(errors[field]).toHaveLength(0);
-
-    const project2 = project.set(field, "N");
-    const errors2 = await project2.validate([field]);
-    expect(errors2[field]).toHaveLength(1);
-    expect(errors2[field]).toContain("Subsequent Lettering must have 2 characters");
-
-    const project3 = project.set(field, "NGO");
-    const errors3 = await project3.validate([field]);
-    expect(errors3[field]).toHaveLength(1);
-    expect(errors3[field]).toContain("Subsequent Lettering must have 2 characters");
-}
-
 describe("Project", () => {
     describe("set", () => {
         it("sets immutable data fields using field name", () => {
@@ -57,9 +25,9 @@ describe("Project", () => {
         });
     });
 
-    describe("create", () => { });
+    describe("create", () => {});
 
-    describe("get", () => { });
+    describe("get", () => {});
 
     describe("getOrganisationUnitsWithName", () => {
         const paginatedOrgUnits = {
@@ -100,20 +68,40 @@ describe("Project", () => {
             expectFieldPresence("endDate");
         });
 
-        it("requires an award number", async () => {
-            expectFieldPresence("awardNumber");
-        });
-
         it("requires a number with five digits in award number", async () => {
-            expectNumberAwardNumber("awardNumber");
-        });
+            const project = Project.create(api).set("awardNumber", "22222");
+            const errors = await project.validate(["awardNumber"]);
+            expect(errors["awardNumber"]).toHaveLength(0);
 
-        it("requires a subsequent lettering", async () => {
-            expectFieldPresence("subsequentLettering");
+            const project2 = project.set("awardNumber", "22");
+            const errors2 = await project2.validate(["awardNumber"]);
+            expect(errors2["awardNumber"]).toHaveLength(1);
+            expect(errors2["awardNumber"]).toContain("Award Number should be a number of 5 digits");
+
+            const project3 = project.set("awardNumber", "222222");
+            const errors3 = await project3.validate(["awardNumber"]);
+            expect(errors3["awardNumber"]).toHaveLength(1);
+            expect(errors3["awardNumber"]).toContain("Award Number should be a number of 5 digits");
         });
 
         it("requires a string with 2 characters in subsequent lettering", async () => {
-            expectCharactersSubsequentLettering("awardNumber");
+            const project = Project.create(api).set("subsequentLettering", "NG");
+            const errors = await project.validate(["subsequentLettering"]);
+            expect(errors["subsequentLettering"]).toHaveLength(0);
+
+            const project2 = project.set("subsequentLettering", "N");
+            const errors2 = await project2.validate(["subsequentLettering"]);
+            expect(errors2["subsequentLettering"]).toHaveLength(1);
+            expect(errors2["subsequentLettering"]).toContain(
+                "Subsequent Lettering must have 2 characters"
+            );
+
+            const project3 = project.set("subsequentLettering", "NGO");
+            const errors3 = await project3.validate(["subsequentLettering"]);
+            expect(errors3["subsequentLettering"]).toHaveLength(1);
+            expect(errors3["subsequentLettering"]).toContain(
+                "Subsequent Lettering must have 2 characters"
+            );
         });
 
         it("requires at least one sector", async () => {
