@@ -223,6 +223,3 @@ msgstr ""
 
 msgid "Create Project"
 msgstr ""
-
-msgid "Only my projects"
-msgstr ""

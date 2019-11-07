@@ -86,7 +86,7 @@ describe("Projects - Create", () => {
 
 function selectOrgUnit(label) {
     cy.contains(label)
-        .prev()
+        .find("input")
         .click();
     cy.contains(label)
         .should("have.css", "color")
@@ -94,7 +94,7 @@ function selectOrgUnit(label) {
 }
 
 function clickDay(dayOfMonth) {
-    cy.xpath(`//span[contains(text(), '${dayOfMonth}')]`).then(spans => {
+    cy.xpath(`//p[contains(text(), '${dayOfMonth}')]`).then(spans => {
         const span = spans[spans.length - 1];
         if (span && span.parentElement) {
             span.parentElement.click();

@@ -56,7 +56,7 @@ describe("Project Configuration - List page", () => {
     });
 
     it("can filter datasets by name", () => {
-        cy.get("[data-test='search']")
+        cy.get("[data-test='search'] input")
             .clear()
             .type("cypress test");
 

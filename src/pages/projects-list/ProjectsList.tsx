@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { ObjectsTable } from "d2-ui-components";
 
 import i18n from "../../locales";
@@ -10,7 +10,6 @@ import { generateUrl } from "../../router";
 import Project, { FiltersForList, DataSetForList } from "../../models/Project";
 import { Pagination } from "../../types/ObjectsList";
 import "./ProjectsList.css";
-import { Checkbox, FormControlLabel, FormGroup } from "@material-ui/core";
 
 type DataSet = DataSetForList;
 
@@ -130,7 +129,6 @@ function getConfig(history: History) {
 }
 
 const ProjectsList: React.FC = () => {
-    const [byUser, setByUser] = useState<boolean>(false);
     const history = useHistory();
     const api = useD2Api();
     const goToLandingPage = () => goTo(history, "/");
@@ -158,30 +156,9 @@ const ProjectsList: React.FC = () => {
                 list={list}
                 disableMultiplePageSelection={true}
                 buttonLabel={i18n.t("Create Project")}
-                customFiltersComponent={() => (
-                    <CustomFilters
-                        createdByCurrentUser={byUser}
-                        onChange={() => setByUser(!byUser)}
-                    />
-                )}
-                customFilters={{ createdByCurrentUser: byUser }}
                 onButtonClick={() => goToNewProjectPage(history)}
             />
         </React.Fragment>
-    );
-};
-
-const CustomFilters: React.FC<{ createdByCurrentUser: boolean; onChange: () => void }> = ({
-    createdByCurrentUser,
-    onChange,
-}) => {
-    return (
-        <FormGroup style={{ paddingLeft: 30, display: "inline-block" }}>
-            <FormControlLabel
-                control={<Checkbox checked={createdByCurrentUser} onChange={onChange} />}
-                label={i18n.t("Only my projects")}
-            />
-        </FormGroup>
     );
 };
 
