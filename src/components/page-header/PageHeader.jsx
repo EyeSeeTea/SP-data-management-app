@@ -11,7 +11,7 @@ const iconStyle = { paddingTop: 10, marginBottom: 5 };
 
 function PageHeader({ variant, title, onBackClick, help, pageVisited }) {
     return (
-        <div>
+        <div data-test={title}>
             <IconButton
                 onClick={onBackClick}
                 color="secondary"

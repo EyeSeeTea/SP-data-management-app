@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2019-11-06T08:29:26.811Z\n"
-"PO-Revision-Date: 2019-11-06T08:29:26.811Z\n"
+"POT-Creation-Date: 2019-11-08T10:23:12.246Z\n"
+"PO-Revision-Date: 2019-11-08T10:23:12.246Z\n"
 
 msgid "Help"
 msgstr ""
@@ -94,16 +94,33 @@ msgstr ""
 msgid "Select at least one item for {{field}}"
 msgstr ""
 
-msgid "Project Configuration"
+msgid ""
+"Please click on the grey arrow next to the chart/table title if you want to "
+"modify the layout."
 msgstr ""
 
-msgid "Monthly Executive Report"
+msgid "Dashboard"
+msgstr ""
+
+msgid ""
+"Select a) organizational unit where project was performed, b) data set, c) "
+"date, d) current/target\n"
+"\n"
+"        Then enter data for the fields shown in the screen."
+msgstr ""
+
+msgid ""
+"Once cells turn into green, all information is saved and you can leave the "
+"Data Entry Section"
 msgstr ""
 
 msgid "Data Entry"
 msgstr ""
 
-msgid "Dashboard"
+msgid "Project Configuration"
+msgstr ""
+
+msgid "Monthly Executive Report"
 msgstr ""
 
 msgid "Cannot load project"
@@ -210,4 +227,7 @@ msgid "Projects"
 msgstr ""
 
 msgid "Create Project"
+msgstr ""
+
+msgid "Help message for MER"
 msgstr ""
