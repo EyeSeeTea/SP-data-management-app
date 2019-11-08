@@ -47,6 +47,19 @@ const App = () => {
     const { loading, error, data } = useDataQuery({
         userSettings: { resource: "/userSettings" },
     });
+    const config = {
+        currentUser: {
+            userRoles: ["Encode"],
+        },
+        userRoles: {
+            app: ["Manager", "Superadmin", "Encoder"],
+            feedback: ["Feedback", "Manager"],
+            reportingAnalyst: ["Configurator"],
+            superUser: ["Superuser"],
+            encode: ["Encode"],
+            analyser: ["Analyser"],
+        },
+    };
 
     useEffect(() => {
         const run = async () => {
@@ -87,7 +100,7 @@ const App = () => {
                         <HeaderBar appName={"Skeleton app"} />
 
                         <div id="app" className="content">
-                            <ApiContext.Provider value={{ d2, api }}>
+                            <ApiContext.Provider value={{ d2, api, config }}>
                                 <Root />
                             </ApiContext.Provider>
                         </div>
