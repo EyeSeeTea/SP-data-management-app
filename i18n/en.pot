@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2019-11-08T10:23:12.246Z\n"
-"PO-Revision-Date: 2019-11-08T10:23:12.246Z\n"
+"POT-Creation-Date: 2019-11-08T10:30:18.178Z\n"
+"PO-Revision-Date: 2019-11-08T10:30:18.178Z\n"
 
 msgid "Help"
 msgstr ""
@@ -106,7 +106,9 @@ msgstr ""
 msgid "{{field}} must have {{length}} characters"
 msgstr ""
 
-msgid "Project Configuration"
+msgid ""
+"Please click on the grey arrow next to the chart/table title if you want to "
+"modify the layout."
 msgstr ""
 
 msgid "Dashboard"
@@ -127,7 +129,10 @@ msgstr ""
 msgid "Data Entry"
 msgstr ""
 
-msgid "Dashboard"
+msgid "Project Configuration"
+msgstr ""
+
+msgid "Monthly Executive Report"
 msgstr ""
 
 msgid "Cannot load project"
