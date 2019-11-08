@@ -9,9 +9,7 @@ function goTo(history: History, url: string) {
 }
 
 function getConfig() {
-    const help = i18n.t(
-        `Help message for MER`
-    );
+    const help = i18n.t(`Help message for MER`);
 
     return { help };
 }
@@ -26,7 +24,8 @@ const Report: React.FC = () => {
             <PageHeader
                 title={i18n.t("Monthly Executive Report")}
                 help={config.help}
-                onBackClick={goToLandingPage} />
+                onBackClick={goToLandingPage}
+            />
         </React.Fragment>
     );
 };
