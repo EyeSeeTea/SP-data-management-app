@@ -10,7 +10,7 @@ function goTo(history: History, url: string) {
 
 function getConfig() {
     const help = i18n.t(
-        `Select a) organizational unit where vaccination was performed, b) data set, c) date of vaccination, d) team that performed vaccination
+        `Select a) organizational unit where project was performed, b) data set, c) date, d) current/target
 
         Then enter data for the fields shown in the screen.`
     );
