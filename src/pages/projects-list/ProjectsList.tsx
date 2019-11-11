@@ -38,11 +38,21 @@ const Link: React.FC<{ url: string }> = ({ url }) => {
 function getConfig({
     history,
     currentUser,
-    appRole, feedbackRole, reportingAnalystRole, superUserRole, encodeRole, analyserRole,
+    appRole,
+    feedbackRole,
+    reportingAnalystRole,
+    superUserRole,
+    encodeRole,
+    analyserRole,
 }: {
     history: History;
     currentUser: string[];
-    appRole: string[], feedbackRole: string[], reportingAnalystRole: string[], superUserRole: string[], encodeRole: string[], analyserRole: string[];
+    appRole: string[];
+    feedbackRole: string[];
+    reportingAnalystRole: string[];
+    superUserRole: string[];
+    encodeRole: string[];
+    analyserRole: string[];
 }) {
     const columns = [
         { name: "displayName", text: i18n.t("Name"), sortable: true },
@@ -189,23 +199,28 @@ const ProjectsList: React.FC = () => {
     const encodeRole = _.intersection(currentUser, userRoles.encode);
     const analyserRole = _.intersection(currentUser, userRoles.analyser);
 
-
-    const config = getConfig({ history, currentUser, appRole, feedbackRole, reportingAnalystRole, superUserRole, encodeRole, analyserRole });
+    const config = getConfig({
+        history,
+        currentUser,
+        appRole,
+        feedbackRole,
+        reportingAnalystRole,
+        superUserRole,
+        encodeRole,
+        analyserRole,
+    });
 
     const list = (_d2: unknown, filters: FiltersForList, pagination: Pagination) =>
         Project.getList(api, filters, pagination);
 
     const handleButtonCreateProject = () => {
-        console.log("soy configurator")
         if (_.isEqual(reportingAnalystRole, currentUser)) {
-            return i18n.t("Create Project")
-        } else {
+            return i18n.t("Create Project");
         }
     };
     const handleLinkButtonCreateProject = () => {
-        console.log("puedo clickar")
         if (_.isEqual(reportingAnalystRole, currentUser)) {
-            return () => goToNewProjectPage(history)
+            return () => goToNewProjectPage(history);
         }
     };
     return (
