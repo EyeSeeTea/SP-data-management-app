@@ -1,19 +1,18 @@
 import React, { useContext } from "react";
 import { D2Api, D2ApiDefault } from "d2-api";
 
-
 interface MetadataConfig {
     currentUser: {
         userRoles: string[];
-    },
+    };
     userRoles: {
-        app: string[],
-        feedback: string[],
-        reportingAnalyst: string[],
-        superUser: string[],
-        encode: string[],
-        analyser: string[],
-    }
+        app: string[];
+        feedback: string[];
+        reportingAnalyst: string[];
+        superUser: string[];
+        encode: string[];
+        analyser: string[];
+    };
 }
 
 interface Context {
@@ -33,11 +32,9 @@ const defaultValue = {
             superUser: [],
             encode: [],
             analyser: [],
-        }
+        },
     },
 };
-;
-
 export const ApiContext = React.createContext<Context>(defaultValue);
 
 export function useD2() {

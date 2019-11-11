@@ -56,8 +56,8 @@ const OrgUnitsStep: React.FC<StepProps> = ({ api, project, onChange }) => {
                     levels={[1, 2, 3]}
                 />
             ) : (
-                    <LinearProgress />
-                )}
+                <LinearProgress />
+            )}
         </React.Fragment>
     );
 };

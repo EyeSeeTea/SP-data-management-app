@@ -11,7 +11,6 @@ import { generateUrl } from "../../router";
 import Project, { FiltersForList, DataSetForList } from "../../models/Project";
 import { Pagination } from "../../types/ObjectsList";
 import "./ProjectsList.css";
-import { isDeepStrictEqual } from "util";
 
 type DataSet = DataSetForList;
 
@@ -38,15 +37,23 @@ const Link: React.FC<{ url: string }> = ({ url }) => {
 
 // to change: use it form api-context
 interface MetadataConfig {
-    app: string[],
-    feedback: string[],
-    reportingAnalyst: string[],
-    superUser: string[],
-    encode: string[],
-    analyser: string[],
+    app: string[];
+    feedback: string[];
+    reportingAnalyst: string[];
+    superUser: string[];
+    encode: string[];
+    analyser: string[];
 }
 
-function getConfig({ history, currentUser, userRoles }: { history: History; currentUser: string[]; userRoles: MetadataConfig }) {
+function getConfig({
+    history,
+    currentUser,
+    userRoles,
+}: {
+    history: History;
+    currentUser: string[];
+    userRoles: MetadataConfig;
+}) {
     const columns = [
         { name: "displayName", text: i18n.t("Name"), sortable: true },
         { name: "publicAccess", text: i18n.t("Public access"), sortable: true },
@@ -82,16 +89,6 @@ function getConfig({ history, currentUser, userRoles }: { history: History; curr
     const superUserRole = _.intersection(currentUser, userRoles.superUser);
     const encodeRole = _.intersection(currentUser, userRoles.encode);
     const analyserRole = _.intersection(currentUser, userRoles.analyser);
-
-    // const listRoles = ["app", "feedback", "reporingAnalyst", "superUser", "encode", "analyser"];
-    // const testRoles = (currentUser: any, userRoles: string | number, listRoles: string[]) => {
-    //     const listRolesOptions = listRoles.map((role: any) => {
-    //         const a = userRoles + role;
-    //         return _.intersection(currentUser, a)
-    //     })
-    //     return listRolesOptions
-    // }
-    // console.log(test)
 
     const detailsAction = {
         name: "details",
@@ -139,6 +136,12 @@ function getConfig({ history, currentUser, userRoles }: { history: History; curr
         multiple: false,
     };
 
+    const createAction = {
+        name: "create",
+        text: i18n.t("Create"),
+        multiple: false,
+    };
+
     const editAction = {
         name: "edit",
         text: i18n.t("Edit"),
@@ -155,37 +158,38 @@ function getConfig({ history, currentUser, userRoles }: { history: History; curr
         onClick: (dataSets: DataSet[]) => {
             console.log("delete", dataSets);
         },
-    }
-    //SP Feedback = same behaviour than in vaccination
-    //SP Reporting Analyst = Configurator = Add Target Values,  Generate/Configure MER, Create, Edit, Delete, ,
-    //SP Superuser
-    //SP Encode = Go to Data Entry
-    //SP Analyser = Go to Dashboard, Download Data
+    };
+
+    //To implement:
+    // SP Feedback = same behaviour than in vaccination
+    // Create Action -> icon
 
     const getActions = () => {
-
         if (_.isEqual(appRole, currentUser)) {
             return [
-                detailsAction, dataEntryAction, dashboardAction, targetValuesAction, downloadDataAction, configMERAction, editAction, deleteAction
-            ]
-
+                detailsAction,
+                dataEntryAction,
+                dashboardAction,
+                targetValuesAction,
+                downloadDataAction,
+                configMERAction,
+                editAction,
+                deleteAction,
+            ];
         } else if (_.isEqual(feedbackRole, currentUser)) {
-            return [dashboardAction]
-
+            return [dashboardAction];
         } else if (_.isEqual(analyserRole, currentUser)) {
-            return [dashboardAction]
+            return [dashboardAction];
         } else if (_.isEqual(encodeRole, currentUser)) {
-            return [dataEntryAction]
+            return [dataEntryAction];
         } else if (_.isEqual(superUserRole, currentUser)) {
-            return [detailsAction, targetValuesAction, editAction, deleteAction]
-
+            return [detailsAction, targetValuesAction, editAction, deleteAction];
         } else if (_.isEqual(reportingAnalystRole, currentUser)) {
-            return [targetValuesAction, configMERAction, editAction, deleteAction]
+            return [targetValuesAction, configMERAction, editAction, deleteAction, createAction];
+        } else {
+            return [];
         }
-        else {
-            return []
-        }
-    }
+    };
 
     const actions = getActions();
 

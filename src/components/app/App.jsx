@@ -39,6 +39,20 @@ const configI18n = ({ keyUiLocale: uiLocale }) => {
     document.documentElement.setAttribute("dir", isLangRTL(uiLocale) ? "rtl" : "ltr");
 };
 
+export const config = {
+    currentUser: {
+        userRoles: ["Manager"],
+    },
+    userRoles: {
+        app: ["Manager", "Superadmin", "Encoder"],
+        feedback: ["Feedback", "Manager"],
+        reportingAnalyst: ["Configurator"],
+        superUser: ["Superuser"],
+        encode: ["Encode"],
+        analyser: ["Analyser"],
+    },
+};
+
 const App = () => {
     const { baseUrl } = useConfig();
     const [d2, setD2] = useState(null);
@@ -47,20 +61,6 @@ const App = () => {
     const { loading, error, data } = useDataQuery({
         userSettings: { resource: "/userSettings" },
     });
-    const config = {
-        currentUser: {
-            userRoles: ["Manager"],
-        },
-        userRoles: {
-            app: ["Manager", "Superadmin", "Encoder"],
-            feedback: ["Feedback", "Manager"],
-            reportingAnalyst: ["Configurator"],
-            superUser: ["Superuser"],
-            encode: ["Encode"],
-            analyser: ["Analyser"],
-        },
-    };
-
     useEffect(() => {
         const run = async () => {
             const appConfig = await fetch("app-config.json", {

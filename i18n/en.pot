@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2019-11-10T15:07:48.141Z\n"
-"PO-Revision-Date: 2019-11-10T15:07:48.141Z\n"
+"POT-Creation-Date: 2019-11-11T09:36:04.904Z\n"
+"PO-Revision-Date: 2019-11-11T09:36:04.904Z\n"
 
 msgid "Help"
 msgstr ""
@@ -207,6 +207,9 @@ msgid "Download Data"
 msgstr ""
 
 msgid "Generate / Configure MER"
+msgstr ""
+
+msgid "Create"
 msgstr ""
 
 msgid "Edit"
