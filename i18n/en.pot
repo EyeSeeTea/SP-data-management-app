@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2019-11-11T09:36:04.904Z\n"
-"PO-Revision-Date: 2019-11-11T09:36:04.904Z\n"
+"POT-Creation-Date: 2019-11-08T10:30:18.178Z\n"
+"PO-Revision-Date: 2019-11-08T10:30:18.178Z\n"
 
 msgid "Help"
 msgstr ""
@@ -20,15 +20,6 @@ msgstr ""
 msgid "Description"
 msgstr ""
 
-msgid "Code"
-msgstr ""
-
-msgid "Start Date"
-msgstr ""
-
-msgid "End Date"
-msgstr ""
-
 msgid "Award Number"
 msgstr ""
 
@@ -36,6 +27,12 @@ msgid "Subsequent Lettering"
 msgstr ""
 
 msgid "Speed Key"
+msgstr ""
+
+msgid "Start Date"
+msgstr ""
+
+msgid "End Date"
 msgstr ""
 
 msgid "Field cannot be blank"
@@ -88,10 +85,25 @@ msgstr ""
 msgid "No"
 msgstr ""
 
+msgid "Award Number should be a number of 5 digits"
+msgstr ""
+
 msgid "{{field}} cannot be blank"
 msgstr ""
 
 msgid "Select at least one item for {{field}}"
+msgstr ""
+
+msgid "{{field}} must be greater than {{value}}"
+msgstr ""
+
+msgid "{{field}} must be less than {{value}}"
+msgstr ""
+
+msgid "{{field}} does not match pattern {{pattern}}"
+msgstr ""
+
+msgid "{{field}} must have {{length}} characters"
 msgstr ""
 
 msgid ""
