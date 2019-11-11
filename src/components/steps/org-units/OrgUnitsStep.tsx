@@ -54,7 +54,6 @@ const OrgUnitsStep: React.FC<StepProps> = ({ api, project, onChange }) => {
                     controls={controls}
                     rootIds={rootIds}
                     levels={[1, 2, 3]}
-                    selectableLevels={[1, 2, 3]}
                 />
             ) : (
                 <LinearProgress />
