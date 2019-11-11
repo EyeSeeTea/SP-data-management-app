@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2019-11-11T13:17:08.738Z\n"
-"PO-Revision-Date: 2019-11-11T13:17:08.738Z\n"
+"POT-Creation-Date: 2019-11-11T14:04:51.043Z\n"
+"PO-Revision-Date: 2019-11-11T14:04:51.043Z\n"
 
 msgid "Help"
 msgstr ""
@@ -223,10 +223,10 @@ msgid ""
 "to perform an action over a project."
 msgstr ""
 
-msgid "Projects"
+msgid "Create Project"
 msgstr ""
 
-msgid "Create Project"
+msgid "Projects"
 msgstr ""
 
 msgid "Help message for MER"
