@@ -15,6 +15,7 @@ import muiThemeLegacy from "./themes/dhis2-legacy.theme";
 import Root from "../../pages/root/Root";
 import Share from "../share/Share";
 import { ApiContext } from "../../contexts/api-context";
+import { any } from "prop-types";
 
 const isLangRTL = code => {
     const langs = ["ar", "fa", "ur"];
@@ -41,11 +42,11 @@ const configI18n = ({ keyUiLocale: uiLocale }) => {
 
 export const config = {
     currentUser: {
-        userRoles: ["Manager"],
+        userRoles: ["Encode"],
     },
     userRoles: {
         app: ["Manager", "Superadmin", "Encoder"],
-        feedback: ["Feedback", "Manager"],
+        feedback: ["Feedback"],
         reportingAnalyst: ["Configurator"],
         superUser: ["Superuser"],
         encode: ["Encode"],
@@ -75,7 +76,14 @@ const App = () => {
             setApi(api);
             Object.assign(window, { d2, api });
             setShowShareButton(_(appConfig).get("appearance.showShareButton") || false);
-            initFeedbackTool(d2, appConfig);
+            const feedbackRole = _.intersection(
+                config.currentUser.userRoles,
+                config.userRoles.feedback
+            );
+            const isfeedbackRole = _.isEqual(feedbackRole, config.currentUser.userRoles)
+                ? initFeedbackTool(d2, appConfig)
+                : any;
+            return isfeedbackRole;
         };
 
         if (data) run();

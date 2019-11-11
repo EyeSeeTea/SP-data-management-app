@@ -35,24 +35,14 @@ const Link: React.FC<{ url: string }> = ({ url }) => {
     );
 };
 
-// to change: use it form api-context
-interface MetadataConfig {
-    app: string[];
-    feedback: string[];
-    reportingAnalyst: string[];
-    superUser: string[];
-    encode: string[];
-    analyser: string[];
-}
-
 function getConfig({
     history,
     currentUser,
-    userRoles,
+    appRole, feedbackRole, reportingAnalystRole, superUserRole, encodeRole, analyserRole,
 }: {
     history: History;
     currentUser: string[];
-    userRoles: MetadataConfig;
+    appRole: string[], feedbackRole: string[], reportingAnalystRole: string[], superUserRole: string[], encodeRole: string[], analyserRole: string[];
 }) {
     const columns = [
         { name: "displayName", text: i18n.t("Name"), sortable: true },
@@ -81,14 +71,6 @@ function getConfig({
             },
         },
     ];
-
-    // to reduce these const to a self-executing function
-    const appRole = _.intersection(currentUser, userRoles.app);
-    const feedbackRole = _.intersection(currentUser, userRoles.feedback);
-    const reportingAnalystRole = _.intersection(currentUser, userRoles.reportingAnalyst);
-    const superUserRole = _.intersection(currentUser, userRoles.superUser);
-    const encodeRole = _.intersection(currentUser, userRoles.encode);
-    const analyserRole = _.intersection(currentUser, userRoles.analyser);
 
     const detailsAction = {
         name: "details",
@@ -136,12 +118,6 @@ function getConfig({
         multiple: false,
     };
 
-    const createAction = {
-        name: "create",
-        text: i18n.t("Create"),
-        multiple: false,
-    };
-
     const editAction = {
         name: "edit",
         text: i18n.t("Edit"),
@@ -159,10 +135,6 @@ function getConfig({
             console.log("delete", dataSets);
         },
     };
-
-    //To implement:
-    // SP Feedback = same behaviour than in vaccination
-    // Create Action -> icon
 
     const getActions = () => {
         if (_.isEqual(appRole, currentUser)) {
@@ -185,7 +157,7 @@ function getConfig({
         } else if (_.isEqual(superUserRole, currentUser)) {
             return [detailsAction, targetValuesAction, editAction, deleteAction];
         } else if (_.isEqual(reportingAnalystRole, currentUser)) {
-            return [targetValuesAction, configMERAction, editAction, deleteAction, createAction];
+            return [targetValuesAction, configMERAction, editAction, deleteAction];
         } else {
             return [];
         }
@@ -208,11 +180,34 @@ const ProjectsList: React.FC = () => {
     const goToLandingPage = () => goTo(history, "/");
     const currentUser = useConfig().currentUser.userRoles;
     const userRoles = useConfig().userRoles;
-    const config = getConfig({ history, currentUser, userRoles });
+
+    // config different roles
+    const appRole = _.intersection(currentUser, userRoles.app);
+    const feedbackRole = _.intersection(currentUser, userRoles.feedback);
+    const reportingAnalystRole = _.intersection(currentUser, userRoles.reportingAnalyst);
+    const superUserRole = _.intersection(currentUser, userRoles.superUser);
+    const encodeRole = _.intersection(currentUser, userRoles.encode);
+    const analyserRole = _.intersection(currentUser, userRoles.analyser);
+
+
+    const config = getConfig({ history, currentUser, appRole, feedbackRole, reportingAnalystRole, superUserRole, encodeRole, analyserRole });
 
     const list = (_d2: unknown, filters: FiltersForList, pagination: Pagination) =>
         Project.getList(api, filters, pagination);
 
+    const handleButtonCreateProject = () => {
+        console.log("soy configurator")
+        if (_.isEqual(reportingAnalystRole, currentUser)) {
+            return i18n.t("Create Project")
+        } else {
+        }
+    };
+    const handleLinkButtonCreateProject = () => {
+        console.log("puedo clickar")
+        if (_.isEqual(reportingAnalystRole, currentUser)) {
+            return () => goToNewProjectPage(history)
+        }
+    };
     return (
         <React.Fragment>
             <PageHeader
@@ -231,8 +226,8 @@ const ProjectsList: React.FC = () => {
                 actions={config.actions}
                 list={list}
                 disableMultiplePageSelection={true}
-                buttonLabel={i18n.t("Create Project")}
-                onButtonClick={() => goToNewProjectPage(history)}
+                buttonLabel={handleButtonCreateProject()}
+                onButtonClick={handleLinkButtonCreateProject()}
             />
         </React.Fragment>
     );
