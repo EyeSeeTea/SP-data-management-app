@@ -49,7 +49,7 @@ const App = () => {
     });
     const config = {
         currentUser: {
-            userRoles: ["Encode"],
+            userRoles: ["Manager"],
         },
         userRoles: {
             app: ["Manager", "Superadmin", "Encoder"],
