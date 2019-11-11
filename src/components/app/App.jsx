@@ -42,7 +42,7 @@ const configI18n = ({ keyUiLocale: uiLocale }) => {
 
 export const config = {
     currentUser: {
-        userRoles: ["Encode"],
+        userRoles: ["Configurator"],
     },
     userRoles: {
         app: ["Manager", "Superadmin", "Encoder"],

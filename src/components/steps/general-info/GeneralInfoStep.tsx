@@ -11,17 +11,11 @@ import Project from "../../../models/Project";
 const { TextField } = require("@dhis2/d2-ui-core");
 const { FormBuilder, Validators } = require("@dhis2/d2-ui-forms");
 
-type StringField =
-    | "name"
-    | "description"
-    | "code"
-    | "awardNumber"
-    | "subsequentLettering"
-    | "speedKey";
+type StringField = "name" | "description" | "awardNumber" | "subsequentLettering" | "speedKey";
 
 type DateField = "startDate" | "endDate";
 
-type ProjectData = Pick<Project, StringField | DateField>;
+type ProjectData = Pick<Project, StringField | DateField /* | NumberField */>;
 
 class GeneralInfoStep extends React.Component<StepProps> {
     onUpdateField = <K extends keyof ProjectData>(fieldName: K, newValue: ProjectData[K]) => {
@@ -39,20 +33,21 @@ class GeneralInfoStep extends React.Component<StepProps> {
             getTextField("description", i18n.t("Description"), project.description, {
                 props: { multiLine: true },
             }),
-            getTextField("code", i18n.t("Code"), project.code),
-            getDateField("startDate", i18n.t("Start Date"), project.startDate, {
-                onUpdateField: this.onUpdateField,
+            getTextField("awardNumber", i18n.t("Award Number"), project.awardNumber, {
+                props: { type: "number" },
             }),
-            getDateField("endDate", i18n.t("End Date"), project.endDate, {
-                onUpdateField: this.onUpdateField,
-            }),
-            getTextField("awardNumber", i18n.t("Award Number"), project.awardNumber),
             getTextField(
                 "subsequentLettering",
                 i18n.t("Subsequent Lettering"),
                 project.subsequentLettering
             ),
             getTextField("speedKey", i18n.t("Speed Key"), project.speedKey),
+            getDateField("startDate", i18n.t("Start Date"), project.startDate, {
+                onUpdateField: this.onUpdateField,
+            }),
+            getDateField("endDate", i18n.t("End Date"), project.endDate, {
+                onUpdateField: this.onUpdateField,
+            }),
         ];
 
         return (
