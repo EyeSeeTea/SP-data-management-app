@@ -1,6 +1,5 @@
 import _ from "lodash";
 
-//try to import from app, but it doesn't work
 const config = {
     currentUser: {
         userRoles: ["Manager"],
