@@ -179,7 +179,7 @@ function getConfig({
         } else if (_.isEqual(feedbackRole, currentUser)) {
             return [dashboardAction];
         } else if (_.isEqual(analyserRole, currentUser)) {
-            return [dashboardAction];
+            return [dashboardAction, downloadDataAction];
         } else if (_.isEqual(encodeRole, currentUser)) {
             return [dataEntryAction];
         } else if (_.isEqual(superUserRole, currentUser)) {
