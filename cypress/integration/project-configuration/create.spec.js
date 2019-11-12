@@ -3,7 +3,7 @@ import _ from "lodash";
 
 const config = {
     currentUser: {
-        userRoles: ["Configurator"],
+        userRoles: ["Manager"],
     },
     userRoles: {
         app: ["Manager", "Superadmin", "Encoder"],
