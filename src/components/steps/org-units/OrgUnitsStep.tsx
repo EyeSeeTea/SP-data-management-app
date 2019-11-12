@@ -43,7 +43,7 @@ const OrgUnitsStep: React.FC<StepProps> = ({ api, project, onChange }) => {
         const newProject = project.set("organisationUnits", orgUnits);
         onChange(newProject);
     };
-
+    const selectableLevel = 3;
     return (
         <React.Fragment>
             {rootIds.length > 0 ? (
@@ -54,10 +54,11 @@ const OrgUnitsStep: React.FC<StepProps> = ({ api, project, onChange }) => {
                     controls={controls}
                     rootIds={rootIds}
                     levels={[1, 2, 3]}
+                    selectableLevel={selectableLevel}
                 />
             ) : (
-                <LinearProgress />
-            )}
+                    <LinearProgress />
+                )}
         </React.Fragment>
     );
 };

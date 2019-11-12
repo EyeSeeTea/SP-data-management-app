@@ -1,5 +1,5 @@
 import React from "react";
-import { ObjectsTable } from "d2-ui-components";
+import { OldObjectsTable } from "d2-ui-components";
 
 import i18n from "../../locales";
 import PageHeader from "../../components/page-header/PageHeader";
@@ -145,7 +145,7 @@ const ProjectsList: React.FC = () => {
                 onBackClick={goToLandingPage}
             />
 
-            <ObjectsTable
+            <OldObjectsTable
                 model={{ modelValidations: {} }}
                 columns={config.columns}
                 d2={{}}
