@@ -15,11 +15,13 @@ function getConfig() {
 
     return { help };
 }
-
 const Dashboard: React.FC = () => {
     const history = useHistory();
     const goToLandingPage = () => goTo(history, "/");
     const config = getConfig();
+    const iFrameSrc = "http://localhost:8080/dhis-web-dashboard/#/nghVC4wtyzi";
+    // const header = document.querySelector(".dashboard-header-bar");
+    // header.style.display = "none";
 
     return (
         <React.Fragment>
@@ -28,8 +30,20 @@ const Dashboard: React.FC = () => {
                 help={config.help}
                 onBackClick={goToLandingPage}
             />
+            {/* <iframe />
+            <iframe
+                // ref="iframe"
+                title={i18n.t("Dashboard")}
+                src={iFrameSrc}
+                style={styles.iframe} /> */}
         </React.Fragment>
     );
+}
+
+
+
+const styles = {
+    iframe: { width: "100%", height: 1000 },
 };
 
 export default Dashboard;
