@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import i18n from "../../locales";
 import PageHeader from "../../components/page-header/PageHeader";
 import { useHistory } from "react-router";
@@ -17,10 +17,49 @@ function getConfig() {
 }
 
 const Dashboard: React.FC = () => {
+    const [loading, setLoading] = useState(false);
     const history = useHistory();
     const goToLandingPage = () => goTo(history, "/");
     const config = getConfig();
-    const iFrameSrc = "http://dev2.eyeseetea.com:8081/dhis-web-dashboard/#/nghVC4wtyzi";
+    const iFrameSrc = "http://localhost:8080/dhis-web-dashboard/#/nghVC4wtyzi";
+    const iframeRef: React.RefObject<HTMLIFrameElement> = React.createRef();
+
+    const waitforElementToLoad = (iframeDocument: any, selector: string) => {
+        return new Promise(resolve => {
+            const check = () => {
+                if (iframeDocument.querySelector(selector)) {
+                    resolve();
+                } else {
+                    setTimeout(check, 10);
+                }
+            };
+            check();
+        });
+    };
+
+    const setDashboardStyling = async (iframe: any) => {
+        const iframeDocument = iframe.contentWindow.document;
+
+        await waitforElementToLoad(iframeDocument, ".app-wrapper");
+        const iFrameRoot = iframeDocument.querySelector("#root");
+        const iFrameWrapper = iframeDocument.querySelector(".app-wrapper");
+        const pageContainer = iframeDocument.querySelector(".page-container-top-margin");
+
+        iFrameWrapper.removeChild(iFrameWrapper.firstChild).remove();
+        iFrameWrapper.removeChild(iFrameWrapper.firstChild).remove();
+
+        pageContainer.style.marginTop = "0px";
+        iFrameRoot.style.marginTop = "0px";
+    };
+
+    useEffect(() => {
+        const iframe = iframeRef.current;
+
+        if (iframe !== null && !loading) {
+            setLoading(true);
+            iframe.addEventListener("load", setDashboardStyling.bind(null, iframe));
+        }
+    });
 
     return (
         <React.Fragment>
@@ -29,7 +68,13 @@ const Dashboard: React.FC = () => {
                 help={config.help}
                 onBackClick={goToLandingPage}
             />
-            <iframe id="iframe" title={i18n.t("Dashboard")} src={iFrameSrc} style={styles.iframe} />
+            <iframe
+                ref={iframeRef}
+                id="iframe"
+                title={i18n.t("Dashboard")}
+                src={iFrameSrc}
+                style={styles.iframe}
+            />
         </React.Fragment>
     );
 };
