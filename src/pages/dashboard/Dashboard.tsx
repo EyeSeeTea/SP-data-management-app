@@ -15,13 +15,12 @@ function getConfig() {
 
     return { help };
 }
+
 const Dashboard: React.FC = () => {
     const history = useHistory();
     const goToLandingPage = () => goTo(history, "/");
     const config = getConfig();
-    const iFrameSrc = "http://localhost:8080/dhis-web-dashboard/#/nghVC4wtyzi";
-    // const header = document.querySelector(".dashboard-header-bar");
-    // header.style.display = "none";
+    const iFrameSrc = "http://dev2.eyeseetea.com:8081/dhis-web-dashboard/#/nghVC4wtyzi";
 
     return (
         <React.Fragment>
@@ -30,17 +29,14 @@ const Dashboard: React.FC = () => {
                 help={config.help}
                 onBackClick={goToLandingPage}
             />
-            {/* <iframe />
             <iframe
-                // ref="iframe"
+                id="iframe"
                 title={i18n.t("Dashboard")}
                 src={iFrameSrc}
-                style={styles.iframe} /> */}
+                style={styles.iframe} />
         </React.Fragment>
     );
-}
-
-
+};
 
 const styles = {
     iframe: { width: "100%", height: 1000 },
