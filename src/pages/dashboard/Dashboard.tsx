@@ -29,11 +29,7 @@ const Dashboard: React.FC = () => {
                 help={config.help}
                 onBackClick={goToLandingPage}
             />
-            <iframe
-                id="iframe"
-                title={i18n.t("Dashboard")}
-                src={iFrameSrc}
-                style={styles.iframe} />
+            <iframe id="iframe" title={i18n.t("Dashboard")} src={iFrameSrc} style={styles.iframe} />
         </React.Fragment>
     );
 };
