@@ -35,25 +35,28 @@ const Link: React.FC<{ url: string }> = ({ url }) => {
     );
 };
 
+function hasRole(currentUser: string[], userRoleNames: string[]) {
+    return _.intersection(currentUser, userRoleNames).length > 0;
+}
+
 function getConfig({
     history,
     currentUser,
-    appRole,
-    feedbackRole,
-    reportingAnalystRole,
-    superUserRole,
-    encodeRole,
-    analyserRole,
+    userRoles,
 }: {
     history: History;
     currentUser: string[];
-    appRole: string[];
-    feedbackRole: string[];
-    reportingAnalystRole: string[];
-    superUserRole: string[];
-    encodeRole: string[];
-    analyserRole: string[];
+    userRoles: any;
 }) {
+    userRoles = {
+        app: [],
+        feedback: [],
+        reportingAnalyst: [],
+        superUser: [],
+        encode: [],
+        analyser: [],
+    };
+
     const columns = [
         { name: "displayName", text: i18n.t("Name"), sortable: true },
         { name: "publicAccess", text: i18n.t("Public access"), sortable: true },
@@ -146,34 +149,54 @@ function getConfig({
         },
     };
 
-    const getActions = () => {
-        if (_.isEqual(appRole, currentUser)) {
-            return [
-                detailsAction,
-                dataEntryAction,
-                dashboardAction,
-                targetValuesAction,
-                downloadDataAction,
-                configMERAction,
-                editAction,
-                deleteAction,
-            ];
-        } else if (_.isEqual(feedbackRole, currentUser)) {
-            return [dashboardAction];
-        } else if (_.isEqual(analyserRole, currentUser)) {
-            return [dashboardAction, downloadDataAction];
-        } else if (_.isEqual(encodeRole, currentUser)) {
-            return [dataEntryAction];
-        } else if (_.isEqual(superUserRole, currentUser)) {
-            return [detailsAction, targetValuesAction, editAction, deleteAction];
-        } else if (_.isEqual(reportingAnalystRole, currentUser)) {
-            return [targetValuesAction, configMERAction, editAction, deleteAction];
-        } else {
-            return [];
-        }
-    };
+    const actions = _.compact([
+        hasRole(currentUser, userRoles.appRole) ? configMERAction : undefined,
+    ]);
 
-    const actions = getActions();
+    //         hasRole(currentUser, userRoles.reportingAnalystRole)
+    //     ) {
+    //         return [configMERAction];
+    //     }
+    // };
+
+    console.log(actions);
+    //     hasRole(currentUser, userRoles.appRole) ||
+    //     hasRole(currentUser, userRoles.feedbackRole) ||
+    //     hasRole(currentUser, userRoles.analyserRole)
+    //         ? dashboardAction
+    //         : null,
+    //     hasRole(currentUser, userRoles.appRole) || hasRole(currentUser, userRoles.encodeRole)
+    //         ? dataEntryAction
+    //         : null,
+    //     hasRole(currentUser, userRoles.appRole) ||
+    //     hasRole(currentUser, userRoles.reportingAnalystRole)
+    //         ? deleteAction
+    //         : null,
+    //     hasRole(currentUser, userRoles.appRole) || hasRole(currentUser, userRoles.superUserRole)
+    //         ? detailsAction
+    //         : null,
+    //     hasRole(currentUser, userRoles.appRole) || hasRole(currentUser, userRoles.analyserRole)
+    //         ? downloadDataAction
+    //         : null,
+    //     hasRole(currentUser, userRoles.appRole) || hasRole(currentUser, userRoles.superUserRole)
+    //         ? editAction
+    //         : null,
+    //     hasRole(currentUser, userRoles.appRole) ||
+    //     hasRole(currentUser, userRoles.superUserRole) ||
+    //     hasRole(currentUser, userRoles.reportingAnalystRole)
+    //         ? targetValuesAction
+    //         : null,
+    // ]);
+    // const actions = [
+    //     {
+    //         name: "delete",
+    //         text: i18n.t("Delete"),
+    //         multiple: true,
+    //         onClick: (dataSets: DataSet[]) => {
+    //             console.log("delete", dataSets);
+    //         },
+    //     },
+    // ];
 
     const help = i18n.t(
         `Click the blue button to create a new project or select a previously created project that you may want to access.
@@ -188,41 +211,30 @@ const ProjectsList: React.FC = () => {
     const history = useHistory();
     const api = useD2Api();
     const goToLandingPage = () => goTo(history, "/");
-    const currentUser = useConfig().currentUser.userRoles;
+    const currentUser = useConfig().currentUser.userRoles.map(userRole => userRole.name);
     const userRoles = useConfig().userRoles;
-
-    // config different roles
-    const appRole = _.intersection(currentUser, userRoles.app);
-    const feedbackRole = _.intersection(currentUser, userRoles.feedback);
-    const reportingAnalystRole = _.intersection(currentUser, userRoles.reportingAnalyst);
-    const superUserRole = _.intersection(currentUser, userRoles.superUser);
-    const encodeRole = _.intersection(currentUser, userRoles.encode);
-    const analyserRole = _.intersection(currentUser, userRoles.analyser);
 
     const config = getConfig({
         history,
         currentUser,
-        appRole,
-        feedbackRole,
-        reportingAnalystRole,
-        superUserRole,
-        encodeRole,
-        analyserRole,
+        userRoles,
     });
 
     const list = (_d2: unknown, filters: FiltersForList, pagination: Pagination) =>
         Project.getList(api, filters, pagination);
 
     const handleButtonCreateProject = () => {
-        if (_.isEqual(reportingAnalystRole, currentUser)) {
+        if (hasRole(currentUser, userRoles.reportingAnalyst)) {
             return i18n.t("Create Project");
         }
     };
+
     const handleLinkButtonCreateProject = () => {
-        if (_.isEqual(reportingAnalystRole, currentUser)) {
+        if (hasRole(currentUser, userRoles.reportingAnalyst)) {
             return () => goToNewProjectPage(history);
         }
     };
+
     return (
         <React.Fragment>
             <PageHeader

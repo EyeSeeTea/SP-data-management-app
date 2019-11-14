@@ -15,7 +15,6 @@ import muiThemeLegacy from "./themes/dhis2-legacy.theme";
 import Root from "../../pages/root/Root";
 import Share from "../share/Share";
 import { ApiContext } from "../../contexts/api-context";
-import { any } from "prop-types";
 
 const isLangRTL = code => {
     const langs = ["ar", "fa", "ur"];
@@ -42,15 +41,15 @@ const configI18n = ({ keyUiLocale: uiLocale }) => {
 
 export const config = {
     currentUser: {
-        userRoles: ["Manager"],
+        userRoles: [{ id: "2", name: "Admin" }],
     },
     userRoles: {
-        app: ["Manager", "Superadmin", "Encoder"],
-        feedback: ["Feedback"],
-        reportingAnalyst: ["Configurator"],
-        superUser: ["Superuser"],
-        encode: ["Encode"],
-        analyser: ["Analyser"],
+        app: ["Admin", "Manager", "Superadmin", "Encoder"],
+        feedback: ["Admin", "Feedback", "Manager"],
+        reportingAnalyst: ["Admin", "Configurator"],
+        superUser: ["Admin", "Superuser"],
+        encode: ["Admin", "Encode"],
+        analyser: ["Admin", "Analyser"],
     },
 };
 
@@ -76,14 +75,14 @@ const App = () => {
             setApi(api);
             Object.assign(window, { d2, api });
             setShowShareButton(_(appConfig).get("appearance.showShareButton") || false);
-            const feedbackRole = _.intersection(
-                config.currentUser.userRoles,
-                config.userRoles.feedback
-            );
-            const isfeedbackRole = _.isEqual(feedbackRole, config.currentUser.userRoles)
-                ? initFeedbackTool(d2, appConfig)
-                : any;
-            return isfeedbackRole;
+            const isFeedbackRole =
+                _.intersection(
+                    config.currentUser.userRoles.map(userRole => userRole.name),
+                    config.userRoles.feedback
+                ).length > 0;
+            if (isFeedbackRole) {
+                initFeedbackTool(d2, appConfig);
+            }
         };
 
         if (data) run();

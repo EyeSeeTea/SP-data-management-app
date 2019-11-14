@@ -1,18 +1,25 @@
 import React, { useContext } from "react";
 import { D2Api, D2ApiDefault } from "d2-api";
 
+interface CurrentUserRole {
+    name: string;
+    id: string;
+}
+
+interface UserRoles {
+    app: string[];
+    feedback: string[];
+    reportingAnalyst: string[];
+    superUser: string[];
+    encode: string[];
+    analyser: string[];
+}
+
 interface MetadataConfig {
     currentUser: {
-        userRoles: string[];
+        userRoles: CurrentUserRole[];
     };
-    userRoles: {
-        app: string[];
-        feedback: string[];
-        reportingAnalyst: string[];
-        superUser: string[];
-        encode: string[];
-        analyser: string[];
-    };
+    userRoles: UserRoles;
 }
 
 interface Context {
@@ -24,7 +31,7 @@ const defaultValue = {
     api: new D2ApiDefault({ baseUrl: "http://localhost:8080" }),
     d2: {},
     config: {
-        currentUser: { userRoles: [] },
+        currentUser: { userRoles: [{ id: "", name: "" }] },
         userRoles: {
             app: [],
             feedback: [],
