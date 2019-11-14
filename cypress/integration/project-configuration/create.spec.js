@@ -1,108 +1,87 @@
 import moment from "moment";
 import _ from "lodash";
 
-const config = {
-    currentUser: {
-        userRoles: ["Manager"],
-    },
-    userRoles: {
-        app: ["Manager", "Superadmin", "Encoder"],
-        feedback: ["Feedback", "Manager"],
-        reportingAnalyst: ["Configurator"],
-        superUser: ["Superuser"],
-        encode: ["Encode"],
-        analyser: ["Analyser"],
-    },
-};
-
-const reportingAnalystRole = _.isEqual(
-    _.intersection(config.currentUser.userRoles, config.userRoles.reportingAnalyst),
-    config.currentUser.userRoles
-);
-
 describe("Projects - Create", () => {
-    if (reportingAnalystRole) {
-        before(() => {
-            cy.login("admin");
-            cy.loadPage();
-            cy.contains("Project Configuration").click();
-            cy.get("[data-test=list-action-bar]").click();
-        });
-        it("gets data from the user and creates a project", () => {
-            cy.contains("New project");
+    before(() => {
+        cy.login("admin");
+        cy.loadPage();
+        cy.contains("Project Configuration").click();
+        cy.get("[data-test=list-action-bar]").click();
+    });
+    it("gets data from the user and creates a project", () => {
+        cy.contains("New project");
 
-            // General Info step
-            waitForStep("General info");
+        // General Info step
+        waitForStep("General info");
 
-            cy.contains("Next").click();
-            cy.contains("Name cannot be blank");
-            cy.contains("Start Date cannot be blank");
-            cy.contains("End Date cannot be blank");
-            cy.contains("Award Number should be a number of 5 digits");
-            cy.contains("Subsequent Lettering must have 2 characters");
+        cy.contains("Next").click();
+        cy.contains("Name cannot be blank");
+        cy.contains("Start Date cannot be blank");
+        cy.contains("End Date cannot be blank");
+        cy.contains("Award Number should be a number of 5 digits");
+        cy.contains("Subsequent Lettering must have 2 characters");
 
-            cy.get("[data-field='name']").type("Cypress Project");
-            cy.get("[data-field='awardNumber']").type("12345");
-            cy.get("[data-field='subsequentLettering']").type("SL");
+        cy.get("[data-field='name']").type("Cypress Project");
+        cy.get("[data-field='awardNumber']").type("12345");
+        cy.get("[data-field='subsequentLettering']").type("SL");
 
-            cy.contains("Start Date").click({ force: true });
-            clickDay(11);
+        cy.contains("Start Date").click({ force: true });
+        clickDay(11);
 
-            cy.contains("End Date").click({ force: true });
-            clickDay(13);
+        cy.contains("End Date").click({ force: true });
+        clickDay(13);
 
-            cy.contains("Next").click();
+        cy.contains("Next").click();
 
-            // Sectors & Funders
+        // Sectors & Funders
 
-            waitForStep("Sectors & Project Funders");
+        waitForStep("Sectors & Project Funders");
 
-            cy.contains("Next").click();
-            cy.contains("Select at least one item for Sectors");
-            cy.contains("Select at least one item for Funders");
+        cy.contains("Next").click();
+        cy.contains("Select at least one item for Sectors");
+        cy.contains("Select at least one item for Funders");
 
-            selectInMultiSelector("sectors", "Sector1");
-            selectInMultiSelector("funders", "ACWME");
-            cy.contains("Next").click();
+        selectInMultiSelector("sectors", "Sector1");
+        selectInMultiSelector("funders", "ACWME");
+        cy.contains("Next").click();
 
-            // Organisation Units Step
+        // Organisation Units Step
 
-            waitForStep("Organisation Units");
-            cy.contains("Next").click();
-            cy.contains("Select at least one item for Organisation Units");
+        waitForStep("Organisation Units");
+        cy.contains("Next").click();
+        cy.contains("Select at least one item for Organisation Units");
 
-            selectOrgUnit("West");
+        selectOrgUnit("West");
 
-            cy.contains("Next").click();
+        cy.contains("Next").click();
 
-            // Data Elements
+        // Data Elements
 
-            waitForStep("Data Elements");
-            cy.contains("Next").click();
+        waitForStep("Data Elements");
+        cy.contains("Next").click();
 
-            // Save step
+        // Save step
 
-            waitForStep("Summary and Save");
-            cy.get("[data-test-current=true]").contains("Save");
+        waitForStep("Summary and Save");
+        cy.get("[data-test-current=true]").contains("Save");
 
-            cy.contains("Name");
-            cy.contains("Cypress Project");
+        cy.contains("Name");
+        cy.contains("Cypress Project");
 
-            cy.contains("Period dates");
-            const now = moment();
-            const expectedDataStart = now.set("date", 11).format("LL");
-            const expectedDataEnd = now.set("date", 13).format("LL");
-            cy.contains(`${expectedDataStart} -> ${expectedDataEnd}`);
+        cy.contains("Period dates");
+        const now = moment();
+        const expectedDataStart = now.set("date", 11).format("LL");
+        const expectedDataEnd = now.set("date", 13).format("LL");
+        cy.contains(`${expectedDataStart} -> ${expectedDataEnd}`);
 
-            cy.contains("Description");
+        cy.contains("Description");
 
-            cy.contains("Organisation Units");
+        cy.contains("Organisation Units");
 
-            cy.get("[data-wizard-contents] button")
-                .contains("Save")
-                .click();
-        });
-    }
+        cy.get("[data-wizard-contents] button")
+            .contains("Save")
+            .click();
+    });
 });
 
 function selectOrgUnit(label) {
