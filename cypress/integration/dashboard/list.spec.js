@@ -11,4 +11,10 @@ describe("Dashboard", () => {
         cy.get("h5").contains("Dashboard");
         cy.url().should("include", "/dashboard");
     });
+
+    it("should have an iframe", () => {
+        cy.get("[id=iframe").click();
+        cy.get("#document");
+        cy.get("html");
+    });
 });
