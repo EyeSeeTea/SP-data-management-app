@@ -148,18 +148,25 @@ function getConfig({
             console.log("delete", dataSets);
         },
     };
-
-    const actions = _.compact([
-        hasRole(currentUser, userRoles.appRole) ? configMERAction : undefined,
-    ]);
+    const actions = [
+        deleteAction,
+        editAction,
+        configMERAction,
+        downloadDataAction,
+        targetValuesAction,
+        dashboardAction,
+        dataEntryAction,
+        detailsAction,
+    ];
+    // const actions = _.compact([
+    //     hasRole(currentUser, userRoles.appRole) ? configMERAction : undefined,
+    // ]);
 
     //         hasRole(currentUser, userRoles.reportingAnalystRole)
     //     ) {
     //         return [configMERAction];
     //     }
     // };
-
-    console.log(actions);
     //     hasRole(currentUser, userRoles.appRole) ||
     //     hasRole(currentUser, userRoles.feedbackRole) ||
     //     hasRole(currentUser, userRoles.analyserRole)
