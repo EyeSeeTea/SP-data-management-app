@@ -21,7 +21,7 @@ const Dashboard: React.FC = () => {
     const history = useHistory();
     const goToLandingPage = () => goTo(history, "/");
     const config = getConfig();
-    const iFrameSrc = "http://localhost:8080/dhis-web-dashboard/#/nghVC4wtyzi";
+    const iFrameSrc = "http://localhost:8081/dhis-web-dashboard/#/nghVC4wtyzi";
     const iframeRef: React.RefObject<HTMLIFrameElement> = React.createRef();
 
     const waitforElementToLoad = (iframeDocument: any, selector: string) => {
