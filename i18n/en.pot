@@ -5,13 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-<<<<<<< HEAD
 "POT-Creation-Date: 2019-11-11T14:04:51.043Z\n"
 "PO-Revision-Date: 2019-11-11T14:04:51.043Z\n"
-=======
-"POT-Creation-Date: 2019-11-08T10:30:18.178Z\n"
-"PO-Revision-Date: 2019-11-08T10:30:18.178Z\n"
->>>>>>> 542965babd3d37443dd78493cc52eaccf93ecae9
 
 msgid "Help"
 msgstr ""
