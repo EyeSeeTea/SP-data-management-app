@@ -6,20 +6,18 @@ interface CurrentUserRole {
     id: string;
 }
 
-interface UserRoles {
-    app: string[];
-    feedback: string[];
-    reportingAnalyst: string[];
-    superUser: string[];
-    encode: string[];
-    analyser: string[];
-}
-
 interface MetadataConfig {
     currentUser: {
         userRoles: CurrentUserRole[];
     };
-    userRoles: UserRoles;
+    userRoles: {
+        app: string[];
+        feedback: string[];
+        reportingAnalyst: string[];
+        superUser: string[];
+        encode: string[];
+        analyser: string[];
+    };
 }
 
 interface Context {

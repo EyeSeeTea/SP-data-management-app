@@ -39,24 +39,18 @@ function hasRole(currentUser: string[], userRoleNames: string[]) {
     return _.intersection(currentUser, userRoleNames).length > 0;
 }
 
-function getConfig({
-    history,
-    currentUser,
-    userRoles,
-}: {
-    history: History;
-    currentUser: string[];
-    userRoles: any;
-}) {
-    userRoles = {
-        app: [],
-        feedback: [],
-        reportingAnalyst: [],
-        superUser: [],
-        encode: [],
-        analyser: [],
-    };
-
+function getConfig(
+    history: string[] | History<any>,
+    currentUser: string[],
+    userRoles: {
+        app: string[];
+        feedback: string[];
+        reportingAnalyst: string[];
+        superUser: string[];
+        encode: string[];
+        analyser: string[];
+    }
+) {
     const columns = [
         { name: "displayName", text: i18n.t("Name"), sortable: true },
         { name: "publicAccess", text: i18n.t("Public access"), sortable: true },
@@ -148,67 +142,45 @@ function getConfig({
             console.log("delete", dataSets);
         },
     };
-    const actions = [
-        deleteAction,
-        editAction,
-        configMERAction,
-        downloadDataAction,
-        targetValuesAction,
-        dashboardAction,
-        dataEntryAction,
-        detailsAction,
-    ];
-    // const actions = _.compact([
-    //     hasRole(currentUser, userRoles.appRole) ? configMERAction : undefined,
-    // ]);
 
-    //         hasRole(currentUser, userRoles.reportingAnalystRole)
-    //     ) {
-    //         return [configMERAction];
-    //     }
-    // };
-    //     hasRole(currentUser, userRoles.appRole) ||
-    //     hasRole(currentUser, userRoles.feedbackRole) ||
-    //     hasRole(currentUser, userRoles.analyserRole)
-    //         ? dashboardAction
-    //         : null,
-    //     hasRole(currentUser, userRoles.appRole) || hasRole(currentUser, userRoles.encodeRole)
-    //         ? dataEntryAction
-    //         : null,
-    //     hasRole(currentUser, userRoles.appRole) ||
-    //     hasRole(currentUser, userRoles.reportingAnalystRole)
-    //         ? deleteAction
-    //         : null,
-    //     hasRole(currentUser, userRoles.appRole) || hasRole(currentUser, userRoles.superUserRole)
-    //         ? detailsAction
-    //         : null,
-    //     hasRole(currentUser, userRoles.appRole) || hasRole(currentUser, userRoles.analyserRole)
-    //         ? downloadDataAction
-    //         : null,
-    //     hasRole(currentUser, userRoles.appRole) || hasRole(currentUser, userRoles.superUserRole)
-    //         ? editAction
-    //         : null,
-    //     hasRole(currentUser, userRoles.appRole) ||
-    //     hasRole(currentUser, userRoles.superUserRole) ||
-    //     hasRole(currentUser, userRoles.reportingAnalystRole)
-    //         ? targetValuesAction
-    //         : null,
-    // ]);
-    // const actions = [
-    //     {
-    //         name: "delete",
-    //         text: i18n.t("Delete"),
-    //         multiple: true,
-    //         onClick: (dataSets: DataSet[]) => {
-    //             console.log("delete", dataSets);
-    //         },
-    //     },
-    // ];
+    const getActions = _.compact([
+        hasRole(currentUser, userRoles.app) ||
+        hasRole(currentUser, userRoles.superUser) ||
+        hasRole(currentUser, userRoles.reportingAnalyst)
+            ? targetValuesAction
+            : null,
+        hasRole(currentUser, userRoles.app) || hasRole(currentUser, userRoles.reportingAnalyst)
+            ? configMERAction
+            : undefined,
+        hasRole(currentUser, userRoles.app) || hasRole(currentUser, userRoles.analyser)
+            ? dashboardAction
+            : null,
+        hasRole(currentUser, userRoles.app) || hasRole(currentUser, userRoles.encode)
+            ? dataEntryAction
+            : null,
+        hasRole(currentUser, userRoles.app) ||
+        hasRole(currentUser, userRoles.reportingAnalyst) ||
+        hasRole(currentUser, userRoles.superUser)
+            ? deleteAction
+            : null,
+        hasRole(currentUser, userRoles.app) || hasRole(currentUser, userRoles.superUser)
+            ? detailsAction
+            : null,
+        hasRole(currentUser, userRoles.app) || hasRole(currentUser, userRoles.analyser)
+            ? downloadDataAction
+            : null,
+        hasRole(currentUser, userRoles.app) ||
+        hasRole(currentUser, userRoles.superUser) ||
+        hasRole(currentUser, userRoles.reportingAnalyst)
+            ? editAction
+            : null,
+    ]);
+    const actions = getActions;
 
     const help = i18n.t(
         `Click the blue button to create a new project or select a previously created project that you may want to access.
-
-         Click the three dots on the right side of the screen if you wish to perform an action over a project.`
+    
+             Click the three dots on the right side of the screen if you wish to perform an action over a project.`
     );
 
     return { columns, initialSorting, detailsFields, actions, help };
@@ -221,11 +193,7 @@ const ProjectsList: React.FC = () => {
     const currentUser = useConfig().currentUser.userRoles.map(userRole => userRole.name);
     const userRoles = useConfig().userRoles;
 
-    const config = getConfig({
-        history,
-        currentUser,
-        userRoles,
-    });
+    const config = getConfig(history, currentUser, userRoles);
 
     const list = (_d2: unknown, filters: FiltersForList, pagination: Pagination) =>
         Project.getList(api, filters, pagination);
