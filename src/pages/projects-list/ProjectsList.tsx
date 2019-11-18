@@ -5,21 +5,21 @@ import _ from "lodash";
 import PageHeader from "../../components/page-header/PageHeader";
 import { useHistory } from "react-router";
 import { History } from "history";
-import { useD2Api } from "../../contexts/api-context";
-import { useConfig } from "../../contexts/api-context";
+import { useAppContext, CurrentUser } from "../../contexts/api-context";
 import { generateUrl } from "../../router";
 import Project, { FiltersForList, DataSetForList } from "../../models/Project";
 import { Pagination } from "../../types/ObjectsList";
 import "./ProjectsList.css";
+import { Config } from "../../models/config";
 
 type DataSet = DataSetForList;
 
+type ActionsRoleMapping<Actions> = {
+    [Key in keyof Config["userRoles"]]?: Array<keyof Actions>;
+};
+
 function goTo(history: History, url: string) {
     history.push(url);
-}
-
-function goToNewProjectPage(history: History) {
-    history.push(generateUrl("projects.new"));
 }
 
 const Link: React.FC<{ url: string }> = ({ url }) => {
@@ -35,22 +35,7 @@ const Link: React.FC<{ url: string }> = ({ url }) => {
     );
 };
 
-function hasRole(currentUser: string[], userRoleNames: string[]) {
-    return _.intersection(currentUser, userRoleNames).length > 0;
-}
-
-function getConfig(
-    history: string[] | History<any>,
-    currentUser: string[],
-    userRoles: {
-        app: string[];
-        feedback: string[];
-        reportingAnalyst: string[];
-        superUser: string[];
-        encode: string[];
-        analyser: string[];
-    }
-) {
+function getConfig(history: History, currentUser: CurrentUser) {
     const columns = [
         { name: "displayName", text: i18n.t("Name"), sortable: true },
         { name: "publicAccess", text: i18n.t("Public access"), sortable: true },
@@ -79,107 +64,90 @@ function getConfig(
         },
     ];
 
-    const detailsAction = {
-        name: "details",
-        text: i18n.t("Details"),
-        multiple: false,
-        type: "details",
-        isPrimary: true,
-    };
+    const allActions = {
+        details: {
+            name: "details",
+            text: i18n.t("Details"),
+            multiple: false,
+            type: "details",
+            isPrimary: true,
+        },
 
-    const dataEntryAction = {
-        name: "data-entry",
-        icon: "library_books",
-        text: i18n.t("Go to Data Entry"),
-        multiple: false,
-        onClick: (dataSet: DataSet) =>
-            history.push(generateUrl("dataEntry.edit", { id: dataSet.id })),
-    };
+        dataEntry: {
+            name: "data-entry",
+            icon: "library_books",
+            text: i18n.t("Go to Data Entry"),
+            multiple: false,
+            onClick: (dataSet: DataSet) =>
+                history.push(generateUrl("dataEntry.edit", { id: dataSet.id })),
+        },
 
-    const dashboardAction = {
-        name: "dashboard",
-        icon: "dashboard",
-        text: i18n.t("Go to Dashboard"),
-        multiple: false,
-        onClick: () => history.push(generateUrl("dashboard")),
-    };
+        dashboard: {
+            name: "dashboard",
+            icon: "dashboard",
+            text: i18n.t("Go to Dashboard"),
+            multiple: false,
+            onClick: () => history.push(generateUrl("dashboard")),
+        },
 
-    const targetValuesAction = {
-        name: "add-target-values",
-        icon: "assignment",
-        text: i18n.t("Add Target Values"),
-        multiple: false,
-    };
+        targetValues: {
+            name: "add-target-values",
+            icon: "assignment",
+            text: i18n.t("Add Target Values"),
+            multiple: false,
+        },
 
-    const downloadDataAction = {
-        name: "download-data",
-        icon: "cloud_download",
-        text: i18n.t("Download Data"),
-        multiple: false,
-    };
+        downloadData: {
+            name: "download-data",
+            icon: "cloud_download",
+            text: i18n.t("Download Data"),
+            multiple: false,
+        },
 
-    const configMERAction = {
-        name: "mer",
-        icon: "description",
-        text: i18n.t("Generate / Configure MER"),
-        multiple: false,
-    };
+        configMER: {
+            name: "mer",
+            icon: "description",
+            text: i18n.t("Generate / Configure MER"),
+            multiple: false,
+        },
 
-    const editAction = {
-        name: "edit",
-        text: i18n.t("Edit"),
-        multiple: false,
-        // isActive: (d2, dataSet) => true,
-        onClick: (dataSet: DataSet) =>
-            history.push(generateUrl("projects.edit", { id: dataSet.id })),
-    };
+        edit: {
+            name: "edit",
+            text: i18n.t("Edit"),
+            multiple: false,
+            onClick: (dataSet: DataSet) =>
+                history.push(generateUrl("projects.edit", { id: dataSet.id })),
+        },
 
-    const deleteAction = {
-        name: "delete",
-        text: i18n.t("Delete"),
-        multiple: true,
-        onClick: (dataSets: DataSet[]) => {
-            console.log("delete", dataSets);
+        delete: {
+            name: "delete",
+            text: i18n.t("Delete"),
+            multiple: true,
+            onClick: (dataSets: DataSet[]) => {
+                console.log("delete", dataSets);
+            },
         },
     };
 
-    const getActions = _.compact([
-        hasRole(currentUser, userRoles.app) ||
-        hasRole(currentUser, userRoles.superUser) ||
-        hasRole(currentUser, userRoles.reportingAnalyst)
-            ? targetValuesAction
-            : null,
-        hasRole(currentUser, userRoles.app) || hasRole(currentUser, userRoles.reportingAnalyst)
-            ? configMERAction
-            : undefined,
-        hasRole(currentUser, userRoles.app) || hasRole(currentUser, userRoles.analyser)
-            ? dashboardAction
-            : null,
-        hasRole(currentUser, userRoles.app) || hasRole(currentUser, userRoles.encode)
-            ? dataEntryAction
-            : null,
-        hasRole(currentUser, userRoles.app) ||
-        hasRole(currentUser, userRoles.reportingAnalyst) ||
-        hasRole(currentUser, userRoles.superUser)
-            ? deleteAction
-            : null,
-        hasRole(currentUser, userRoles.app) || hasRole(currentUser, userRoles.superUser)
-            ? detailsAction
-            : null,
-        hasRole(currentUser, userRoles.app) || hasRole(currentUser, userRoles.analyser)
-            ? downloadDataAction
-            : null,
-        hasRole(currentUser, userRoles.app) ||
-        hasRole(currentUser, userRoles.superUser) ||
-        hasRole(currentUser, userRoles.reportingAnalyst)
-            ? editAction
-            : null,
-    ]);
-    const actions = getActions;
+    const actionsForUserRoles: ActionsRoleMapping<typeof allActions> = {
+        reportingAnalyst: ["details", "edit", "delete", "targetValues", "configMER"],
+        superUser: _.keys(allActions) as Array<keyof typeof allActions>,
+        encode: ["details", "dataEntry"],
+        analyser: ["details", "dashboard", "downloadData"],
+    };
+
+    const roleKeys = (_.keys(actionsForUserRoles) as unknown) as Array<keyof Config["userRoles"]>;
+    const actions = _(roleKeys)
+        .flatMap(roleKey => {
+            const actionKeys: Array<keyof typeof allActions> = actionsForUserRoles[roleKey] || [];
+            return currentUser.hasRole(roleKey) ? actionKeys.map(key => allActions[key]) : [];
+        })
+        .uniq()
+        .value();
 
     const help = i18n.t(
         `Click the blue button to create a new project or select a previously created project that you may want to access.
-    
+
              Click the three dots on the right side of the screen if you wish to perform an action over a project.`
     );
 
@@ -188,48 +156,38 @@ function getConfig(
 
 const ProjectsList: React.FC = () => {
     const history = useHistory();
-    const api = useD2Api();
+    const { api, config, currentUser } = useAppContext();
     const goToLandingPage = () => goTo(history, "/");
-    const currentUser = useConfig().currentUser.userRoles.map(userRole => userRole.name);
-    const userRoles = useConfig().userRoles;
 
-    const config = getConfig(history, currentUser, userRoles);
+    const componentConfig = getConfig(history, currentUser);
 
     const list = (_d2: unknown, filters: FiltersForList, pagination: Pagination) =>
-        Project.getList(api, filters, pagination);
+        Project.getList(api, config, filters, pagination);
 
-    const handleButtonCreateProject = () => {
-        if (hasRole(currentUser, userRoles.reportingAnalyst)) {
-            return i18n.t("Create Project");
-        }
-    };
-
-    const handleLinkButtonCreateProject = () => {
-        if (hasRole(currentUser, userRoles.reportingAnalyst)) {
-            return () => goToNewProjectPage(history);
-        }
-    };
+    const newProjectPageHandler = currentUser.canCreateProject()
+        ? () => goTo(history, generateUrl("projects.new"))
+        : null;
 
     return (
         <React.Fragment>
             <PageHeader
                 title={i18n.t("Projects")}
-                help={config.help}
+                help={componentConfig.help}
                 onBackClick={goToLandingPage}
             />
 
             <OldObjectsTable
                 model={{ modelValidations: {} }}
-                columns={config.columns}
+                columns={componentConfig.columns}
                 d2={{}}
-                detailsFields={config.detailsFields}
-                initialSorting={config.initialSorting}
+                detailsFields={componentConfig.detailsFields}
+                initialSorting={componentConfig.initialSorting}
                 pageSize={20}
-                actions={config.actions}
+                actions={componentConfig.actions}
                 list={list}
                 disableMultiplePageSelection={true}
-                buttonLabel={handleButtonCreateProject()}
-                onButtonClick={handleLinkButtonCreateProject()}
+                buttonLabel={i18n.t("Create Project")}
+                onButtonClick={newProjectPageHandler}
             />
         </React.Fragment>
     );
