@@ -28,6 +28,19 @@ function autoResizeIframeByContent(iframe: HTMLIFrameElement) {
     window.setInterval(resize, 1000);
 }
 
+function waitforElementToLoad(iframeDocument: any, selector: string) {
+    return new Promise(resolve => {
+        const check = () => {
+            if (iframeDocument.querySelector(selector)) {
+                resolve();
+            } else {
+                setTimeout(check, 10);
+            }
+        };
+        check();
+    });
+}
+
 const Dashboard: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const history = useHistory();
@@ -36,19 +49,6 @@ const Dashboard: React.FC = () => {
     const { baseUrl } = useConfig();
     const iFrameSrc = `${baseUrl}/dhis-web-dashboard/#/JW7RlN5xafN`;
     const iframeRef: React.RefObject<HTMLIFrameElement> = React.createRef();
-
-    const waitforElementToLoad = (iframeDocument: any, selector: string) => {
-        return new Promise(resolve => {
-            const check = () => {
-                if (iframeDocument.querySelector(selector)) {
-                    resolve();
-                } else {
-                    setTimeout(check, 10);
-                }
-            };
-            check();
-        });
-    };
 
     const setDashboardStyling = async (iframe: any) => {
         const iframeDocument = iframe.contentWindow.document;
