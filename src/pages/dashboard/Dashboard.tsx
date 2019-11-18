@@ -18,6 +18,16 @@ function getConfig() {
     return { help };
 }
 
+function autoResizeIframeByContent(iframe: HTMLIFrameElement) {
+    const resize = () => {
+        if (iframe.contentWindow) {
+            const height = iframe.contentWindow.document.body.scrollHeight;
+            iframe.height = height.toString();
+        }
+    };
+    window.setInterval(resize, 1000);
+}
+
 const Dashboard: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const history = useHistory();
@@ -53,6 +63,8 @@ const Dashboard: React.FC = () => {
 
         pageContainer.style.marginTop = "0px";
         iFrameRoot.style.marginTop = "0px";
+
+        autoResizeIframeByContent(iframe);
     };
 
     useEffect(() => {
@@ -76,6 +88,7 @@ const Dashboard: React.FC = () => {
                 id="iframe"
                 title={i18n.t("Dashboard")}
                 src={iFrameSrc}
+                height="10000px"
                 style={styles.iframe}
             />
         </React.Fragment>
@@ -83,7 +96,7 @@ const Dashboard: React.FC = () => {
 };
 
 const styles = {
-    iframe: { width: "100%", height: 1000 },
+    iframe: { width: "100%", border: 0, overflow: "hidden" },
 };
 
 export default Dashboard;
