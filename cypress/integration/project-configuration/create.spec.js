@@ -51,7 +51,7 @@ describe("Projects - Create", () => {
         cy.contains("Next").click();
         cy.contains("Select at least one item for Organisation Units");
 
-        selectOrgUnit("West");
+        selectOrgUnit("Africa");
 
         cy.contains("Next").click();
 

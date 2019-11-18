@@ -8,17 +8,17 @@ describe("Project Configuration - List page", () => {
     });
 
     it("shows list of user projects", () => {
-        cy.get(".data-table__rows > :nth-child(3) > :nth-child(4) span").should("not.be.empty");
+        cy.get(".data-table__rows > :nth-child(1) > :nth-child(2) span").should("not.be.empty");
     });
 
     it("opens details window when mouse clicked", () => {
-        cy.get(".data-table__rows > :nth-child(3) > :nth-child(4) span").click();
+        cy.get(".data-table__rows > :nth-child(1) > :nth-child(2) span").click();
         cy.contains("API link");
         cy.contains("Id");
     });
 
     it("opens context window when right button mouse is clicked", () => {
-        cy.get(".data-table__rows > :nth-child(3) > :nth-child(4) span")
+        cy.get(".data-table__rows > :nth-child(1) > :nth-child(2) span")
             .first()
             .trigger("contextmenu");
 
