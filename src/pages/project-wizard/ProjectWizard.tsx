@@ -16,6 +16,7 @@ import GeneralInfoStep from "../../components/steps/general-info/GeneralInfoStep
 import SectorsFundersStep from "../../components/steps/sectors-funders/SectorsFundersStep";
 import OrgUnitsStep from "../../components/steps/org-units/OrgUnitsStep";
 import SaveStep from "../../components/steps/save/SaveStep";
+import DataElementsStep from "../../components/steps/data-elements/DataElementsStep";
 
 export interface StepProps {
     api: D2Api;
@@ -62,7 +63,10 @@ class ProjectWizardImpl extends React.Component<Props, State> {
             const project =
                 match && match.params.id
                     ? await Project.get(api, match.params.id)
-                    : Project.create(api);
+                    : (await Project.create(api)).set("sectors", [
+                          { id: "mGQ5ckOTU8A", displayName: "Agriculture" },
+                          { id: "m4Cg6FOPPR7", displayName: "Livelihoods" },
+                      ]);
             this.setState({ project });
         } catch (err) {
             console.error(err);
@@ -114,7 +118,7 @@ class ProjectWizardImpl extends React.Component<Props, State> {
             {
                 key: "data-elements",
                 label: i18n.t("Data Elements"),
-                component: () => <p>Data Elements</p>,
+                component: DataElementsStep,
                 validationKeys: [],
                 help: i18n.t("TODO"),
             },

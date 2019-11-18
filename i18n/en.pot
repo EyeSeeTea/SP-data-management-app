@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2019-11-08T10:30:18.178Z\n"
-"PO-Revision-Date: 2019-11-08T10:30:18.178Z\n"
+"POT-Creation-Date: 2019-11-18T18:29:32.271Z\n"
+"PO-Revision-Date: 2019-11-18T18:29:32.271Z\n"
 
 msgid "Help"
 msgstr ""
@@ -15,6 +15,24 @@ msgid "Back"
 msgstr ""
 
 msgid "Name"
+msgstr ""
+
+msgid "Code"
+msgstr ""
+
+msgid "Indicator Type"
+msgstr ""
+
+msgid "People / Benefit"
+msgstr ""
+
+msgid "Series"
+msgstr ""
+
+msgid "Paired DE"
+msgstr ""
+
+msgid "Search by name / code"
 msgstr ""
 
 msgid "Description"

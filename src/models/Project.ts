@@ -44,6 +44,7 @@ import { D2Api, SelectedPick, D2DataSetSchema, Id } from "d2-api";
 import { Pagination } from "./../types/ObjectsList";
 import { Pager } from "d2-api/api/models";
 import i18n from "../locales";
+import DataElements from "./data-elements-set";
 
 export interface ProjectData {
     name: string;
@@ -56,6 +57,7 @@ export interface ProjectData {
     sectors: Sector[];
     funders: Funder[];
     organisationUnits: OrganisationUnit[];
+    dataElements: DataElements;
 }
 
 interface NamedObject {
@@ -162,12 +164,20 @@ class Project {
         return _.fromPairs(_.zip(keys, values)) as Validations;
     }
 
-    static async get(api: D2Api, _id: string) {
-        return new Project(api, defaultProjectData);
+    static async getData(
+        api: D2Api,
+        partialData: Omit<ProjectData, "dataElements">
+    ): Promise<ProjectData> {
+        const dataElements = await DataElements.build(api);
+        return { ...partialData, dataElements };
     }
 
-    static create(api: D2Api) {
-        return new Project(api, defaultProjectData);
+    static async get(api: D2Api, _id: string) {
+        return new Project(api, await Project.getData(api, defaultProjectData));
+    }
+
+    static async create(api: D2Api) {
+        return new Project(api, await Project.getData(api, defaultProjectData));
     }
 
     public async getOrganisationUnitsWithName() {
@@ -204,6 +214,12 @@ class Project {
                 },
             })
             .getData();
+    }
+
+    updateDataElementSelection(dataElementIds: string[]): Project {
+        const dataElementsUpdated = this.data.dataElements.updateSelection(dataElementIds);
+        console.log({ dataElementsUpdated, dataElementIds });
+        return this.set("dataElements", dataElementsUpdated);
     }
 }
 
