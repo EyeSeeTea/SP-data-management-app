@@ -143,7 +143,7 @@ function getConfig(
         },
     };
 
-    const getActions = _.compact([
+    const actions = _.compact([
         hasRole(currentUser, userRoles.app) ||
         hasRole(currentUser, userRoles.superUser) ||
         hasRole(currentUser, userRoles.reportingAnalyst)
@@ -175,7 +175,6 @@ function getConfig(
             ? editAction
             : null,
     ]);
-    const actions = getActions;
 
     const help = i18n.t(
         `Click the blue button to create a new project or select a previously created project that you may want to access.
@@ -198,13 +197,13 @@ const ProjectsList: React.FC = () => {
     const list = (_d2: unknown, filters: FiltersForList, pagination: Pagination) =>
         Project.getList(api, filters, pagination);
 
-    const handleButtonCreateProject = () => {
+    const getNewProjectLabel = () => {
         if (hasRole(currentUser, userRoles.reportingAnalyst)) {
             return i18n.t("Create Project");
         }
     };
 
-    const handleLinkButtonCreateProject = () => {
+    const goToNewProjectPage = (history: any) => {
         if (hasRole(currentUser, userRoles.reportingAnalyst)) {
             return () => goToNewProjectPage(history);
         }
@@ -228,8 +227,8 @@ const ProjectsList: React.FC = () => {
                 actions={config.actions}
                 list={list}
                 disableMultiplePageSelection={true}
-                buttonLabel={handleButtonCreateProject()}
-                onButtonClick={handleLinkButtonCreateProject()}
+                buttonLabel={getNewProjectLabel()}
+                onButtonClick={goToNewProjectPage(history)}
             />
         </React.Fragment>
     );
