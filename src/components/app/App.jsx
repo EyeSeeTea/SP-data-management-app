@@ -41,15 +41,18 @@ const configI18n = ({ keyUiLocale: uiLocale }) => {
 
 export const config = {
     currentUser: {
-        userRoles: [{ id: "1", name: "Admin" }],
+        userRoles: [
+            { id: "1", name: "PM Feedback" },
+            { id: "2", name: "PM Reporting Analyst" },
+            { id: "3", name: "PM Encoder" },
+        ],
     },
     userRoles: {
-        app: ["Admin", "Manager", "Superadmin", "Encoder"],
-        feedback: ["Admin", "Feedback", "Manager"],
-        reportingAnalyst: ["Admin", "Configurator"],
-        superUser: ["Admin", "Superuser"],
-        encode: ["Admin", "Encode"],
-        analyser: ["Admin", "Analyser"],
+        feedback: ["PM Feedback"],
+        reportingAnalyst: ["PM Reporting Analyst"],
+        superUser: ["PM Superuser"],
+        encode: ["PM Encoder"],
+        analyser: ["PM Analyser"],
     },
 };
 
