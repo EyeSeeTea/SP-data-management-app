@@ -3,6 +3,8 @@ import i18n from "../../locales";
 import PageHeader from "../../components/page-header/PageHeader";
 import { useHistory } from "react-router";
 import { History } from "history";
+//@ts-ignore
+import { useConfig } from "@dhis2/app-runtime";
 
 function goTo(history: History, url: string) {
     history.push(url);
@@ -21,7 +23,8 @@ const Dashboard: React.FC = () => {
     const history = useHistory();
     const goToLandingPage = () => goTo(history, "/");
     const config = getConfig();
-    const iFrameSrc = "http://localhost:8081/dhis-web-dashboard/#/nghVC4wtyzi";
+    const { baseUrl } = useConfig();
+    const iFrameSrc = `${baseUrl}/dhis-web-dashboard/#/JW7RlN5xafN`;
     const iframeRef: React.RefObject<HTMLIFrameElement> = React.createRef();
 
     const waitforElementToLoad = (iframeDocument: any, selector: string) => {
