@@ -1,5 +1,4 @@
-import { Id } from "d2-api";
-import { D2Api } from "./../../../d2-api/src/api/d2-api";
+import { D2Api, Id } from "d2-api";
 
 export const baseConfig = {
     userRoles: {
