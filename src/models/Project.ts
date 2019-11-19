@@ -44,7 +44,7 @@ import { D2Api, SelectedPick, D2DataSetSchema, Id } from "d2-api";
 import { Pagination } from "./../types/ObjectsList";
 import { Pager } from "d2-api/api/models";
 import i18n from "../locales";
-import DataElements from "./data-elements-set";
+import DataElements, { SelectionUpdate } from "./data-elements-set";
 
 export interface ProjectData {
     name: string;
@@ -216,10 +216,11 @@ class Project {
             .getData();
     }
 
-    updateDataElementSelection(dataElementIds: string[]): Project {
-        const dataElementsUpdated = this.data.dataElements.updateSelection(dataElementIds);
-        console.log({ dataElementsUpdated, dataElementIds });
-        return this.set("dataElements", dataElementsUpdated);
+    updateDataElementSelection(
+        dataElementIds: string[]
+    ): { related: SelectionUpdate; project: Project } {
+        const { related, dataElements } = this.data.dataElements.updateSelection(dataElementIds);
+        return { related, project: this.set("dataElements", dataElements) };
     }
 }
 

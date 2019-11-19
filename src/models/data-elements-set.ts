@@ -1,3 +1,8 @@
+import { DataElement } from "./data-elements-set";
+import { D2Api, Ref, Id } from "d2-api";
+import _ from "lodash";
+import "../utils/lodash-mixins";
+
 /*
     Abstract list of Project data element of type DataElement. Usage:
 
@@ -5,11 +10,6 @@
     const dataElements = dataElementsSet.get();
     # [... Array of data elements ...]
 */
-
-import { DataElement } from "./data-elements-set";
-import { D2Api, Ref } from "d2-api";
-import _ from "lodash";
-import "../utils/lodash-mixins";
 
 export interface DataElement {
     id: string;
@@ -42,8 +42,33 @@ interface DataElementsData {
     selected: string[];
 }
 
+export interface SelectionUpdate {
+    selected: DataElement[];
+    unselected: DataElement[];
+}
+
+function getSectorAndSeriesKey(
+    dataElement: DataElement,
+    dataElementOverride: Partial<DataElement> = {}
+): string {
+    const de = _.merge({}, dataElement, dataElementOverride);
+    return [de.sectorId, de.series, de.indicatorType].join("-");
+}
+
 export default class DataElements {
-    constructor(private data: DataElementsData) {}
+    dataElementsBy: {
+        id: Record<Id, DataElement>;
+        code: Record<string, DataElement>;
+        sectorAndSeries: Record<string, DataElement[]>;
+    };
+
+    constructor(private data: DataElementsData) {
+        this.dataElementsBy = {
+            id: _.keyBy(data.dataElements, de => de.id),
+            code: _.keyBy(data.dataElements, de => de.code),
+            sectorAndSeries: _.groupBy(data.dataElements, de => getSectorAndSeriesKey(de)),
+        };
+    }
 
     get selected(): string[] {
         return this.data.selected;
@@ -133,8 +158,59 @@ export default class DataElements {
         return options.sectorId ? items.filter(de => de.sectorId === options.sectorId) : items;
     }
 
-    updateSelection(dataElementIds: string[]): DataElements {
-        return new DataElements({ ...this.data, selected: dataElementIds });
+    updateSelection(
+        dataElementIds: string[]
+    ): { related: SelectionUpdate; dataElements: DataElements } {
+        const { selected } = this.data;
+        const newSelected = _.difference(dataElementIds, selected);
+        const newUnselected = _.difference(selected, dataElementIds);
+        const currentSelection = new Set(dataElementIds);
+        const related = {
+            selected: this.getRelated(newSelected).filter(de => !currentSelection.has(de.id)),
+            unselected: [] as DataElement[], // this.getRelated(newUnselected).filter(de => currentSelection.has(de.id)),
+        };
+        const finalSelected = _(dataElementIds)
+            .union(related.selected.map(de => de.id))
+            .difference(related.unselected.map(de => de.id))
+            .value();
+        const dataElementsUpdated = new DataElements({ ...this.data, selected: finalSelected });
+
+        return { related, dataElements: dataElementsUpdated };
+    }
+
+    getRelated(dataElementIds: Id[]) {
+        const dataElements = dataElementIds.map(
+            dataElementId => _(this.dataElementsBy.id).getOrFail(dataElementId) as DataElement
+        );
+
+        const relatedBySeries = _(dataElements)
+            .map(dataElement => {
+                const related =
+                    dataElement.indicatorType == "sub"
+                        ? _(this.dataElementsBy.sectorAndSeries).getOrFail(
+                              getSectorAndSeriesKey(dataElement, { indicatorType: "global" })
+                          )
+                        : [];
+                return { id: dataElement.id, related };
+            })
+            .value();
+
+        const relatedByPairing = _(dataElements)
+            .map(dataElement => {
+                const pairedDataElements = dataElement.pairedDataElement
+                    ? [_(this.dataElementsBy.code).getOrFail(dataElement.pairedDataElement)]
+                    : [];
+                return { id: dataElement.id, related: pairedDataElements };
+            })
+            .value();
+
+        return _(relatedBySeries)
+            .concat(relatedByPairing)
+            .groupBy(({ id }) => id)
+            .mapValues(groups => _.flatMap(groups, ({ related }) => related))
+            .values()
+            .flatten()
+            .value();
     }
 }
 
@@ -175,7 +251,7 @@ const metadataFields = {
 
 type DataElementGroup = { code: string; dataElements: Ref[] };
 
-function getGroupCodeByDataElementId<K extends keyof GroupCode>(
+function getGroupCodeByDataElementId(
     dataElementGroups: DataElementGroup[]
 ): { [dataElementId: string]: Set<string> } {
     const getGroupCodeByDataElementId = _(dataElementGroups)
