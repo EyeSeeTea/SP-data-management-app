@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { OldObjectsTable } from "d2-ui-components";
 import i18n from "../../locales";
 import PageHeader from "../../components/page-header/PageHeader";
@@ -10,8 +10,6 @@ import Project, { FiltersForList, DataSetForList } from "../../models/Project";
 import { Pagination } from "../../types/ObjectsList";
 import "./ProjectsList.css";
 import TargetValues from "../../components/TargetValues";
-
-let targetPopulationDataSet = false;
 
 type DataSet = DataSetForList;
 
@@ -35,12 +33,11 @@ const Link: React.FC<{ url: string }> = ({ url }) => {
         </a>
     );
 };
-const openTargetPopulation = () => {
-    console.log(targetPopulationDataSet);
-    return (targetPopulationDataSet = true);
-};
 
-function getConfig(history: History) {
+function getConfig(
+    history: History,
+    setTargetPopulation: React.Dispatch<React.SetStateAction<boolean>>
+) {
     const columns = [
         { name: "displayName", text: i18n.t("Name"), sortable: true },
         { name: "publicAccess", text: i18n.t("Public access"), sortable: true },
@@ -67,7 +64,6 @@ function getConfig(history: History) {
             },
         },
     ];
-    targetPopulationDataSet = false;
 
     const actions = [
         {
@@ -97,7 +93,9 @@ function getConfig(history: History) {
             icon: "assignment",
             text: i18n.t("Add Target Values"),
             multiple: false,
-            onClick: () => openTargetPopulation(),
+            onClick: () => {
+                return setTargetPopulation(true);
+            },
         },
         {
             name: "download-data",
@@ -139,10 +137,11 @@ function getConfig(history: History) {
 }
 
 const ProjectsList: React.FC = () => {
+    const [targetPopulation, setTargetPopulation] = useState(false);
     const history = useHistory();
     const api = useD2Api();
     const goToLandingPage = () => goTo(history, "/");
-    const config = getConfig(history);
+    const config = getConfig(history, setTargetPopulation);
 
     const list = (_d2: unknown, filters: FiltersForList, pagination: Pagination) =>
         Project.getList(api, filters, pagination);
@@ -168,7 +167,8 @@ const ProjectsList: React.FC = () => {
                 buttonLabel={i18n.t("Create Project")}
                 onButtonClick={() => goToNewProjectPage(history)}
             />
-            {targetPopulationDataSet && <TargetValues />}
+            {/* {targetPopulation && <TargetValues hideModal={() => setTargetPopulation(false)} />} */}
+            {targetPopulation && <TargetValues />}
         </React.Fragment>
     );
 };
