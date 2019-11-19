@@ -7,7 +7,6 @@ describe("Projects - Create", () => {
         cy.contains("Project Configuration").click();
         cy.get("[data-test=list-action-bar]").click();
     });
-
     it("gets data from the user and creates a project", () => {
         cy.contains("New project");
 
@@ -104,6 +103,18 @@ function clickDay(dayOfMonth) {
 
     cy.wait(100); // eslint-disable-line cypress/no-unnecessary-waiting
 }
+function expandOrgUnit(label) {
+    cy.server()
+        .route("GET", "/api/organisationUnits/*")
+        .as("getChildrenOrgUnits");
+    cy.get("[data-wizard-contents]")
+        .contains(label)
+        .parents(".label")
+        .prev()
+        .click();
+    cy.wait("@getChildrenOrgUnits");
+}
+
 function expandOrgUnit(label) {
     cy.server()
         .route("GET", "/api/organisationUnits/*")

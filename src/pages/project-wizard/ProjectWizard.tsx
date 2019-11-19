@@ -11,7 +11,7 @@ import { generateUrl } from "../../router";
 import i18n from "../../locales";
 import ExitWizardButton from "../../components/wizard/ExitWizardButton";
 import PageHeader from "../../components/page-header/PageHeader";
-import { useD2Api } from "../../contexts/api-context";
+import { useAppContext } from "../../contexts/api-context";
 import GeneralInfoStep from "../../components/steps/general-info/GeneralInfoStep";
 import SectorsFundersStep from "../../components/steps/sectors-funders/SectorsFundersStep";
 import OrgUnitsStep from "../../components/steps/org-units/OrgUnitsStep";
@@ -231,7 +231,7 @@ const ProjectWizard: React.FC<{}> = () => {
     const snackbar = useSnackbar();
     const history = useHistory();
     const location = useLocation();
-    const api = useD2Api();
+    const { api } = useAppContext();
     const match = useRouteMatch();
 
     return (
