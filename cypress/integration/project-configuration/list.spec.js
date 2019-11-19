@@ -17,7 +17,7 @@ describe("Project Configuration - List page", () => {
         cy.contains("Id");
     });
 
-    it("opens app role context window when right button mouse is clicked", () => {
+    it("opens context window when right button mouse is clicked", () => {
         cy.get(".data-table__rows > :nth-child(1) > :nth-child(4) span")
             .first()
             .trigger("contextmenu");
@@ -34,7 +34,6 @@ describe("Project Configuration - List page", () => {
 
     it("shows list of user dataset sorted alphabetically", () => {
         cy.get("[data-test='displayName-sorting-asc']");
-
         cy.get(".data-table__rows > * > :nth-child(2) span").then(spans$ => {
             const names = spans$.get().map(x => x.innerText);
             const sortedNames = _(names)
@@ -48,23 +47,35 @@ describe("Project Configuration - List page", () => {
         runAndWaitForRequest("/api/dataSets*", () => cy.contains("Name").click());
 
         cy.get("[data-test='displayName-sorting-desc']");
-
         cy.get(".data-table__rows > * > :nth-child(2) span").then(spans$ => {
             const names = spans$.get().map(x => x.innerText);
             const sortedNames = _(names)
                 .orderBy(name => name.toLowerCase())
-                .reverse()
                 .value();
             assert.isTrue(_.isEqual(names, sortedNames));
         });
-    });
 
-    it("can filter datasets by name", () => {
-        cy.get("[data-test='search'] input")
-            .clear()
-            .type("cypress test");
+        it("shows list of user dataset sorted alphabetically by name desc", () => {
+            cy.contains("Name").click();
+            cy.get("[data-test='displayName-sorting-desc']");
 
-        cy.contains("No results found");
+            cy.get(".data-table__rows > * > :nth-child(2) span").then(spans$ => {
+                const names = spans$.get().map(x => x.innerText);
+                const sortedNames = _(names)
+                    .orderBy(name => name.toLowerCase())
+                    .reverse()
+                    .value();
+                assert.isTrue(_.isEqual(names, sortedNames));
+            });
+        });
+
+        it("can filter datasets by name", () => {
+            cy.get("[data-test='search'] input")
+                .clear()
+                .type("cypress test");
+
+            cy.contains("No results found");
+        });
     });
 
     it("will navegate to dashboard from the actions menu", () => {
