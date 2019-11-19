@@ -1,4 +1,4 @@
-import { ObjectsTable, TablePagination, TableColumn, TableState } from "d2-ui-components";
+import { ObjectsTable, TablePagination, TableColumn } from "d2-ui-components";
 import React from "react";
 import i18n from "../../../locales";
 import DataElementsSet, { DataElement } from "../../../models/dataElementsSet";

@@ -58,7 +58,6 @@ export default class ProjectDb {
         };
 
         const parentOrgUnitId = getOrgUnitId(parentOrgUnit);
-        const orgUnitId = generateUid();
 
         const orgUnit = {
             id: generateUid(),
