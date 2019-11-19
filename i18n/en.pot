@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2019-11-19T13:30:29.533Z\n"
-"PO-Revision-Date: 2019-11-19T13:30:29.533Z\n"
+"POT-Creation-Date: 2019-11-19T22:15:20.007Z\n"
+"PO-Revision-Date: 2019-11-19T22:15:20.007Z\n"
 
 msgid "Help"
 msgstr ""
@@ -113,6 +113,9 @@ msgid "No"
 msgstr ""
 
 msgid "Award Number should be a number of 5 digits"
+msgstr ""
+
+msgid "Select at least one data element"
 msgstr ""
 
 msgid "{{field}} cannot be blank"
