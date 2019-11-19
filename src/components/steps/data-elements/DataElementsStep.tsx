@@ -43,7 +43,6 @@ const DataElementsStep: React.FC<StepProps> = ({ onChange, project }) => {
         );
 
         showRelatedMessage(snackbar, related);
-
         onChange(projectUpdated);
     }
 
@@ -53,11 +52,13 @@ const DataElementsStep: React.FC<StepProps> = ({ onChange, project }) => {
             currentMenuItemId={sectorId}
             onMenuItemClick={item => setSectorId(item.id)}
             contents={
-                <DataElementsTable
-                    dataElements={dataElements}
-                    sectorId={sectorId}
-                    onSelectionChange={onSelectionChange}
-                />
+                <div style={{ width: "100%" }}>
+                    <DataElementsTable
+                        dataElements={dataElements}
+                        sectorId={sectorId}
+                        onSelectionChange={onSelectionChange}
+                    />
+                </div>
             }
         />
     );
