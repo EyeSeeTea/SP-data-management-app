@@ -1,7 +1,7 @@
 import { ObjectsTable, TablePagination, TableColumn, TableState } from "d2-ui-components";
 import React from "react";
 import i18n from "../../../locales";
-import DataElementsSet, { DataElement } from "../../../models/data-elements-set";
+import DataElementsSet, { DataElement } from "../../../models/dataElementsSet";
 
 interface DataElementsTableProps {
     dataElements: DataElementsSet;
@@ -19,7 +19,7 @@ const DataElementsTable: React.FC<DataElementsTableProps> = ({
         { name: "indicatorType" as const, text: i18n.t("Indicator Type"), sortable: true },
         { name: "peopleOrBenefit" as const, text: i18n.t("People / Benefit"), sortable: true },
         { name: "series" as const, text: i18n.t("Series"), sortable: true },
-        { name: "pairedDataElement" as const, text: i18n.t("Paired DE"), sortable: true },
+        // { name: "pairedDataElementCode" as const, text: i18n.t("Paired DE"), sortable: true },
     ];
 
     const rows = dataElements.get({ sectorId });

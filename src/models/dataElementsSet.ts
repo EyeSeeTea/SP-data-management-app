@@ -1,4 +1,4 @@
-import { DataElement } from "./data-elements-set";
+import { DataElement } from "./dataElementsSet";
 import { D2Api, Ref, Id } from "d2-api";
 import _ from "lodash";
 import "../utils/lodash-mixins";
@@ -12,14 +12,15 @@ import "../utils/lodash-mixins";
 */
 
 export interface DataElement {
-    id: string;
+    id: Id;
     name: string;
     code: string;
-    sectorId: string;
+    sectorId: Id;
     indicatorType: "global" | "sub";
     peopleOrBenefit: "people" | "benefit";
     series: string;
-    pairedDataElement: string;
+    pairedDataElementCode: string;
+    categoryComboId: Id;
 }
 
 const config = {
@@ -141,7 +142,8 @@ export default class DataElements {
                             indicatorType,
                             peopleOrBenefit,
                             series: seriesCode.replace(seriesPrefix, ""),
-                            pairedDataElement: pairedDataElement || "",
+                            pairedDataElementCode: pairedDataElement || "",
+                            categoryComboId: d2DataElement.categoryCombo.id,
                         };
                         return dataElement;
                     }
@@ -153,9 +155,14 @@ export default class DataElements {
         return new DataElements({ dataElements, selected: [] });
     }
 
-    get(options: { sectorId?: string }): DataElement[] {
+    get(options: { sectorId?: string } = {}): DataElement[] {
         const { dataElements: items } = this.data;
         return options.sectorId ? items.filter(de => de.sectorId === options.sectorId) : items;
+    }
+
+    getSelected(options: { sectorId?: string } = {}): DataElement[] {
+        const selected = new Set(this.data.selected);
+        return this.get(options).filter(de => selected.has(de.id));
     }
 
     updateSelection(
@@ -180,15 +187,16 @@ export default class DataElements {
 
     getRelated(dataElementIds: Id[]) {
         const dataElements = dataElementIds.map(
-            dataElementId => _(this.dataElementsBy.id).getOrFail(dataElementId) as DataElement
+            dataElementId => _(this.dataElementsBy.id).get(dataElementId) as DataElement
         );
 
         const relatedBySeries = _(dataElements)
             .map(dataElement => {
                 const related =
                     dataElement.indicatorType == "sub"
-                        ? _(this.dataElementsBy.sectorAndSeries).getOrFail(
-                              getSectorAndSeriesKey(dataElement, { indicatorType: "global" })
+                        ? _(this.dataElementsBy.sectorAndSeries).get(
+                              getSectorAndSeriesKey(dataElement, { indicatorType: "global" }),
+                              []
                           )
                         : [];
                 return { id: dataElement.id, related };
@@ -197,10 +205,10 @@ export default class DataElements {
 
         const relatedByPairing = _(dataElements)
             .map(dataElement => {
-                const pairedDataElements = dataElement.pairedDataElement
-                    ? [_(this.dataElementsBy.code).getOrFail(dataElement.pairedDataElement)]
-                    : [];
-                return { id: dataElement.id, related: pairedDataElements };
+                const pairedDataElement = dataElement.pairedDataElementCode
+                    ? _(this.dataElementsBy.code).get(dataElement.pairedDataElementCode, null)
+                    : null;
+                return { id: dataElement.id, related: _.compact([pairedDataElement]) };
             })
             .value();
 
@@ -233,6 +241,7 @@ const metadataFields = {
                     code: yes,
                     attributeValues: { attribute: { id: yes }, value: yes },
                     displayName: yes,
+                    categoryCombo: { id: yes },
                 },
             },
         },

@@ -44,7 +44,9 @@ import { D2Api, SelectedPick, D2DataSetSchema, Id } from "d2-api";
 import { Pagination } from "./../types/ObjectsList";
 import { Pager } from "d2-api/api/models";
 import i18n from "../locales";
-import DataElements, { SelectionUpdate } from "./data-elements-set";
+import DataElements, { SelectionUpdate } from "./dataElementsSet";
+import ProjectDb from "./ProjectDb";
+import { MetadataResponse } from "d2-api/api/metadata";
 
 export interface ProjectData {
     name: string;
@@ -178,6 +180,10 @@ class Project {
 
     static async create(api: D2Api) {
         return new Project(api, await Project.getData(api, defaultProjectData));
+    }
+
+    save(): Promise<{ response: MetadataResponse; project: Project }> {
+        return new ProjectDb(this.api, this).save();
     }
 
     public async getOrganisationUnitsWithName() {

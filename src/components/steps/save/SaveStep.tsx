@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, ReactNode } from "react";
 import _ from "lodash";
 import { Button, LinearProgress } from "@material-ui/core";
 import { PaginatedObjects } from "d2-api";
@@ -8,6 +8,7 @@ import ExitWizardButton from "../../wizard/ExitWizardButton";
 import i18n from "../../../locales";
 import { StepProps } from "../../../pages/project-wizard/ProjectWizard";
 import Project from "../../../models/Project";
+import { useSnackbar } from "d2-ui-components";
 
 const useStyles = makeStyles({
     wrapper: {
@@ -27,14 +28,24 @@ const SaveStep: React.FC<StepProps> = ({ project, onCancel }) => {
     const [orgUnits, setOrgUnits] = useState<undefined | PaginatedObjects<OrganisationUnit>>(
         undefined
     );
-    const [errorMessages] = useState<string[]>([]);
     const [dialogOpen, setDialogOpen] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
+    const snackbar = useSnackbar();
 
     useEffect(() => {
         project.getOrganisationUnitsWithName().then(paginatedOus => setOrgUnits(paginatedOus));
     }, [project]);
 
     const classes = useStyles();
+
+    async function save() {
+        const { response, project: projectSaved } = await project.save();
+        if (response.status === "OK") {
+            snackbar.success(i18n.t(`Project created: ${projectSaved.name}`));
+        } else {
+            setErrorMessage(JSON.stringify(response, null, 2));
+        }
+    }
 
     return (
         <React.Fragment>
@@ -60,30 +71,27 @@ const SaveStep: React.FC<StepProps> = ({ project, onCancel }) => {
                         value={getProjectPeriodDateString(project)}
                     />
 
-                    <LiEntry label={i18n.t("Sectors")} value={getNames(project.sectors)} />
                     <LiEntry label={i18n.t("Funders")} value={getNames(project.funders)} />
 
                     <LiEntry
                         label={i18n.t("Organisation Units")}
                         value={getNamesFromPaginated(orgUnits)}
                     />
+
+                    <LiEntry label={i18n.t("Sectors")} value={getSectorsInfo(project)} />
                 </ul>
 
                 <Button onClick={() => setDialogOpen(true)} variant="contained">
                     {i18n.t("Cancel")}
                 </Button>
 
-                <Button
-                    className={classes.saveButton}
-                    onClick={() => console.log("TODO")}
-                    variant="contained"
-                >
+                <Button className={classes.saveButton} onClick={() => save()} variant="contained">
                     {i18n.t("Save")}
                 </Button>
 
                 {isSaving && <LinearProgress />}
 
-                <pre>{errorMessages.join("\n")}</pre>
+                <pre>{errorMessage}</pre>
             </div>
         </React.Fragment>
     );
@@ -96,6 +104,24 @@ const LiEntry = ({ label, value }: { label: string; value?: React.ReactNode }) =
         </li>
     );
 };
+
+function getSectorsInfo(project: Project): ReactNode {
+    return (
+        <ul>
+            {project.sectors.map(sector => (
+                <LiEntry
+                    key={sector.id}
+                    label={sector.displayName}
+                    value={
+                        project.dataElements.getSelected({ sectorId: sector.id }).length +
+                        " " +
+                        i18n.t("data elements")
+                    }
+                />
+            ))}
+        </ul>
+    );
+}
 
 function getNames(objects: { displayName: string }[]) {
     return objects.map(obj => obj.displayName).join(", ");

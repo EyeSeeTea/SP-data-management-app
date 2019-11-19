@@ -24,15 +24,13 @@ const metadata = {
 describe("Project", () => {
     beforeEach(() => {
         mock.onGet("/metadata", {
-            params: {
-                "attributes:fields": "code,id",
-                "attributes:filter": ["code:eq:PM_PAIRED_DE"],
-                "dataElementGroupSets:fields":
-                    "code,dataElementGroups[code,dataElements[attributeValues[attribute[id],value],code,displayName,id],displayName,id]",
-                "dataElementGroupSets:filter": ["code:eq:SECTOR"],
-                "dataElementGroups:fields": "code,dataElements[id]",
-                "dataElementGroups:filter": [],
-            },
+            "attributes:fields": "code,id",
+            "attributes:filter": ["code:eq:PM_PAIRED_DE"],
+            "dataElementGroupSets:fields":
+                "code,dataElementGroups[code,dataElements[attributeValues[attribute[id],value],categoryCombo[id],code,displayName,id],displayName,id]",
+            "dataElementGroupSets:filter": ["code:eq:SECTOR"],
+            "dataElementGroups:fields": "code,dataElements[id]",
+            "dataElementGroups:filter": [],
         }).reply(200, metadata);
     });
     describe("set", () => {

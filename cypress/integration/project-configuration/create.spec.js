@@ -78,9 +78,11 @@ describe("Projects - Create", () => {
 
         cy.contains("Organisation Units");
 
+        /*
         cy.get("[data-wizard-contents] button")
             .contains("Save")
             .click();
+        */
     });
 });
 

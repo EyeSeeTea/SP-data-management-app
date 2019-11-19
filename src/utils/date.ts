@@ -22,7 +22,7 @@ export function formatDateShort(inputDate: string | Date | Moment | undefined): 
     }
 }
 
-export function getDaysRange(startDate: Moment | null, endDate: Moment | null): Moment[] {
+export function getMonthsRange(startDate: Moment | null, endDate: Moment | null): Moment[] {
     if (!startDate || !endDate) {
         return [];
     } else {
@@ -31,7 +31,7 @@ export function getDaysRange(startDate: Moment | null, endDate: Moment | null): 
 
         while (currentDate <= endDate) {
             outputDates.push(currentDate.clone());
-            currentDate.add(1, "days");
+            currentDate.add(1, "month");
         }
         return outputDates;
     }

@@ -5,7 +5,7 @@ import DataElementsTable from "./DataElementsTable";
 import Sidebar from "./Sidebar";
 import { useSnackbar } from "d2-ui-components";
 import i18n from "../../../locales";
-import { SelectionUpdate, DataElement } from "../../../models/data-elements-set";
+import { SelectionUpdate, DataElement } from "../../../models/dataElementsSet";
 
 function getRelatedMessage(dataElements: DataElement[], action: string): string | null {
     return dataElements.length === 0
