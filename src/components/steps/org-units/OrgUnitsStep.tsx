@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import _ from "lodash";
 import { OrgUnitsSelector, useSnackbar } from "d2-ui-components";
-import { D2Api } from "d2-api";
+import { LinearProgress } from "@material-ui/core";
 
 import { StepProps } from "../../../pages/project-wizard/ProjectWizard";
 import i18n from "../../../locales";
-import { useD2 } from "../../../contexts/api-context";
-import { LinearProgress } from "@material-ui/core";
+import { useAppContext } from "../../../contexts/api-context";
+import User from "../../../models/user";
 
 const controls = {
     filterByLevel: true,
@@ -14,28 +14,21 @@ const controls = {
     selectAll: true,
 };
 
-async function getCurrentUserOrganisationUnitsRoot(api: D2Api): Promise<string[]> {
-    const currentUser = await api.currrentUser.get().getData();
-    return currentUser.organisationUnits.map(ou => ou.id);
-}
-
-const OrgUnitsStep: React.FC<StepProps> = ({ api, project, onChange }) => {
+const OrgUnitsStep: React.FC<StepProps> = ({ project, onChange }) => {
     const [rootIds, setRootIds] = useState<string[]>([]);
     const snackbar = useSnackbar();
-    const d2 = useD2();
+    const { d2, config } = useAppContext();
+    const user = new User(config);
 
     useEffect(() => {
-        async function load() {
-            const rootIds = await getCurrentUserOrganisationUnitsRoot(api);
-            if (_(rootIds).isEmpty()) {
-                snackbar.error(
-                    i18n.t("This user has no Data output and analytic organisation units assigned")
-                );
-            } else {
-                setRootIds(rootIds);
-            }
+        const rootIds = user.getOrgUnits().map(ou => ou.id);
+        if (_(rootIds).isEmpty()) {
+            snackbar.error(
+                i18n.t("This user has no Data output and analytic organisation units assigned")
+            );
+        } else {
+            setRootIds(rootIds);
         }
-        load();
     }, [d2]);
 
     const setOrgUnits = (orgUnitsPaths: string[]) => {
