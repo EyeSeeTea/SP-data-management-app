@@ -33,53 +33,57 @@ describe("Project Configuration - List page", () => {
     });
 
     it("shows list of user dataset sorted alphabetically", () => {
-        cy.get(".data-table__rows > :nth-child(1) > :nth-child(2) span").then(text1 => {
-            cy.get(".data-table__rows > :nth-child(2) > :nth-child(2) span").then(text2 => {
-                assert.isTrue(text1.text() < text2.text());
-            });
-        });
-    });
-
-    it("shows list of user dataset sorted alphabetically by name desc", () => {
-        cy.contains("Name").click();
-        cy.get("[data-test='displayName-sorting-desc']");
+        cy.get("[data-test='displayName-sorting-asc']");
 
         cy.get(".data-table__rows > * > :nth-child(2) span").then(spans$ => {
             const names = spans$.get().map(x => x.innerText);
             const sortedNames = _(names)
                 .orderBy(name => name.toLowerCase())
-                .reverse()
                 .value();
-            console.log({ names, sortedNames });
             assert.isTrue(_.isEqual(names, sortedNames));
         });
-    });
 
-    it("can filter datasets by name", () => {
-        cy.get("[data-test='search'] input")
-            .clear()
-            .type("cypress test");
+        it("shows list of user dataset sorted alphabetically by name desc", () => {
+            cy.contains("Name").click();
+            cy.get("[data-test='displayName-sorting-desc']");
 
-        cy.contains("No results found");
-    });
+            cy.get(".data-table__rows > * > :nth-child(2) span").then(spans$ => {
+                const names = spans$.get().map(x => x.innerText);
+                const sortedNames = _(names)
+                    .orderBy(name => name.toLowerCase())
+                    .reverse()
+                    .value();
+                console.log({ names, sortedNames });
+                assert.isTrue(_.isEqual(names, sortedNames));
+            });
+        });
 
-    it("will navegate to dashboard from the actions menu", () => {
-        cy.get(".data-table__rows > :nth-child(1) button").click();
-        cy.get("span[role=menuitem]")
-            .contains("Go to Dashboard")
-            .click();
+        it("can filter datasets by name", () => {
+            cy.get("[data-test='search'] input")
+                .clear()
+                .type("cypress test");
 
-        cy.get("h5").contains("Dashboard");
-        cy.url().should("include", "/dashboard");
-    });
+            cy.contains("No results found");
+        });
 
-    it("will navegate to data-entry from the actions menu", () => {
-        cy.get(".data-table__rows > :nth-child(1) button").click();
-        cy.get("span[role=menuitem]")
-            .contains("Go to Data Entry")
-            .click();
+        it("will navegate to dashboard from the actions menu", () => {
+            cy.get(".data-table__rows > :nth-child(1) button").click();
+            cy.get("span[role=menuitem]")
+                .contains("Go to Dashboard")
+                .click();
 
-        cy.get("h5").contains("Data Entry");
-        cy.url().should("include", "/data-entry/");
+            cy.get("h5").contains("Dashboard");
+            cy.url().should("include", "/dashboard");
+        });
+
+        it("will navegate to data-entry from the actions menu", () => {
+            cy.get(".data-table__rows > :nth-child(1) button").click();
+            cy.get("span[role=menuitem]")
+                .contains("Go to Data Entry")
+                .click();
+
+            cy.get("h5").contains("Data Entry");
+            cy.url().should("include", "/data-entry/");
+        });
     });
 });
