@@ -7,7 +7,6 @@ describe("Projects - Create", () => {
         cy.contains("Project Configuration").click();
         cy.get("[data-test=list-action-bar]").click();
     });
-
     it("gets data from the user and creates a project", () => {
         cy.contains("New project");
 
@@ -52,7 +51,8 @@ describe("Projects - Create", () => {
         cy.contains("Next").click();
         cy.contains("Select at least one item for Organisation Units");
 
-        selectOrgUnit("IHQ");
+        expandOrgUnit("Africa");
+        selectOrgUnit("Sierra Leone");
 
         cy.contains("Next").click();
 
@@ -105,6 +105,18 @@ function clickDay(dayOfMonth) {
     });
 
     cy.wait(100); // eslint-disable-line cypress/no-unnecessary-waiting
+}
+
+function expandOrgUnit(label) {
+    cy.server()
+        .route("GET", "/api/organisationUnits/*")
+        .as("getChildrenOrgUnits");
+    cy.get("[data-wizard-contents]")
+        .contains(label)
+        .parents(".label")
+        .prev()
+        .click();
+    cy.wait("@getChildrenOrgUnits");
 }
 
 function selectInMultiSelector(selectorName, label) {

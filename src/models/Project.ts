@@ -1,3 +1,4 @@
+import { Config } from "./config";
 /*
 
 Project model.
@@ -199,12 +200,10 @@ class Project {
 
     static async getList(
         api: D2Api,
+        config: Config,
         filters: FiltersForList,
         pagination: Pagination
     ): Promise<{ objects: DataSetForList[]; pager: Pager }> {
-        const currentUser = await api.currrentUser.get().getData();
-        currentUser.displayName;
-
         return api.models.dataSets
             .get({
                 paging: true,
@@ -216,7 +215,9 @@ class Project {
                 pageSize: pagination.pageSize,
                 filter: {
                     name: { ilike: filters.search },
-                    "user.id": { eq: filters.createdByCurrentUser ? currentUser.id : undefined },
+                    "user.id": {
+                        eq: filters.createdByCurrentUser ? config.currentUser.id : undefined,
+                    },
                 },
             })
             .getData();
