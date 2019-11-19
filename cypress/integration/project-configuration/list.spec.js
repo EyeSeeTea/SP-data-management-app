@@ -34,7 +34,6 @@ describe("Project Configuration - List page", () => {
 
     it("shows list of user dataset sorted alphabetically", () => {
         cy.get("[data-test='displayName-sorting-asc']");
-
         cy.get(".data-table__rows > * > :nth-child(2) span").then(spans$ => {
             const names = spans$.get().map(x => x.innerText);
             const sortedNames = _(names)
@@ -57,33 +56,33 @@ describe("Project Configuration - List page", () => {
                 assert.isTrue(_.isEqual(names, sortedNames));
             });
         });
+    });
 
-        it("can filter datasets by name", () => {
-            cy.get("[data-test='search'] input")
-                .clear()
-                .type("cypress test");
+    it("can filter datasets by name", () => {
+        cy.get("[data-test='search'] input")
+            .clear()
+            .type("cypress test");
 
-            cy.contains("No results found");
-        });
+        cy.contains("No results found");
+    });
 
-        it("will navegate to dashboard from the actions menu", () => {
-            cy.get(".data-table__rows > :nth-child(1) button").click();
-            cy.get("span[role=menuitem]")
-                .contains("Go to Dashboard")
-                .click();
+    it("will navegate to dashboard from the actions menu", () => {
+        cy.get(".data-table__rows > :nth-child(1) button").click();
+        cy.get("span[role=menuitem]")
+            .contains("Go to Dashboard")
+            .click();
 
-            cy.get("h5").contains("Dashboard");
-            cy.url().should("include", "/dashboard");
-        });
+        cy.get("h5").contains("Dashboard");
+        cy.url().should("include", "/dashboard");
+    });
 
-        it("will navegate to data-entry from the actions menu", () => {
-            cy.get(".data-table__rows > :nth-child(1) button").click();
-            cy.get("span[role=menuitem]")
-                .contains("Go to Data Entry")
-                .click();
+    it("will navegate to data-entry from the actions menu", () => {
+        cy.get(".data-table__rows > :nth-child(1) button").click();
+        cy.get("span[role=menuitem]")
+            .contains("Go to Data Entry")
+            .click();
 
-            cy.get("h5").contains("Data Entry");
-            cy.url().should("include", "/data-entry/");
-        });
+        cy.get("h5").contains("Data Entry");
+        cy.url().should("include", "/data-entry/");
     });
 });

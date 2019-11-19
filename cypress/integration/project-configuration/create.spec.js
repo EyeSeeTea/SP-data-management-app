@@ -115,18 +115,6 @@ function expandOrgUnit(label) {
     cy.wait("@getChildrenOrgUnits");
 }
 
-function expandOrgUnit(label) {
-    cy.server()
-        .route("GET", "/api/organisationUnits/*")
-        .as("getChildrenOrgUnits");
-    cy.get("[data-wizard-contents]")
-        .contains(label)
-        .parents(".label")
-        .prev()
-        .click();
-    cy.wait("@getChildrenOrgUnits");
-}
-
 function selectInMultiSelector(selectorName, label) {
     const prefix = `[data-test-selector='${selectorName}']`;
     cy.get(prefix + " > div > div > div select:first").select(label);
