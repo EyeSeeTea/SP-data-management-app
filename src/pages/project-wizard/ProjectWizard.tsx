@@ -50,26 +50,6 @@ interface Step {
     help?: string;
 }
 
-function getNewProject(project: Project) {
-    return project
-        .set("organisationUnits", [{ path: "/J0hschZVMBt/EaBSqFZQp2h/ag6s3ypoFK0" }])
-        .set("sectors", [
-            { id: "mGQ5ckOTU8A", displayName: "Agriculture" },
-            { id: "m4Cg6FOPPR7", displayName: "Livelihoods" },
-        ])
-        .set(
-            "dataElements",
-            project.dataElements.updateSelection(["WS8XV4WWPE7", "ik0ICagvIjm", "We61YNYyOX0"])
-                .dataElements
-        )
-        .set("name", "Test1")
-        .set("awardNumber", "12345")
-        .set("subsequentLettering", "en")
-        .set("startDate", moment().subtract(1, "month"))
-        .set("funders", [{ id: "1", displayName: "Atlas Copco" }])
-        .set("endDate", moment().add(1, "month"));
-}
-
 class ProjectWizardImpl extends React.Component<Props, State> {
     state: State = {
         project: undefined,
@@ -84,7 +64,7 @@ class ProjectWizardImpl extends React.Component<Props, State> {
             const project =
                 match && match.params.id
                     ? await Project.get(api, match.params.id)
-                    : getNewProject(await Project.create(api));
+                    : await Project.create(api);
             this.setState({ project });
         } catch (err) {
             console.error(err);
