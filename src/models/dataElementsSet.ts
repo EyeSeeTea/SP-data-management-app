@@ -170,7 +170,7 @@ export default class DataElements {
     ): { related: SelectionUpdate; dataElements: DataElements } {
         const { selected } = this.data;
         const newSelected = _.difference(dataElementIds, selected);
-        const newUnselected = _.difference(selected, dataElementIds);
+        // const newUnselected = _.difference(selected, dataElementIds);
         const currentSelection = new Set(dataElementIds);
         const related = {
             selected: this.getRelated(newSelected).filter(de => !currentSelection.has(de.id)),

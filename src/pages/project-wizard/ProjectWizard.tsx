@@ -17,7 +17,6 @@ import SectorsFundersStep from "../../components/steps/sectors-funders/SectorsFu
 import OrgUnitsStep from "../../components/steps/org-units/OrgUnitsStep";
 import SaveStep from "../../components/steps/save/SaveStep";
 import DataElementsStep from "../../components/steps/data-elements/DataElementsStep";
-import moment from "moment";
 
 export interface StepProps {
     api: D2Api;
