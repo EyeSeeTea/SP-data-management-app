@@ -1,6 +1,21 @@
+import { getMockApi } from "d2-api";
+import { baseConfig, Config } from "./../config";
 import { ProjectData } from "./../Project";
 import Project from "../Project";
-import { getMockApi } from "d2-api";
+
+const config: Config = {
+    ...baseConfig,
+    currentUser: {
+        id: "xE7jOejl9FI",
+        userRoles: [],
+        organisationUnits: [
+            {
+                id: "ueuQlqb8ccl",
+                displayName: " Panderu MCHP",
+            },
+        ],
+    },
+};
 
 const currentUser = {
     id: "xE7jOejl9FI",
@@ -150,6 +165,7 @@ describe("Project", () => {
 
             const { objects, pager } = await Project.getList(
                 api,
+                config,
                 {},
                 { page: 1, pageSize: 10, sorting: ["displayName", "desc"] }
             );
@@ -168,6 +184,7 @@ describe("Project", () => {
 
             const { objects, pager } = await Project.getList(
                 api,
+                config,
                 { search: "abc", createdByCurrentUser: true },
                 { page: 1, pageSize: 10, sorting: ["displayName", "desc"] }
             );

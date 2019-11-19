@@ -5,7 +5,7 @@ import { Card, CardContent } from "@material-ui/core";
 import { MultiSelector } from "d2-ui-components";
 import i18n from "../../../locales";
 import { StepProps } from "../../../pages/project-wizard/ProjectWizard";
-import { useD2 } from "../../../contexts/api-context";
+import { useAppContext } from "../../../contexts/api-context";
 import { CSSProperties } from "@material-ui/core/styles/withStyles";
 
 type Option = { value: string; text: string };
@@ -36,7 +36,7 @@ const Title: React.FC<{ style?: CSSProperties }> = ({ style, children }) => {
 };
 
 const SectorsFundersStep: React.FC<StepProps> = ({ project, onChange }) => {
-    const d2 = useD2();
+    const { d2 } = useAppContext();
 
     const onUpdateField = <K extends ModelCollectionField>(
         fieldName: K,
