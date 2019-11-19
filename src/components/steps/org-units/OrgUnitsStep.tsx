@@ -33,9 +33,11 @@ const OrgUnitsStep: React.FC<StepProps> = ({ project, onChange }) => {
 
     const setOrgUnits = (orgUnitsPaths: string[]) => {
         const orgUnits = orgUnitsPaths.map(path => ({ path }));
-        const newProject = project.set("organisationUnits", orgUnits);
+        const orgUnitsLast = orgUnits.slice(orgUnits.length - 1, orgUnits.length);
+        const newProject = project.set("organisationUnits", orgUnitsLast);
         onChange(newProject);
     };
+    const selectableLevels = [3];
 
     return (
         <React.Fragment>
@@ -46,6 +48,8 @@ const OrgUnitsStep: React.FC<StepProps> = ({ project, onChange }) => {
                     selected={project.organisationUnits.map(ou => ou.path)}
                     controls={controls}
                     rootIds={rootIds}
+                    typeInput="radio"
+                    selectableLevels={selectableLevels}
                 />
             ) : (
                 <LinearProgress />
