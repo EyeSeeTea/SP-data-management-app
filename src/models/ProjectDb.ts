@@ -63,7 +63,7 @@ export default class ProjectDb {
         const orgUnit = {
             id: generateUid(),
             name: project.name,
-            shortName: orgUnitId.toString(),
+            shortName: project.shortName,
             parent: { id: parentOrgUnitId },
             openingDate: toISOString(startDate.startOf("month")),
             closedDate: toISOString(endDate.endOf("month")),

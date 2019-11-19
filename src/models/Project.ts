@@ -155,6 +155,10 @@ class Project {
         return new Project(this.api, { ...this.data, [field]: value });
     }
 
+    public get shortName(): string {
+        return this.data.name.slice(0, 50);
+    }
+
     public async validate(
         validationKeys: (ValidationKey)[] | undefined = undefined
     ): Promise<Validations> {
