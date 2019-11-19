@@ -9,6 +9,9 @@ import { generateUrl } from "../../router";
 import Project, { FiltersForList, DataSetForList } from "../../models/Project";
 import { Pagination } from "../../types/ObjectsList";
 import "./ProjectsList.css";
+import TargetValues from "../../components/TargetValues";
+
+let targetPopulationDataSet = false;
 
 type DataSet = DataSetForList;
 
@@ -32,6 +35,10 @@ const Link: React.FC<{ url: string }> = ({ url }) => {
         </a>
     );
 };
+const openTargetPopulation = () => {
+    console.log(targetPopulationDataSet);
+    return (targetPopulationDataSet = true);
+};
 
 function getConfig(history: History) {
     const columns = [
@@ -39,7 +46,6 @@ function getConfig(history: History) {
         { name: "publicAccess", text: i18n.t("Public access"), sortable: true },
         { name: "lastUpdated", text: i18n.t("Last updated"), sortable: true },
     ];
-
     const initialSorting = ["displayName", "asc"];
 
     const detailsFields = [
@@ -61,6 +67,7 @@ function getConfig(history: History) {
             },
         },
     ];
+    targetPopulationDataSet = false;
 
     const actions = [
         {
@@ -90,6 +97,7 @@ function getConfig(history: History) {
             icon: "assignment",
             text: i18n.t("Add Target Values"),
             multiple: false,
+            onClick: () => openTargetPopulation(),
         },
         {
             name: "download-data",
@@ -160,6 +168,7 @@ const ProjectsList: React.FC = () => {
                 buttonLabel={i18n.t("Create Project")}
                 onButtonClick={() => goToNewProjectPage(history)}
             />
+            {targetPopulationDataSet && <TargetValues />}
         </React.Fragment>
     );
 };
