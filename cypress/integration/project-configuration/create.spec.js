@@ -41,6 +41,8 @@ describe("Projects - Create", () => {
         cy.contains("Select at least one item for Funders");
 
         selectInMultiSelector("sectors", "Agriculture");
+        selectInMultiSelector("sectors", "Livelihoods");
+
         selectInMultiSelector("funders", "ACWME");
 
         cy.contains("Next").click();
@@ -59,6 +61,15 @@ describe("Projects - Create", () => {
         // Data Elements
 
         waitForStep("Data Elements");
+        cy.contains("# of agriculture groups receiving support for improved livelihoods")
+            .prev("td")
+            .click();
+
+        cy.contains("Livelihoods").click();
+        cy.contains("# of HH-level storage equipment provided")
+            .prev("td")
+            .click();
+
         cy.contains("Next").click();
 
         // Save step
@@ -120,10 +131,10 @@ function expandOrgUnit(label) {
 }
 
 function selectInMultiSelector(selectorName, label) {
-    const prefix = `[data-test-selector='${selectorName}']`;
-    cy.get(prefix + " > div > div > div select:first").select(label);
-    cy.get(prefix)
-        .contains("→")
+    const prefix = `[data-test-selector='${selectorName}'] > div > div:last`;
+    cy.get(prefix + " > div select:first").select(label);
+    cy.contains("Selected")
+        .next("button")
         .click();
 }
 

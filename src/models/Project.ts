@@ -145,6 +145,10 @@ class Project {
         funders: () => validateNonEmpty(this.funders, i18n.t("Funders")),
         organisationUnits: () =>
             validateNonEmpty(this.organisationUnits, i18n.t("Organisation Units")),
+        dataElements: () =>
+            this.dataElements.getSelected().length == 0
+                ? [i18n.t("Select at least one data element")]
+                : [],
     };
 
     constructor(public api: D2Api, private data: ProjectData) {
