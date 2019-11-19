@@ -41,8 +41,9 @@ describe("Projects - Create", () => {
         cy.contains("Select at least one item for Sectors");
         cy.contains("Select at least one item for Funders");
 
-        selectInMultiSelector("sectors", "Sector1");
+        selectInMultiSelector("sectors", "Agriculture");
         selectInMultiSelector("funders", "ACWME");
+
         cy.contains("Next").click();
 
         // Organisation Units Step
@@ -51,7 +52,7 @@ describe("Projects - Create", () => {
         cy.contains("Next").click();
         cy.contains("Select at least one item for Organisation Units");
 
-        selectOrgUnit("West");
+        selectOrgUnit("IHQ");
 
         cy.contains("Next").click();
 
