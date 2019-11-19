@@ -53,7 +53,6 @@ const OrgUnitsStep: React.FC<StepProps> = ({ api, project, onChange }) => {
                     selected={project.organisationUnits.map(ou => ou.path)}
                     controls={controls}
                     rootIds={rootIds}
-                    levels={[1, 2, 3]}
                 />
             ) : (
                 <LinearProgress />
