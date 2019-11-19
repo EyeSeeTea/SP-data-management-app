@@ -9,6 +9,8 @@ import i18n from "../../../locales";
 import { StepProps } from "../../../pages/project-wizard/ProjectWizard";
 import Project from "../../../models/Project";
 import { useSnackbar } from "d2-ui-components";
+import { useHistory } from "react-router";
+import { generateUrl } from "../../../router";
 
 const useStyles = makeStyles({
     wrapper: {
@@ -31,6 +33,7 @@ const SaveStep: React.FC<StepProps> = ({ project, onCancel }) => {
     const [dialogOpen, setDialogOpen] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const snackbar = useSnackbar();
+    const history = useHistory();
 
     useEffect(() => {
         project.getOrganisationUnitsWithName().then(paginatedOus => setOrgUnits(paginatedOus));
@@ -41,6 +44,7 @@ const SaveStep: React.FC<StepProps> = ({ project, onCancel }) => {
     async function save() {
         const { response, project: projectSaved } = await project.save();
         if (response.status === "OK") {
+            history.push(generateUrl("projects"));
             snackbar.success(i18n.t(`Project created: ${projectSaved.name}`));
         } else {
             setErrorMessage(JSON.stringify(response, null, 2));
