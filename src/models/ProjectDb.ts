@@ -3,7 +3,7 @@ import moment from "moment";
 import { generateUid } from "d2/uid";
 import { D2DataSet, D2Api } from "d2-api";
 import Project from "./Project";
-import { getMonthsRange } from "../utils/date";
+import { getMonthsRange, toISOString } from "../utils/date";
 
 const config = {
     createdByAppCode: "PM_CREATED_BY_PROJECT_MONITORING",
@@ -65,8 +65,8 @@ export default class ProjectDb {
             name: project.name,
             shortName: orgUnitId.toString(),
             parent: { id: parentOrgUnitId },
-            openingDate: startDate.startOf("month").toISOString(),
-            closedDate: endDate.endOf("month").toISOString(),
+            openingDate: toISOString(startDate.startOf("month")),
+            closedDate: toISOString(endDate.endOf("month")),
             attributeValues: [
                 ...baseAttributeValues,
                 {
@@ -78,8 +78,8 @@ export default class ProjectDb {
 
         const targetPeriods = getMonthsRange(startDate, endDate).map(date => ({
             period: { id: date.format("YYYYMM") },
-            openingDate: startDate.startOf("month").toISOString(),
-            closingDate: endDate.endOf("month").toISOString(),
+            openingDate: toISOString(startDate.startOf("month")),
+            closingDate: toISOString(endDate.endOf("month")),
         }));
 
         const dataSetAttributeValues = [
@@ -100,12 +100,13 @@ export default class ProjectDb {
 
         const actualPeriods = getMonthsRange(startDate, endDate).map(date => ({
             period: { id: date.format("YYYYMM") },
-            openingDate: date.startOf("month").toISOString(),
-            closingDate: date
-                .startOf("month")
-                .add(1, "month")
-                .date(6)
-                .toISOString(),
+            openingDate: toISOString(date.startOf("month")),
+            closingDate: toISOString(
+                date
+                    .startOf("month")
+                    .add(1, "month")
+                    .date(6)
+            ),
         }));
 
         const dataSetActualMetadata = this.getDataSetsMetadata(orgUnit, {

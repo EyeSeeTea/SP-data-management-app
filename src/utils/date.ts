@@ -1,6 +1,6 @@
 import moment, { Moment } from "moment";
 
-export function toISOStringNoTZ(date: Moment) {
+export function toISOString(date: Moment) {
     return date.format("YYYY-MM-DDTHH:mm:ss");
 }
 
