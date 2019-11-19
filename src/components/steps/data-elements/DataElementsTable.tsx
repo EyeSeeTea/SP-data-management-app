@@ -8,11 +8,10 @@ interface DataElementsTableProps {
     sectorId?: string;
     onSelectionChange: (dataElementIds: string[]) => void;
 }
-const DataElementsTable: React.FC<DataElementsTableProps> = ({
-    dataElements,
-    sectorId,
-    onSelectionChange,
-}) => {
+
+const DataElementsTable: React.FC<DataElementsTableProps> = props => {
+    const { dataElements, sectorId, onSelectionChange } = props;
+
     const columns: TableColumn<DataElement>[] = [
         { name: "name" as const, text: i18n.t("Name"), sortable: true },
         { name: "code" as const, text: i18n.t("Code"), sortable: true },
@@ -23,26 +22,18 @@ const DataElementsTable: React.FC<DataElementsTableProps> = ({
     ];
 
     const rows = dataElements.get({ sectorId });
-
-    const pagination: TablePagination = {
-        pageSize: 10,
-        page: 1,
-        total: rows.length,
-    };
-
-    function onChange(state: TableState<DataElement>) {
-        onSelectionChange(state.selection);
-    }
+    const selection = dataElements.selected;
+    const pagination: TablePagination = { pageSize: 10, page: 1, total: rows.length };
 
     return (
         <ObjectsTable<DataElement>
-            selection={dataElements.selected}
+            selection={selection}
             rows={rows}
             forceSelectionColumn={true}
             initialState={{ pagination }}
             columns={columns}
             searchBoxLabel={i18n.t("Search by name / code")}
-            onChange={onChange}
+            onChange={state => onSelectionChange(state.selection)}
             searchBoxColumns={["name", "code"]}
         />
     );
