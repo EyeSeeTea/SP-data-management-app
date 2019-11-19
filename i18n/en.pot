@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2019-11-06T08:29:26.811Z\n"
-"PO-Revision-Date: 2019-11-06T08:29:26.811Z\n"
+"POT-Creation-Date: 2019-11-08T10:30:18.178Z\n"
+"PO-Revision-Date: 2019-11-08T10:30:18.178Z\n"
 
 msgid "Help"
 msgstr ""
@@ -20,15 +20,6 @@ msgstr ""
 msgid "Description"
 msgstr ""
 
-msgid "Code"
-msgstr ""
-
-msgid "Start Date"
-msgstr ""
-
-msgid "End Date"
-msgstr ""
-
 msgid "Award Number"
 msgstr ""
 
@@ -36,6 +27,12 @@ msgid "Subsequent Lettering"
 msgstr ""
 
 msgid "Speed Key"
+msgstr ""
+
+msgid "Start Date"
+msgstr ""
+
+msgid "End Date"
 msgstr ""
 
 msgid "Field cannot be blank"
@@ -88,22 +85,54 @@ msgstr ""
 msgid "No"
 msgstr ""
 
+msgid "Award Number should be a number of 5 digits"
+msgstr ""
+
 msgid "{{field}} cannot be blank"
 msgstr ""
 
 msgid "Select at least one item for {{field}}"
 msgstr ""
 
-msgid "Project Configuration"
+msgid "{{field}} must be greater than {{value}}"
 msgstr ""
 
-msgid "Monthly Executive Report"
+msgid "{{field}} must be less than {{value}}"
+msgstr ""
+
+msgid "{{field}} does not match pattern {{pattern}}"
+msgstr ""
+
+msgid "{{field}} must have {{length}} characters"
+msgstr ""
+
+msgid ""
+"Please click on the grey arrow next to the chart/table title if you want to "
+"modify the layout."
+msgstr ""
+
+msgid "Dashboard"
+msgstr ""
+
+msgid ""
+"Select a) organizational unit where project was performed, b) data set, c) "
+"date, d) current/target\n"
+"\n"
+"        Then enter data for the fields shown in the screen."
+msgstr ""
+
+msgid ""
+"Once cells turn into green, all information is saved and you can leave the "
+"Data Entry Section"
 msgstr ""
 
 msgid "Data Entry"
 msgstr ""
 
-msgid "Dashboard"
+msgid "Project Configuration"
+msgstr ""
+
+msgid "Monthly Executive Report"
 msgstr ""
 
 msgid "Cannot load project"
@@ -210,4 +239,7 @@ msgid "Projects"
 msgstr ""
 
 msgid "Create Project"
+msgstr ""
+
+msgid "Help message for MER"
 msgstr ""

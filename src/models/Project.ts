@@ -48,7 +48,6 @@ import i18n from "../locales";
 export interface ProjectData {
     name: string;
     description: string;
-    code: string;
     awardNumber: string;
     subsequentLettering: string;
     speedKey: string;
@@ -121,13 +120,22 @@ type ValidationError = string[];
 type Validations = { [K in ValidationKey]?: () => ValidationError | Promise<ValidationError> };
 
 class Project {
+    // TODO: create an object {[field: string]: string} with field translations to DRY code
     validations: Validations = {
         name: () => validatePresence(this.name, i18n.t("Name")),
         startDate: () => validatePresence(this.startDate, i18n.t("Start Date")),
         endDate: () => validatePresence(this.endDate, i18n.t("End Date")),
-        awardNumber: () => validatePresence(this.awardNumber, i18n.t("Award Number")),
+        awardNumber: () =>
+            validateRegexp(
+                this.awardNumber,
+                i18n.t("Award Number"),
+                /^\d{5}$/,
+                i18n.t("Award Number should be a number of 5 digits")
+            ),
         subsequentLettering: () =>
-            validatePresence(this.subsequentLettering, i18n.t("Subsequent Lettering")),
+            validateLength(this.subsequentLettering, i18n.t("Subsequent Lettering"), {
+                length: 2,
+            }),
         sectors: () => validateNonEmpty(this.sectors, i18n.t("Sectors")),
         funders: () => validateNonEmpty(this.funders, i18n.t("Funders")),
         organisationUnits: () =>
@@ -212,6 +220,50 @@ function validatePresence(value: any, field: string): ValidationError {
 
 function validateNonEmpty(value: any[], field: string): ValidationError {
     return value.length == 0 ? [i18n.t("Select at least one item for {{field}}", { field })] : [];
+}
+
+/* eslint-disable @typescript-eslint/no-unused-vars */
+function validateNumber(
+    value: number,
+    field: string,
+    { min, max }: { min?: number; max?: number } = {}
+): ValidationError {
+    if (min && value < min) {
+        return [i18n.t("{{field}} must be greater than {{value}}", { field, value: min })];
+    } else if (max && value > max) {
+        return [i18n.t("{{field}} must be less than {{value}}", { field, value: max })];
+    } else {
+        return [];
+    }
+}
+
+function validateRegexp(
+    value: string,
+    field: string,
+    regexp: RegExp,
+    customMsg: string
+): ValidationError {
+    return regexp.test(value)
+        ? []
+        : [
+              customMsg ||
+                  i18n.t("{{field}} does not match pattern {{pattern}}", {
+                      field,
+                      pattern: regexp.source,
+                  }),
+          ];
+}
+
+function validateLength(
+    value: string,
+    field: string,
+    { length }: { length?: number } = {}
+): ValidationError {
+    if (value.length !== 2) {
+        return [i18n.t("{{field}} must have {{length}} characters", { field, length })];
+    } else {
+        return [];
+    }
 }
 
 export default Project;
