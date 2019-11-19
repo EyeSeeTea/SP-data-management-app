@@ -51,6 +51,7 @@ describe("Project Configuration - List page", () => {
             const names = spans$.get().map(x => x.innerText);
             const sortedNames = _(names)
                 .orderBy(name => name.toLowerCase())
+                .reverse()
                 .value();
             assert.isTrue(_.isEqual(names, sortedNames));
         });
