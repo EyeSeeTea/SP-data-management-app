@@ -70,13 +70,12 @@ describe("Project Configuration - List page", () => {
             });
         });
 
-        it("can filter datasets by name", () => {
-            cy.get("[data-test='search'] input")
-                .clear()
-                .type("cypress test");
+    it("can filter datasets by name", () => {
+        cy.get("[data-test='search'] input")
+            .clear()
+            .type("cypress test");
 
-            cy.contains("No results found");
-        });
+        cy.contains("No results found");
     });
 
     it("will navegate to dashboard from the actions menu", () => {

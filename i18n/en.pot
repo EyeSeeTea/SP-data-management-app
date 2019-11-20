@@ -141,6 +141,9 @@ msgid ""
 "modify the layout."
 msgstr ""
 
+msgid "Dashboard project to analyse your data..."
+msgstr ""
+
 msgid "Dashboard"
 msgstr ""
 
