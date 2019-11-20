@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { OldObjectsTable } from "d2-ui-components";
+import React from "react";
+import { OldObjectsTable, TableColumn } from "d2-ui-components";
 import i18n from "../../locales";
 import _ from "lodash";
 import PageHeader from "../../components/page-header/PageHeader";
@@ -7,13 +7,12 @@ import { useHistory } from "react-router";
 import { History } from "history";
 import { useAppContext, CurrentUser } from "../../contexts/api-context";
 import { generateUrl } from "../../router";
-import Project, { FiltersForList, DataSetForList } from "../../models/Project";
+import Project, { FiltersForList, ProjectForList } from "../../models/Project";
 import { Pagination } from "../../types/ObjectsList";
 import "./ProjectsList.css";
-import TargetValues from "../../components/TargetValues";
 import { Config } from "../../models/config";
-
-type DataSet = DataSetForList;
+import { formatDateShort, formatDateLong } from "../../utils/date";
+import { GetPropertiesByType } from "../../types/utils";
 
 type ActionsRoleMapping<Actions> = {
     [Key in keyof Config["userRoles"]]?: Array<keyof Actions>;
@@ -36,34 +35,46 @@ const Link: React.FC<{ url: string }> = ({ url }) => {
     );
 };
 
-function getConfig(
-    history: History,
-    currentUser: CurrentUser,
-    setTargetPopulation: React.Dispatch<React.SetStateAction<boolean>>
-)  {
-    const columns = [
+function columnDate(
+    field: GetPropertiesByType<ProjectForList, string>,
+    format: "date" | "datetime"
+) {
+    const formatter = format === "date" ? formatDateShort : formatDateLong;
+    return {
+        name: field,
+        getValue: (project: ProjectForList) => formatter(project[field]),
+    };
+}
+
+function getConfig(history: History, currentUser: CurrentUser) {
+    const columns: TableColumn<ProjectForList>[] = [
         { name: "displayName", text: i18n.t("Name"), sortable: true },
-        { name: "publicAccess", text: i18n.t("Public access"), sortable: true },
-        { name: "lastUpdated", text: i18n.t("Last updated"), sortable: true },
+        { ...columnDate("lastUpdated", "datetime"), text: i18n.t("Last updated"), sortable: true },
+        { ...columnDate("openingDate", "date"), text: i18n.t("Opening date"), sortable: true },
+        { ...columnDate("closedDate", "date"), text: i18n.t("Closed date"), sortable: true },
     ];
+
     const initialSorting = ["displayName", "asc"];
 
     const detailsFields = [
         { name: "displayName", text: i18n.t("Name") },
+        { name: "id", text: i18n.t("Id") },
         { name: "displayDescription", text: i18n.t("Description") },
         { name: "created", text: i18n.t("Created") },
         {
             name: "createdBy",
             text: i18n.t("Created By"),
-            getValue: (dataSet: DataSet) => `${dataSet.user.displayName} (${dataSet.user.id})`,
+            getValue: (project: ProjectForList) =>
+                `${project.user.displayName} (${project.user.id})`,
         },
-        { name: "lastUpdated", text: i18n.t("Last update") },
-        { name: "id", text: i18n.t("Id") },
+        { ...columnDate("lastUpdated", "datetime"), text: i18n.t("Last updated") },
+        { ...columnDate("openingDate", "date"), text: i18n.t("Opening date") },
+        { ...columnDate("closedDate", "date"), text: i18n.t("Closed date") },
         {
             name: "href",
             text: i18n.t("API link"),
-            getValue: function getDataSetLink(dataSet: DataSet) {
-                return <Link url={dataSet.href + ".json"} />;
+            getValue: function getDataSetLink(project: ProjectForList) {
+                return <Link url={project.href + ".json"} />;
             },
         },
     ];
@@ -82,8 +93,8 @@ function getConfig(
             icon: "library_books",
             text: i18n.t("Go to Data Entry"),
             multiple: false,
-            onClick: (dataSet: DataSet) =>
-                history.push(generateUrl("dataEntry.edit", { id: dataSet.id })),
+            onClick: (project: ProjectForList) =>
+                history.push(generateUrl("dataEntry.edit", { id: project.id })),
         },
 
         dashboard: {
@@ -120,16 +131,16 @@ function getConfig(
             name: "edit",
             text: i18n.t("Edit"),
             multiple: false,
-            onClick: (dataSet: DataSet) =>
-                history.push(generateUrl("projects.edit", { id: dataSet.id })),
+            onClick: (project: ProjectForList) =>
+                history.push(generateUrl("projects.edit", { id: project.id })),
         },
 
         delete: {
             name: "delete",
             text: i18n.t("Delete"),
             multiple: true,
-            onClick: (dataSets: DataSet[]) => {
-                console.log("delete", dataSets);
+            onClick: (projects: ProjectForList[]) => {
+                console.log("delete", projects);
             },
         },
     };
@@ -166,7 +177,9 @@ const ProjectsList: React.FC = () => {
     const history = useHistory();
     const { api, config, currentUser } = useAppContext();
     const goToLandingPage = () => goTo(history, "/");
-    const componentConfig = getConfig(history, currentUser, setTargetPopulation);
+
+    const componentConfig = getConfig(history, currentUser);
+
     const list = (_d2: unknown, filters: FiltersForList, pagination: Pagination) =>
         Project.getList(api, config, filters, pagination);
 
