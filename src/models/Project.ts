@@ -45,6 +45,9 @@ import { D2Api, SelectedPick, D2DataSetSchema, Id } from "d2-api";
 import { Pagination } from "./../types/ObjectsList";
 import { Pager } from "d2-api/api/models";
 import i18n from "../locales";
+import DataElements, { SelectionUpdate } from "./dataElementsSet";
+import ProjectDb from "./ProjectDb";
+import { MetadataResponse } from "d2-api/api/metadata";
 
 export interface ProjectData {
     name: string;
@@ -57,6 +60,7 @@ export interface ProjectData {
     sectors: Sector[];
     funders: Funder[];
     organisationUnits: OrganisationUnit[];
+    dataElements: DataElements;
 }
 
 interface NamedObject {
@@ -141,6 +145,10 @@ class Project {
         funders: () => validateNonEmpty(this.funders, i18n.t("Funders")),
         organisationUnits: () =>
             validateNonEmpty(this.organisationUnits, i18n.t("Organisation Units")),
+        dataElements: () =>
+            this.dataElements.getSelected().length == 0
+                ? [i18n.t("Select at least one data element")]
+                : [],
     };
 
     constructor(public api: D2Api, private data: ProjectData) {
@@ -149,6 +157,10 @@ class Project {
 
     public set<K extends keyof ProjectData>(field: K, value: ProjectData[K]): Project {
         return new Project(this.api, { ...this.data, [field]: value });
+    }
+
+    public get shortName(): string {
+        return this.data.name.slice(0, 50);
     }
 
     public async validate(
@@ -163,12 +175,24 @@ class Project {
         return _.fromPairs(_.zip(keys, values)) as Validations;
     }
 
-    static async get(api: D2Api, _id: string) {
-        return new Project(api, defaultProjectData);
+    static async getData(
+        api: D2Api,
+        partialData: Omit<ProjectData, "dataElements">
+    ): Promise<ProjectData> {
+        const dataElements = await DataElements.build(api);
+        return { ...partialData, dataElements };
     }
 
-    static create(api: D2Api) {
-        return new Project(api, defaultProjectData);
+    static async get(api: D2Api, _id: string) {
+        return new Project(api, await Project.getData(api, defaultProjectData));
+    }
+
+    static async create(api: D2Api) {
+        return new Project(api, await Project.getData(api, defaultProjectData));
+    }
+
+    save(): Promise<{ response: MetadataResponse; project: Project }> {
+        return new ProjectDb(this.api, this).save();
     }
 
     public async getOrganisationUnitsWithName() {
@@ -205,6 +229,13 @@ class Project {
                 },
             })
             .getData();
+    }
+
+    updateDataElementSelection(
+        dataElementIds: string[]
+    ): { related: SelectionUpdate; project: Project } {
+        const { related, dataElements } = this.data.dataElements.updateSelection(dataElementIds);
+        return { related, project: this.set("dataElements", dataElements) };
     }
 }
 

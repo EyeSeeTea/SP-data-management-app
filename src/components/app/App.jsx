@@ -94,7 +94,7 @@ const App = () => {
             <MuiThemeProvider theme={muiTheme}>
                 <OldMuiThemeProvider muiTheme={muiThemeLegacy}>
                     <SnackbarProvider>
-                        <HeaderBar appName={"Skeleton app"} />
+                        <HeaderBar appName={"Project Monitoring"} />
 
                         <div id="app" className="content">
                             <ApiContext.Provider value={appContext}>

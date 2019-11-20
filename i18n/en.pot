@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2019-11-20T08:30:31.994Z\n"
-"PO-Revision-Date: 2019-11-20T08:30:31.994Z\n"
+"POT-Creation-Date: 2019-11-19T22:15:20.007Z\n"
+"PO-Revision-Date: 2019-11-19T22:15:20.007Z\n"
 
 msgid "Help"
 msgstr ""
@@ -14,7 +14,31 @@ msgstr ""
 msgid "Back"
 msgstr ""
 
+msgid "selected"
+msgstr ""
+
+msgid "unselected"
+msgstr ""
+
 msgid "Name"
+msgstr ""
+
+msgid "Code"
+msgstr ""
+
+msgid "Indicator Type"
+msgstr ""
+
+msgid "People / Benefit"
+msgstr ""
+
+msgid "Series"
+msgstr ""
+
+msgid "Paired DE"
+msgstr ""
+
+msgid "Search by name / code"
 msgstr ""
 
 msgid "Description"
@@ -44,19 +68,22 @@ msgstr ""
 msgid "Period dates"
 msgstr ""
 
-msgid "Sectors"
-msgstr ""
-
 msgid "Funders"
 msgstr ""
 
 msgid "Organisation Units"
 msgstr ""
 
+msgid "Sectors"
+msgstr ""
+
 msgid "Cancel"
 msgstr ""
 
 msgid "Save"
+msgstr ""
+
+msgid "data elements"
 msgstr ""
 
 msgid "Loading..."
@@ -86,6 +113,9 @@ msgid "No"
 msgstr ""
 
 msgid "Award Number should be a number of 5 digits"
+msgstr ""
+
+msgid "Select at least one data element"
 msgstr ""
 
 msgid "{{field}} cannot be blank"
