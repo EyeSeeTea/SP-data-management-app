@@ -5,26 +5,13 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"POT-Creation-Date: 2019-11-20T14:36:17.366Z\n"
+"PO-Revision-Date: 2019-11-20T14:36:17.366Z\n"
 
-"POT-Creation-Date: 2019-11-20T10:49:39.091Z\n"
-"PO-Revision-Date: 2019-11-20T10:49:39.091Z\n"
-
-msgid "Set Target Population Name of Organit Unit"
+msgid "Set Target Values for Project"
 msgstr ""
 
-msgid ""
-"Insert the age distribution for your project(s).\n"
-"        Insert the target population for each of the sites.\n"
-"        Age distribution at project level will be used for all sites within "
-"that project.\n"
-"        Age distribution can be modified for any of the sites if needed.\n"
-"\n"
-"        If you leave this page and return to it again you might find that "
-"information is not updated yet. Do not worry, information was not lost, "
-"updated information will appear within a few minutes.\n"
-"\n"
-"        The source of data may be {{- hyperlink}} or you may have access to "
-"local estimates (i.e. Ministry of Health)"
+msgid "This is just an example of a description"
 msgstr ""
 
 msgid "Close"
@@ -103,12 +90,6 @@ msgid "Sectors"
 msgstr ""
 
 msgid "Cancel"
-msgstr ""
-
-msgid "Save"
-msgstr ""
-
-msgid "data elements"
 msgstr ""
 
 msgid "data elements"

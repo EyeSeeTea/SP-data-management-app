@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import i18n from "../locales";
 import { DialogTitle, DialogContent, CardContent, DialogActions, Button } from "@material-ui/core";
-import Linkify from "react-linkify";
 import { CSSProperties } from "@material-ui/styles";
+//@ts-ignore
+import { useConfig } from "@dhis2/app-runtime";
 
 function autoResizeIframeByContent(iframe: HTMLIFrameElement) {
     const resize = () => {
@@ -29,25 +30,18 @@ function waitforElementToLoad(iframeDocument: any, selector: string) {
 const TargetValues: React.FC<{
     closeTargetValues: (event: React.MouseEvent<HTMLButtonElement>) => void;
 }> = props => {
-    const title = i18n.t("Set Target Population Name of Organit Unit");
+    const title = i18n.t("Set Target Values for Project");
     const description = i18n.t(
-        `Insert the age distribution for your project(s).
-        Insert the target population for each of the sites.
-        Age distribution at project level will be used for all sites within that project.
-        Age distribution can be modified for any of the sites if needed.
-
-        If you leave this page and return to it again you might find that information is not updated yet. Do not worry, information was not lost, updated information will appear within a few minutes.
-
-        The source of data may be {{- hyperlink}} or you may have access to local estimates (i.e. Ministry of Health)`,
-        {
-            hyperlink: "https://hmisocba.msf.es/external-static/Denominators_Tool_OCBA.xlsm",
-        }
+        `This is just an example of a description`
     );
+    const stylesSubtitle = { marginBottom: 10, marginLeft: 15 };
     const [loading, setLoading] = useState(false);
     const closeTargetValues = props.closeTargetValues;
+    const { baseUrl } = useConfig();
+    const iFrameSrc = `${baseUrl}/dhis-web-dataentry/index.action`;
 
     const iframeRef: React.RefObject<HTMLIFrameElement> = React.createRef();
-    const setDashboardStyling = async (iframe: any) => {
+    const setEntryStyling = async (iframe: any) => {
         const iframeDocument = iframe.contentWindow.document;
 
         await waitforElementToLoad(iframeDocument, "#selectedDataSetId");
@@ -71,7 +65,7 @@ const TargetValues: React.FC<{
 
         if (iframe !== null && !loading) {
             setLoading(true);
-            iframe.addEventListener("load", setDashboardStyling.bind(null, iframe));
+            iframe.addEventListener("load", setEntryStyling.bind(null, iframe));
         }
     });
     return (
@@ -81,11 +75,11 @@ const TargetValues: React.FC<{
                     <DialogTitle>{title}</DialogTitle>
                     <DialogContent>
                         <React.Fragment>
-                            <Linkify>{description}</Linkify>
+                            <div style={stylesSubtitle}>{description}</div>
                             <iframe
                                 ref={iframeRef}
                                 title="Target Values"
-                                src="http://localhost:8080/dhis-web-dataentry/index.action"
+                                src={iFrameSrc}
                                 style={styles.iframe}
                             />
                             <CardContent />

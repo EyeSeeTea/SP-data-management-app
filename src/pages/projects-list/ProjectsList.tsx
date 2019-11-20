@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { OldObjectsTable, TableColumn } from "d2-ui-components";
 import i18n from "../../locales";
 import _ from "lodash";
@@ -10,6 +10,7 @@ import { generateUrl } from "../../router";
 import Project, { FiltersForList, ProjectForList } from "../../models/Project";
 import { Pagination } from "../../types/ObjectsList";
 import "./ProjectsList.css";
+import TargetValues from "../../components/TargetValues";
 import { Config } from "../../models/config";
 import { formatDateShort, formatDateLong } from "../../utils/date";
 import { GetPropertiesByType } from "../../types/utils";
@@ -46,7 +47,7 @@ function columnDate(
     };
 }
 
-function getConfig(history: History, currentUser: CurrentUser) {
+function getConfig(history: History, currentUser: CurrentUser, setTargetPopulation: React.Dispatch<React.SetStateAction<boolean>>) {
     const columns: TableColumn<ProjectForList>[] = [
         { name: "displayName", text: i18n.t("Name"), sortable: true },
         { ...columnDate("lastUpdated", "datetime"), text: i18n.t("Last updated"), sortable: true },
@@ -178,7 +179,7 @@ const ProjectsList: React.FC = () => {
     const { api, config, currentUser } = useAppContext();
     const goToLandingPage = () => goTo(history, "/");
 
-    const componentConfig = getConfig(history, currentUser);
+    const componentConfig = getConfig(history, currentUser, setTargetPopulation);
 
     const list = (_d2: unknown, filters: FiltersForList, pagination: Pagination) =>
         Project.getList(api, config, filters, pagination);

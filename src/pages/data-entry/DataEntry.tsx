@@ -61,7 +61,7 @@ const DataEntry: React.FC = () => {
 
         await waitforElementToLoad(iframeDocument, "#selectedDataSetId");
         iframeDocument.querySelector("#header").remove();
-        iframeDocument.querySelector("#leftBar").style.display = "none";
+        // iframeDocument.querySelector("#leftBar").style.display = "none";
         iframeDocument.querySelector("body").style.marginTop = "-55px";
         iframeDocument.querySelector("html").style.overflow = "hidden";
 
