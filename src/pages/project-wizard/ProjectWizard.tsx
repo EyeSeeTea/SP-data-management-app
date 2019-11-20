@@ -17,6 +17,7 @@ import SectorsFundersStep from "../../components/steps/sectors-funders/SectorsFu
 import OrgUnitsStep from "../../components/steps/org-units/OrgUnitsStep";
 import SaveStep from "../../components/steps/save/SaveStep";
 import DataElementsStep from "../../components/steps/data-elements/DataElementsStep";
+import { getDevProject } from "../../models/dev-project";
 
 export interface StepProps {
     api: D2Api;
@@ -57,13 +58,14 @@ class ProjectWizardImpl extends React.Component<Props, State> {
     };
 
     async componentDidMount() {
-        const { api, match } = this.props;
+        const { api, match, location } = this.props;
+        const isDevMode = location.hash.split("#")[2] == "dev";
 
         try {
             const project =
                 match && match.params.id
                     ? await Project.get(api, match.params.id)
-                    : await Project.create(api);
+                    : getDevProject(await Project.create(api), isDevMode);
             this.setState({ project });
         } catch (err) {
             console.error(err);
@@ -179,7 +181,7 @@ class ProjectWizardImpl extends React.Component<Props, State> {
             },
         }));
 
-        const urlHash = location.hash.slice(1);
+        const urlHash = location.hash.split("#")[1];
         const stepExists = steps.find(step => step.key === urlHash);
         const firstStepKey = steps.map(step => step.key)[0];
         const initialStepKey = stepExists ? urlHash : firstStepKey;
