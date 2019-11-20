@@ -48,7 +48,7 @@ const TargetValues: React.FC<{
         iframeDocument.querySelector("#header").remove();
         iframeDocument.querySelector("#actions").remove();
         iframeDocument.querySelector("#moduleHeader").remove();
-        iframeDocument.querySelector("#leftBar").style.display = "none";
+        // iframeDocument.querySelector("#leftBar").style.display = "none";
         iframeDocument.querySelector("#contentDiv").style.overflow = "scroll";
         iframeDocument.querySelector("body").style.marginTop = "-55px";
         iframeDocument
