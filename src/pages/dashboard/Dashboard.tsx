@@ -45,9 +45,7 @@ const Dashboard: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const history = useHistory();
     const goToLandingPage = () => goTo(history, "/");
-    const subtitle = i18n.t(
-        `Dashboard project to analyse your data...`
-    );
+    const subtitle = i18n.t(`Dashboard project to analyse your data...`);
     const stylesSubtitle = { marginBottom: 10, marginLeft: 15 };
     const config = getConfig();
     const { baseUrl } = useConfig();
