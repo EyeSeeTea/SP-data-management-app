@@ -44,7 +44,7 @@ describe("Project Configuration - List page", () => {
     });
 
     it("shows list of user dataset sorted alphabetically by name desc", () => {
-        runAndWaitForRequest("/api/dataSets*", () => cy.contains("Name").click());
+        runAndWaitForRequest("/api/*", () => cy.contains("Name").click());
 
         cy.get("[data-test='displayName-sorting-desc']");
         cy.get(".data-table__rows > * > :nth-child(2) span").then(spans$ => {
