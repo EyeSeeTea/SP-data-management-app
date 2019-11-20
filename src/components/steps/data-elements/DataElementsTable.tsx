@@ -18,7 +18,7 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
         { name: "indicatorType" as const, text: i18n.t("Indicator Type"), sortable: true },
         { name: "peopleOrBenefit" as const, text: i18n.t("People / Benefit"), sortable: true },
         { name: "series" as const, text: i18n.t("Series"), sortable: true },
-        // { name: "pairedDataElementCode" as const, text: i18n.t("Paired DE"), sortable: true },
+        { name: "pairedDataElementCode" as const, text: i18n.t("Paired DE"), sortable: true },
     ];
 
     const rows = dataElements.get({ sectorId });
