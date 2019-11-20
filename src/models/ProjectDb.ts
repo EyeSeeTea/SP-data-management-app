@@ -63,6 +63,7 @@ export default class ProjectDb {
             id: generateUid(),
             name: project.name,
             shortName: project.shortName,
+            description: project.description,
             parent: { id: parentOrgUnitId },
             openingDate: toISOString(startDate.startOf("month")),
             closedDate: toISOString(endDate.endOf("month")),
