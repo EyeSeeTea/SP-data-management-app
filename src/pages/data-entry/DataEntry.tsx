@@ -56,7 +56,7 @@ const DataEntry: React.FC = () => {
     const { baseUrl } = useConfig();
     const iFrameSrc = `${baseUrl}/dhis-web-dataentry/index.action`;
 
-    const setDashboardStyling = async (iframe: any) => {
+    const setEntryStyling = async (iframe: any) => {
         const iframeDocument = iframe.contentWindow.document;
 
         await waitforElementToLoad(iframeDocument, "#selectedDataSetId");
@@ -74,7 +74,7 @@ const DataEntry: React.FC = () => {
 
         if (iframe !== null && !loading) {
             setLoading(true);
-            iframe.addEventListener("load", setDashboardStyling.bind(null, iframe));
+            iframe.addEventListener("load", setEntryStyling.bind(null, iframe));
         }
     });
 

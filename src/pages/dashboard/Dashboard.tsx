@@ -45,9 +45,13 @@ const Dashboard: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const history = useHistory();
     const goToLandingPage = () => goTo(history, "/");
+    const subtitle = i18n.t(
+        `Dashboard project to analyse your data...`
+    );
+    const stylesSubtitle = { marginBottom: 10, marginLeft: 15 };
     const config = getConfig();
     const { baseUrl } = useConfig();
-    const iFrameSrc = `${baseUrl}/dhis-web-dashboard/#/JW7RlN5xafN`;
+    const iFrameSrc = `${baseUrl}/dhis-web-dashboard/#/CrpCenwxWwl`;
     const iframeRef: React.RefObject<HTMLIFrameElement> = React.createRef();
 
     const setDashboardStyling = async (iframe: any) => {
@@ -83,6 +87,7 @@ const Dashboard: React.FC = () => {
                 help={config.help}
                 onBackClick={goToLandingPage}
             />
+            <div style={stylesSubtitle}>{subtitle}</div>
             <iframe
                 ref={iframeRef}
                 id="iframe"
