@@ -8,17 +8,17 @@ describe("Project Configuration - List page", () => {
     });
 
     it("shows list of user projects", () => {
-        cy.get(".data-table__rows > :nth-child(1) > :nth-child(4) span").should("not.be.empty");
+        cy.get(".data-table__rows > :nth-child(1) > :nth-child(2) span").should("not.be.empty");
     });
 
     it("opens details window when mouse clicked", () => {
-        cy.get(".data-table__rows > :nth-child(1) > :nth-child(4) span").click();
+        cy.get(".data-table__rows > :nth-child(1) > :nth-child(2) span").click();
         cy.contains("API link");
         cy.contains("Id");
     });
 
     it("opens context window when right button mouse is clicked", () => {
-        cy.get(".data-table__rows > :nth-child(1) > :nth-child(4) span")
+        cy.get(".data-table__rows > :nth-child(1) > :nth-child(2) span")
             .first()
             .trigger("contextmenu");
 
@@ -41,19 +41,6 @@ describe("Project Configuration - List page", () => {
                 .value();
             assert.isTrue(_.isEqual(names, sortedNames));
         });
-    });
-
-    it("shows list of user dataset sorted alphabetically by name desc", () => {
-        runAndWaitForRequest("/api/dataSets*", () => cy.contains("Name").click());
-
-        cy.get("[data-test='displayName-sorting-desc']");
-        cy.get(".data-table__rows > * > :nth-child(2) span").then(spans$ => {
-            const names = spans$.get().map(x => x.innerText);
-            const sortedNames = _(names)
-                .orderBy(name => name.toLowerCase())
-                .value();
-            assert.isTrue(_.isEqual(names, sortedNames));
-        });
 
         it("shows list of user dataset sorted alphabetically by name desc", () => {
             cy.contains("Name").click();
@@ -65,17 +52,18 @@ describe("Project Configuration - List page", () => {
                     .orderBy(name => name.toLowerCase())
                     .reverse()
                     .value();
+                console.log({ names, sortedNames });
                 assert.isTrue(_.isEqual(names, sortedNames));
             });
         });
+    });
 
-        it("can filter datasets by name", () => {
-            cy.get("[data-test='search'] input")
-                .clear()
-                .type("cypress test");
+    it("can filter datasets by name", () => {
+        cy.get("[data-test='search'] input")
+            .clear()
+            .type("cypress test");
 
-            cy.contains("No results found");
-        });
+        cy.contains("No results found");
     });
 
     it("will navegate to dashboard from the actions menu", () => {
@@ -98,13 +86,3 @@ describe("Project Configuration - List page", () => {
         cy.url().should("include", "/data-entry/");
     });
 });
-
-function runAndWaitForRequest(urlPattern, action) {
-    cy.server()
-        .route("GET", urlPattern)
-        .as(urlPattern);
-
-    action();
-
-    cy.wait("@" + urlPattern);
-}

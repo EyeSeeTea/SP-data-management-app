@@ -7,8 +7,12 @@ describe("Dashboard", () => {
     });
 
     it("should have a help button", () => {
-        cy.get("[data-test=Dashboard").click();
+        cy.get("[data-test=Dashboard]").click();
         cy.get("h5").contains("Dashboard");
         cy.url().should("include", "/dashboard");
+    });
+
+    it("should have an iframe", () => {
+        cy.get("iframe");
     });
 });
