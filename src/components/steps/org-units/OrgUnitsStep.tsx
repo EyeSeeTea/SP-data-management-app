@@ -11,7 +11,7 @@ import User from "../../../models/user";
 const controls = {
     filterByLevel: false,
     filterByGroup: false,
-    selectAll: true,
+    selectAll: false,
 };
 
 const OrgUnitsStep: React.FC<StepProps> = ({ project, onChange }) => {
