@@ -1,6 +1,21 @@
+import { getMockApi } from "d2-api";
+import { baseConfig, Config } from "./../config";
 import { ProjectData } from "./../Project";
 import Project from "../Project";
-import { getMockApi } from "d2-api";
+
+const config: Config = {
+    ...baseConfig,
+    currentUser: {
+        id: "xE7jOejl9FI",
+        userRoles: [],
+        organisationUnits: [
+            {
+                id: "ueuQlqb8ccl",
+                displayName: " Panderu MCHP",
+            },
+        ],
+    },
+};
 
 const currentUser = {
     id: "xE7jOejl9FI",
@@ -10,15 +25,32 @@ const currentUser = {
 const { api, mock } = getMockApi();
 
 async function expectFieldPresence(field: keyof ProjectData) {
-    const project = Project.create(api);
+    const project = await Project.create(api);
     const errors = await project.validate([field]);
     expect(errors[field] !== undefined && (errors[field] || []).length > 0).toBeTruthy();
 }
 
+const metadata = {
+    attributes: [],
+    dataElementGroupSets: [],
+    dataElementGroups: [],
+};
+
 describe("Project", () => {
+    beforeEach(() => {
+        mock.onGet("/metadata", {
+            "attributes:fields": "code,id",
+            "attributes:filter": ["code:eq:PM_PAIRED_DE"],
+            "dataElementGroupSets:fields":
+                "code,dataElementGroups[code,dataElements[attributeValues[attribute[id],value],categoryCombo[id],code,displayName,id],displayName,id]",
+            "dataElementGroupSets:filter": ["code:eq:SECTOR"],
+            "dataElementGroups:fields": "code,dataElements[id]",
+            "dataElementGroups:filter": [],
+        }).reply(200, metadata);
+    });
     describe("set", () => {
-        it("sets immutable data fields using field name", () => {
-            const project1 = Project.create(api);
+        it("sets immutable data fields using field name", async () => {
+            const project1 = await Project.create(api);
             const project2 = project1.set("name", "Project name");
             expect(project1.name).toEqual("");
             expect(project2.name).toEqual("Project name");
@@ -45,7 +77,7 @@ describe("Project", () => {
             }).reply(200, paginatedOrgUnits);
         });
         it("gets paginated organisation units with display name", async () => {
-            const project1 = Project.create(api);
+            const project1 = await Project.create(api);
             const orgUnits = [{ path: "/1" }, { path: "/1/2" }, { path: "/1/3" }];
             const project2 = project1.set("organisationUnits", orgUnits);
             const { pager, objects } = await project2.getOrganisationUnitsWithName();
@@ -69,7 +101,7 @@ describe("Project", () => {
         });
 
         it("requires a number with five digits in award number", async () => {
-            const project = Project.create(api).set("awardNumber", "22222");
+            const project = (await Project.create(api)).set("awardNumber", "22222");
             const errors = await project.validate(["awardNumber"]);
             expect(errors["awardNumber"]).toHaveLength(0);
 
@@ -85,7 +117,7 @@ describe("Project", () => {
         });
 
         it("requires a string with 2 characters in subsequent lettering", async () => {
-            const project = Project.create(api).set("subsequentLettering", "NG");
+            const project = (await Project.create(api)).set("subsequentLettering", "NG");
             const errors = await project.validate(["subsequentLettering"]);
             expect(errors["subsequentLettering"]).toHaveLength(0);
 
@@ -150,6 +182,7 @@ describe("Project", () => {
 
             const { objects, pager } = await Project.getList(
                 api,
+                config,
                 {},
                 { page: 1, pageSize: 10, sorting: ["displayName", "desc"] }
             );
@@ -168,6 +201,7 @@ describe("Project", () => {
 
             const { objects, pager } = await Project.getList(
                 api,
+                config,
                 { search: "abc", createdByCurrentUser: true },
                 { page: 1, pageSize: 10, sorting: ["displayName", "desc"] }
             );

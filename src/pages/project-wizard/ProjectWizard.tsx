@@ -11,11 +11,12 @@ import { generateUrl } from "../../router";
 import i18n from "../../locales";
 import ExitWizardButton from "../../components/wizard/ExitWizardButton";
 import PageHeader from "../../components/page-header/PageHeader";
-import { useD2Api } from "../../contexts/api-context";
+import { useAppContext } from "../../contexts/api-context";
 import GeneralInfoStep from "../../components/steps/general-info/GeneralInfoStep";
 import SectorsFundersStep from "../../components/steps/sectors-funders/SectorsFundersStep";
 import OrgUnitsStep from "../../components/steps/org-units/OrgUnitsStep";
 import SaveStep from "../../components/steps/save/SaveStep";
+import DataElementsStep from "../../components/steps/data-elements/DataElementsStep";
 
 export interface StepProps {
     api: D2Api;
@@ -62,7 +63,7 @@ class ProjectWizardImpl extends React.Component<Props, State> {
             const project =
                 match && match.params.id
                     ? await Project.get(api, match.params.id)
-                    : Project.create(api);
+                    : await Project.create(api);
             this.setState({ project });
         } catch (err) {
             console.error(err);
@@ -114,8 +115,8 @@ class ProjectWizardImpl extends React.Component<Props, State> {
             {
                 key: "data-elements",
                 label: i18n.t("Data Elements"),
-                component: () => <p>Data Elements</p>,
-                validationKeys: [],
+                component: DataElementsStep,
+                validationKeys: ["dataElements"],
                 help: i18n.t("TODO"),
             },
             {
@@ -231,7 +232,7 @@ const ProjectWizard: React.FC<{}> = () => {
     const snackbar = useSnackbar();
     const history = useHistory();
     const location = useLocation();
-    const api = useD2Api();
+    const { api } = useAppContext();
     const match = useRouteMatch();
 
     return (

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import i18n from "../locales";
-import { DialogTitle, DialogContent, CardContent, Hidden } from "@material-ui/core";
+import { DialogTitle, DialogContent, CardContent } from "@material-ui/core";
 import Linkify from "react-linkify";
 import { CSSProperties } from "@material-ui/styles";
 
@@ -82,6 +82,7 @@ const TargetValues: React.FC = () => {
                             <iframe
                                 // id="iframe"
                                 ref={iframeRef}
+                                title="Target Values"
                                 src="http://localhost:8080/dhis-web-dataentry/index.action"
                                 style={styles.iframe}
                             />

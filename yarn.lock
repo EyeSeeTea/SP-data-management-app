@@ -1318,6 +1318,11 @@
   dependencies:
     "@types/node" "*"
 
+"@types/classnames@^2.2.9":
+  version "2.2.9"
+  resolved "https://registry.yarnpkg.com/@types/classnames/-/classnames-2.2.9.tgz#d868b6febb02666330410fe7f58f3c4b8258be7b"
+  integrity sha512-MNl+rT5UmZeilaPxAVs6YaPC2m6aA8rofviZbhbxpPpl61uKodfdQVsBtgJGTqGizEf02oW3tsVe7FYB8kK14A==
+
 "@types/debug@^4.0.0":
   version "4.1.5"
   resolved "https://registry.yarnpkg.com/@types/debug/-/debug-4.1.5.tgz#b14efa8852b7768d898906613c23f688713e02cd"
@@ -3940,10 +3945,10 @@ cypress@^3.1.4:
     url "0.11.0"
     yauzl "2.10.0"
 
-d2-api@0.0.2-beta.2:
-  version "0.0.2-beta.2"
-  resolved "https://registry.yarnpkg.com/d2-api/-/d2-api-0.0.2-beta.2.tgz#f3075c476e26d7e486acfb917e8940c1b460b343"
-  integrity sha512-n6y9uHcogJfAltxqETUkppNZFPpmNVALw1RcsmlQJZyrYgd0D6H/Vr5xD346xOyLU2yQf9dWWTmC5zQfwRZNJQ==
+d2-api@0.0.2-beta.4:
+  version "0.0.2-beta.4"
+  resolved "https://registry.yarnpkg.com/d2-api/-/d2-api-0.0.2-beta.4.tgz#c4991c9e13fa3566f3c2d8bb5e409aaf3383f1fa"
+  integrity sha512-dFPTP4qO5kAPfs8gceb8FSv6rmcxFBVkEgu10VmuVGeK/thUAC62waa1GpHL6QciZyQQOXusTMFEvBBdcktJew==
   dependencies:
     "@babel/runtime" "^7.5.4"
     "@dhis2/d2-i18n" "^1.0.5"

@@ -7,7 +7,6 @@ describe("Projects - Create", () => {
         cy.contains("Project Configuration").click();
         cy.get("[data-test=list-action-bar]").click();
     });
-
     it("gets data from the user and creates a project", () => {
         cy.contains("New project");
 
@@ -41,8 +40,11 @@ describe("Projects - Create", () => {
         cy.contains("Select at least one item for Sectors");
         cy.contains("Select at least one item for Funders");
 
-        selectInMultiSelector("sectors", "Sector1");
+        selectInMultiSelector("sectors", "Agriculture");
+        selectInMultiSelector("sectors", "Livelihoods");
+
         selectInMultiSelector("funders", "ACWME");
+
         cy.contains("Next").click();
 
         // Organisation Units Step
@@ -59,6 +61,15 @@ describe("Projects - Create", () => {
         // Data Elements
 
         waitForStep("Data Elements");
+        cy.contains("# of agriculture groups receiving support for improved livelihoods")
+            .prev("td")
+            .click();
+
+        cy.contains("Livelihoods").click();
+        cy.contains("# of HH-level storage equipment provided")
+            .prev("td")
+            .click();
+
         cy.contains("Next").click();
 
         // Save step
@@ -79,9 +90,11 @@ describe("Projects - Create", () => {
 
         cy.contains("Organisation Units");
 
+        /*
         cy.get("[data-wizard-contents] button")
             .contains("Save")
             .click();
+        */
     });
 });
 
@@ -117,10 +130,10 @@ function expandOrgUnit(label) {
 }
 
 function selectInMultiSelector(selectorName, label) {
-    const prefix = `[data-test-selector='${selectorName}']`;
-    cy.get(prefix + " > div > div > div select:first").select(label);
-    cy.get(prefix)
-        .contains("→")
+    const prefix = `[data-test-selector='${selectorName}'] > div > div:last`;
+    cy.get(prefix + " > div select:first").select(label);
+    cy.contains("Selected")
+        .next("button")
         .click();
 }
 

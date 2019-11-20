@@ -15,6 +15,8 @@ import muiThemeLegacy from "./themes/dhis2-legacy.theme";
 import Root from "../../pages/root/Root";
 import Share from "../share/Share";
 import { ApiContext } from "../../contexts/api-context";
+import { getConfig } from "../../models/config";
+import User from "../../models/user";
 
 const isLangRTL = code => {
     const langs = ["ar", "fa", "ur"];
@@ -41,13 +43,12 @@ const configI18n = ({ keyUiLocale: uiLocale }) => {
 
 const App = () => {
     const { baseUrl } = useConfig();
-    const [d2, setD2] = useState(null);
-    const [api, setApi] = useState(null);
+    const [appContext, setAppContext] = useState(null);
+
     const [showShareButton, setShowShareButton] = useState(false);
     const { loading, error, data } = useDataQuery({
         userSettings: { resource: "/userSettings" },
     });
-
     useEffect(() => {
         const run = async () => {
             const appConfig = await fetch("app-config.json", {
@@ -55,14 +56,23 @@ const App = () => {
             }).then(res => res.json());
             const d2 = await init({ baseUrl: baseUrl + "/api" });
             const api = new D2ApiDefault({ baseUrl });
-            Object.assign({ d2, api });
+            const config = await getConfig(api);
 
             configI18n(data.userSettings);
-            setD2(d2);
-            setApi(api);
-            Object.assign(window, { d2, api });
+            const currentUser = new User(config);
+            const appContext = { d2, api, config, currentUser };
+            setAppContext(appContext);
+            Object.assign(window, { pm: appContext });
+
             setShowShareButton(_(appConfig).get("appearance.showShareButton") || false);
-            initFeedbackTool(d2, appConfig);
+            const isFeedbackRole =
+                _.intersection(
+                    config.currentUser.userRoles.map(userRole => userRole.name),
+                    config.userRoles.feedback
+                ).length > 0;
+            if (isFeedbackRole) {
+                initFeedbackTool(d2, appConfig);
+            }
         };
 
         if (data) run();
@@ -77,17 +87,17 @@ const App = () => {
                 {` ${baseUrl}`}
             </h3>
         );
-    } else if (loading || !d2 || !api) {
+    } else if (loading || !appContext) {
         return <h3>Connecting to {baseUrl}...</h3>;
     } else {
         return (
             <MuiThemeProvider theme={muiTheme}>
                 <OldMuiThemeProvider muiTheme={muiThemeLegacy}>
                     <SnackbarProvider>
-                        <HeaderBar appName={"Skeleton app"} />
+                        <HeaderBar appName={"Project Monitoring"} />
 
                         <div id="app" className="content">
-                            <ApiContext.Provider value={{ d2, api }}>
+                            <ApiContext.Provider value={appContext}>
                                 <Root />
                             </ApiContext.Provider>
                         </div>
