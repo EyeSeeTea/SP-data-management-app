@@ -47,7 +47,11 @@ function columnDate(
     };
 }
 
-function getConfig(history: History, currentUser: CurrentUser, setTargetPopulation: React.Dispatch<React.SetStateAction<boolean>>) {
+function getConfig(
+    history: History,
+    currentUser: CurrentUser,
+    setTargetPopulation: React.Dispatch<React.SetStateAction<boolean>>
+) {
     const columns: TableColumn<ProjectForList>[] = [
         { name: "displayName", text: i18n.t("Name"), sortable: true },
         { ...columnDate("lastUpdated", "datetime"), text: i18n.t("Last updated"), sortable: true },

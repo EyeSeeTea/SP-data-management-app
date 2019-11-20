@@ -31,9 +31,7 @@ const TargetValues: React.FC<{
     closeTargetValues: (event: React.MouseEvent<HTMLButtonElement>) => void;
 }> = props => {
     const title = i18n.t("Set Target Values for Project");
-    const description = i18n.t(
-        `This is just an example of a description`
-    );
+    const description = i18n.t(`This is just an example of a description`);
     const stylesSubtitle = { marginBottom: 10, marginLeft: 15 };
     const [loading, setLoading] = useState(false);
     const closeTargetValues = props.closeTargetValues;
