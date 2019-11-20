@@ -1,7 +1,6 @@
 import { DataElement } from "./dataElementsSet";
 import { D2Api, Ref, Id } from "d2-api";
 import _ from "lodash";
-import "../utils/lodash-mixins";
 
 /*
     Abstract list of Project data element of type DataElement. Usage:
@@ -11,12 +10,18 @@ import "../utils/lodash-mixins";
     # [... Array of data elements ...]
 */
 
+type GetItemType<T> = T extends (infer U)[] ? U : never;
+
+export const indicatorTypes = ["global" as const, "sub" as const];
+
+export type IndicatorType = GetItemType<typeof indicatorTypes>;
+
 export interface DataElement {
     id: Id;
     name: string;
     code: string;
     sectorId: Id;
-    indicatorType: "global" | "sub";
+    indicatorType: IndicatorType;
     peopleOrBenefit: "people" | "benefit";
     series: string;
     pairedDataElementCode: string;
@@ -47,6 +52,13 @@ export interface SelectionUpdate {
     selected: DataElement[];
     unselected: DataElement[];
 }
+
+type Filter = Partial<{
+    sectorId: string;
+    series: string;
+    indicatorType: string;
+    onlySelected: boolean;
+}>;
 
 function getSectorAndSeriesKey(
     dataElement: DataElement,
@@ -155,14 +167,25 @@ export default class DataElements {
         return new DataElements({ dataElements, selected: [] });
     }
 
-    get(options: { sectorId?: string } = {}): DataElement[] {
+    get(filter: Filter = {}): DataElement[] {
+        const { sectorId, series, indicatorType, onlySelected } = filter;
         const { dataElements: items } = this.data;
-        return options.sectorId ? items.filter(de => de.sectorId === options.sectorId) : items;
+        const isFiltered = !!(sectorId || series);
+        const selected = new Set(onlySelected ? this.data.selected : []);
+
+        return isFiltered
+            ? items.filter(
+                  de =>
+                      (!sectorId || de.sectorId === sectorId) &&
+                      (!series || de.series === series) &&
+                      (!indicatorType || de.indicatorType === indicatorType) &&
+                      (!onlySelected || selected.has(de.id))
+              )
+            : items;
     }
 
-    getSelected(options: { sectorId?: string } = {}): DataElement[] {
-        const selected = new Set(this.data.selected);
-        return this.get(options).filter(de => selected.has(de.id));
+    getSelected(filter: Filter = {}): DataElement[] {
+        return this.get({ ...filter, onlySelected: true });
     }
 
     updateSelection(

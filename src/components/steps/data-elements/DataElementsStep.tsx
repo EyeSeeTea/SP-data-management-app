@@ -54,7 +54,7 @@ const DataElementsStep: React.FC<StepProps> = ({ onChange, project }) => {
             contents={
                 <div style={{ width: "100%" }}>
                     <DataElementsTable
-                        dataElements={dataElements}
+                        dataElementsSet={dataElements}
                         sectorId={sectorId}
                         onSelectionChange={onSelectionChange}
                     />

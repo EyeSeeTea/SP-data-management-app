@@ -1,16 +1,21 @@
+import React, { useState, useEffect } from "react";
 import { ObjectsTable, TablePagination, TableColumn } from "d2-ui-components";
-import React from "react";
+import _ from "lodash";
 import i18n from "../../../locales";
-import DataElementsSet, { DataElement } from "../../../models/dataElementsSet";
+import DataElementsSet, { DataElement, indicatorTypes } from "../../../models/dataElementsSet";
+import DataElementsFilters, { Filter } from "./DataElementsFilters";
 
 interface DataElementsTableProps {
-    dataElements: DataElementsSet;
+    dataElementsSet: DataElementsSet;
     sectorId?: string;
     onSelectionChange: (dataElementIds: string[]) => void;
 }
 
 const DataElementsTable: React.FC<DataElementsTableProps> = props => {
-    const { dataElements, sectorId, onSelectionChange } = props;
+    const { dataElementsSet, sectorId, onSelectionChange } = props;
+
+    const [currentFilter, setCurrentFilter] = useState<Filter>({});
+    useEffect(() => setCurrentFilter({}), [sectorId]);
 
     const columns: TableColumn<DataElement>[] = [
         { name: "name" as const, text: i18n.t("Name"), sortable: true },
@@ -21,20 +26,47 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
         // { name: "pairedDataElementCode" as const, text: i18n.t("Paired DE"), sortable: true },
     ];
 
-    const rows = dataElements.get({ sectorId });
-    const selection = dataElements.selected;
-    const pagination: TablePagination = { pageSize: 10, page: 1, total: rows.length };
+    const filter = {
+        sectorId,
+        series: currentFilter.series,
+        indicatorType: currentFilter.indicatorType,
+        onlySelected: currentFilter.onlySelected,
+    };
+    const dataElements = dataElementsSet.get(filter);
+
+    const filterOptions = React.useMemo(() => {
+        const dataElements = dataElementsSet.get({ sectorId });
+        return {
+            series: _.sortBy(_.uniq(dataElements.map(de => de.series))),
+            indicatorType: indicatorTypes,
+        };
+    }, [dataElementsSet, sectorId]);
+
+    const pagination: TablePagination = { pageSize: 10, page: 1, total: dataElements.length };
+
+    const componentKey = _(filter)
+        .map((value, key) => `${key}=${value || ""}`)
+        .join("-");
 
     return (
         <ObjectsTable<DataElement>
-            selection={selection}
-            rows={rows}
+            selection={dataElementsSet.selected}
+            rows={dataElements}
             forceSelectionColumn={true}
             initialState={{ pagination }}
             columns={columns}
             searchBoxLabel={i18n.t("Search by name / code")}
             onChange={state => onSelectionChange(state.selection)}
             searchBoxColumns={["name", "code"]}
+            key={componentKey}
+            filterComponents={
+                <DataElementsFilters
+                    key="filters"
+                    filter={currentFilter}
+                    filterOptions={filterOptions}
+                    onChange={setCurrentFilter}
+                />
+            }
         />
     );
 };
