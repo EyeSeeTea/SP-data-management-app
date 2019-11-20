@@ -40,7 +40,7 @@ function getConfig(
     history: History,
     currentUser: CurrentUser,
     setTargetPopulation: React.Dispatch<React.SetStateAction<boolean>>
-) {
+)  {
     const columns = [
         { name: "displayName", text: i18n.t("Name"), sortable: true },
         { name: "publicAccess", text: i18n.t("Public access"), sortable: true },
@@ -167,7 +167,6 @@ const ProjectsList: React.FC = () => {
     const { api, config, currentUser } = useAppContext();
     const goToLandingPage = () => goTo(history, "/");
     const componentConfig = getConfig(history, currentUser, setTargetPopulation);
-
     const list = (_d2: unknown, filters: FiltersForList, pagination: Pagination) =>
         Project.getList(api, config, filters, pagination);
 

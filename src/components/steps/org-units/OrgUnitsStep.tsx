@@ -9,9 +9,9 @@ import { useAppContext } from "../../../contexts/api-context";
 import User from "../../../models/user";
 
 const controls = {
-    filterByLevel: true,
-    filterByGroup: true,
-    selectAll: true,
+    filterByLevel: false,
+    filterByGroup: false,
+    selectAll: false,
 };
 
 const OrgUnitsStep: React.FC<StepProps> = ({ project, onChange }) => {

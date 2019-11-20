@@ -5,6 +5,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
+
 "POT-Creation-Date: 2019-11-20T10:49:39.091Z\n"
 "PO-Revision-Date: 2019-11-20T10:49:39.091Z\n"
 
@@ -102,6 +103,9 @@ msgid "Sectors"
 msgstr ""
 
 msgid "Cancel"
+msgstr ""
+
+msgid "data elements"
 msgstr ""
 
 msgid "data elements"
