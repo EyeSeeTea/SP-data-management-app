@@ -1,6 +1,6 @@
 import { Config } from "./config";
-/*
 
+/*
 Project model.
 
 * Get an existing project:
@@ -33,7 +33,8 @@ Project model.
 * Get paginated list of projects:
 
     const { objects, pager } = await Project.getList(
-        d2Api,
+        api,
+        config,
         { search: "abc", createdByCurrentUser: true },
         { page: 2, pageSize: 10, sorting: ["displayName", "desc"] }
     )
@@ -41,7 +42,7 @@ Project model.
 
 import { Moment } from "moment";
 import _ from "lodash";
-import { D2Api, SelectedPick, D2DataSetSchema, Id } from "d2-api";
+import { D2Api, SelectedPick, Id, D2OrganisationUnitSchema } from "d2-api";
 import { Pagination } from "./../types/ObjectsList";
 import { Pager } from "d2-api/api/models";
 import i18n from "../locales";
@@ -89,20 +90,22 @@ const defaultProjectData = {
     organisationUnits: [],
 };
 
-const true_ = true as true;
+const yes = true as const;
 
-const dataSetFieldsForList = {
-    id: true_,
-    created: true_,
-    user: { id: true_, displayName: true_ },
-    displayName: true_,
-    displayDescription: true_,
-    href: true_,
-    publicAccess: true_,
-    lastUpdated: true_,
+const orgUnitFields = {
+    id: yes,
+    created: yes,
+    user: { id: yes, displayName: yes },
+    displayName: yes,
+    displayDescription: yes,
+    href: yes,
+    publicAccess: yes,
+    lastUpdated: yes,
+    openingDate: yes,
+    closedDate: yes,
 };
 
-export type DataSetForList = SelectedPick<D2DataSetSchema, typeof dataSetFieldsForList>;
+export type ProjectForList = SelectedPick<D2OrganisationUnitSchema, typeof orgUnitFields>;
 
 export type FiltersForList = Partial<{
     search: string;
@@ -211,11 +214,11 @@ class Project {
         config: Config,
         filters: FiltersForList,
         pagination: Pagination
-    ): Promise<{ objects: DataSetForList[]; pager: Pager }> {
-        return api.models.dataSets
+    ): Promise<{ objects: ProjectForList[]; pager: Pager }> {
+        return api.models.organisationUnits
             .get({
                 paging: true,
-                fields: dataSetFieldsForList,
+                fields: orgUnitFields,
                 order: pagination.sorting
                     ? _.thru(pagination.sorting, ([field, order]) => `${field}:i${order}`)
                     : undefined,
@@ -223,6 +226,7 @@ class Project {
                 pageSize: pagination.pageSize,
                 filter: {
                     name: { ilike: filters.search },
+                    level: { eq: "4" },
                     "user.id": {
                         eq: filters.createdByCurrentUser ? config.currentUser.id : undefined,
                     },
