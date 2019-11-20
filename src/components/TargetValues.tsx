@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import i18n from "../locales";
-import { DialogTitle, DialogContent, CardContent } from "@material-ui/core";
+import { DialogTitle, DialogContent, CardContent, DialogActions, Button } from "@material-ui/core";
 import Linkify from "react-linkify";
 import { CSSProperties } from "@material-ui/styles";
 
@@ -8,7 +8,7 @@ function autoResizeIframeByContent(iframe: HTMLIFrameElement) {
     const resize = () => {
         if (iframe.contentWindow) {
             const height = iframe.contentWindow.document.body.scrollHeight;
-            iframe.height = height.toString();
+            iframe.style.height = height.toString();
         }
     };
     window.setInterval(resize, 1000);
@@ -26,7 +26,9 @@ function waitforElementToLoad(iframeDocument: any, selector: string) {
     });
 }
 
-const TargetValues: React.FC = () => {
+const TargetValues: React.FC<{
+    closeTargetValues: (event: React.MouseEvent<HTMLButtonElement>) => void;
+}> = props => {
     const title = i18n.t("Set Target Population Name of Organit Unit");
     const description = i18n.t(
         `Insert the age distribution for your project(s).
@@ -42,22 +44,23 @@ const TargetValues: React.FC = () => {
         }
     );
     const [loading, setLoading] = useState(false);
+    const closeTargetValues = props.closeTargetValues;
+
     const iframeRef: React.RefObject<HTMLIFrameElement> = React.createRef();
     const setDashboardStyling = async (iframe: any) => {
         const iframeDocument = iframe.contentWindow.document;
-        // iframeDocument.querySelector("#header").remove();
 
-        await waitforElementToLoad(iframeDocument, ".app-wrapper");
-        const iFrameRoot = iframeDocument.querySelector("#root");
-        const iFrameWrapper = iframeDocument.querySelector(".app-wrapper");
-        const pageContainer = iframeDocument.querySelector(".page-container-top-margin");
-
-        iFrameWrapper.removeChild(iFrameWrapper.firstChild).remove();
-        iFrameWrapper.removeChild(iFrameWrapper.firstChild).remove();
-
-        pageContainer.style.marginTop = "0px";
-        iFrameRoot.style.marginTop = "0px";
-
+        await waitforElementToLoad(iframeDocument, "#selectedDataSetId");
+        iframeDocument.querySelector("#header").remove();
+        iframeDocument.querySelector("#actions").remove();
+        iframeDocument.querySelector("#moduleHeader").remove();
+        iframeDocument.querySelector("#leftBar").style.display = "none";
+        iframeDocument.querySelector("#contentDiv").style.overflow = "scroll";
+        iframeDocument.querySelector("body").style.marginTop = "-55px";
+        iframeDocument
+            .querySelector(".backgroundModal")
+            .addEventListener("onclick", closeTargetValues);
+        iframeDocument.querySelector("#contentDiv").style.overflow = "scroll";
         autoResizeIframeByContent(iframe);
     };
     useEffect(() => {
@@ -73,14 +76,13 @@ const TargetValues: React.FC = () => {
     });
     return (
         <React.Fragment>
-            <div style={styleBackground}>
+            <div className="backgroundModal" style={styleBackground}>
                 <CardContent style={styleCard}>
                     <DialogTitle>{title}</DialogTitle>
                     <DialogContent>
                         <React.Fragment>
                             <Linkify>{description}</Linkify>
                             <iframe
-                                // id="iframe"
                                 ref={iframeRef}
                                 title="Target Values"
                                 src="http://localhost:8080/dhis-web-dataentry/index.action"
@@ -89,6 +91,12 @@ const TargetValues: React.FC = () => {
                             <CardContent />
                         </React.Fragment>
                     </DialogContent>
+                    <DialogActions>
+                        <Button onClick={closeTargetValues} autoFocus>
+                            {i18n.t("Close")}
+                        </Button>
+                        <Button>{i18n.t("Save")}</Button>
+                    </DialogActions>
                 </CardContent>
             </div>
         </React.Fragment>
@@ -101,20 +109,23 @@ const styles = {
 
 const styleCard: CSSProperties = {
     backgroundColor: "white",
-    padding: "5px 5px 5px 5px",
+    padding: "5px",
+    width: "90vw",
     position: "absolute",
-    height: "100vh",
+    borderRadius: "5px",
 };
 
 const styleBackground: CSSProperties = {
     backgroundColor: "rgba(0, 0, 0, 0.5)",
-    height: "100vh",
+    height: "100vw",
     padding: "0",
     margin: "0",
     position: "absolute",
     width: "100%",
     top: "50px",
     left: "0",
+    display: "flex",
+    justifyContent: "center",
 };
 
 export default TargetValues;

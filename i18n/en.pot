@@ -5,8 +5,32 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2019-11-13T11:57:33.634Z\n"
-"PO-Revision-Date: 2019-11-13T11:57:33.634Z\n"
+"POT-Creation-Date: 2019-11-20T10:49:39.091Z\n"
+"PO-Revision-Date: 2019-11-20T10:49:39.091Z\n"
+
+msgid "Set Target Population Name of Organit Unit"
+msgstr ""
+
+msgid ""
+"Insert the age distribution for your project(s).\n"
+"        Insert the target population for each of the sites.\n"
+"        Age distribution at project level will be used for all sites within "
+"that project.\n"
+"        Age distribution can be modified for any of the sites if needed.\n"
+"\n"
+"        If you leave this page and return to it again you might find that "
+"information is not updated yet. Do not worry, information was not lost, "
+"updated information will appear within a few minutes.\n"
+"\n"
+"        The source of data may be {{- hyperlink}} or you may have access to "
+"local estimates (i.e. Ministry of Health)"
+msgstr ""
+
+msgid "Close"
+msgstr ""
+
+msgid "Save"
+msgstr ""
 
 msgid "Help"
 msgstr ""
@@ -14,7 +38,31 @@ msgstr ""
 msgid "Back"
 msgstr ""
 
+msgid "selected"
+msgstr ""
+
+msgid "unselected"
+msgstr ""
+
 msgid "Name"
+msgstr ""
+
+msgid "Code"
+msgstr ""
+
+msgid "Indicator Type"
+msgstr ""
+
+msgid "People / Benefit"
+msgstr ""
+
+msgid "Series"
+msgstr ""
+
+msgid "Paired DE"
+msgstr ""
+
+msgid "Search by name / code"
 msgstr ""
 
 msgid "Description"
@@ -44,19 +92,19 @@ msgstr ""
 msgid "Period dates"
 msgstr ""
 
-msgid "Sectors"
-msgstr ""
-
 msgid "Funders"
 msgstr ""
 
 msgid "Organisation Units"
 msgstr ""
 
+msgid "Sectors"
+msgstr ""
+
 msgid "Cancel"
 msgstr ""
 
-msgid "Save"
+msgid "data elements"
 msgstr ""
 
 msgid "Loading..."
@@ -88,6 +136,9 @@ msgstr ""
 msgid "Award Number should be a number of 5 digits"
 msgstr ""
 
+msgid "Select at least one data element"
+msgstr ""
+
 msgid "{{field}} cannot be blank"
 msgstr ""
 
@@ -109,6 +160,9 @@ msgstr ""
 msgid ""
 "Please click on the grey arrow next to the chart/table title if you want to "
 "modify the layout."
+msgstr ""
+
+msgid "Dashboard project to analyse your data..."
 msgstr ""
 
 msgid "Dashboard"
@@ -231,8 +285,8 @@ msgid ""
 "Click the blue button to create a new project or select a previously "
 "created project that you may want to access.\n"
 "\n"
-"         Click the three dots on the right side of the screen if you wish "
-"to perform an action over a project."
+"             Click the three dots on the right side of the screen if you "
+"wish to perform an action over a project."
 msgstr ""
 
 msgid "Projects"
