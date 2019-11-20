@@ -9,8 +9,8 @@ import { useAppContext } from "../../../contexts/api-context";
 import User from "../../../models/user";
 
 const controls = {
-    filterByLevel: true,
-    filterByGroup: true,
+    filterByLevel: false,
+    filterByGroup: false,
     selectAll: true,
 };
 
