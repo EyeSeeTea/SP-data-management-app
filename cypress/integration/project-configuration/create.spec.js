@@ -58,9 +58,9 @@ describe("Projects - Create", () => {
 
         cy.contains("Next").click();
 
-        // Data Elements
+        // Indicators selection
 
-        waitForStep("Data Elements");
+        waitForStep("Indicators Selection");
         cy.contains("# of agriculture groups receiving support for improved livelihoods")
             .prev("td")
             .click();
