@@ -115,8 +115,8 @@ class ProjectWizardImpl extends React.Component<Props, State> {
                 help: i18n.t("TODO"),
             },
             {
-                key: "data-elements",
-                label: i18n.t("Data Elements"),
+                key: "indicators",
+                label: i18n.t("Indicators Selection"),
                 component: DataElementsStep,
                 validationKeys: ["dataElements"],
                 help: i18n.t("TODO"),
