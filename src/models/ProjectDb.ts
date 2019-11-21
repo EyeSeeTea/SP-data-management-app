@@ -62,6 +62,7 @@ export default class ProjectDb {
         const orgUnit = {
             id: generateUid(),
             name: project.name,
+            code: project.code,
             shortName: project.shortName,
             description: project.description,
             parent: { id: parentOrgUnitId },

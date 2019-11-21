@@ -1,4 +1,5 @@
 import { getMockApi } from "d2-api";
+import _ from "lodash";
 import { baseConfig, Config } from "./../config";
 import { ProjectData } from "./../Project";
 import Project from "../Project";
@@ -61,6 +62,24 @@ describe("Project", () => {
 
     describe("get", () => {});
 
+    describe("code", () => {
+        it("joins {subsequentLettering}{this.awardNumber}-{this.speedKey}", async () => {
+            const project = await Project.create(api);
+            const project2 = project.setObj({
+                subsequentLettering: "es",
+                awardNumber: "12345",
+                speedKey: "somekey",
+            });
+            expect(project2.code).toEqual("es12345-somekey");
+        });
+
+        it("joins {subsequentLettering}{this.awardNumber} if speedKey not set", async () => {
+            const project = await Project.create(api);
+            const project2 = project.set("subsequentLettering", "es").set("awardNumber", "12345");
+            expect(project2.code).toEqual("es12345");
+        });
+    });
+
     describe("getOrganisationUnitsWithName", () => {
         const paginatedOrgUnits = {
             pager: { page: 1, pageSize: 10, pageCount: 1, total: 0 },
@@ -100,17 +119,28 @@ describe("Project", () => {
             expectFieldPresence("endDate");
         });
 
-        it("requires a number with five digits in award number", async () => {
-            const project = (await Project.create(api)).set("awardNumber", "22222");
+        it("limits speedKey to 40 chars", async () => {
+            const project = (await Project.create(api)).set("speedKey", "1");
+            const errors = await project.validate(["speedKey"]);
+            expect(errors["speedKey"]).toHaveLength(0);
+
+            const project2 = (await Project.create(api)).set("speedKey", _.repeat("1", 41));
+            const errors2 = await project2.validate(["speedKey"]);
+            expect(errors2["speedKey"]).toHaveLength(1);
+            expect(errors2["speedKey"]).toContain("Speed Key must be less than or equal to 40");
+        });
+
+        it("requires a five-digit string in award number", async () => {
+            const project = (await Project.create(api)).set("awardNumber", "12345");
             const errors = await project.validate(["awardNumber"]);
             expect(errors["awardNumber"]).toHaveLength(0);
 
-            const project2 = project.set("awardNumber", "22");
+            const project2 = project.set("awardNumber", "12");
             const errors2 = await project2.validate(["awardNumber"]);
             expect(errors2["awardNumber"]).toHaveLength(1);
             expect(errors2["awardNumber"]).toContain("Award Number should be a number of 5 digits");
 
-            const project3 = project.set("awardNumber", "222222");
+            const project3 = project.set("awardNumber", "123456");
             const errors3 = await project3.validate(["awardNumber"]);
             expect(errors3["awardNumber"]).toHaveLength(1);
             expect(errors3["awardNumber"]).toContain("Award Number should be a number of 5 digits");
@@ -146,6 +176,25 @@ describe("Project", () => {
 
         it("requires at least one organisation unit", async () => {
             expectFieldPresence("organisationUnits");
+        });
+
+        it("without keys, it runs all validations", async () => {
+            const project = await Project.create(api);
+            const errors = await project.validate();
+            expect(_.keys(errors)).toEqual(
+                expect.arrayContaining([
+                    "name",
+                    "startDate",
+                    "endDate",
+                    "awardNumber",
+                    "subsequentLettering",
+                    "speedKey",
+                    "sectors",
+                    "funders",
+                    "organisationUnits",
+                    "dataElements",
+                ])
+            );
         });
     });
 

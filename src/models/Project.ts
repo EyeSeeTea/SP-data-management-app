@@ -10,17 +10,24 @@ Project model.
 * Create a new project, set fields and validate:
 
     const project = Project.create(d2Api);
-    const projectWithNameAndCode = project
+    const projectWithNameAndDescription = project
         .set("name", "Project Name")
-        .set("code", "PR_1234")
+        .set("description", "Some description")
 
-    projectWithNameAndCode.name
+    projectWithNameAndDescription.name
     # "Project Name"
 
-    const errors = await projectWithNameAndCode.validate(["name", "code"])
-    # {name: []}
+    # Also:
 
-    const errors = await projectWithNameAndCode.validate()
+    const projectWithNameAndDescription = project.setObj({
+        name: "Project Name",
+        description: "Some description",
+    });
+
+    const errors = await projectWithNameAndDescription.validate(["name", "description"])
+    # {name: [], description: []}
+
+    const errors = await projectWithNameAndDescription.validate()
     # {
         "name": [],
         "startDate": [
@@ -79,7 +86,6 @@ interface OrganisationUnit {
 const defaultProjectData = {
     name: "",
     description: "",
-    code: "",
     awardNumber: "",
     subsequentLettering: "",
     speedKey: "",
@@ -123,12 +129,18 @@ function defineGetters(sourceObject: any, targetObject: any) {
 }
 
 export type ValidationKey = keyof ProjectData;
-
+type Validation = () => ValidationError | Promise<ValidationError>;
 type ValidationError = string[];
-type Validations = { [K in ValidationKey]?: () => ValidationError | Promise<ValidationError> };
+type Validations = { [K in ValidationKey]?: Validation };
 
 class Project {
-    // TODO: create an object {[field: string]: string} with field translations to DRY code
+    static lengths = {
+        awardNumber: 5,
+        subsequentLettering: 2,
+        speedKey: 40,
+    };
+
+    // TODO: create an object {[field: string]: string} with field translations
     validations: Validations = {
         name: () => validatePresence(this.name, i18n.t("Name")),
         startDate: () => validatePresence(this.startDate, i18n.t("Start Date")),
@@ -137,12 +149,16 @@ class Project {
             validateRegexp(
                 this.awardNumber,
                 i18n.t("Award Number"),
-                /^\d{5}$/,
+                new RegExp(`^\\d{${Project.lengths.awardNumber}}$`),
                 i18n.t("Award Number should be a number of 5 digits")
             ),
         subsequentLettering: () =>
             validateLength(this.subsequentLettering, i18n.t("Subsequent Lettering"), {
-                length: 2,
+                length: Project.lengths.subsequentLettering,
+            }),
+        speedKey: () =>
+            validateNumber(this.speedKey.length, i18n.t("Speed Key"), {
+                max: Project.lengths.speedKey,
             }),
         sectors: () => validateNonEmpty(this.sectors, i18n.t("Sectors")),
         funders: () => validateNonEmpty(this.funders, i18n.t("Funders")),
@@ -162,16 +178,31 @@ class Project {
         return new Project(this.api, { ...this.data, [field]: value });
     }
 
+    public setObj<K extends keyof ProjectData>(obj: Pick<ProjectData, K>): Project {
+        return new Project(this.api, { ...this.data, ...obj });
+    }
+
     public get shortName(): string {
         return this.data.name.slice(0, 50);
+    }
+
+    public get code(): string {
+        return _([
+            this.subsequentLettering,
+            this.awardNumber,
+            this.speedKey ? "-" + this.speedKey : null,
+        ])
+            .compact()
+            .join("");
     }
 
     public async validate(
         validationKeys: (ValidationKey)[] | undefined = undefined
     ): Promise<Validations> {
-        const obj = _(this.validations)
-            .pickBy((_value, key) => !validationKeys || _(validationKeys as string[]).includes(key))
-            .mapValues(fn => (fn ? fn.call(this) : []))
+        const obj = _(validationKeys || (_.keys(this.validations) as ValidationKey[]))
+            .map(key => [key, this.validations[key]])
+            .fromPairs()
+            .mapValues(validationFn => (validationFn ? validationFn.call(this) : []))
             .value();
         const [keys, promises] = _.unzip(_.toPairs(obj));
         const values = await Promise.all(promises);
@@ -274,9 +305,11 @@ function validateNumber(
     { min, max }: { min?: number; max?: number } = {}
 ): ValidationError {
     if (min && value < min) {
-        return [i18n.t("{{field}} must be greater than {{value}}", { field, value: min })];
+        return [
+            i18n.t("{{field}} must be greater than or equal to {{value}}", { field, value: min }),
+        ];
     } else if (max && value > max) {
-        return [i18n.t("{{field}} must be less than {{value}}", { field, value: max })];
+        return [i18n.t("{{field}} must be less than or equal to {{value}}", { field, value: max })];
     } else {
         return [];
     }
