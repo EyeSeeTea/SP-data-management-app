@@ -168,20 +168,19 @@ export default class DataElements {
     }
 
     get(filter: Filter = {}): DataElement[] {
+        if (_.isEqual(filter, {})) return this.data.dataElements;
+
         const { sectorId, series, indicatorType, onlySelected } = filter;
         const { dataElements: items } = this.data;
-        const isFiltered = !!(sectorId || series);
         const selected = new Set(onlySelected ? this.data.selected : []);
 
-        return isFiltered
-            ? items.filter(
-                  de =>
-                      (!sectorId || de.sectorId === sectorId) &&
-                      (!series || de.series === series) &&
-                      (!indicatorType || de.indicatorType === indicatorType) &&
-                      (!onlySelected || selected.has(de.id))
-              )
-            : items;
+        return items.filter(
+            de =>
+                (!sectorId || de.sectorId === sectorId) &&
+                (!series || de.series === series) &&
+                (!indicatorType || de.indicatorType === indicatorType) &&
+                (!onlySelected || selected.has(de.id))
+        );
     }
 
     getSelected(filter: Filter = {}): DataElement[] {

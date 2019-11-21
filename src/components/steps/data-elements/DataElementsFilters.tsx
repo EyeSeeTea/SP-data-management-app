@@ -3,6 +3,7 @@ import { indicatorTypes } from "../../../models/dataElementsSet";
 import Dropdown from "../../dropdown/Dropdown";
 import i18n from "../../../locales";
 import { Checkbox, FormControlLabel } from "@material-ui/core";
+import { makeStyles } from "@material-ui/styles";
 
 interface DataElementsFiltersProps {
     filter: Filter;
@@ -22,6 +23,7 @@ export interface FilterOptions {
 
 const DataElementsFilters: React.FC<DataElementsFiltersProps> = props => {
     const { filter, filterOptions, onChange } = props;
+    const classes = useStyles();
 
     return (
         <div>
@@ -41,6 +43,7 @@ const DataElementsFilters: React.FC<DataElementsFiltersProps> = props => {
 
             <FormControlLabel
                 label={i18n.t("Only selected")}
+                className={classes.checkbox}
                 control={
                     <Checkbox
                         checked={!!filter.onlySelected}
@@ -51,5 +54,9 @@ const DataElementsFilters: React.FC<DataElementsFiltersProps> = props => {
         </div>
     );
 };
+
+const useStyles = makeStyles({
+    checkbox: { marginLeft: 5 },
+});
 
 export default DataElementsFilters;

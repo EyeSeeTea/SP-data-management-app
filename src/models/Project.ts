@@ -231,11 +231,20 @@ class Project {
             .getData();
     }
 
-    updateDataElementSelection(
+    updateDataElementsSelection(
         dataElementIds: string[]
     ): { related: SelectionUpdate; project: Project } {
         const { related, dataElements } = this.data.dataElements.updateSelection(dataElementIds);
         return { related, project: this.set("dataElements", dataElements) };
+    }
+
+    updateDataElementsSelectionForSector(dataElementIds: string[], sectorId: string) {
+        const selectedIdsInOtherSectors = this.dataElements
+            .getSelected()
+            .filter(de => de.sectorId !== sectorId)
+            .map(de => de.id);
+        const ids = _.union(selectedIdsInOtherSectors, dataElementIds);
+        return this.updateDataElementsSelection(ids);
     }
 }
 

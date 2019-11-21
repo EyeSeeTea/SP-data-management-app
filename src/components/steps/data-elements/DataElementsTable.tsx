@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { ObjectsTable, TablePagination, TableColumn } from "d2-ui-components";
 import _ from "lodash";
 import i18n from "../../../locales";
-import DataElementsSet, { DataElement, indicatorTypes } from "../../../models/dataElementsSet";
+import DataElementsSet, { DataElement } from "../../../models/dataElementsSet";
 import DataElementsFilters, { Filter } from "./DataElementsFilters";
 
 interface DataElementsTableProps {
@@ -13,9 +13,9 @@ interface DataElementsTableProps {
 
 const DataElementsTable: React.FC<DataElementsTableProps> = props => {
     const { dataElementsSet, sectorId, onSelectionChange } = props;
+    const [filter, setFilter] = useState<Filter>({});
 
-    const [currentFilter, setCurrentFilter] = useState<Filter>({});
-    useEffect(() => setCurrentFilter({}), [sectorId]);
+    useEffect(() => setFilter({}), [sectorId]);
 
     const columns: TableColumn<DataElement>[] = [
         { name: "name" as const, text: i18n.t("Name"), sortable: true },
@@ -26,31 +26,35 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
         // { name: "pairedDataElementCode" as const, text: i18n.t("Paired DE"), sortable: true },
     ];
 
-    const filter = {
-        sectorId,
-        series: currentFilter.series,
-        indicatorType: currentFilter.indicatorType,
-        onlySelected: currentFilter.onlySelected,
-    };
-    const dataElements = dataElementsSet.get(filter);
+    const fullFilter = { ...filter, sectorId };
 
-    const filterOptions = React.useMemo(() => {
-        const dataElements = dataElementsSet.get({ sectorId });
-        return {
-            series: _.sortBy(_.uniq(dataElements.map(de => de.series))),
-            indicatorType: indicatorTypes,
-        };
-    }, [dataElementsSet, sectorId]);
+    const dataElements = useMemo(() => dataElementsSet.get(fullFilter), [
+        dataElementsSet,
+        sectorId,
+        filter,
+    ]);
+
+    const filterOptions = useMemo(
+        () => ({
+            series: _.sortBy(_.uniq(dataElementsSet.get({ sectorId }).map(de => de.series))),
+        }),
+        [dataElementsSet, sectorId]
+    );
 
     const pagination: TablePagination = { pageSize: 10, page: 1, total: dataElements.length };
 
-    const componentKey = _(filter)
+    const componentKey = _(fullFilter)
         .map((value, key) => `${key}=${value || ""}`)
         .join("-");
 
+    const selection = useMemo(() => dataElementsSet.getSelected({ sectorId }).map(de => de.id), [
+        dataElementsSet,
+        sectorId,
+    ]);
+
     return (
         <ObjectsTable<DataElement>
-            selection={dataElementsSet.selected}
+            selection={selection}
             rows={dataElements}
             forceSelectionColumn={true}
             initialState={{ pagination }}
@@ -62,9 +66,9 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
             filterComponents={
                 <DataElementsFilters
                     key="filters"
-                    filter={currentFilter}
+                    filter={filter}
                     filterOptions={filterOptions}
-                    onChange={setCurrentFilter}
+                    onChange={setFilter}
                 />
             }
         />
