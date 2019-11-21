@@ -53,7 +53,7 @@ import { D2Api, SelectedPick, Id, D2OrganisationUnitSchema } from "d2-api";
 import { Pagination } from "./../types/ObjectsList";
 import { Pager } from "d2-api/api/models";
 import i18n from "../locales";
-import DataElements, { SelectionUpdate } from "./dataElementsSet";
+import DataElementsSet, { SelectionUpdate } from "./dataElementsSet";
 import ProjectDb from "./ProjectDb";
 import { MetadataResponse } from "d2-api/api/metadata";
 
@@ -68,7 +68,7 @@ export interface ProjectData {
     sectors: Sector[];
     funders: Funder[];
     organisationUnits: OrganisationUnit[];
-    dataElements: DataElements;
+    dataElements: DataElementsSet;
 }
 
 interface NamedObject {
@@ -164,10 +164,7 @@ class Project {
         funders: () => validateNonEmpty(this.funders, i18n.t("Funders")),
         organisationUnits: () =>
             validateNonEmpty(this.organisationUnits, i18n.t("Organisation Units")),
-        dataElements: () =>
-            this.dataElements.getSelected().length == 0
-                ? [i18n.t("Select at least one data element")]
-                : [],
+        dataElements: () => this.dataElements.validate(this.sectors),
     };
 
     constructor(public api: D2Api, private data: ProjectData) {
@@ -213,7 +210,7 @@ class Project {
         api: D2Api,
         partialData: Omit<ProjectData, "dataElements">
     ): Promise<ProjectData> {
-        const dataElements = await DataElements.build(api);
+        const dataElements = await DataElementsSet.build(api);
         return { ...partialData, dataElements };
     }
 

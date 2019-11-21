@@ -1,6 +1,8 @@
+import { Sector } from "./Project";
 import { DataElement } from "./dataElementsSet";
 import { D2Api, Ref, Id } from "d2-api";
 import _ from "lodash";
+import i18n from "../locales";
 
 /*
     Abstract list of Project data element of type DataElement. Usage:
@@ -81,6 +83,22 @@ export default class DataElements {
             code: _.keyBy(data.dataElements, de => de.code),
             sectorAndSeries: _.groupBy(data.dataElements, de => getSectorAndSeriesKey(de)),
         };
+    }
+
+    validate(sectors: Sector[]) {
+        const sectorsWithSelectedItems = _(this.getSelected())
+            .countBy(de => de.sectorId)
+            .keys()
+            .map(sectorId => ({ id: sectorId }))
+            .value();
+        const missingSectors = _(sectors)
+            .differenceBy(sectorsWithSelectedItems, sector => sector.id)
+            .map(s => s.displayName)
+            .value();
+
+        return missingSectors.length > 0
+            ? [i18n.t(`Those sectors have no indicators selected: ${missingSectors.join(", ")}`)]
+            : [];
     }
 
     get selected(): string[] {

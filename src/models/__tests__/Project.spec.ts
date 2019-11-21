@@ -3,6 +3,7 @@ import _ from "lodash";
 import { baseConfig, Config } from "./../config";
 import { ProjectData } from "./../Project";
 import Project from "../Project";
+import { metadata } from "./metadata";
 
 const config: Config = {
     ...baseConfig,
@@ -30,12 +31,6 @@ async function expectFieldPresence(field: keyof ProjectData) {
     const errors = await project.validate([field]);
     expect(errors[field] !== undefined && (errors[field] || []).length > 0).toBeTruthy();
 }
-
-const metadata = {
-    attributes: [],
-    dataElementGroupSets: [],
-    dataElementGroups: [],
-};
 
 describe("Project", () => {
     beforeEach(() => {
@@ -176,6 +171,32 @@ describe("Project", () => {
 
         it("requires at least one organisation unit", async () => {
             expectFieldPresence("organisationUnits");
+        });
+
+        it("requires at least one data element by sector", async () => {
+            const project = (await Project.create(api)).setObj({
+                sectors: [
+                    { id: "mGQ5ckOTU8A", displayName: "Agriculture" },
+                    { id: "m4Cg6FOPPR7", displayName: "Livelihoods" },
+                ],
+            });
+            const errors = await project.validate(["dataElements"]);
+            expect(errors.dataElements).toEqual([
+                "Those sectors have no indicators selected: Agriculture, Livelihoods",
+            ]);
+
+            const { project: project2 } = project.updateDataElementsSelection(["qQy0N1xdwQ1"]);
+            const errors2 = await project2.validate(["dataElements"]);
+            expect(errors2.dataElements).toEqual([
+                "Those sectors have no indicators selected: Livelihoods",
+            ]);
+
+            const { project: project3 } = project2.updateDataElementsSelection([
+                "qQy0N1xdwQ1",
+                "iyQBe9Xv7bk",
+            ]);
+            const errors3 = await project3.validate(["dataElements"]);
+            expect(errors3.dataElements).toEqual([]);
         });
 
         it("without keys, it runs all validations", async () => {
