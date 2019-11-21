@@ -1,15 +1,11 @@
 import React, { useEffect, useState } from "react";
 import i18n from "../../locales";
 import PageHeader from "../../components/page-header/PageHeader";
-import { useHistory } from "react-router";
 // import { Button } from "@material-ui/core";
+import { useHistory } from "react-router";
 import { History } from "history";
 //@ts-ignore
 import { useConfig } from "@dhis2/app-runtime";
-
-function goTo(history: History, url: string) {
-    history.push(url);
-}
 
 function autoResizeIframeByContent(iframe: HTMLIFrameElement) {
     const resize = () => {
@@ -19,16 +15,6 @@ function autoResizeIframeByContent(iframe: HTMLIFrameElement) {
         }
     };
     window.setInterval(resize, 1000);
-}
-
-function getConfig() {
-    const help = i18n.t(
-        `Select a) organizational unit where project was performed, b) data set, c) date, d) current/target
-
-        Then enter data for the fields shown in the screen.`
-    );
-
-    return { help };
 }
 
 function waitforElementToLoad(iframeDocument: any, selector: string) {
@@ -43,36 +29,40 @@ function waitforElementToLoad(iframeDocument: any, selector: string) {
         check();
     });
 }
+function goTo(history: History, url: string) {
+    history.push(url);
+}
 
-const DataEntry: React.FC = () => {
-    const [loading, setLoading] = useState(false);
-    const history = useHistory();
-    const goBack = () => goTo(history, "/projects");
-    const config = getConfig();
-    const subtitle = i18n.t(
-        `Once cells turn into green, all information is saved and you can leave the Data Entry Section`
-    );
+const TargetValues: React.FC = props => {
+    const title = i18n.t("Set Target Values for Project");
+    const subtitle = i18n.t(`This is just an example of a description`);
     const stylesSubtitle = { marginBottom: 10, marginLeft: 15 };
-    const iframeRef: React.RefObject<HTMLIFrameElement> = React.createRef();
+    const [loading, setLoading] = useState(false);
     const { baseUrl } = useConfig();
     const iFrameSrc = `${baseUrl}/dhis-web-dataentry/index.action`;
 
+    const iframeRef: React.RefObject<HTMLIFrameElement> = React.createRef();
     const setEntryStyling = async (iframe: any) => {
         const iframeDocument = iframe.contentWindow.document;
 
         await waitforElementToLoad(iframeDocument, "#selectedDataSetId");
         iframeDocument.querySelector("#header").remove();
+        iframeDocument.querySelector("#actions").remove();
+        iframeDocument.querySelector("#moduleHeader").remove();
         // iframeDocument.querySelector("#leftBar").style.display = "none";
-        iframeDocument.querySelector("body").style.marginTop = "-55px";
         iframeDocument.querySelector("html").style.overflow = "hidden";
 
-        iframeDocument.querySelector("#moduleHeader").remove();
+        iframeDocument.querySelector("body").style.marginTop = "-55px";
         autoResizeIframeByContent(iframe);
     };
+    const help = i18n.t(
+        `This is just an example of a help instruction: Register your target values for this project`
+    );
+    const history = useHistory();
+    const goBack = () => goTo(history, "/projects");
 
     useEffect(() => {
         const iframe = iframeRef.current;
-
         if (iframe !== null && !loading) {
             setLoading(true);
             iframe.addEventListener("load", setEntryStyling.bind(null, iframe));
@@ -81,16 +71,15 @@ const DataEntry: React.FC = () => {
 
     return (
         <React.Fragment>
-            <PageHeader title={i18n.t("Data Entry")} help={config.help} onBackClick={goBack} />
+            <PageHeader title={title} help={help} onBackClick={goBack} />
             <div style={stylesSubtitle}>{subtitle}</div>
             <div style={styles.backgroundIframe}>
                 <iframe
                     ref={iframeRef}
-                    id="iframe"
-                    title={i18n.t("Data Entry")}
+                    title="Target Values"
                     src={iFrameSrc}
                     style={styles.iframe}
-                />
+                ></iframe>
                 {/* <Button autoFocus>{i18n.t("Close")}</Button>
                 <Button>{i18n.t("Save")}</Button> */}
             </div>
@@ -102,4 +91,5 @@ const styles = {
     iframe: { width: "100%", border: 0, overflow: "hidden" },
     backgroundIframe: { backgroundColor: "white" },
 };
-export default DataEntry;
+
+export default TargetValues;

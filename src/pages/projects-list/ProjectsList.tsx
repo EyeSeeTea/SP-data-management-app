@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { OldObjectsTable, TableColumn } from "d2-ui-components";
 import i18n from "../../locales";
 import _ from "lodash";
@@ -10,7 +10,6 @@ import { generateUrl } from "../../router";
 import Project, { FiltersForList, ProjectForList } from "../../models/Project";
 import { Pagination } from "../../types/ObjectsList";
 import "./ProjectsList.css";
-import TargetValues from "../../components/TargetValues";
 import { Config } from "../../models/config";
 import { formatDateShort, formatDateLong } from "../../utils/date";
 import { GetPropertiesByType } from "../../types/utils";
@@ -47,11 +46,7 @@ function columnDate(
     };
 }
 
-function getConfig(
-    history: History,
-    currentUser: CurrentUser,
-    setTargetPopulation: React.Dispatch<React.SetStateAction<boolean>>
-) {
+function getConfig(history: History, currentUser: CurrentUser) {
     const columns: TableColumn<ProjectForList>[] = [
         { name: "displayName", text: i18n.t("Name"), sortable: true },
         { ...columnDate("lastUpdated", "datetime"), text: i18n.t("Last updated"), sortable: true },
@@ -98,8 +93,8 @@ function getConfig(
             icon: "library_books",
             text: i18n.t("Go to Data Entry"),
             multiple: false,
-            onClick: (project: ProjectForList) =>
-                history.push(generateUrl("dataEntry.edit", { id: project.id })),
+            onClick: () => history.push(generateUrl("dataEntry")),
+            //     history.push(generateUrl("dataEntry.edit", { id: project.id })),
         },
 
         dashboard: {
@@ -115,7 +110,8 @@ function getConfig(
             icon: "assignment",
             text: i18n.t("Add Target Values"),
             multiple: false,
-            onClick: () => setTargetPopulation(true),
+            onClick: () => history.push(generateUrl("targetValues")),
+            //     history.push(generateUrl("targetValues.edit", { id: project.id })),
         },
 
         downloadData: {
@@ -161,7 +157,9 @@ function getConfig(
     const actionsByRole = _(roleKeys)
         .flatMap(roleKey => {
             const actionKeys: Array<keyof typeof allActions> = actionsForUserRoles[roleKey] || [];
-            return currentUser.hasRole(roleKey) ? actionKeys.map(key => allActions[key]) : [];
+
+            return actionKeys.map(key => allActions[key]);
+            // return currentUser.hasRole(roleKey) ? actionKeys.map(key => allActions[key]) : [];
         })
         .uniq()
         .value();
@@ -178,12 +176,11 @@ function getConfig(
 }
 
 const ProjectsList: React.FC = () => {
-    const [targetPopulation, setTargetPopulation] = useState(false);
     const history = useHistory();
     const { api, config, currentUser } = useAppContext();
     const goToLandingPage = () => goTo(history, "/");
 
-    const componentConfig = getConfig(history, currentUser, setTargetPopulation);
+    const componentConfig = getConfig(history, currentUser);
 
     const list = (_d2: unknown, filters: FiltersForList, pagination: Pagination) =>
         Project.getList(api, config, filters, pagination);
@@ -191,7 +188,6 @@ const ProjectsList: React.FC = () => {
     const newProjectPageHandler = currentUser.canCreateProject()
         ? () => goTo(history, generateUrl("projects.new"))
         : null;
-
     return (
         <React.Fragment>
             <PageHeader
@@ -213,9 +209,6 @@ const ProjectsList: React.FC = () => {
                 buttonLabel={i18n.t("Create Project")}
                 onButtonClick={newProjectPageHandler}
             />
-            {targetPopulation && (
-                <TargetValues closeTargetValues={() => setTargetPopulation(false)} />
-            )}
         </React.Fragment>
     );
 };

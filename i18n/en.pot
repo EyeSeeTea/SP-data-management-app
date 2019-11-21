@@ -5,20 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2019-11-20T14:36:17.366Z\n"
-"PO-Revision-Date: 2019-11-20T14:36:17.366Z\n"
-
-msgid "Set Target Values for Project"
-msgstr ""
-
-msgid "This is just an example of a description"
-msgstr ""
-
-msgid "Close"
-msgstr ""
-
-msgid "Save"
-msgstr ""
+"POT-Creation-Date: 2019-11-21T11:49:55.582Z\n"
+"PO-Revision-Date: 2019-11-21T11:49:55.582Z\n"
 
 msgid "Help"
 msgstr ""
@@ -90,6 +78,9 @@ msgid "Sectors"
 msgstr ""
 
 msgid "Cancel"
+msgstr ""
+
+msgid "Save"
 msgstr ""
 
 msgid "data elements"
@@ -169,6 +160,9 @@ msgid ""
 msgstr ""
 
 msgid "Data Entry"
+msgstr ""
+
+msgid "Close"
 msgstr ""
 
 msgid "Project Configuration"
@@ -284,4 +278,10 @@ msgid "Create Project"
 msgstr ""
 
 msgid "Help message for MER"
+msgstr ""
+
+msgid "Set Target Values for Project"
+msgstr ""
+
+msgid "This is just an example of a description"
 msgstr ""

@@ -3,8 +3,10 @@ const routes = {
     "projects.new": () => `/projects/new`,
     "projects.edit": ({ id }: { id: string }) => `/projects/${id}`,
     report: () => "/report",
-    dataEntry: () => "/data-entry",
-    "dataEntry.edit": ({ id }: { id: string }) => `/data-entry/${id}`,
+    dataEntry: () => "/dataEntry",
+    // "dataEntry.edit": ({ id }: { id: string }) => `/dataEntry/${id}`,
+    targetValues: () => "/targetValues",
+    // "targetValues.edit": ({ id }: { id: string }) => `/targetValues/${id}`,
     dashboard: () => "/dashboard",
 };
 
