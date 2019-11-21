@@ -162,9 +162,6 @@ msgstr ""
 msgid "Data Entry"
 msgstr ""
 
-msgid "Close"
-msgstr ""
-
 msgid "Project Configuration"
 msgstr ""
 
