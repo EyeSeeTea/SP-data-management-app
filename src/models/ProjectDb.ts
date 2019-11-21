@@ -37,7 +37,7 @@ export default class ProjectDb {
 
         const attributesByCode = _(attributes).keyBy(attr => attr.code);
         const { startDate, endDate } = project;
-        const parentOrgUnit = _.first(project.organisationUnits);
+        const parentOrgUnit = project.organisationUnit;
 
         if (!startDate || !endDate) {
             throw new Error("Missing dates");

@@ -67,7 +67,7 @@ export interface ProjectData {
     endDate?: Moment;
     sectors: Sector[];
     funders: Funder[];
-    organisationUnits: OrganisationUnit[];
+    organisationUnit: OrganisationUnit | undefined;
     dataElements: DataElementsSet;
 }
 
@@ -93,7 +93,7 @@ const defaultProjectData = {
     endDate: undefined,
     sectors: [],
     funders: [],
-    organisationUnits: [],
+    organisationUnit: undefined,
 };
 
 const yes = true as const;
@@ -162,8 +162,8 @@ class Project {
             }),
         sectors: () => validateNonEmpty(this.sectors, i18n.t("Sectors")),
         funders: () => validateNonEmpty(this.funders, i18n.t("Funders")),
-        organisationUnits: () =>
-            validateNonEmpty(this.organisationUnits, i18n.t("Organisation Units")),
+        organisationUnit: () =>
+            this.organisationUnit ? [] : [i18n.t("One Organisation Unit should be selected")],
         dataElements: () => this.dataElements.validate(this.sectors),
     };
 
@@ -226,15 +226,19 @@ class Project {
         return new ProjectDb(this.api, this).save();
     }
 
-    public async getOrganisationUnitsWithName() {
-        const ids = this.data.organisationUnits.map(ou => _.last(ou.path.split("/")) || "");
-        return this.api.models.organisationUnits
+    public async getOrganisationUnitName(): Promise<string | undefined> {
+        const { organisationUnit } = this.data;
+        if (!organisationUnit) return;
+        const id = _.last(organisationUnit.path.split("/")) || "";
+
+        const { objects } = await this.api.models.organisationUnits
             .get({
                 fields: { id: true, displayName: true },
-                filter: { id: { in: ids } },
-                pageSize: 20,
+                filter: { id: { eq: id } },
             })
             .getData();
+
+        return objects.length > 0 ? objects[0].displayName : undefined;
     }
 
     static async getList(

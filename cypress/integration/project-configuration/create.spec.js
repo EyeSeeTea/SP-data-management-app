@@ -47,11 +47,11 @@ describe("Projects - Create", () => {
 
         cy.contains("Next").click();
 
-        // Organisation Units Step
+        // Organisation Unit Step
 
-        waitForStep("Organisation Units");
+        waitForStep("Organisation Unit");
         cy.contains("Next").click();
-        cy.contains("Select at least one item for Organisation Units");
+        cy.contains("One Organisation Unit should be selected");
 
         expandOrgUnit("Africa");
         selectOrgUnit("Sierra Leone");
@@ -88,7 +88,7 @@ describe("Projects - Create", () => {
 
         cy.contains("Description");
 
-        cy.contains("Organisation Units");
+        cy.contains("Organisation Unit");
 
         /*
         cy.get("[data-wizard-contents] button")

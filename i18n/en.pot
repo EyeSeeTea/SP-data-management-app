@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2019-11-20T12:21:26.363Z\n"
-"PO-Revision-Date: 2019-11-20T12:21:26.363Z\n"
+"POT-Creation-Date: 2019-11-21T11:55:59.490Z\n"
+"PO-Revision-Date: 2019-11-21T11:55:59.490Z\n"
 
 msgid "<No value>"
 msgstr ""
@@ -68,6 +68,9 @@ msgstr ""
 msgid "Field cannot be blank"
 msgstr ""
 
+msgid "Field length is invalid"
+msgstr ""
+
 msgid "This user has no Data output and analytic organisation units assigned"
 msgstr ""
 
@@ -77,7 +80,7 @@ msgstr ""
 msgid "Funders"
 msgstr ""
 
-msgid "Organisation Units"
+msgid "Organisation Unit"
 msgstr ""
 
 msgid "Sectors"
@@ -90,15 +93,6 @@ msgid "Save"
 msgstr ""
 
 msgid "data elements"
-msgstr ""
-
-msgid "Loading..."
-msgstr ""
-
-msgid "[None]"
-msgstr ""
-
-msgid "[{{total}}] {{names}} and {{othersCount}} other(s)"
 msgstr ""
 
 msgid "Project funders"
@@ -121,19 +115,16 @@ msgstr ""
 msgid "Award Number should be a number of 5 digits"
 msgstr ""
 
-msgid "Select at least one data element"
-msgstr ""
-
 msgid "{{field}} cannot be blank"
 msgstr ""
 
 msgid "Select at least one item for {{field}}"
 msgstr ""
 
-msgid "{{field}} must be greater than {{value}}"
+msgid "{{field}} must be greater than or equal to {{value}}"
 msgstr ""
 
-msgid "{{field}} must be less than {{value}}"
+msgid "{{field}} must be less than or equal to {{value}}"
 msgstr ""
 
 msgid "{{field}} does not match pattern {{pattern}}"
@@ -199,7 +190,7 @@ msgid ""
 "be selected."
 msgstr ""
 
-msgid "Data Elements"
+msgid "Indicators Selection"
 msgstr ""
 
 msgid "Summary and Save"
@@ -219,6 +210,9 @@ msgid "Edit project"
 msgstr ""
 
 msgid "New project"
+msgstr ""
+
+msgid "Loading..."
 msgstr ""
 
 msgid "Last updated"

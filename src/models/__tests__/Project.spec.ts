@@ -44,6 +44,7 @@ describe("Project", () => {
             "dataElementGroups:filter": [],
         }).reply(200, metadata);
     });
+
     describe("set", () => {
         it("sets immutable data fields using field name", async () => {
             const project1 = await Project.create(api);
@@ -78,26 +79,24 @@ describe("Project", () => {
     describe("getOrganisationUnitsWithName", () => {
         const paginatedOrgUnits = {
             pager: { page: 1, pageSize: 10, pageCount: 1, total: 0 },
-            organisationUnits: [],
+            organisationUnits: [{ id: "1", displayName: "Asia" }],
         };
 
         beforeEach(() => {
             mock.onGet("/organisationUnits", {
                 params: {
                     fields: "displayName,id",
-                    filter: ["id:in:[1,2,3]"],
-                    pageSize: 20,
+                    filter: ["id:eq:1"],
                 },
             }).reply(200, paginatedOrgUnits);
         });
-        it("gets paginated organisation units with display name", async () => {
+        it("gets organisation unit with display name", async () => {
             const project1 = await Project.create(api);
-            const orgUnits = [{ path: "/1" }, { path: "/1/2" }, { path: "/1/3" }];
-            const project2 = project1.set("organisationUnits", orgUnits);
-            const { pager, objects } = await project2.getOrganisationUnitsWithName();
+            const orgUnit = { path: "/3/2/1" };
+            const project2 = project1.set("organisationUnit", orgUnit);
+            const orgUnitName = await project2.getOrganisationUnitName();
 
-            expect(pager).toEqual(paginatedOrgUnits.pager);
-            expect(objects).toEqual(paginatedOrgUnits.organisationUnits);
+            expect(orgUnitName).toEqual("Asia");
         });
     });
 
@@ -169,8 +168,8 @@ describe("Project", () => {
             expectFieldPresence("funders");
         });
 
-        it("requires at least one organisation unit", async () => {
-            expectFieldPresence("organisationUnits");
+        it("requires one organisation unit", async () => {
+            expectFieldPresence("organisationUnit");
         });
 
         it("requires at least one data element by sector", async () => {
@@ -212,7 +211,7 @@ describe("Project", () => {
                     "speedKey",
                     "sectors",
                     "funders",
-                    "organisationUnits",
+                    "organisationUnit",
                     "dataElements",
                 ])
             );

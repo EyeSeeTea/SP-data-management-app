@@ -23,20 +23,16 @@ const useStyles = makeStyles({
     },
 });
 
-type OrganisationUnit = { id: string; displayName: string };
-
 const SaveStep: React.FC<StepProps> = ({ project, onCancel }) => {
     const [isSaving] = useState(false);
-    const [orgUnits, setOrgUnits] = useState<undefined | PaginatedObjects<OrganisationUnit>>(
-        undefined
-    );
+    const [orgUnit, setOrgUnitName] = useState("...");
     const [dialogOpen, setDialogOpen] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const snackbar = useSnackbar();
     const history = useHistory();
 
     useEffect(() => {
-        project.getOrganisationUnitsWithName().then(paginatedOus => setOrgUnits(paginatedOus));
+        project.getOrganisationUnitName().then(name => setOrgUnitName(name || "unknown"));
     }, [project]);
 
     const classes = useStyles();
@@ -77,10 +73,7 @@ const SaveStep: React.FC<StepProps> = ({ project, onCancel }) => {
 
                     <LiEntry label={i18n.t("Funders")} value={getNames(project.funders)} />
 
-                    <LiEntry
-                        label={i18n.t("Organisation Units")}
-                        value={getNamesFromPaginated(orgUnits)}
-                    />
+                    <LiEntry label={i18n.t("Organisation Unit")} value={orgUnit} />
 
                     <LiEntry label={i18n.t("Sectors")} value={getSectorsInfo(project)} />
                 </ul>
@@ -129,31 +122,6 @@ function getSectorsInfo(project: Project): ReactNode {
 
 function getNames(objects: { displayName: string }[]) {
     return objects.map(obj => obj.displayName).join(", ");
-}
-
-function getNamesFromPaginated(
-    paginatedObjects: PaginatedObjects<{ displayName: string }> | undefined
-) {
-    if (!paginatedObjects) {
-        return i18n.t("Loading...");
-    } else {
-        const { pager, objects } = paginatedObjects;
-        const othersCount = pager.total - objects.length;
-        const names =
-            _(objects)
-                .map(obj => obj.displayName)
-                .sortBy()
-                .join(", ") || i18n.t("[None]");
-        if (othersCount > 0) {
-            return i18n.t("[{{total}}] {{names}} and {{othersCount}} other(s)", {
-                total: pager.total,
-                names,
-                othersCount,
-            });
-        } else {
-            return `[${pager.total}] ${names}`;
-        }
-    }
 }
 
 function getProjectPeriodDateString(project: Project): string {
