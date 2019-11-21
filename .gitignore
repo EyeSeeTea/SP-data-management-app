@@ -37,3 +37,5 @@ cypress/videos/
 # Custom
 scripts/
 project-monitoring-app.zip
+bak/
+cypress/fixtures
