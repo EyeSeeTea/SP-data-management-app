@@ -24,22 +24,23 @@ function waitforElementToLoad(iframeDocument: any, selector: string) {
         check();
     });
 }
-const setEntryStyling = async (iframe: any) => {
-    const iframeDocument = iframe.contentWindow.document;
-
-    await waitforElementToLoad(iframeDocument, "#selectedDataSetId");
-
+function setEntryStyling(iframeDocument: any) {
     iframeDocument.querySelector("#currentSelection").remove();
     iframeDocument.querySelector("#header").remove();
     iframeDocument.querySelector("html").style.overflow = "hidden";
     iframeDocument.querySelector("#leftBar").style.display = "none";
     iframeDocument.querySelector("#selectionBox").style.display = "none";
     iframeDocument.querySelector("body").style.marginTop = "-55px";
+}
 
+const getFormTargetValues = async (iframe: any) => {
+    const iframeDocument = iframe.contentWindow.document;
+
+    await waitforElementToLoad(iframeDocument, "#selectedDataSetId");
+    setEntryStyling(iframeDocument);
     autoResizeIframeByContent(iframe);
 
-    //selecting the form that we want
-
+    //get the form that we want
     const dataSetSelector = iframeDocument.querySelector("#selectedDataSetId");
     const periodSelector = iframeDocument.querySelector("#selectedPeriodId");
 
@@ -65,7 +66,7 @@ const TargetValues = () => {
         const iframe = iframeRef.current;
         if (iframe !== null && !loading) {
             setLoading(true);
-            iframe.addEventListener("load", setEntryStyling.bind(null, iframe));
+            iframe.addEventListener("load", getFormTargetValues.bind(null, iframe));
         }
     });
 
