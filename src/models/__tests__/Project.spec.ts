@@ -150,24 +150,24 @@ describe("Project", () => {
     });
 
     describe("getList", () => {
-        const dataSetsPaginated = {
+        const objectsPaginated = {
             pager: {
                 page: 1,
                 pageCount: 3,
                 total: 12,
                 pageSize: 5,
             },
-            dataSets: [{ id: "1234a" }, { id: "1234b" }],
+            organisationUnits: [{ id: "1234a" }, { id: "1234b" }],
         };
 
         const baseRequest = {
             paging: true,
             fields:
-                "created,displayDescription,displayName,href,id,lastUpdated,publicAccess,user[displayName,id]",
+                "closedDate,created,displayDescription,displayName,href,id,lastUpdated,openingDate,publicAccess,user[displayName,id]",
             order: "displayName:idesc",
             page: 1,
             pageSize: 10,
-            filter: [],
+            filter: ["level:eq:4"],
         };
 
         beforeEach(() => {
@@ -175,10 +175,10 @@ describe("Project", () => {
             mock.onGet("/me").reply(200, currentUser);
         });
 
-        it("returns list of dataSets", async () => {
-            mock.onGet("/dataSets", {
-                params: { ...baseRequest, filter: [] },
-            }).reply(200, dataSetsPaginated);
+        it("returns list of organisation units of level 4", async () => {
+            mock.onGet("/organisationUnits", {
+                params: { ...baseRequest, filter: ["level:eq:4"] },
+            }).reply(200, objectsPaginated);
 
             const { objects, pager } = await Project.getList(
                 api,
@@ -187,17 +187,17 @@ describe("Project", () => {
                 { page: 1, pageSize: 10, sorting: ["displayName", "desc"] }
             );
 
-            expect(pager).toEqual(dataSetsPaginated.pager);
-            expect(objects).toEqual(dataSetsPaginated.dataSets);
+            expect(pager).toEqual(objectsPaginated.pager);
+            expect(objects).toEqual(objectsPaginated.organisationUnits);
         });
 
-        it("returns list of dataSets filtered", async () => {
-            mock.onGet("/dataSets", {
+        it("returns list of organisation units filtered", async () => {
+            mock.onGet("/organisationUnits", {
                 params: {
                     ...baseRequest,
-                    filter: ["name:ilike:abc", "user.id:eq:xE7jOejl9FI"],
+                    filter: ["level:eq:4", "name:ilike:abc", "user.id:eq:xE7jOejl9FI"],
                 },
-            }).reply(200, dataSetsPaginated);
+            }).reply(200, objectsPaginated);
 
             const { objects, pager } = await Project.getList(
                 api,
@@ -206,8 +206,8 @@ describe("Project", () => {
                 { page: 1, pageSize: 10, sorting: ["displayName", "desc"] }
             );
 
-            expect(pager).toEqual(dataSetsPaginated.pager);
-            expect(objects).toEqual(dataSetsPaginated.dataSets);
+            expect(pager).toEqual(objectsPaginated.pager);
+            expect(objects).toEqual(objectsPaginated.organisationUnits);
         });
     });
 });

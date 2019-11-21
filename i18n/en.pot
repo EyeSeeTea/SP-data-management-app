@@ -147,6 +147,9 @@ msgid ""
 "modify the layout."
 msgstr ""
 
+msgid "Dashboard project to analyse your data..."
+msgstr ""
+
 msgid "Dashboard"
 msgstr ""
 
@@ -218,22 +221,22 @@ msgstr ""
 msgid "New project"
 msgstr ""
 
-msgid "Public access"
+msgid "Last updated"
 msgstr ""
 
-msgid "Last updated"
+msgid "Opening date"
+msgstr ""
+
+msgid "Closed date"
+msgstr ""
+
+msgid "Id"
 msgstr ""
 
 msgid "Created"
 msgstr ""
 
 msgid "Created By"
-msgstr ""
-
-msgid "Last update"
-msgstr ""
-
-msgid "Id"
 msgstr ""
 
 msgid "API link"

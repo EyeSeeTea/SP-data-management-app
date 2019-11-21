@@ -117,7 +117,6 @@ function clickDay(dayOfMonth) {
 
     cy.wait(100); // eslint-disable-line cypress/no-unnecessary-waiting
 }
-
 function expandOrgUnit(label) {
     cy.server()
         .route("GET", "/api/organisationUnits/*")

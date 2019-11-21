@@ -44,7 +44,7 @@ describe("Project Configuration - List page", () => {
     });
 
     it("shows list of user dataset sorted alphabetically by name desc", () => {
-        runAndWaitForRequest("/api/dataSets*", () => cy.contains("Name").click());
+        runAndWaitForRequest("/api/*", () => cy.contains("Name").click());
 
         cy.get("[data-test='displayName-sorting-desc']");
         cy.get(".data-table__rows > * > :nth-child(2) span").then(spans$ => {
@@ -77,35 +77,35 @@ describe("Project Configuration - List page", () => {
 
             cy.contains("No results found");
         });
+
+        it("will navegate to dashboard from the actions menu", () => {
+            cy.get(".data-table__rows > :nth-child(1) button").click();
+            cy.get("span[role=menuitem]")
+                .contains("Go to Dashboard")
+                .click();
+
+            cy.get("h5").contains("Dashboard");
+            cy.url().should("include", "/dashboard");
+        });
+
+        it("will navegate to data-entry from the actions menu", () => {
+            cy.get(".data-table__rows > :nth-child(1) button").click();
+            cy.get("span[role=menuitem]")
+                .contains("Go to Data Entry")
+                .click();
+
+            cy.get("h5").contains("Data Entry");
+            cy.url().should("include", "/data-entry/");
+        });
     });
 
-    it("will navegate to dashboard from the actions menu", () => {
-        cy.get(".data-table__rows > :nth-child(1) button").click();
-        cy.get("span[role=menuitem]")
-            .contains("Go to Dashboard")
-            .click();
+    function runAndWaitForRequest(urlPattern, action) {
+        cy.server()
+            .route("GET", urlPattern)
+            .as(urlPattern);
 
-        cy.get("h5").contains("Dashboard");
-        cy.url().should("include", "/dashboard");
-    });
+        action();
 
-    it("will navegate to data-entry from the actions menu", () => {
-        cy.get(".data-table__rows > :nth-child(1) button").click();
-        cy.get("span[role=menuitem]")
-            .contains("Go to Data Entry")
-            .click();
-
-        cy.get("h5").contains("Data Entry");
-        cy.url().should("include", "/data-entry/");
-    });
+        cy.wait("@" + urlPattern);
+    }
 });
-
-function runAndWaitForRequest(urlPattern, action) {
-    cy.server()
-        .route("GET", urlPattern)
-        .as(urlPattern);
-
-    action();
-
-    cy.wait("@" + urlPattern);
-}
