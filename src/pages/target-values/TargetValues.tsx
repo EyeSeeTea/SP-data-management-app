@@ -33,7 +33,7 @@ function goTo(history: History, url: string) {
     history.push(url);
 }
 
-const TargetValues: React.FC = props => {
+const TargetValues: React.FC = () => {
     const title = i18n.t("Set Target Values for Project");
     const subtitle = i18n.t(`This is just an example of a description`);
     const stylesSubtitle = { marginBottom: 10, marginLeft: 15 };

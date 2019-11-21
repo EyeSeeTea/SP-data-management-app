@@ -157,9 +157,7 @@ function getConfig(history: History, currentUser: CurrentUser) {
     const actionsByRole = _(roleKeys)
         .flatMap(roleKey => {
             const actionKeys: Array<keyof typeof allActions> = actionsForUserRoles[roleKey] || [];
-
-            return actionKeys.map(key => allActions[key]);
-            // return currentUser.hasRole(roleKey) ? actionKeys.map(key => allActions[key]) : [];
+            return currentUser.hasRole(roleKey) ? actionKeys.map(key => allActions[key]) : [];
         })
         .uniq()
         .value();
