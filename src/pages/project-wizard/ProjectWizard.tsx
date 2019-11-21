@@ -90,6 +90,7 @@ class ProjectWizardImpl extends React.Component<Props, State> {
                     "endDate",
                     "awardNumber",
                     "subsequentLettering",
+                    "code",
                 ],
                 description: i18n.t(
                     `Choose a name for the project and define the period for which data entry will be enabled`

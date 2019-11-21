@@ -34,6 +34,7 @@ async function expectFieldPresence(field: keyof ProjectData) {
 
 describe("Project", () => {
     beforeEach(() => {
+        mock.reset();
         mock.onGet("/metadata", {
             "attributes:fields": "code,id",
             "attributes:filter": ["code:eq:PM_PAIRED_DE"],
@@ -42,7 +43,7 @@ describe("Project", () => {
             "dataElementGroupSets:filter": ["code:eq:SECTOR"],
             "dataElementGroups:fields": "code,dataElements[id]",
             "dataElementGroups:filter": [],
-        }).reply(200, metadata);
+        }).replyOnce(200, metadata);
     });
 
     describe("set", () => {
@@ -88,8 +89,9 @@ describe("Project", () => {
                     fields: "displayName,id",
                     filter: ["id:eq:1"],
                 },
-            }).reply(200, paginatedOrgUnits);
+            }).replyOnce(200, paginatedOrgUnits);
         });
+
         it("gets organisation unit with display name", async () => {
             const project1 = await Project.create(api);
             const orgUnit = { path: "/3/2/1" };
@@ -118,7 +120,7 @@ describe("Project", () => {
             const errors = await project.validate(["speedKey"]);
             expect(errors["speedKey"]).toHaveLength(0);
 
-            const project2 = (await Project.create(api)).set("speedKey", _.repeat("1", 41));
+            const project2 = project.set("speedKey", _.repeat("1", 41));
             const errors2 = await project2.validate(["speedKey"]);
             expect(errors2["speedKey"]).toHaveLength(1);
             expect(errors2["speedKey"]).toContain("Speed Key must be less than or equal to 40");
@@ -170,6 +172,26 @@ describe("Project", () => {
 
         it("requires one organisation unit", async () => {
             expectFieldPresence("organisationUnit");
+        });
+
+        it("requires a unique code", async () => {
+            const project = (await Project.create(api)).setObj({
+                subsequentLettering: "au",
+                awardNumber: "19234",
+                speedKey: "key",
+            });
+
+            mock.onGet("/metadata", {
+                params: {
+                    "organisationUnits:fields": "displayName",
+                    "organisationUnits:filter": ["code:eq:au19234-key"],
+                },
+            }).replyOnce(200, { organisationUnits: [{ displayName: "Asia" }] });
+
+            const errors = await project.validate(["code"]);
+            expect(errors.code).toEqual([
+                "There is a project with the same code 'au19234-key': Asia",
+            ]);
         });
 
         it("requires at least one data element by sector", async () => {
@@ -240,14 +262,13 @@ describe("Project", () => {
         };
 
         beforeEach(() => {
-            mock.reset();
-            mock.onGet("/me").reply(200, currentUser);
+            mock.onGet("/me").replyOnce(200, currentUser);
         });
 
         it("returns list of organisation units of level 4", async () => {
             mock.onGet("/organisationUnits", {
                 params: { ...baseRequest, filter: ["level:eq:4"] },
-            }).reply(200, objectsPaginated);
+            }).replyOnce(200, objectsPaginated);
 
             const { objects, pager } = await Project.getList(
                 api,
@@ -266,7 +287,7 @@ describe("Project", () => {
                     ...baseRequest,
                     filter: ["level:eq:4", "name:ilike:abc", "user.id:eq:xE7jOejl9FI"],
                 },
-            }).reply(200, objectsPaginated);
+            }).replyOnce(200, objectsPaginated);
 
             const { objects, pager } = await Project.getList(
                 api,

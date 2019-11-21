@@ -128,7 +128,7 @@ function defineGetters(sourceObject: any, targetObject: any) {
     });
 }
 
-export type ValidationKey = keyof ProjectData;
+export type ValidationKey = keyof ProjectData | "code";
 type Validation = () => ValidationError | Promise<ValidationError>;
 type ValidationError = string[];
 type Validations = { [K in ValidationKey]?: Validation };
@@ -145,6 +145,7 @@ class Project {
         name: () => validatePresence(this.name, i18n.t("Name")),
         startDate: () => validatePresence(this.startDate, i18n.t("Start Date")),
         endDate: () => validatePresence(this.endDate, i18n.t("End Date")),
+        code: () => this.validateCodeUniqueness(),
         awardNumber: () =>
             validateRegexp(
                 this.awardNumber,
@@ -281,6 +282,24 @@ class Project {
             .map(de => de.id);
         const ids = _.union(selectedIdsInOtherSectors, dataElementIds);
         return this.updateDataElementsSelection(ids);
+    }
+
+    async validateCodeUniqueness(): Promise<ValidationError> {
+        const { api, code } = this;
+        console.log({ request: code });
+        if (!code) return [];
+        const { organisationUnits } = await api.metadata
+            .get({
+                organisationUnits: {
+                    fields: { displayName: true },
+                    filter: { code: { eq: code } },
+                },
+            })
+            .getData();
+        const orgUnit = organisationUnits[0];
+        return orgUnit
+            ? [i18n.t(`There is a project with the same code '${code}': ${orgUnit.displayName}`)]
+            : [];
     }
 }
 

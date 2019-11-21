@@ -1,7 +1,5 @@
 import React, { useState, useEffect, ReactNode } from "react";
-import _ from "lodash";
 import { Button, LinearProgress } from "@material-ui/core";
-import { PaginatedObjects } from "d2-api";
 import { makeStyles } from "@material-ui/core/styles";
 
 import ExitWizardButton from "../../wizard/ExitWizardButton";
