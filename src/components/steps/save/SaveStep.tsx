@@ -71,7 +71,7 @@ const SaveStep: React.FC<StepProps> = ({ project, onCancel }) => {
 
                     <LiEntry label={i18n.t("Funders")} value={getNames(project.funders)} />
 
-                    <LiEntry label={i18n.t("Organisation Unit")} value={orgUnit} />
+                    <LiEntry label={i18n.t("Selected country")} value={orgUnit} />
 
                     <LiEntry label={i18n.t("Sectors")} value={getSectorsInfo(project)} />
                 </ul>

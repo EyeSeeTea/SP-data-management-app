@@ -88,7 +88,8 @@ describe("Projects - Create", () => {
 
         cy.contains("Description");
 
-        cy.contains("Organisation Unit");
+        cy.contains("Selected country");
+        cy.contains("Sierra Leone");
 
         cy.contains("Sectors");
         cy.contains("# of agriculture groups receiving support for improved livelihoods");
