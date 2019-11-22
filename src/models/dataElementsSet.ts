@@ -47,6 +47,8 @@ type Filter = Partial<{
     onlySelected: boolean;
 }>;
 
+type DataElementGroupCodes = Config["base"]["dataElementGroups"];
+
 function getSectorAndSeriesKey(
     dataElement: DataElement,
     dataElementOverride: Partial<DataElement> = {}
@@ -96,17 +98,13 @@ export default class DataElementsSet {
     ): Promise<DataElement[]> {
         const { attributes, dataElements, dataElementGroupSets } = metadata;
         const sectorsCode = baseConfig.dataElementGroupSets.sector;
-        const sectorsSet = _(dataElementGroupSets)
-            .keyBy("code")
-            .get(sectorsCode, undefined);
-        const attributePairedElements = _(attributes)
-            .keyBy("code")
-            .get(baseConfig.attributes.pairedDataElement, undefined);
-        const degCodes = baseConfig.dataElementGroups;
-        const sectorGroups = sectorsSet ? sectorsSet.dataElementGroups : [];
+        const sectorsSet = getBy(dataElementGroupSets, "code", sectorsCode);
+        const pairedDataElementCode = baseConfig.attributes.pairedDataElement;
+        const attributePairedElements = getBy(attributes, "code", pairedDataElementCode);
+        const codes = baseConfig.dataElementGroups;
         const dataElementsById = _(dataElements).keyBy(de => de.id);
 
-        return _.flatMap(sectorGroups, sectorGroup => {
+        return _.flatMap(sectorsSet.dataElementGroups, sectorGroup => {
             const groupCodesByDataElementId = getGroupCodeByDataElementId(dataElementGroupSets);
 
             return _(sectorGroup.dataElements)
@@ -114,30 +112,17 @@ export default class DataElementsSet {
                     const d2DataElement = dataElementsById.getOrFail(dataElementRef.id);
                     const pairedDataElement = _(d2DataElement.attributeValues)
                         .map(attributeValue =>
-                            attributePairedElements &&
                             attributeValue.attribute.id == attributePairedElements.id
                                 ? attributeValue.value
                                 : null
                         )
                         .compact()
                         .first();
-                    const groupCodes = groupCodesByDataElementId[d2DataElement.id];
-                    if (!groupCodes) return;
 
-                    const indicatorType = groupCodes.has(degCodes.global)
-                        ? "global"
-                        : groupCodes.has(degCodes.sub)
-                        ? "sub"
-                        : undefined;
-
-                    const peopleOrBenefit = groupCodes.has(degCodes.people)
-                        ? "people"
-                        : groupCodes.has(degCodes.benefit)
-                        ? "benefit"
-                        : undefined;
-
+                    const groupCodes = groupCodesByDataElementId[d2DataElement.id] || new Set();
+                    const indicatorType = getGroupKey(groupCodes, codes, ["global", "sub"]);
+                    const peopleOrBenefit = getGroupKey(groupCodes, codes, ["people", "benefit"]);
                     const seriesPrefix = `SERIES_`;
-
                     const seriesCode = Array.from(groupCodes).find(code =>
                         code.startsWith(seriesPrefix)
                     );
@@ -201,7 +186,7 @@ export default class DataElementsSet {
         const currentSelection = new Set(dataElementIds);
         const related = {
             selected: this.getRelated(newSelected).filter(de => !currentSelection.has(de.id)),
-            unselected: [] as DataElement[], // this.getRelated(newUnselected).filter(de => currentSelection.has(de.id)),
+            unselected: [] as DataElement[],
         };
         const finalSelected = _(dataElementIds)
             .union(related.selected.map(de => de.id))
@@ -259,4 +244,21 @@ function getGroupCodeByDataElementId(
         .groupBy(obj => obj.id)
         .mapValues(objs => new Set(objs.map(obj => obj.code)))
         .value();
+}
+
+function getGroupKey<T extends keyof DataElementGroupCodes>(
+    groupCodes: Set<string>,
+    degCodes: DataElementGroupCodes,
+    keys: (T)[]
+): T | undefined {
+    return keys.find(key => groupCodes.has(degCodes[key]));
+}
+
+function getBy<T, K extends keyof T>(objs: T[], key: K, value: T[K]): T {
+    const matchingObj = objs.find(obj => obj[key] === value);
+    if (!matchingObj) {
+        throw new Error(`Cannot get object: ${key}=${value}`);
+    } else {
+        return matchingObj;
+    }
 }
