@@ -1,9 +1,10 @@
 import _ from "lodash";
 import moment from "moment";
 import { generateUid } from "d2/uid";
-import { D2DataSet, D2Api } from "d2-api";
+import { D2DataSet } from "d2-api";
 import Project from "./Project";
 import { getMonthsRange, toISOString } from "../utils/date";
+import "../utils/lodash-mixins";
 
 function getOrgUnitId(orgUnit: { path: string }): string {
     const id = _.last(orgUnit.path.split("/"));

@@ -2,6 +2,7 @@ import _ from "lodash";
 import { D2Api, Id, MetadataPick } from "d2-api";
 import DataElementsSet, { DataElement } from "./dataElementsSet";
 import { GetItemType } from "../types/utils";
+import "../utils/lodash-mixins";
 
 const yes = true as const;
 
@@ -40,6 +41,15 @@ const metadataParams = {
             code: yes,
         },
     },
+    dataElements: {
+        fields: {
+            id: yes,
+            code: yes,
+            attributeValues: { attribute: { id: yes }, value: yes },
+            displayName: yes,
+            categoryCombo: { id: yes },
+        },
+    },
     dataElementGroupSets: {
         fields: {
             code: yes,
@@ -47,13 +57,7 @@ const metadataParams = {
                 id: yes,
                 displayName: yes,
                 code: yes,
-                dataElements: {
-                    id: yes,
-                    code: yes,
-                    attributeValues: { attribute: { id: yes }, value: yes },
-                    displayName: yes,
-                    categoryCombo: { id: yes },
-                },
+                dataElements: { id: yes },
             },
         },
         filter: {
@@ -62,7 +66,7 @@ const metadataParams = {
     },
 };
 
-type Metadata = MetadataPick<typeof metadataParams>;
+export type Metadata = MetadataPick<typeof metadataParams>;
 export type BaseConfig = typeof baseConfig;
 
 export type CurrentUser = {

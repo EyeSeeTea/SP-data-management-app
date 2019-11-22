@@ -1,40 +1,35 @@
-/*
 import { getMockApi } from "d2-api";
 import _ from "lodash";
-import { baseConfig, Config } from "./../config";
+import { Config, getConfig } from "./../Config";
 import { ProjectData } from "./../Project";
 import Project from "../Project";
 import { metadata } from "./metadata";
 
-const config: Config = {
-    ...baseConfig,
-    currentUser: {
-        id: "xE7jOejl9FI",
-        userRoles: [],
-        organisationUnits: [
-            {
-                id: "ueuQlqb8ccl",
-                displayName: " Panderu MCHP",
-            },
-        ],
+const pmSuperuser = {
+    id: "M5zQapPyTZI",
+    displayName: "admin admin",
+    userCredentials: {
+        userRoles: [{ name: "PM Superuser" }],
     },
-};
-
-const currentUser = {
-    id: "xE7jOejl9FI",
-    displayName: "John Traore",
+    organisationUnits: [{ id: "J0hschZVMBt", displayName: "IHQ" }],
 };
 
 const { api, mock } = getMockApi();
 
+let config: Config;
+
+function getProject() {
+    return Project.create(api, config);
+}
+
 async function expectFieldPresence(field: keyof ProjectData) {
-    const project = await Project.create(api);
+    const project = await getProject();
     const errors = await project.validate([field]);
     expect(errors[field] !== undefined && (errors[field] || []).length > 0).toBeTruthy();
 }
 
 describe("Project", () => {
-    beforeEach(() => {
+    beforeEach(async () => {
         mock.reset();
         mock.onGet("/metadata", {
             "attributes:fields": "code,id",
@@ -45,11 +40,18 @@ describe("Project", () => {
             "dataElementGroups:fields": "code,dataElements[id]",
             "dataElementGroups:filter": [],
         }).replyOnce(200, metadata);
+
+        mock.onGet("/me", {
+            fields:
+                "displayName,id,organisationUnits[displayName,id],userCredentials[userRoles[name]]",
+        }).replyOnce(200, pmSuperuser);
+
+        config = await getConfig(api);
     });
 
     describe("set", () => {
         it("sets immutable data fields using field name", async () => {
-            const project1 = await Project.create(api);
+            const project1 = await getProject();
             const project2 = project1.set("name", "Project name");
             expect(project1.name).toEqual("");
             expect(project2.name).toEqual("Project name");
@@ -62,7 +64,7 @@ describe("Project", () => {
 
     describe("code", () => {
         it("joins {subsequentLettering}{this.awardNumber}-{this.speedKey}", async () => {
-            const project = await Project.create(api);
+            const project = await getProject();
             const project2 = project.setObj({
                 subsequentLettering: "es",
                 awardNumber: "12345",
@@ -72,7 +74,7 @@ describe("Project", () => {
         });
 
         it("joins {subsequentLettering}{this.awardNumber} if speedKey not set", async () => {
-            const project = await Project.create(api);
+            const project = await getProject();
             const project2 = project.set("subsequentLettering", "es").set("awardNumber", "12345");
             expect(project2.code).toEqual("es12345");
         });
@@ -94,7 +96,7 @@ describe("Project", () => {
         });
 
         it("gets organisation unit with display name", async () => {
-            const project1 = await Project.create(api);
+            const project1 = await getProject();
             const orgUnit = { path: "/3/2/1" };
             const project2 = project1.set("organisationUnit", orgUnit);
             const orgUnitName = await project2.getOrganisationUnitName();
@@ -117,7 +119,7 @@ describe("Project", () => {
         });
 
         it("limits speedKey to 40 chars", async () => {
-            const project = (await Project.create(api)).set("speedKey", "1");
+            const project = (await getProject()).set("speedKey", "1");
             const errors = await project.validate(["speedKey"]);
             expect(errors["speedKey"]).toHaveLength(0);
 
@@ -128,7 +130,7 @@ describe("Project", () => {
         });
 
         it("requires a five-digit string in award number", async () => {
-            const project = (await Project.create(api)).set("awardNumber", "12345");
+            const project = (await getProject()).set("awardNumber", "12345");
             const errors = await project.validate(["awardNumber"]);
             expect(errors["awardNumber"]).toHaveLength(0);
 
@@ -144,7 +146,7 @@ describe("Project", () => {
         });
 
         it("requires a string with 2 characters in subsequent lettering", async () => {
-            const project = (await Project.create(api)).set("subsequentLettering", "NG");
+            const project = (await getProject()).set("subsequentLettering", "NG");
             const errors = await project.validate(["subsequentLettering"]);
             expect(errors["subsequentLettering"]).toHaveLength(0);
 
@@ -176,7 +178,7 @@ describe("Project", () => {
         });
 
         it("requires a unique code", async () => {
-            const project = (await Project.create(api)).setObj({
+            const project = (await getProject()).setObj({
                 subsequentLettering: "au",
                 awardNumber: "19234",
                 speedKey: "key",
@@ -196,7 +198,7 @@ describe("Project", () => {
         });
 
         it("requires at least one data element by sector", async () => {
-            const project = (await Project.create(api)).setObj({
+            const project = (await getProject()).setObj({
                 sectors: [
                     { id: "mGQ5ckOTU8A", displayName: "Agriculture" },
                     { id: "m4Cg6FOPPR7", displayName: "Livelihoods" },
@@ -222,7 +224,7 @@ describe("Project", () => {
         });
 
         it("without keys, it runs all validations", async () => {
-            const project = await Project.create(api);
+            const project = await getProject();
             const errors = await project.validate();
             expect(_.keys(errors)).toEqual(
                 expect.arrayContaining([
@@ -262,10 +264,6 @@ describe("Project", () => {
             filter: ["level:eq:4"],
         };
 
-        beforeEach(() => {
-            mock.onGet("/me").replyOnce(200, currentUser);
-        });
-
         it("returns list of organisation units of level 4", async () => {
             mock.onGet("/organisationUnits", {
                 params: { ...baseRequest, filter: ["level:eq:4"] },
@@ -286,7 +284,7 @@ describe("Project", () => {
             mock.onGet("/organisationUnits", {
                 params: {
                     ...baseRequest,
-                    filter: ["level:eq:4", "name:ilike:abc", "user.id:eq:xE7jOejl9FI"],
+                    filter: ["level:eq:4", "name:ilike:abc", "user.id:eq:M5zQapPyTZI"],
                 },
             }).replyOnce(200, objectsPaginated);
 
@@ -302,7 +300,3 @@ describe("Project", () => {
         });
     });
 });
-
-*/
-
-export {};

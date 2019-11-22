@@ -288,7 +288,6 @@ class Project {
 
     async validateCodeUniqueness(): Promise<ValidationError> {
         const { api, code } = this;
-        console.log({ request: code });
         if (!code) return [];
         const { organisationUnits } = await api.metadata
             .get({

@@ -1,7 +1,7 @@
 import _ from "lodash";
-import { Ref, Id } from "d2-api";
+import { Id } from "d2-api";
 
-import { Config, Attribute, DataElementGroupSet, BaseConfig } from "./Config";
+import { Config, Attribute, DataElementGroupSet, BaseConfig, Metadata } from "./Config";
 import { Sector } from "./Project";
 import i18n from "../locales";
 import { GetItemType } from "../types/utils";
@@ -29,12 +29,6 @@ export interface DataElement {
     pairedDataElementCode: string;
     categoryComboId: Id;
 }
-
-type Metadata = {
-    attributes: Attribute[];
-    dataElementGroupSets: DataElementGroupSet[];
-};
-type R1 = Metadata["attributes"];
 
 interface DataElementsData {
     dataElements: DataElement[];
@@ -100,7 +94,7 @@ export default class DataElementsSet {
         baseConfig: BaseConfig,
         metadata: Metadata
     ): Promise<DataElement[]> {
-        const { attributes, dataElementGroupSets } = metadata;
+        const { attributes, dataElements, dataElementGroupSets } = metadata;
         const sectorsCode = baseConfig.dataElementGroupSets.sector;
         const sectorsSet = _(dataElementGroupSets)
             .keyBy("code")
@@ -110,12 +104,14 @@ export default class DataElementsSet {
             .get(baseConfig.attributes.pairedDataElement, undefined);
         const degCodes = baseConfig.dataElementGroups;
         const sectorGroups = sectorsSet ? sectorsSet.dataElementGroups : [];
+        const dataElementsById = _(dataElements).keyBy(de => de.id);
 
-        const dataElements = _.flatMap(sectorGroups, sectorGroup => {
+        return _.flatMap(sectorGroups, sectorGroup => {
             const groupCodesByDataElementId = getGroupCodeByDataElementId(dataElementGroupSets);
 
             return _(sectorGroup.dataElements)
-                .map(d2DataElement => {
+                .map(dataElementRef => {
+                    const d2DataElement = dataElementsById.getOrFail(dataElementRef.id);
                     const pairedDataElement = _(d2DataElement.attributeValues)
                         .map(attributeValue =>
                             attributePairedElements &&
@@ -170,8 +166,6 @@ export default class DataElementsSet {
                 .compact()
                 .value();
         });
-
-        return dataElements;
     }
 
     static async build(config: Config) {
@@ -219,9 +213,10 @@ export default class DataElementsSet {
     }
 
     getRelated(dataElementIds: Id[]) {
-        const dataElements = dataElementIds.map(
-            dataElementId => _(this.dataElementsBy.id).get(dataElementId) as DataElement
-        );
+        const dataElements = _(dataElementIds)
+            .map(dataElementId => _(this.dataElementsBy.id).get(dataElementId) as DataElement)
+            .compact()
+            .value();
 
         const relatedBySeries = _(dataElements)
             .map(dataElement => {
