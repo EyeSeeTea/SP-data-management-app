@@ -8,7 +8,7 @@ export function getDevProject(initialProject: Project, enabled: boolean) {
         .set("organisationUnit", { path: "/J0hschZVMBt/EaBSqFZQp2h/ag6s3ypoFK0" })
         .set("sectors", [
             { id: "mGQ5ckOTU8A", displayName: "Agriculture" },
-            { id: "m4Cg6FOPPR7", displayName: "Livelihoods" },
+            //{ id: "m4Cg6FOPPR7", displayName: "Livelihoods" },
         ])
         .set(
             "dataElements",

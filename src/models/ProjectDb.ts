@@ -5,12 +5,6 @@ import { D2DataSet, D2Api } from "d2-api";
 import Project from "./Project";
 import { getMonthsRange, toISOString } from "../utils/date";
 
-const config = {
-    createdByAppCode: "PM_CREATED_BY_PROJECT_MONITORING",
-    orgUnitProjectCode: "PM_ORGUNIT_PROJECT_ID",
-    projectDashboardCode: "PM_PROJECT_DASHBOARD_ID",
-};
-
 function getOrgUnitId(orgUnit: { path: string }): string {
     const id = _.last(orgUnit.path.split("/"));
     if (id) return id;
@@ -26,14 +20,12 @@ type RecursivePartial<T> = {
 };
 
 export default class ProjectDb {
-    constructor(public api: D2Api, public project: Project) {}
+    constructor(public project: Project) {}
 
     async save() {
-        const { api, project } = this;
-
-        const { attributes } = await api.metadata
-            .get({ attributes: { fields: { id: true, code: true } } })
-            .getData();
+        const { project } = this;
+        const { api, config } = project;
+        const { attributes } = project.config;
 
         const attributesByCode = _(attributes).keyBy(attr => attr.code);
         const { startDate, endDate } = project;
@@ -48,7 +40,9 @@ export default class ProjectDb {
         const baseAttributeValues = [
             {
                 value: "true",
-                attribute: { id: attributesByCode.getOrFail(config.createdByAppCode).id },
+                attribute: {
+                    id: attributesByCode.getOrFail(config.base.attributes.createdByApp).id,
+                },
             },
         ];
 
@@ -72,7 +66,9 @@ export default class ProjectDb {
                 ...baseAttributeValues,
                 {
                     value: dashboard.id,
-                    attribute: { id: attributesByCode.getOrFail(config.projectDashboardCode).id },
+                    attribute: {
+                        id: attributesByCode.getOrFail(config.base.attributes.projectDashboard).id,
+                    },
                 },
             ],
         };
@@ -87,7 +83,9 @@ export default class ProjectDb {
             ...baseAttributeValues,
             {
                 value: orgUnit.id,
-                attribute: { id: attributesByCode.getOrFail(config.orgUnitProjectCode).id },
+                attribute: {
+                    id: attributesByCode.getOrFail(config.base.attributes.orgUnitProject).id,
+                },
             },
         ];
 
@@ -131,10 +129,13 @@ export default class ProjectDb {
 
     getDataSetsMetadata(orgUnit: { id: string }, baseDataSet: RecursivePartial<D2DataSet>) {
         const { project } = this;
-
         const dataSetId = generateUid();
 
-        const dataSetElements = project.dataElements.getSelected().map(dataElement => ({
+        const dataElementsInSectors = project.dataElements
+            .getSelected()
+            .filter(de => project.sectors.some(sector => sector.id === de.sectorId));
+
+        const dataSetElements = dataElementsInSectors.map(dataElement => ({
             dataSet: { id: dataSetId },
             dataElement: { id: dataElement.id },
             categoryCombo: { id: dataElement.categoryComboId },

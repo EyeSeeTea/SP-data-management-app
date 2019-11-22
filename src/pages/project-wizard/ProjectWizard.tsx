@@ -18,6 +18,7 @@ import OrgUnitsStep from "../../components/steps/org-units/OrgUnitsStep";
 import SaveStep from "../../components/steps/save/SaveStep";
 import DataElementsStep from "../../components/steps/data-elements/DataElementsStep";
 import { getDevProject } from "../../models/dev-project";
+import { Config } from "../../models/Config";
 
 export interface StepProps {
     api: D2Api;
@@ -28,6 +29,7 @@ export interface StepProps {
 
 interface Props {
     api: D2Api;
+    config: Config;
     history: History;
     location: Location;
     snackbar: any;
@@ -58,14 +60,14 @@ class ProjectWizardImpl extends React.Component<Props, State> {
     };
 
     async componentDidMount() {
-        const { api, match, location } = this.props;
+        const { api, config, match, location } = this.props;
         const isDevMode = location.hash.split("#")[2] == "dev";
 
         try {
             const project =
                 match && match.params.id
-                    ? await Project.get(api, match.params.id)
-                    : getDevProject(await Project.create(api), isDevMode);
+                    ? await Project.get(api, config, match.params.id)
+                    : getDevProject(await Project.create(api, config), isDevMode);
             this.setState({ project });
         } catch (err) {
             console.error(err);
@@ -235,13 +237,14 @@ const ProjectWizard: React.FC<{}> = () => {
     const snackbar = useSnackbar();
     const history = useHistory();
     const location = useLocation();
-    const { api } = useAppContext();
+    const { api, config } = useAppContext();
     const match = useRouteMatch();
 
     return (
         <ProjectWizardImpl
             snackbar={snackbar}
             api={api}
+            config={config}
             history={history}
             location={location}
             match={match}

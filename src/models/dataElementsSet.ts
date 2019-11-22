@@ -1,8 +1,10 @@
-import { Sector } from "./Project";
-import { DataElement } from "./dataElementsSet";
-import { D2Api, Ref, Id } from "d2-api";
 import _ from "lodash";
+import { Ref, Id } from "d2-api";
+
+import { Config, Attribute, DataElementGroupSet, BaseConfig } from "./Config";
+import { Sector } from "./Project";
 import i18n from "../locales";
+import { GetItemType } from "../types/utils";
 
 /*
     Abstract list of Project data element of type DataElement. Usage:
@@ -11,8 +13,6 @@ import i18n from "../locales";
     const dataElements = dataElementsSet.get();
     # [... Array of data elements ...]
 */
-
-type GetItemType<T> = T extends (infer U)[] ? U : never;
 
 export const indicatorTypes = ["global" as const, "sub" as const];
 
@@ -30,20 +30,11 @@ export interface DataElement {
     categoryComboId: Id;
 }
 
-const config = {
-    dataElementGroupSetSectorCode: "SECTOR",
-    attributes: {
-        pairedDataElementCode: "PM_PAIRED_DE",
-    },
-    dataElementGroupCodes: {
-        global: "GLOBAL",
-        sub: "SUB",
-        people: "PEOPLE",
-        benefit: "BENEFIT",
-    },
+type Metadata = {
+    attributes: Attribute[];
+    dataElementGroupSets: DataElementGroupSet[];
 };
-
-type GroupCode = typeof config.dataElementGroupCodes;
+type R1 = Metadata["attributes"];
 
 interface DataElementsData {
     dataElements: DataElement[];
@@ -70,7 +61,7 @@ function getSectorAndSeriesKey(
     return [de.sectorId, de.series, de.indicatorType].join("-");
 }
 
-export default class DataElements {
+export default class DataElementsSet {
     dataElementsBy: {
         id: Record<Id, DataElement>;
         code: Record<string, DataElement>;
@@ -105,25 +96,23 @@ export default class DataElements {
         return this.data.selected;
     }
 
-    static async build(api: D2Api) {
-        const { attributes, dataElementGroupSets, dataElementGroups } = await api.metadata
-            .get(metadataFields)
-            .getData();
-
-        const sectorsCode = config.dataElementGroupSetSectorCode;
+    static async getDataElements(
+        baseConfig: BaseConfig,
+        metadata: Metadata
+    ): Promise<DataElement[]> {
+        const { attributes, dataElementGroupSets } = metadata;
+        const sectorsCode = baseConfig.dataElementGroupSets.sector;
         const sectorsSet = _(dataElementGroupSets)
             .keyBy("code")
             .get(sectorsCode, undefined);
         const attributePairedElements = _(attributes)
             .keyBy("code")
-            .get(config.attributes.pairedDataElementCode, undefined);
-        const degCodes = config.dataElementGroupCodes;
-
+            .get(baseConfig.attributes.pairedDataElement, undefined);
+        const degCodes = baseConfig.dataElementGroups;
         const sectorGroups = sectorsSet ? sectorsSet.dataElementGroups : [];
 
         const dataElements = _.flatMap(sectorGroups, sectorGroup => {
-            const groupCodeByDataElementId = getGroupCodeByDataElementId(dataElementGroups);
-            const sectorCode = sectorGroup.code.replace(/^SECTOR_/, "");
+            const groupCodesByDataElementId = getGroupCodeByDataElementId(dataElementGroupSets);
 
             return _(sectorGroup.dataElements)
                 .map(d2DataElement => {
@@ -136,7 +125,7 @@ export default class DataElements {
                         )
                         .compact()
                         .first();
-                    const groupCodes = groupCodeByDataElementId[d2DataElement.id];
+                    const groupCodes = groupCodesByDataElementId[d2DataElement.id];
                     if (!groupCodes) return;
 
                     const indicatorType = groupCodes.has(degCodes.global)
@@ -151,7 +140,7 @@ export default class DataElements {
                         ? "benefit"
                         : undefined;
 
-                    const seriesPrefix = `SERIES_${sectorCode}_`;
+                    const seriesPrefix = `SERIES_`;
 
                     const seriesCode = Array.from(groupCodes).find(code =>
                         code.startsWith(seriesPrefix)
@@ -182,7 +171,11 @@ export default class DataElements {
                 .value();
         });
 
-        return new DataElements({ dataElements, selected: [] });
+        return dataElements;
+    }
+
+    static async build(config: Config) {
+        return new DataElementsSet({ dataElements: config.dataElements, selected: [] });
     }
 
     get(filter: Filter = {}): DataElement[] {
@@ -207,7 +200,7 @@ export default class DataElements {
 
     updateSelection(
         dataElementIds: string[]
-    ): { related: SelectionUpdate; dataElements: DataElements } {
+    ): { related: SelectionUpdate; dataElements: DataElementsSet } {
         const { selected } = this.data;
         const newSelected = _.difference(dataElementIds, selected);
         // const newUnselected = _.difference(selected, dataElementIds);
@@ -220,7 +213,7 @@ export default class DataElements {
             .union(related.selected.map(de => de.id))
             .difference(related.unselected.map(de => de.id))
             .value();
-        const dataElementsUpdated = new DataElements({ ...this.data, selected: finalSelected });
+        const dataElementsUpdated = new DataElementsSet({ ...this.data, selected: finalSelected });
 
         return { related, dataElements: dataElementsUpdated };
     }
@@ -262,54 +255,13 @@ export default class DataElements {
     }
 }
 
-const yes = true as const;
-
-const metadataFields = {
-    attributes: {
-        fields: { id: yes, code: yes },
-        filter: { code: { eq: config.attributes.pairedDataElementCode } },
-    },
-    dataElementGroupSets: {
-        fields: {
-            code: yes,
-            dataElementGroups: {
-                id: yes,
-                displayName: yes,
-                code: yes,
-                dataElements: {
-                    id: yes,
-                    code: yes,
-                    attributeValues: { attribute: { id: yes }, value: yes },
-                    displayName: yes,
-                    categoryCombo: { id: yes },
-                },
-            },
-        },
-        filter: {
-            code: { eq: config.dataElementGroupSetSectorCode },
-        },
-    },
-    dataElementGroups: {
-        fields: {
-            code: yes,
-            dataElements: { id: yes },
-        },
-        filter: {},
-    },
-};
-
-type DataElementGroup = { code: string; dataElements: Ref[] };
-
 function getGroupCodeByDataElementId(
-    dataElementGroups: DataElementGroup[]
+    dataElementGroupSets: DataElementGroupSet[]
 ): { [dataElementId: string]: Set<string> } {
-    const getGroupCodeByDataElementId = _(dataElementGroups)
-        .flatMap(dataElementGroup =>
-            dataElementGroup.dataElements.map(de => ({ id: de.id, code: dataElementGroup.code }))
-        )
-        .groupBy("id")
-        .mapValues(group => new Set(group.map(o => o.code)))
+    return _(dataElementGroupSets)
+        .flatMap(degSet => degSet.dataElementGroups)
+        .flatMap(deg => deg.dataElements.map(de => ({ id: de.id, code: deg.code })))
+        .groupBy(obj => obj.id)
+        .mapValues(objs => new Set(objs.map(obj => obj.code)))
         .value();
-
-    return getGroupCodeByDataElementId;
 }

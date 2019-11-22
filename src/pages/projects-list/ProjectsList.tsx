@@ -10,12 +10,14 @@ import { generateUrl } from "../../router";
 import Project, { FiltersForList, ProjectForList } from "../../models/Project";
 import { Pagination } from "../../types/ObjectsList";
 import "./ProjectsList.css";
-import { Config } from "../../models/config";
+import { Config } from "../../models/Config";
 import { formatDateShort, formatDateLong } from "../../utils/date";
 import { GetPropertiesByType } from "../../types/utils";
 
+type UserRolesConfig = Config["base"]["userRoles"];
+
 type ActionsRoleMapping<Actions> = {
-    [Key in keyof Config["userRoles"]]?: Array<keyof Actions>;
+    [Key in keyof UserRolesConfig]?: Array<keyof Actions>;
 };
 
 function goTo(history: History, url: string) {
@@ -151,7 +153,7 @@ function getConfig(history: History, currentUser: CurrentUser) {
         analyser: ["dashboard", "downloadData"],
     };
 
-    const roleKeys = (_.keys(actionsForUserRoles) as unknown) as Array<keyof Config["userRoles"]>;
+    const roleKeys = (_.keys(actionsForUserRoles) as unknown) as Array<keyof UserRolesConfig>;
     const actionsByRole = _(roleKeys)
         .flatMap(roleKey => {
             const actionKeys: Array<keyof typeof allActions> = actionsForUserRoles[roleKey] || [];

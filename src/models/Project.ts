@@ -1,4 +1,4 @@
-import { Config } from "./config";
+import { Config } from "./Config";
 
 /*
 Project model.
@@ -79,6 +79,7 @@ interface NamedObject {
 export type Sector = NamedObject;
 export type Funder = NamedObject;
 
+// TODO: Add also displayName
 interface OrganisationUnit {
     path: string;
 }
@@ -168,16 +169,16 @@ class Project {
         dataElements: () => this.dataElements.validate(this.sectors),
     };
 
-    constructor(public api: D2Api, private data: ProjectData) {
+    constructor(public api: D2Api, public config: Config, private data: ProjectData) {
         defineGetters(data, this);
     }
 
     public set<K extends keyof ProjectData>(field: K, value: ProjectData[K]): Project {
-        return new Project(this.api, { ...this.data, [field]: value });
+        return new Project(this.api, this.config, { ...this.data, [field]: value });
     }
 
     public setObj<K extends keyof ProjectData>(obj: Pick<ProjectData, K>): Project {
-        return new Project(this.api, { ...this.data, ...obj });
+        return new Project(this.api, this.config, { ...this.data, ...obj });
     }
 
     public get shortName(): string {
@@ -208,23 +209,23 @@ class Project {
     }
 
     static async getData(
-        api: D2Api,
+        config: Config,
         partialData: Omit<ProjectData, "dataElements">
     ): Promise<ProjectData> {
-        const dataElements = await DataElementsSet.build(api);
+        const dataElements = await DataElementsSet.build(config);
         return { ...partialData, dataElements };
     }
 
-    static async get(api: D2Api, _id: string) {
-        return new Project(api, await Project.getData(api, defaultProjectData));
+    static async get(api: D2Api, config: Config, _id: string) {
+        return new Project(api, config, await Project.getData(config, defaultProjectData));
     }
 
-    static async create(api: D2Api) {
-        return new Project(api, await Project.getData(api, defaultProjectData));
+    static async create(api: D2Api, config: Config) {
+        return new Project(api, config, await Project.getData(config, defaultProjectData));
     }
 
     save(): Promise<{ response: MetadataResponse; project: Project }> {
-        return new ProjectDb(this.api, this).save();
+        return new ProjectDb(this).save();
     }
 
     public async getOrganisationUnitName(): Promise<string | undefined> {
@@ -248,21 +249,22 @@ class Project {
         filters: FiltersForList,
         pagination: Pagination
     ): Promise<{ objects: ProjectForList[]; pager: Pager }> {
+        const order = pagination.sorting
+            ? _.thru(pagination.sorting, ([field, order]) => `${field}:i${order}`)
+            : undefined;
+        const userId = config.currentUser.id;
+
         return api.models.organisationUnits
             .get({
                 paging: true,
                 fields: orgUnitFields,
-                order: pagination.sorting
-                    ? _.thru(pagination.sorting, ([field, order]) => `${field}:i${order}`)
-                    : undefined,
+                order: order,
                 page: pagination.page,
                 pageSize: pagination.pageSize,
                 filter: {
                     name: { ilike: filters.search },
                     level: { eq: "4" },
-                    "user.id": {
-                        eq: filters.createdByCurrentUser ? config.currentUser.id : undefined,
-                    },
+                    "user.id": { eq: filters.createdByCurrentUser ? userId : undefined },
                 },
             })
             .getData();

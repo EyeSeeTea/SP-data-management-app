@@ -10,11 +10,6 @@ import { CSSProperties } from "@material-ui/core/styles/withStyles";
 
 type Option = { value: string; text: string };
 
-const sectorOptions = [
-    { value: "mGQ5ckOTU8A", text: "Agriculture" },
-    { value: "m4Cg6FOPPR7", text: "Livelihoods" },
-];
-
 const fundersOptions = [
     { value: "1", text: "Atlas Copco" },
     { value: "2", text: "ACWME" },
@@ -34,7 +29,7 @@ const Title: React.FC<{ style?: CSSProperties }> = ({ style, children }) => {
 };
 
 const SectorsFundersStep: React.FC<StepProps> = ({ project, onChange }) => {
-    const { d2 } = useAppContext();
+    const { d2, config } = useAppContext();
 
     const onUpdateField = <K extends ModelCollectionField>(
         fieldName: K,
@@ -49,6 +44,11 @@ const SectorsFundersStep: React.FC<StepProps> = ({ project, onChange }) => {
         const newProject = project.set(fieldName, newValue);
         onChange(newProject);
     };
+
+    const sectorOptions = config.sectors.map(sector => ({
+        value: sector.id,
+        text: sector.displayName,
+    }));
 
     return (
         <Card>
