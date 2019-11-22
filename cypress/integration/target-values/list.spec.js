@@ -12,6 +12,7 @@ describe("Target Values", () => {
     it("should have a help button", () => {
         cy.get('[data-test="Set Target Values for Project"').click();
         cy.get("h5").contains("Target Values");
+        cy.get("iframe");
         cy.url().should("include", "/target-values");
     });
 });

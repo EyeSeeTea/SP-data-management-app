@@ -29,9 +29,23 @@ function setEntryStyling(iframeDocument: any) {
     iframeDocument.querySelector("#header").remove();
     iframeDocument.querySelector("html").style.overflow = "hidden";
     iframeDocument.querySelector("#leftBar").style.display = "none";
-    iframeDocument.querySelector("#selectionBox").style.display = "none";
+    // iframeDocument.querySelector("#selectionBox").style.display = "none";
     iframeDocument.querySelector("body").style.marginTop = "-55px";
 }
+
+const waitFor = (t: number) => new Promise(resolve => setTimeout(resolve, t));
+const waitForChildren = (el: HTMLElement) => {
+    return new Promise(resolve => {
+        const check = () => {
+            if (el.childElementCount > 0) {
+                resolve();
+            } else {
+                setTimeout(check, 10);
+            }
+        };
+        check();
+    });
+};
 
 const getFormTargetValues = async (iframe: any) => {
     const iframeDocument = iframe.contentWindow.document;
@@ -40,10 +54,14 @@ const getFormTargetValues = async (iframe: any) => {
     setEntryStyling(iframeDocument);
     autoResizeIframeByContent(iframe);
 
+    const iframeSelection = iframe.contentWindow.selection;
+    iframeSelection.select("YuQRtpLP10I");
+
     //get the form that we want
     const dataSetSelector = iframeDocument.querySelector("#selectedDataSetId");
     const periodSelector = iframeDocument.querySelector("#selectedPeriodId");
 
+    await waitForChildren(dataSetSelector);
     await waitforElementToLoad(dataSetSelector, "option");
     iframeDocument.querySelector("#moduleHeader").remove();
     dataSetSelector.value = "BfMAe6Itzgt";
@@ -53,7 +71,8 @@ const getFormTargetValues = async (iframe: any) => {
     periodSelector.value = "201910";
 
     // getting periodSelector options and select it
-    setTimeout(() => periodSelector.onchange(), 10);
+    await waitFor(10);
+    periodSelector.onchange();
 };
 
 const TargetValues = () => {
