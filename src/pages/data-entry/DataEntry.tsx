@@ -23,7 +23,7 @@ const DataEntry: React.FC = () => {
 
     return (
         <React.Fragment>
-            <PageHeader title={i18n.t("Data Entry")} help={help} onBackClick={goBack} />
+            <PageHeader title={i18n.t("Data Entry test")} help={help} onBackClick={goBack} />
             <div style={stylesSubtitle}>{subtitle}</div>
             <TargetValues />
         </React.Fragment>
