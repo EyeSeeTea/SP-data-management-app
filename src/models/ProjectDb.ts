@@ -56,6 +56,7 @@ export default class ProjectDb {
             parent: { id: parentOrgUnitId },
             openingDate: toISOString(startDate.startOf("month")),
             closedDate: toISOString(endDate.endOf("month")),
+            organisationUnitGroups: project.funders.map(funder => ({ id: funder.id })),
             attributeValues: [
                 ...baseAttributeValues,
                 {
@@ -66,6 +67,20 @@ export default class ProjectDb {
                 },
             ],
         };
+
+        const { organisationUnitGroups: existingOrgUnitGroupFunders } = await api.metadata
+            .get({
+                organisationUnitGroups: {
+                    fields: { $owner: true },
+                    filter: { id: { in: project.funders.map(funder => funder.id) } },
+                },
+            })
+            .getData();
+
+        const newOrgUnitGroupFunders = existingOrgUnitGroupFunders.map(ouGroup => ({
+            ...ouGroup,
+            organisationUnits: [...ouGroup.organisationUnits, { id: orgUnit.id }],
+        }));
 
         const targetPeriods = getMonthsRange(startDate, endDate).map(date => ({
             period: { id: date.format("YYYYMM") },
@@ -110,8 +125,14 @@ export default class ProjectDb {
             attributeValues: dataSetAttributeValues,
         });
 
+        const baseMetadata = {
+            organisationUnits: [orgUnit],
+            organisationUnitGroups: newOrgUnitGroupFunders,
+            dashboards: [dashboard],
+        };
+
         const metadata = flattenPayloads([
-            { organisationUnits: [orgUnit], dashboards: [dashboard] },
+            baseMetadata,
             dataSetTargetMetadata,
             dataSetActualMetadata,
         ]);

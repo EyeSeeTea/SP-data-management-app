@@ -32,6 +32,9 @@ const baseConfig = {
         people: "PEOPLE",
         benefit: "BENEFIT",
     },
+    organitionUnitGroupSets: {
+        funder: "FUNDER",
+    },
 };
 
 const metadataParams = {
@@ -64,10 +67,16 @@ const metadataParams = {
             code: { in: _.values(baseConfig.dataElementGroupSets) },
         },
     },
-    organisationUnitGroups: {
+    organisationUnitGroupSets: {
         fields: {
-            id: yes,
-            displayName: yes,
+            code: yes,
+            organisationUnitGroups: {
+                id: yes,
+                displayName: yes,
+            },
+        },
+        filter: {
+            code: { eq: baseConfig.organitionUnitGroupSets.funder },
         },
     },
 };
@@ -110,18 +119,24 @@ class ConfigLoader {
     async get(): Promise<Config> {
         const metadata: Metadata = await this.api.metadata.get(metadataParams).getData();
         const dataElementsMetadata = await this.getDataElementsMetadata(metadata);
-        const currentUser = await this.getCurrentUser();
+        const d2CurrentUser = await this.getCurrentUser();
+
+        const funders = _(metadata.organisationUnitGroupSets)
+            .keyBy(ougSet => ougSet.code)
+            .getOrFail(baseConfig.organitionUnitGroupSets.funder).organisationUnitGroups;
+
+        const currentUser = {
+            id: d2CurrentUser.id,
+            userRoles: d2CurrentUser.userCredentials.userRoles,
+            organisationUnits: d2CurrentUser.organisationUnits,
+        };
 
         const config = {
             base: baseConfig,
-            currentUser: {
-                id: currentUser.id,
-                userRoles: currentUser.userCredentials.userRoles,
-                organisationUnits: currentUser.organisationUnits,
-            },
+            currentUser: currentUser,
             attributes: metadata.attributes,
             ...dataElementsMetadata,
-            funders: metadata.organisationUnitGroups,
+            funders: funders,
         };
 
         return config;

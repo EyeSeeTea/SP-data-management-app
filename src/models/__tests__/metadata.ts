@@ -1105,4 +1105,28 @@ export const metadata = {
             id: "aywduilEjPQ",
         },
     ],
+
+    organisationUnitGroupSets: [
+        {
+            code: "FUNDER",
+            organisationUnitGroups: [
+                {
+                    id: "WO4whsMxaLQ",
+                    displayName: "IAF",
+                },
+                {
+                    id: "ekAr5F6Nv6f",
+                    displayName: "UNV",
+                },
+                {
+                    id: "iC442ceo1rv",
+                    displayName: "FFP",
+                },
+                {
+                    id: "meM0nfUWG9e",
+                    displayName: "UNCF",
+                },
+            ],
+        },
+    ],
 };
