@@ -64,6 +64,12 @@ const metadataParams = {
             code: { in: _.values(baseConfig.dataElementGroupSets) },
         },
     },
+    organisationUnitGroups: {
+        fields: {
+            id: yes,
+            displayName: yes,
+        },
+    },
 };
 
 export type Metadata = MetadataPick<typeof metadataParams>;
@@ -84,16 +90,17 @@ export type DataElementGroupSet = GetItemType<Metadata["dataElementGroupSets"]>;
 
 export type Attribute = GetItemType<Metadata["attributes"]>;
 
-export type Sector = {
-    id: Id;
-    displayName: string;
-};
+type NamedObject = { id: Id; displayName: string };
+
+export type Sector = NamedObject;
+export type Funder = NamedObject;
 
 export type Config = {
     base: typeof baseConfig;
     currentUser: CurrentUser;
     dataElements: DataElement[];
     sectors: Sector[];
+    funders: Funder[];
     attributes: Attribute[];
 };
 
@@ -114,6 +121,7 @@ class ConfigLoader {
             },
             attributes: metadata.attributes,
             ...dataElementsMetadata,
+            funders: metadata.organisationUnitGroups,
         };
 
         return config;

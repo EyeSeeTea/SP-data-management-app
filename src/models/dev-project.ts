@@ -22,6 +22,9 @@ export function getDevProject(initialProject: Project, enabled: boolean) {
         .set("awardNumber", "12345")
         .set("subsequentLettering", "en")
         .set("startDate", moment().subtract(1, "month"))
-        .set("funders", [{ id: "1", displayName: "Atlas Copco" }])
+        .set("funders", [
+            { id: "OKEZCrPzqph", displayName: "Atlas Copco" },
+            { id: "em8NIwi0KvM", displayName: "Agridius Foundation" },
+        ])
         .set("endDate", moment().add(1, "month"));
 }

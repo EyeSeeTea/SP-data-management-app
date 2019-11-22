@@ -5,20 +5,13 @@ import { D2DataSet } from "d2-api";
 import Project from "./Project";
 import { getMonthsRange, toISOString } from "../utils/date";
 import "../utils/lodash-mixins";
+import { RecursivePartial } from "../types/utils";
 
 function getOrgUnitId(orgUnit: { path: string }): string {
     const id = _.last(orgUnit.path.split("/"));
     if (id) return id;
     else throw new Error(`Invalid path: ${orgUnit.path}`);
 }
-
-type RecursivePartial<T> = {
-    [P in keyof T]?: T[P] extends (infer U)[]
-        ? RecursivePartial<U>[]
-        : T[P] extends object
-        ? RecursivePartial<T[P]>
-        : T[P];
-};
 
 export default class ProjectDb {
     constructor(public project: Project) {}
