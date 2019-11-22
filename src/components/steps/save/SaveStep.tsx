@@ -103,17 +103,17 @@ const LiEntry = ({ label, value }: { label: string; value?: React.ReactNode }) =
 function getSectorsInfo(project: Project): ReactNode {
     return (
         <ul>
-            {project.sectors.map(sector => (
-                <LiEntry
-                    key={sector.id}
-                    label={sector.displayName}
-                    value={
-                        project.dataElements.getSelected({ sectorId: sector.id }).length +
-                        " " +
-                        i18n.t("data elements")
-                    }
-                />
-            ))}
+            {project.sectors.map(sector => {
+                const dataElements = project.dataElements.getSelected({ sectorId: sector.id });
+                const value = [
+                    dataElements.length,
+                    " ",
+                    i18n.t("data elements"),
+                    ":",
+                    dataElements.map(de => de.name).join(", "),
+                ].join("");
+                return <LiEntry key={sector.id} label={sector.displayName} value={value} />;
+            })}
         </ul>
     );
 }

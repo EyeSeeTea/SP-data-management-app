@@ -90,6 +90,10 @@ describe("Projects - Create", () => {
 
         cy.contains("Organisation Unit");
 
+        cy.contains("Sectors");
+        cy.contains("# of agriculture groups receiving support for improved livelihoods");
+        cy.contains("# of HH-level storage equipment provided");
+
         /*
         cy.get("[data-wizard-contents] button")
             .contains("Save")

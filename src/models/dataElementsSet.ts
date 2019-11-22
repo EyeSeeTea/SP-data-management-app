@@ -1,7 +1,7 @@
 import _ from "lodash";
 import { Id } from "d2-api";
 
-import { Config, Attribute, DataElementGroupSet, BaseConfig, Metadata } from "./Config";
+import { Config, DataElementGroupSet, BaseConfig, Metadata } from "./Config";
 import { Sector } from "./Project";
 import i18n from "../locales";
 import { GetItemType } from "../types/utils";
