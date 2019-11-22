@@ -22,6 +22,7 @@ export interface DataElement {
     id: Id;
     name: string;
     code: string;
+    description: string;
     sectorId: Id;
     indicatorType: IndicatorType;
     peopleOrBenefit: "people" | "benefit";
@@ -138,6 +139,7 @@ export default class DataElementsSet {
                             id: d2DataElement.id,
                             name: d2DataElement.displayName,
                             code: d2DataElement.code,
+                            description: d2DataElement.description,
                             sectorId: sectorGroup.id,
                             indicatorType,
                             peopleOrBenefit,

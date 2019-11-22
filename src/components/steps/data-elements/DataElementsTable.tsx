@@ -18,7 +18,7 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
     useEffect(() => setFilter({}), [sectorId]);
 
     const columns: TableColumn<DataElement>[] = [
-        { name: "name" as const, text: i18n.t("Name"), sortable: true },
+        { name: "name" as const, text: i18n.t("Name"), sortable: true, getValue: getName },
         { name: "code" as const, text: i18n.t("Code"), sortable: true },
         { name: "indicatorType" as const, text: i18n.t("Indicator Type"), sortable: true },
         { name: "peopleOrBenefit" as const, text: i18n.t("People / Benefit"), sortable: true },
@@ -74,5 +74,9 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
         />
     );
 };
+
+function getName(dataElement: DataElement) {
+    return <span title={dataElement.description}>{dataElement.name}</span>;
+}
 
 export default DataElementsTable;

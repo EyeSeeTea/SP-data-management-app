@@ -48,6 +48,7 @@ const metadataParams = {
         fields: {
             id: yes,
             code: yes,
+            description: yes,
             attributeValues: { attribute: { id: yes }, value: yes },
             displayName: yes,
             categoryCombo: { id: yes },
