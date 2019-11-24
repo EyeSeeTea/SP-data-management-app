@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
+import _ from "lodash";
 //@ts-ignore
 import { useConfig } from "@dhis2/app-runtime";
+
 
 function autoResizeIframeByContent(iframe: HTMLIFrameElement) {
     const resize = () => {
@@ -12,32 +14,25 @@ function autoResizeIframeByContent(iframe: HTMLIFrameElement) {
     window.setInterval(resize, 1000);
 }
 
-function waitforElementToLoad(iframeDocument: any, selector: string) {
-    return new Promise(resolve => {
-        const check = () => {
-            if (iframeDocument.querySelector(selector)) {
-                resolve();
-            } else {
-                setTimeout(check, 10);
-            }
-        };
-        check();
-    });
-}
-function setEntryStyling(iframeDocument: any) {
+function setEntryStyling(iframe: any) {
+    const iframeDocument = iframe.contentWindow.document;
     iframeDocument.querySelector("#currentSelection").remove();
     iframeDocument.querySelector("#header").remove();
     iframeDocument.querySelector("html").style.overflow = "hidden";
     iframeDocument.querySelector("#leftBar").style.display = "none";
     // iframeDocument.querySelector("#selectionBox").style.display = "none";
     iframeDocument.querySelector("body").style.marginTop = "-55px";
+    iframeDocument.querySelector("#moduleHeader").remove();
+    autoResizeIframeByContent(iframe);
 }
 
-const waitFor = (t: number) => new Promise(resolve => setTimeout(resolve, t));
-const waitForChildren = (el: HTMLElement) => {
+const waitForChildren = (el: HTMLSelectElement, datasetId: string) => {
     return new Promise(resolve => {
         const check = () => {
-            if (el.childElementCount > 0) {
+            var option = _.filter(el.options, (option: any) => {
+                return option.value === datasetId;
+            })[0];
+            if (option) {
                 resolve();
             } else {
                 setTimeout(check, 10);
@@ -47,32 +42,47 @@ const waitForChildren = (el: HTMLElement) => {
     });
 };
 
-const getFormTargetValues = async (iframe: any) => {
+const setDatasetAndPeriod = async (iframe: any) => {
     const iframeDocument = iframe.contentWindow.document;
-
-    await waitforElementToLoad(iframeDocument, "#selectedDataSetId");
-    setEntryStyling(iframeDocument);
-    autoResizeIframeByContent(iframe);
-
-    const iframeSelection = iframe.contentWindow.selection;
-    iframeSelection.select("YuQRtpLP10I");
+    
+    // Constants (to be deleted)
+    const datasetId = "Dhu7bwd7aXc";
+    const period = "201911";
 
     //get the form that we want
     const dataSetSelector = iframeDocument.querySelector("#selectedDataSetId");
     const periodSelector = iframeDocument.querySelector("#selectedPeriodId");
 
-    await waitForChildren(dataSetSelector);
-    await waitforElementToLoad(dataSetSelector, "option");
-    iframeDocument.querySelector("#moduleHeader").remove();
-    dataSetSelector.value = "BfMAe6Itzgt";
+    // getting datasets options and select it
+    await waitForChildren(dataSetSelector, datasetId);
+    dataSetSelector.value = datasetId;
     dataSetSelector.onchange();
 
-    await waitforElementToLoad(periodSelector, "option");
-    periodSelector.value = "201910";
-
     // getting periodSelector options and select it
-    await waitFor(10);
+    await waitForChildren(periodSelector, period);
+    periodSelector.value = period;
     periodSelector.onchange();
+}
+
+const getFormTargetValues = async (iframe: any) => {
+    // Constants (to be deleted)
+    const orgUnitId = "YratZYNMnk7";
+
+    const iframeSelection = iframe.contentWindow.selection;
+
+    // await waitforElementToLoad(iframeDocument, "#selectedDataSetId");
+    setEntryStyling(iframe);
+
+    iframe.contentWindow.dhis2.util.on( 'dhis2.ou.event.orgUnitSelected', async ( event: any, organisationUnitId: any, dv: { value: string; de: string; } ) => {
+        if (organisationUnitId[0] == orgUnitId){
+            setDatasetAndPeriod(iframe);
+        }
+        else{
+            iframeSelection.select(orgUnitId);
+        }
+
+      } );
+    iframeSelection.select(orgUnitId);
 };
 
 const TargetValues = () => {
