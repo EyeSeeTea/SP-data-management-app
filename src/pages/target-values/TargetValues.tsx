@@ -3,7 +3,6 @@ import _ from "lodash";
 //@ts-ignore
 import { useConfig } from "@dhis2/app-runtime";
 
-
 function autoResizeIframeByContent(iframe: HTMLIFrameElement) {
     const resize = () => {
         if (iframe.contentWindow) {
@@ -29,7 +28,7 @@ function setEntryStyling(iframe: any) {
 const waitForChildren = (el: HTMLSelectElement, datasetId: string) => {
     return new Promise(resolve => {
         const check = () => {
-            var option = _.filter(el.options, (option: any) => {
+            const option = _.filter(el.options, (option: any) => {
                 return option.value === datasetId;
             })[0];
             if (option) {
@@ -44,7 +43,7 @@ const waitForChildren = (el: HTMLSelectElement, datasetId: string) => {
 
 const setDatasetAndPeriod = async (iframe: any) => {
     const iframeDocument = iframe.contentWindow.document;
-    
+
     // Constants (to be deleted)
     const datasetId = "Dhu7bwd7aXc";
     const period = "201911";
@@ -62,7 +61,7 @@ const setDatasetAndPeriod = async (iframe: any) => {
     await waitForChildren(periodSelector, period);
     periodSelector.value = period;
     periodSelector.onchange();
-}
+};
 
 const getFormTargetValues = async (iframe: any) => {
     // Constants (to be deleted)
@@ -73,15 +72,16 @@ const getFormTargetValues = async (iframe: any) => {
     // await waitforElementToLoad(iframeDocument, "#selectedDataSetId");
     setEntryStyling(iframe);
 
-    iframe.contentWindow.dhis2.util.on( 'dhis2.ou.event.orgUnitSelected', async ( event: any, organisationUnitId: any, dv: { value: string; de: string; } ) => {
-        if (organisationUnitId[0] == orgUnitId){
-            setDatasetAndPeriod(iframe);
+    iframe.contentWindow.dhis2.util.on(
+        "dhis2.ou.event.orgUnitSelected",
+        async (event: any, organisationUnitId: any) => {
+            if (organisationUnitId[0] == orgUnitId) {
+                setDatasetAndPeriod(iframe);
+            } else {
+                iframeSelection.select(orgUnitId);
+            }
         }
-        else{
-            iframeSelection.select(orgUnitId);
-        }
-
-      } );
+    );
     iframeSelection.select(orgUnitId);
 };
 
@@ -101,7 +101,12 @@ const TargetValues = () => {
 
     return (
         <React.Fragment>
-            <iframe ref={iframeRef} src={iFrameSrc} style={styles.iframe}></iframe>
+            <iframe
+                ref={iframeRef}
+                src={iFrameSrc}
+                style={styles.iframe}
+                title={"Target Value"}
+            ></iframe>
         </React.Fragment>
     );
 };
