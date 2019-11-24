@@ -61,6 +61,7 @@ const setDatasetAndPeriod = async (iframe: any) => {
     await waitForChildren(periodSelector, period);
     periodSelector.value = period;
     periodSelector.onchange();
+    iframe.style.display = "";
 };
 
 const getFormTargetValues = async (iframe: any) => {
@@ -87,13 +88,16 @@ const getFormTargetValues = async (iframe: any) => {
 
 const TargetValues = () => {
     const [loading, setLoading] = useState(false);
+
     const { baseUrl } = useConfig();
     const iFrameSrc = `${baseUrl}/dhis-web-dataentry/index.action`;
     const iframeRef: React.RefObject<HTMLIFrameElement> = React.createRef();
 
     useEffect(() => {
         const iframe = iframeRef.current;
+
         if (iframe !== null && !loading) {
+            iframe.style.display = "none";
             setLoading(true);
             iframe.addEventListener("load", getFormTargetValues.bind(null, iframe));
         }
