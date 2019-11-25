@@ -61,7 +61,7 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
             columns={columns}
             searchBoxLabel={i18n.t("Search by name / code")}
             onChange={state => onSelectionChange(state.selection)}
-            searchBoxColumns={["name", "code", "pairedDataElementName"]}
+            searchBoxColumns={["name", "code", "pairedDataElementName", "pairedDataElementCode"]}
             key={componentKey}
             filterComponents={
                 <DataElementsFilters

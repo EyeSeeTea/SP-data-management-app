@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2019-11-21T12:35:56.763Z\n"
-"PO-Revision-Date: 2019-11-21T12:35:56.763Z\n"
+"POT-Creation-Date: 2019-11-25T13:18:33.982Z\n"
+"PO-Revision-Date: 2019-11-25T13:18:33.982Z\n"
 
 msgid "<No value>"
 msgstr ""
@@ -80,7 +80,7 @@ msgstr ""
 msgid "Funders"
 msgstr ""
 
-msgid "Organisation Unit"
+msgid "Selected country"
 msgstr ""
 
 msgid "Sectors"
@@ -90,9 +90,6 @@ msgid "Cancel"
 msgstr ""
 
 msgid "Save"
-msgstr ""
-
-msgid "data elements"
 msgstr ""
 
 msgid "Project funders"
@@ -186,6 +183,9 @@ msgid "Sectors & Project Funders"
 msgstr ""
 
 msgid "Select sectors and funders for your project."
+msgstr ""
+
+msgid "Organisation Unit"
 msgstr ""
 
 msgid ""
