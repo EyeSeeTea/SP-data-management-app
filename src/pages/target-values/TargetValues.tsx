@@ -41,12 +41,12 @@ const waitForChildren = (el: HTMLSelectElement, datasetId: string) => {
         check();
     });
 };
-const dropdownItems: any[] = [];
+let dropdownItems: any[] = [];
 
-const obteinDropdownItems = (iframeDocument: HTMLIFrameElement) => {
+const obtainDropdownItems = (iframeDocument: HTMLIFrameElement) => {
     const selectedPeriod = iframeDocument.querySelector("#selectedPeriodId") as HTMLSelectElement;
     const options = selectedPeriod.options;
-
+    dropdownItems = [];
     for (const option of options) {
         const item = {
             value: option.value,
@@ -77,7 +77,7 @@ const setDatasetAndPeriod = async (iframe: any, dropdownValue: string) => {
     periodSelector.value = period;
     periodSelector.onchange();
 
-    obteinDropdownItems(iframeDocument);
+    obtainDropdownItems(iframeDocument);
 };
 
 const getFormTargetValues = async (
