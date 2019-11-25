@@ -12,7 +12,20 @@ describe("Target Values", () => {
     it("should have a help button", () => {
         cy.get('[data-test="Set Target Values for Project"').click();
         cy.get("h5").contains("Target Values");
-        cy.get("iframe");
+        cy.get("button").title("Help");
         cy.url().should("include", "/target-values");
+    });
+
+    it("should have an iframe button", () => {
+        cy.get("iframe");
+        cy.get("input")
+            .id("selectedOrganisationUnit")
+            .value("Test with SP");
+        cy.get("select")
+            .id("selectedDataSetId")
+            .selectedIndex("2");
+        cy.get("select")
+            .id("selectedPeriodId")
+            .selectedIndex("2");
     });
 });
