@@ -23,7 +23,7 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
         { name: "indicatorType" as const, text: i18n.t("Indicator Type"), sortable: true },
         { name: "peopleOrBenefit" as const, text: i18n.t("People / Benefit"), sortable: true },
         { name: "series" as const, text: i18n.t("Series"), sortable: true },
-        { name: "pairedDataElementCode" as const, text: i18n.t("Paired DE"), sortable: true },
+        // { name: "pairedDataElementCode" as const, text: i18n.t("Paired DE"), sortable: true },
     ];
 
     const fullFilter = { ...filter, sectorId };
@@ -47,10 +47,10 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
         .map((value, key) => `${key}=${value || ""}`)
         .join("-");
 
-    const selection = useMemo(() => dataElementsSet.getSelected({ sectorId }).map(de => de.id), [
-        dataElementsSet,
-        sectorId,
-    ]);
+    const selection = useMemo(
+        () => dataElementsSet.get({ onlySelected: true, sectorId }).map(de => de.id),
+        [dataElementsSet, sectorId]
+    );
 
     return (
         <ObjectsTable<DataElement>
@@ -61,7 +61,7 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
             columns={columns}
             searchBoxLabel={i18n.t("Search by name / code")}
             onChange={state => onSelectionChange(state.selection)}
-            searchBoxColumns={["name", "code"]}
+            searchBoxColumns={["name", "code", "pairedDataElementName"]}
             key={componentKey}
             filterComponents={
                 <DataElementsFilters
@@ -76,7 +76,19 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
 };
 
 function getName(dataElement: DataElement) {
-    return <span title={dataElement.description}>{dataElement.name}</span>;
+    return (
+        <React.Fragment>
+            <span title={dataElement.description}>{dataElement.name}</span>
+            {dataElement.pairedDataElement && (
+                <React.Fragment>
+                    <br />
+                    <span title={dataElement.pairedDataElement.description}>
+                        {dataElement.pairedDataElement.name}
+                    </span>
+                </React.Fragment>
+            )}
+        </React.Fragment>
+    );
 }
 
 export default DataElementsTable;

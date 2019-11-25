@@ -61,12 +61,12 @@ describe("Projects - Create", () => {
         // Indicators selection
 
         waitForStep("Indicators Selection");
-        cy.contains("# of agriculture groups receiving support for improved livelihoods")
+        cy.contains("# of agriculture groups receiving support for improved")
             .prev("td")
             .click();
 
         cy.contains("Livelihoods").click();
-        cy.contains("# of HH-level storage equipment provided")
+        cy.contains("# of community animal health workers (CAHWs) trained")
             .prev("td")
             .click();
 
@@ -92,8 +92,8 @@ describe("Projects - Create", () => {
         cy.contains("Sierra Leone");
 
         cy.contains("Sectors");
-        cy.contains("# of agriculture groups receiving support for improved livelihoods");
-        cy.contains("# of HH-level storage equipment provided");
+        cy.contains("# of agriculture groups receiving support for improved");
+        cy.contains("# of community animal health workers (CAHWs) trained");
 
         /*
         cy.get("[data-wizard-contents] button")

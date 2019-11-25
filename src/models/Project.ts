@@ -279,7 +279,7 @@ class Project {
 
     updateDataElementsSelectionForSector(dataElementIds: string[], sectorId: string) {
         const selectedIdsInOtherSectors = this.dataElements
-            .getSelected()
+            .get({ onlySelected: true })
             .filter(de => de.sectorId !== sectorId)
             .map(de => de.id);
         const ids = _.union(selectedIdsInOtherSectors, dataElementIds);

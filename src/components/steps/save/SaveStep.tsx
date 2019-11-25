@@ -104,7 +104,11 @@ function getSectorsInfo(project: Project): ReactNode {
     return (
         <ul>
             {project.sectors.map(sector => {
-                const dataElements = project.dataElements.getSelected({ sectorId: sector.id });
+                const dataElements = project.dataElements.get({
+                    onlySelected: true,
+                    sectorId: sector.id,
+                    includePaired: true,
+                });
                 const value = [
                     dataElements.length,
                     " ",

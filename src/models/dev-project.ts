@@ -14,8 +14,8 @@ export function getDevProject(initialProject: Project, enabled: boolean) {
             "dataElements",
             initialProject.dataElements.updateSelection([
                 "WS8XV4WWPE7",
-                "ik0ICagvIjm",
-                "We61YNYyOX0",
+                //"ik0ICagvIjm",
+                //"We61YNYyOX0",
             ]).dataElements
         )
         .set("name", "Test1")

@@ -137,7 +137,7 @@ class ConfigLoader {
             currentUser: currentUser,
             attributes: metadata.attributes,
             ...dataElementsMetadata,
-            funders: funders,
+            funders: _.sortBy(funders, funder => funder.displayName),
         };
 
         return config;

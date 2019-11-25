@@ -146,9 +146,12 @@ export default class ProjectDb {
         const { project } = this;
         const dataSetId = generateUid();
 
-        const dataElementsInSectors = project.dataElements
-            .getSelected()
-            .filter(de => project.sectors.some(sector => sector.id === de.sectorId));
+        const dataElements = project.dataElements.get({ onlySelected: true, includePaired: true });
+
+        const dataElementsInSectors = _(dataElements)
+            .filter(de => project.sectors.some(sector => sector.id === de.sectorId))
+            .uniqBy(de => de.id)
+            .value();
 
         const dataSetElements = dataElementsInSectors.map(dataElement => ({
             dataSet: { id: dataSetId },
@@ -162,8 +165,8 @@ export default class ProjectDb {
                 dataSet: { id: dataSetId },
                 sortOrder: index,
                 name: sector.displayName,
-                dataElements: project.dataElements
-                    .getSelected({ sectorId: sector.id })
+                dataElements: dataElements
+                    .filter(de => de.sectorId === sector.id)
                     .map(de => ({ id: de.id })),
                 greyedFields: [],
             };

@@ -18,7 +18,7 @@ export const indicatorTypes = ["global" as const, "sub" as const];
 
 export type IndicatorType = GetItemType<typeof indicatorTypes>;
 
-export interface DataElement {
+export interface DataElementWithCodePairing {
     id: Id;
     name: string;
     code: string;
@@ -31,6 +31,11 @@ export interface DataElement {
     categoryComboId: Id;
 }
 
+export interface DataElement extends DataElementWithCodePairing {
+    pairedDataElement: DataElement | undefined;
+    pairedDataElementName: string | undefined; // Add separate field so we can filter in objects table
+}
+
 interface DataElementsData {
     dataElements: DataElement[];
     selected: string[];
@@ -41,11 +46,12 @@ export interface SelectionUpdate {
     unselected: DataElement[];
 }
 
-type Filter = Partial<{
+type GetOptions = Partial<{
     sectorId: string;
     series: string;
     indicatorType: string;
     onlySelected: boolean;
+    includePaired: boolean;
 }>;
 
 type DataElementGroupCodes = Config["base"]["dataElementGroups"];
@@ -74,7 +80,7 @@ export default class DataElementsSet {
     }
 
     validate(sectors: Sector[]) {
-        const sectorsWithSelectedItems = _(this.getSelected())
+        const sectorsWithSelectedItems = _(this.get({ onlySelected: true }))
             .countBy(de => de.sectorId)
             .keys()
             .map(sectorId => ({ id: sectorId }))
@@ -97,18 +103,18 @@ export default class DataElementsSet {
         baseConfig: BaseConfig,
         metadata: Metadata
     ): Promise<DataElement[]> {
-        const { attributes, dataElements, dataElementGroupSets } = metadata;
+        const { dataElementGroupSets } = metadata;
         const sectorsCode = baseConfig.dataElementGroupSets.sector;
         const sectorsSet = getBy(dataElementGroupSets, "code", sectorsCode);
         const pairedDataElementCode = baseConfig.attributes.pairedDataElement;
-        const attributePairedElements = getBy(attributes, "code", pairedDataElementCode);
+        const attributePairedElements = getBy(metadata.attributes, "code", pairedDataElementCode);
         const codes = baseConfig.dataElementGroups;
-        const dataElementsById = _(dataElements).keyBy(de => de.id);
+        const dataElementsById = _(metadata.dataElements).keyBy(de => de.id);
 
         return _.flatMap(sectorsSet.dataElementGroups, sectorGroup => {
             const groupCodesByDataElementId = getGroupCodeByDataElementId(dataElementGroupSets);
 
-            return _(sectorGroup.dataElements)
+            const dataElements = _(sectorGroup.dataElements)
                 .map(dataElementRef => {
                     const d2DataElement = dataElementsById.getOrFail(dataElementRef.id);
                     const pairedDataElement = _(d2DataElement.attributeValues)
@@ -135,7 +141,7 @@ export default class DataElementsSet {
                     } else if (!seriesCode) {
                         console.error(`Data Element ${d2DataElement.id} has no series`);
                     } else {
-                        const dataElement: DataElement = {
+                        const dataElement: DataElementWithCodePairing = {
                             id: d2DataElement.id,
                             name: d2DataElement.displayName,
                             code: d2DataElement.code,
@@ -152,6 +158,8 @@ export default class DataElementsSet {
                 })
                 .compact()
                 .value();
+
+            return getMainDataElements(dataElements);
         });
     }
 
@@ -159,24 +167,24 @@ export default class DataElementsSet {
         return new DataElementsSet({ dataElements: config.dataElements, selected: [] });
     }
 
-    get(filter: Filter = {}): DataElement[] {
-        if (_.isEqual(filter, {})) return this.data.dataElements;
+    get(options: GetOptions = {}): DataElement[] {
+        if (_.isEqual(options, {})) return this.data.dataElements;
 
-        const { sectorId, series, indicatorType, onlySelected } = filter;
+        const { sectorId, series, indicatorType, onlySelected } = options;
         const { dataElements: items } = this.data;
         const selected = new Set(onlySelected ? this.data.selected : []);
 
-        return items.filter(
+        const dataElementsFiltered = items.filter(
             de =>
                 (!sectorId || de.sectorId === sectorId) &&
                 (!series || de.series === series) &&
                 (!indicatorType || de.indicatorType === indicatorType) &&
                 (!onlySelected || selected.has(de.id))
         );
-    }
 
-    getSelected(filter: Filter = {}): DataElement[] {
-        return this.get({ ...filter, onlySelected: true });
+        return options.includePaired
+            ? _.flatMap(dataElementsFiltered, de => _.compact([de, de.pairedDataElement]))
+            : dataElementsFiltered;
     }
 
     updateSelection(
@@ -235,6 +243,33 @@ export default class DataElementsSet {
             .flatten()
             .value();
     }
+}
+
+function getMainDataElements(dataElements: DataElementWithCodePairing[]): DataElement[] {
+    const pairedCodes = new Set(
+        _(dataElements)
+            .filter(de => de.peopleOrBenefit === "benefit")
+            .map(de => de.pairedDataElementCode)
+            .uniq()
+            .value()
+    );
+    const dataElementsByCode = _(dataElements).keyBy(de => de.code);
+    const nonPairedPeopleDataElements = _.reject(
+        dataElements,
+        de => de.peopleOrBenefit === "people" && pairedCodes.has(de.code)
+    );
+
+    return nonPairedPeopleDataElements.map(dataElement => {
+        const de = dataElementsByCode.get(dataElement.pairedDataElementCode, undefined);
+        const pairedDataElement = de
+            ? { ...de, pairedDataElement: undefined, pairedDataElementName: undefined }
+            : undefined;
+        return {
+            ...dataElement,
+            pairedDataElement,
+            pairedDataElementName: de ? de.name : undefined,
+        };
+    });
 }
 
 function getGroupCodeByDataElementId(
