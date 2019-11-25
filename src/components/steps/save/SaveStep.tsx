@@ -109,13 +109,13 @@ function getSectorsInfo(project: Project): ReactNode {
                     sectorId: sector.id,
                     includePaired: true,
                 });
-                const value = [
-                    dataElements.length,
-                    " ",
-                    i18n.t("data elements"),
-                    ":",
-                    dataElements.map(de => de.name).join(", "),
-                ].join("");
+                const value = (
+                    <ul>
+                        {dataElements.map(de => (
+                            <li key={de.id}>{de.name}</li>
+                        ))}
+                    </ul>
+                );
                 return <LiEntry key={sector.id} label={sector.displayName} value={value} />;
             })}
         </ul>
