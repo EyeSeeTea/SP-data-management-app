@@ -28,17 +28,17 @@ const DataElementsFilters: React.FC<DataElementsFiltersProps> = props => {
     return (
         <div>
             <Dropdown
-                items={filterOptions.series.map(name => ({ value: name, text: name }))}
-                value={filter.series}
-                onChange={value => onChange({ ...filter, series: value })}
-                label={i18n.t("Series")}
-            />
-
-            <Dropdown
                 items={indicatorTypes.map(name => ({ value: name, text: name }))}
                 value={filter.indicatorType}
                 onChange={value => onChange({ ...filter, indicatorType: value })}
                 label={i18n.t("Indicator Type")}
+            />
+
+            <Dropdown
+                items={filterOptions.series.map(name => ({ value: name, text: name }))}
+                value={filter.series}
+                onChange={value => onChange({ ...filter, series: value })}
+                label={i18n.t("Series")}
             />
 
             <FormControlLabel
