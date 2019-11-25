@@ -8,6 +8,9 @@ msgstr ""
 "POT-Creation-Date: 2019-11-21T11:49:55.582Z\n"
 "PO-Revision-Date: 2019-11-21T11:49:55.582Z\n"
 
+msgid "<No value>"
+msgstr ""
+
 msgid "Help"
 msgstr ""
 

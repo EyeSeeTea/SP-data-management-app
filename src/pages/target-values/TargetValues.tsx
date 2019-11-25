@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import _ from "lodash";
 //@ts-ignore
 import { useConfig } from "@dhis2/app-runtime";
+import Dropdown from "../../components/dropdown/Dropdown";
 
 function autoResizeIframeByContent(iframe: HTMLIFrameElement) {
     const resize = () => {
@@ -19,7 +20,7 @@ function setEntryStyling(iframe: any) {
     iframeDocument.querySelector("#header").remove();
     iframeDocument.querySelector("html").style.overflow = "hidden";
     iframeDocument.querySelector("#leftBar").style.display = "none";
-    // iframeDocument.querySelector("#selectionBox").style.display = "none";
+    iframeDocument.querySelector("#selectionBox").style.display = "none";
     iframeDocument.querySelector("body").style.marginTop = "-55px";
     iframeDocument.querySelector("#moduleHeader").remove();
     autoResizeIframeByContent(iframe);
@@ -40,13 +41,27 @@ const waitForChildren = (el: HTMLSelectElement, datasetId: string) => {
         check();
     });
 };
+const dropdownItems: any[] = [];
 
-const setDatasetAndPeriod = async (iframe: any) => {
+const obteinDropdownItems = (iframeDocument: HTMLIFrameElement) => {
+    const selectedPeriod = iframeDocument.querySelector("#selectedPeriodId") as HTMLSelectElement;
+    const options = selectedPeriod.options;
+
+    for (const option of options) {
+        const item = {
+            value: option.value,
+            text: option.text,
+        };
+        dropdownItems.push(item);
+    }
+};
+
+const setDatasetAndPeriod = async (iframe: any, dropdownValue: string) => {
     const iframeDocument = iframe.contentWindow.document;
 
     // Constants (to be deleted)
     const datasetId = "Dhu7bwd7aXc";
-    const period = "201911";
+    const period = dropdownValue;
 
     //get the form that we want
     const dataSetSelector = iframeDocument.querySelector("#selectedDataSetId");
@@ -61,10 +76,15 @@ const setDatasetAndPeriod = async (iframe: any) => {
     await waitForChildren(periodSelector, period);
     periodSelector.value = period;
     periodSelector.onchange();
-    iframe.style.display = "";
+
+    obteinDropdownItems(iframeDocument);
 };
 
-const getFormTargetValues = async (iframe: any) => {
+const getFormTargetValues = async (
+    iframe: any,
+    setDropdownHasValues: Function,
+    dropdownValue: string
+) => {
     // Constants (to be deleted)
     const orgUnitId = "YratZYNMnk7";
 
@@ -77,7 +97,8 @@ const getFormTargetValues = async (iframe: any) => {
         "dhis2.ou.event.orgUnitSelected",
         async (event: any, organisationUnitId: any) => {
             if (organisationUnitId[0] == orgUnitId) {
-                setDatasetAndPeriod(iframe);
+                await setDatasetAndPeriod(iframe, dropdownValue);
+                setDropdownHasValues();
             } else {
                 iframeSelection.select(orgUnitId);
             }
@@ -87,24 +108,58 @@ const getFormTargetValues = async (iframe: any) => {
 };
 
 const TargetValues = () => {
-    const [loading, setLoading] = useState(false);
+    const [state, setState] = useState({
+        loading: false,
+        dropdownHasValues: false,
+        dropdownValue: "201911",
+    });
+    const updateDropdown = (v: any) => {
+        const iframe = iframeRef.current;
+        if (iframe) {
+            const iframeDocument = iframe.contentWindow;
+            if (iframeDocument) {
+                const periodSelector = iframeDocument.document.querySelector(
+                    "#selectedPeriodId"
+                ) as HTMLInputElement;
+                if (periodSelector) {
+                    periodSelector.value = v;
+                    if (periodSelector.onchange) periodSelector.onchange({} as Event);
+                }
+            }
+        }
 
+        setState({ ...state, dropdownValue: v });
+    };
     const { baseUrl } = useConfig();
     const iFrameSrc = `${baseUrl}/dhis-web-dataentry/index.action`;
     const iframeRef: React.RefObject<HTMLIFrameElement> = React.createRef();
 
     useEffect(() => {
         const iframe = iframeRef.current;
+        const setDropdownHasValues = () => setState({ ...state, dropdownHasValues: true });
 
-        if (iframe !== null && !loading) {
-            iframe.style.display = "none";
-            setLoading(true);
-            iframe.addEventListener("load", getFormTargetValues.bind(null, iframe));
+        if (iframe !== null && !state.loading) {
+            setState({ ...state, loading: true });
+            iframe.addEventListener(
+                "load",
+                getFormTargetValues.bind(null, iframe, setDropdownHasValues, state.dropdownValue)
+            );
         }
     });
 
     return (
         <React.Fragment>
+            <div style={styles.selector}>
+                {state.dropdownHasValues && (
+                    <Dropdown
+                        items={dropdownItems}
+                        value={state.dropdownValue}
+                        onChange={updateDropdown}
+                        label="Period"
+                        hideEmpty={true}
+                    />
+                )}{" "}
+            </div>
             <iframe
                 ref={iframeRef}
                 src={iFrameSrc}
@@ -118,6 +173,7 @@ const TargetValues = () => {
 const styles = {
     iframe: { width: "100%", border: 0, overflow: "hidden" },
     backgroundIframe: { backgroundColor: "white" },
+    selector: { padding: "65px  10px 10px 270px", backgroundColor: "white" },
 };
 
 export default TargetValues;
