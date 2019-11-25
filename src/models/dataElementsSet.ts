@@ -207,13 +207,13 @@ export default class DataElementsSet {
         return { related, dataElements: dataElementsUpdated };
     }
 
-    getRelated(dataElementIds: Id[]) {
+    getRelated(dataElementIds: Id[]): DataElement[] {
         const dataElements = _(dataElementIds)
             .map(dataElementId => _(this.dataElementsBy.id).get(dataElementId) as DataElement)
             .compact()
             .value();
 
-        const relatedBySeries = _(dataElements)
+        const relatedGlobalBySeries = _(dataElements)
             .map(dataElement => {
                 const related =
                     dataElement.indicatorType == "sub"
@@ -226,17 +226,7 @@ export default class DataElementsSet {
             })
             .value();
 
-        const relatedByPairing = _(dataElements)
-            .map(dataElement => {
-                const pairedDataElement = dataElement.pairedDataElementCode
-                    ? _(this.dataElementsBy.code).get(dataElement.pairedDataElementCode, null)
-                    : null;
-                return { id: dataElement.id, related: _.compact([pairedDataElement]) };
-            })
-            .value();
-
-        return _(relatedBySeries)
-            .concat(relatedByPairing)
+        return _(relatedGlobalBySeries)
             .groupBy(({ id }) => id)
             .mapValues(groups => _.flatMap(groups, ({ related }) => related))
             .values()
