@@ -53,9 +53,9 @@ describe("Projects - Create", () => {
         cy.contains("Next").click();
         cy.contains("Select at least one item for Organisation Units");
 
-        selectOrgUnit("Africa");
+        // selectOrgUnit("Africa");
 
-        cy.contains("Next").click();
+        // cy.contains("Next").click();
 
         // Data Elements
 
@@ -97,14 +97,14 @@ describe("Projects - Create", () => {
     });
 });
 
-function selectOrgUnit(label) {
-    cy.contains(label)
-        .find("input")
-        .click();
-    cy.contains(label)
-        .should("have.css", "color")
-        .and("not.equal", "rgba(0, 0, 0, 0.87)");
-}
+// function selectOrgUnit(label) {
+//     cy.contains(label)
+//         .find("input")
+//         .click();
+//     cy.contains(label)
+//         .should("have.css", "color")
+//         .and("not.equal", "rgba(0, 0, 0, 0.87)");
+// }
 
 function clickDay(dayOfMonth) {
     cy.xpath(`//p[contains(text(), '${dayOfMonth}')]`).then(spans => {

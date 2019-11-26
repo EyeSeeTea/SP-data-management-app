@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import _ from "lodash";
+import Spinner from "../spinner/Spinner";
 //@ts-ignore
 import { useConfig } from "@dhis2/app-runtime";
 import Dropdown from "../../components/dropdown/Dropdown";
@@ -115,7 +116,7 @@ const DataEntry = (props: { orgUnitId: any; datasetId: string }) => {
     const [state, setState] = useState({
         loading: false,
         dropdownHasValues: false,
-        dropdownValue: "201911",
+        dropdownValue: "201910",
     });
     const updateDropdown = (v: any) => {
         const iframe = iframeRef.current;
@@ -143,6 +144,7 @@ const DataEntry = (props: { orgUnitId: any; datasetId: string }) => {
         const setDropdownHasValues = () => setState({ ...state, dropdownHasValues: true });
 
         if (iframe !== null && !state.loading) {
+            iframe.style.display = "none";
             setState({ ...state, loading: true });
             iframe.addEventListener(
                 "load",
@@ -156,11 +158,15 @@ const DataEntry = (props: { orgUnitId: any; datasetId: string }) => {
                 )
             );
         }
+        if (iframe !== null && state.dropdownHasValues) {
+            iframe.style.display = "";
+        }
     });
 
     return (
         <React.Fragment>
             <div style={styles.selector}>
+                {!state.dropdownHasValues && <Spinner isLoading={state.loading} />}
                 {state.dropdownHasValues && (
                     <Dropdown
                         items={dropdownItems}
