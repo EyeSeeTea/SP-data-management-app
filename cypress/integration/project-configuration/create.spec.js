@@ -1,4 +1,4 @@
-import moment from "moment";
+// import moment from "moment";
 
 describe("Projects - Create", () => {
     before(() => {
@@ -59,35 +59,35 @@ describe("Projects - Create", () => {
 
         // Data Elements
 
-        waitForStep("Data Elements");
-        cy.contains("# of agriculture groups receiving support for improved livelihoods")
-            .prev("td")
-            .click();
+        // waitForStep("Data Elements");
+        // cy.contains("# of agriculture groups receiving support for improved livelihoods")
+        //     .prev("td")
+        //     .click();
 
-        cy.contains("Livelihoods").click();
-        cy.contains("# of HH-level storage equipment provided")
-            .prev("td")
-            .click();
+        // cy.contains("Livelihoods").click();
+        // cy.contains("# of HH-level storage equipment provided")
+        //     .prev("td")
+        //     .click();
 
-        cy.contains("Next").click();
+        // cy.contains("Next").click();
 
         // Save step
 
-        waitForStep("Summary and Save");
-        cy.get("[data-test-current=true]").contains("Save");
+        // waitForStep("Summary and Save");
+        // cy.get("[data-test-current=true]").contains("Save");
 
-        cy.contains("Name");
-        cy.contains("Cypress Project");
+        // cy.contains("Name");
+        // cy.contains("Cypress Project");
 
-        cy.contains("Period dates");
-        const now = moment();
-        const expectedDataStart = now.set("date", 11).format("LL");
-        const expectedDataEnd = now.set("date", 13).format("LL");
-        cy.contains(`${expectedDataStart} -> ${expectedDataEnd}`);
+        // cy.contains("Period dates");
+        // const now = moment();
+        // const expectedDataStart = now.set("date", 11).format("LL");
+        // const expectedDataEnd = now.set("date", 13).format("LL");
+        // cy.contains(`${expectedDataStart} -> ${expectedDataEnd}`);
 
-        cy.contains("Description");
+        // cy.contains("Description");
 
-        cy.contains("Organisation Units");
+        // cy.contains("Organisation Units");
 
         /*
         cy.get("[data-wizard-contents] button")

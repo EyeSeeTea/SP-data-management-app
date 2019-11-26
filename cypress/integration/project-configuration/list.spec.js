@@ -44,9 +44,9 @@ describe("Project Configuration - List page", () => {
     });
 
     it("shows list of user dataset sorted alphabetically by name desc", () => {
-        cy.contains("Name").click();
-        cy.get("[data-test='displayName-sorting-desc']");
+        runAndWaitForRequest("/api/*", () => cy.contains("Name").click());
 
+        cy.get("[data-test='displayName-sorting-desc']");
         cy.get(".data-table__rows > * > :nth-child(2) span").then(spans$ => {
             const names = spans$.get().map(x => x.innerText);
             const sortedNames = _(names)
@@ -55,15 +55,28 @@ describe("Project Configuration - List page", () => {
                 .value();
             assert.isTrue(_.isEqual(names, sortedNames));
         });
-    });
 
-    it("can filter datasets by name", () => {
-        cy.get("[data-test='search'] input")
-            .clear()
-            .type("cypress test");
+        it("shows list of user dataset sorted alphabetically by name desc", () => {
+            cy.contains("Name").click();
+            cy.get("[data-test='displayName-sorting-desc']");
 
-        cy.contains("No results found");
-    });
+            cy.get(".data-table__rows > * > :nth-child(2) span").then(spans$ => {
+                const names = spans$.get().map(x => x.innerText);
+                const sortedNames = _(names)
+                    .orderBy(name => name.toLowerCase())
+                    .reverse()
+                    .value();
+                assert.isTrue(_.isEqual(names, sortedNames));
+            });
+        });
+
+        it("can filter datasets by name", () => {
+            cy.get("[data-test='search'] input")
+                .clear()
+                .type("cypress test");
+
+            cy.contains("No results found");
+        });
 
         it("will navegate to dashboard from the actions menu", () => {
             cy.get(".data-table__rows > :nth-child(1) button").click();
@@ -85,4 +98,14 @@ describe("Project Configuration - List page", () => {
             cy.url().should("include", "/data-entry/");
         });
     });
+
+    function runAndWaitForRequest(urlPattern, action) {
+        cy.server()
+            .route("GET", urlPattern)
+            .as(urlPattern);
+
+        action();
+
+        cy.wait("@" + urlPattern);
+    }
 });
