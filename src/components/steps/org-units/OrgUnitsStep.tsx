@@ -37,7 +37,7 @@ const OrgUnitsStep: React.FC<StepProps> = ({ project, onChange }) => {
         const newProject = project.set("organisationUnits", orgUnitsLast);
         onChange(newProject);
     };
-    const selectableLevels = [3];
+    const selectableLevels = [2];
 
     return (
         <React.Fragment>
