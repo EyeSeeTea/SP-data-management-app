@@ -14,8 +14,4 @@ describe("Target Values", () => {
         cy.get("h5").contains("Set Target Values for Project");
         cy.url().should("include", "/target-values");
     });
-
-    it("should have an iframe", () => {
-        cy.get("iframe");
-    });
 });

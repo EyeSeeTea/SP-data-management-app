@@ -13,9 +13,6 @@ describe("Actual Values", () => {
         cy.get('[data-test="Set Actual Values for Project"').click();
         cy.get("h5").contains("Set Actual Values for Project");
         cy.url().should("include", "/actual-values");
-    });
-
-    it("should have an iframe", () => {
         cy.get("iframe");
     });
 });
