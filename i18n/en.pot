@@ -140,17 +140,6 @@ msgid "{{field}} must have {{length}} characters"
 msgstr ""
 
 msgid ""
-"Please click on the grey arrow next to the chart/table title if you want to "
-"modify the layout."
-msgstr ""
-
-msgid "Dashboard project to analyse your data..."
-msgstr ""
-
-msgid "Dashboard"
-msgstr ""
-
-msgid ""
 "Select a) organizational unit where project was performed, b) data set, c) "
 "date, d) current/target\n"
 "\n"
@@ -162,13 +151,27 @@ msgid ""
 "Data Entry Section"
 msgstr ""
 
-msgid "Data Entry"
+msgid "Set Actual Values for Project"
+msgstr ""
+
+msgid ""
+"Please click on the grey arrow next to the chart/table title if you want to "
+"modify the layout."
+msgstr ""
+
+msgid "Dashboard project to analyse your data..."
+msgstr ""
+
+msgid "Dashboard"
 msgstr ""
 
 msgid "Project Configuration"
 msgstr ""
 
 msgid "Monthly Executive Report"
+msgstr ""
+
+msgid "Data Entry"
 msgstr ""
 
 msgid "Cannot load project"
@@ -242,7 +245,7 @@ msgstr ""
 msgid "Details"
 msgstr ""
 
-msgid "Go to Data Entry"
+msgid "Add Actual Values"
 msgstr ""
 
 msgid "Go to Dashboard"

@@ -1,4 +1,4 @@
-describe("Target Values", () => {
+describe("Actual Values", () => {
     beforeEach(() => {
         cy.login("admin");
         cy.loadPage();
@@ -6,14 +6,13 @@ describe("Target Values", () => {
         cy.get(".data-table__rows > :nth-child(1) > :nth-child(4) span")
             .first()
             .trigger("contextmenu");
-        cy.contains("Add Target Values").click();
+        cy.contains("Data Entry").click();
     });
 
     it("should have a help button", () => {
-        cy.get('[data-test="Set Target Values for Project"').click();
-        cy.get("h5").contains("Target Values");
-        cy.get("button").title("Help");
-        cy.url().should("include", "/target-values");
+        cy.get('[data-test="Set Actual Values for Project"').click();
+        cy.get("h5").contains("Set Actual Values for Project");
+        cy.url().should("include", "/actual-values");
     });
 
     it("should have an iframe", () => {

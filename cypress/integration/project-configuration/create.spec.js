@@ -8,7 +8,7 @@ describe("Projects - Create", () => {
         cy.get("[data-test=list-action-bar]").click();
     });
     it("gets data from the user and creates a project", () => {
-        cy.contains("New project");
+        cy.contains("Create Project").click();
 
         // General Info step
         waitForStep("General info");

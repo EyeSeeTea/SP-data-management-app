@@ -62,8 +62,8 @@ export default function LandingPage() {
             width: 6,
         },
         {
-            key: "dataEntry",
-            url: generateUrl("dataEntry"),
+            key: "actualValues",
+            url: generateUrl("actualValues"),
             title: i18n.t("Data Entry"),
             icon: "library_books",
             width: 6,

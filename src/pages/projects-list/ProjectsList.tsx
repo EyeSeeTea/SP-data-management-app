@@ -88,13 +88,12 @@ function getConfig(history: History, currentUser: CurrentUser) {
             isPrimary: true,
         },
 
-        dataEntry: {
-            name: "data-entry",
+        actualValues: {
+            name: "add-actual-values",
             icon: "library_books",
-            text: i18n.t("Go to Data Entry"),
+            text: i18n.t("Add Actual Values"),
             multiple: false,
-            onClick: () => history.push(generateUrl("dataEntry")),
-            //     history.push(generateUrl("dataEntry.edit", { id: project.id })),
+            onClick: () => history.push(generateUrl("actualValues")),
         },
 
         dashboard: {
@@ -111,7 +110,6 @@ function getConfig(history: History, currentUser: CurrentUser) {
             text: i18n.t("Add Target Values"),
             multiple: false,
             onClick: () => history.push(generateUrl("targetValues")),
-            //     history.push(generateUrl("targetValues.edit", { id: project.id })),
         },
 
         downloadData: {
@@ -149,7 +147,7 @@ function getConfig(history: History, currentUser: CurrentUser) {
     const actionsForUserRoles: ActionsRoleMapping<typeof allActions> = {
         reportingAnalyst: ["edit", "delete", "targetValues", "configMER"],
         superUser: _.without(_.keys(allActions), "details") as Array<keyof typeof allActions>,
-        encode: ["dataEntry"],
+        encode: ["actualValues"],
         analyser: ["dashboard", "downloadData"],
     };
 
