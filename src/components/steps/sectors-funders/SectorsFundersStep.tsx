@@ -11,10 +11,8 @@ import { CSSProperties } from "@material-ui/core/styles/withStyles";
 type Option = { value: string; text: string };
 
 const sectorOptions = [
-    { value: "1", text: "Sector1" },
-    { value: "2", text: "Sector2" },
-    { value: "3", text: "Sector3" },
-    { value: "4", text: "Sector4" },
+    { value: "mGQ5ckOTU8A", text: "Agriculture" },
+    { value: "m4Cg6FOPPR7", text: "Livelihoods" },
 ];
 
 const fundersOptions = [

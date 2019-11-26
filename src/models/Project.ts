@@ -1,6 +1,6 @@
 import { Config } from "./config";
-/*
 
+/*
 Project model.
 
 * Get an existing project:
@@ -33,7 +33,8 @@ Project model.
 * Get paginated list of projects:
 
     const { objects, pager } = await Project.getList(
-        d2Api,
+        api,
+        config,
         { search: "abc", createdByCurrentUser: true },
         { page: 2, pageSize: 10, sorting: ["displayName", "desc"] }
     )
@@ -41,10 +42,13 @@ Project model.
 
 import { Moment } from "moment";
 import _ from "lodash";
-import { D2Api, SelectedPick, D2DataSetSchema, Id } from "d2-api";
+import { D2Api, SelectedPick, Id, D2OrganisationUnitSchema } from "d2-api";
 import { Pagination } from "./../types/ObjectsList";
 import { Pager } from "d2-api/api/models";
 import i18n from "../locales";
+import DataElements, { SelectionUpdate } from "./dataElementsSet";
+import ProjectDb from "./ProjectDb";
+import { MetadataResponse } from "d2-api/api/metadata";
 
 export interface ProjectData {
     name: string;
@@ -57,6 +61,7 @@ export interface ProjectData {
     sectors: Sector[];
     funders: Funder[];
     organisationUnits: OrganisationUnit[];
+    dataElements: DataElements;
 }
 
 interface NamedObject {
@@ -85,20 +90,22 @@ const defaultProjectData = {
     organisationUnits: [],
 };
 
-const true_ = true as true;
+const yes = true as const;
 
-const dataSetFieldsForList = {
-    id: true_,
-    created: true_,
-    user: { id: true_, displayName: true_ },
-    displayName: true_,
-    displayDescription: true_,
-    href: true_,
-    publicAccess: true_,
-    lastUpdated: true_,
+const orgUnitFields = {
+    id: yes,
+    created: yes,
+    user: { id: yes, displayName: yes },
+    displayName: yes,
+    displayDescription: yes,
+    href: yes,
+    publicAccess: yes,
+    lastUpdated: yes,
+    openingDate: yes,
+    closedDate: yes,
 };
 
-export type DataSetForList = SelectedPick<D2DataSetSchema, typeof dataSetFieldsForList>;
+export type ProjectForList = SelectedPick<D2OrganisationUnitSchema, typeof orgUnitFields>;
 
 export type FiltersForList = Partial<{
     search: string;
@@ -141,6 +148,10 @@ class Project {
         funders: () => validateNonEmpty(this.funders, i18n.t("Funders")),
         organisationUnits: () =>
             validateNonEmpty(this.organisationUnits, i18n.t("Organisation Units")),
+        dataElements: () =>
+            this.dataElements.getSelected().length == 0
+                ? [i18n.t("Select at least one data element")]
+                : [],
     };
 
     constructor(public api: D2Api, private data: ProjectData) {
@@ -149,6 +160,10 @@ class Project {
 
     public set<K extends keyof ProjectData>(field: K, value: ProjectData[K]): Project {
         return new Project(this.api, { ...this.data, [field]: value });
+    }
+
+    public get shortName(): string {
+        return this.data.name.slice(0, 50);
     }
 
     public async validate(
@@ -163,12 +178,24 @@ class Project {
         return _.fromPairs(_.zip(keys, values)) as Validations;
     }
 
-    static async get(api: D2Api, _id: string) {
-        return new Project(api, defaultProjectData);
+    static async getData(
+        api: D2Api,
+        partialData: Omit<ProjectData, "dataElements">
+    ): Promise<ProjectData> {
+        const dataElements = await DataElements.build(api);
+        return { ...partialData, dataElements };
     }
 
-    static create(api: D2Api) {
-        return new Project(api, defaultProjectData);
+    static async get(api: D2Api, _id: string) {
+        return new Project(api, await Project.getData(api, defaultProjectData));
+    }
+
+    static async create(api: D2Api) {
+        return new Project(api, await Project.getData(api, defaultProjectData));
+    }
+
+    save(): Promise<{ response: MetadataResponse; project: Project }> {
+        return new ProjectDb(this.api, this).save();
     }
 
     public async getOrganisationUnitsWithName() {
@@ -187,11 +214,11 @@ class Project {
         config: Config,
         filters: FiltersForList,
         pagination: Pagination
-    ): Promise<{ objects: DataSetForList[]; pager: Pager }> {
-        return api.models.dataSets
+    ): Promise<{ objects: ProjectForList[]; pager: Pager }> {
+        return api.models.organisationUnits
             .get({
                 paging: true,
-                fields: dataSetFieldsForList,
+                fields: orgUnitFields,
                 order: pagination.sorting
                     ? _.thru(pagination.sorting, ([field, order]) => `${field}:i${order}`)
                     : undefined,
@@ -199,12 +226,20 @@ class Project {
                 pageSize: pagination.pageSize,
                 filter: {
                     name: { ilike: filters.search },
+                    level: { eq: "4" },
                     "user.id": {
                         eq: filters.createdByCurrentUser ? config.currentUser.id : undefined,
                     },
                 },
             })
             .getData();
+    }
+
+    updateDataElementSelection(
+        dataElementIds: string[]
+    ): { related: SelectionUpdate; project: Project } {
+        const { related, dataElements } = this.data.dataElements.updateSelection(dataElementIds);
+        return { related, project: this.set("dataElements", dataElements) };
     }
 }
 
