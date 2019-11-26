@@ -15,8 +15,9 @@ const TargetValuesPage: React.FC = () => {
     const help = i18n.t(`This is an example of help message.`);
     const history = useHistory();
     const goBack = () => goTo(history, "/projects");
-    const orgUnitId = "YuQRtpLP10I";
-    const datasetId = "BfMAe6Itzgt";
+
+    const orgUnitId = "YratZYNMnk7";
+    const datasetId = "Dhu7bwd7aXc";
     return (
         <React.Fragment>
             <PageHeader title={title} help={help} onBackClick={goBack} />
