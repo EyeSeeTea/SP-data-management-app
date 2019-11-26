@@ -6,10 +6,10 @@ describe("Actual Values", () => {
         cy.get(".data-table__rows > :nth-child(1) > :nth-child(4) span")
             .first()
             .trigger("contextmenu");
-        cy.contains("Data Entry").click();
+        cy.contains("Add Actual Values").click();
     });
 
-    it("should have a help button", () => {
+    it("should have a title and correct url", () => {
         cy.get('[data-test="Set Actual Values for Project"').click();
         cy.get("h5").contains("Set Actual Values for Project");
         cy.url().should("include", "/actual-values");

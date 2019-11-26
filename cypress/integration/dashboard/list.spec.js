@@ -6,7 +6,7 @@ describe("Dashboard", () => {
         cy.contains("Dashboard");
     });
 
-    it("should have a help button", () => {
+    it("should have title and correct url", () => {
         cy.get("[data-test=Dashboard]").click();
         cy.get("h5").contains("Dashboard");
         cy.url().should("include", "/dashboard");
