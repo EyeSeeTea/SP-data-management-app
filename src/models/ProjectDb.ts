@@ -1,15 +1,11 @@
 import _ from "lodash";
 import moment from "moment";
 import { generateUid } from "d2/uid";
-import { D2DataSet, D2Api } from "d2-api";
+import { D2DataSet } from "d2-api";
 import Project from "./Project";
 import { getMonthsRange, toISOString } from "../utils/date";
-
-const config = {
-    createdByAppCode: "PM_CREATED_BY_PROJECT_MONITORING",
-    orgUnitProjectCode: "PM_ORGUNIT_PROJECT_ID",
-    projectDashboardCode: "PM_PROJECT_DASHBOARD_ID",
-};
+import "../utils/lodash-mixins";
+import { RecursivePartial } from "../types/utils";
 
 function getOrgUnitId(orgUnit: { path: string }): string {
     const id = _.last(orgUnit.path.split("/"));
@@ -17,27 +13,17 @@ function getOrgUnitId(orgUnit: { path: string }): string {
     else throw new Error(`Invalid path: ${orgUnit.path}`);
 }
 
-type RecursivePartial<T> = {
-    [P in keyof T]?: T[P] extends (infer U)[]
-        ? RecursivePartial<U>[]
-        : T[P] extends object
-        ? RecursivePartial<T[P]>
-        : T[P];
-};
-
 export default class ProjectDb {
-    constructor(public api: D2Api, public project: Project) {}
+    constructor(public project: Project) {}
 
     async save() {
-        const { api, project } = this;
-
-        const { attributes } = await api.metadata
-            .get({ attributes: { fields: { id: true, code: true } } })
-            .getData();
+        const { project } = this;
+        const { api, config } = project;
+        const { attributes } = project.config;
 
         const attributesByCode = _(attributes).keyBy(attr => attr.code);
         const { startDate, endDate } = project;
-        const parentOrgUnit = _.first(project.organisationUnits);
+        const parentOrgUnit = project.organisationUnit;
 
         if (!startDate || !endDate) {
             throw new Error("Missing dates");
@@ -48,7 +34,9 @@ export default class ProjectDb {
         const baseAttributeValues = [
             {
                 value: "true",
-                attribute: { id: attributesByCode.getOrFail(config.createdByAppCode).id },
+                attribute: {
+                    id: attributesByCode.getOrFail(config.base.attributes.createdByApp).id,
+                },
             },
         ];
 
@@ -62,19 +50,37 @@ export default class ProjectDb {
         const orgUnit = {
             id: generateUid(),
             name: project.name,
+            code: project.code,
             shortName: project.shortName,
             description: project.description,
             parent: { id: parentOrgUnitId },
             openingDate: toISOString(startDate.startOf("month")),
             closedDate: toISOString(endDate.endOf("month")),
+            organisationUnitGroups: project.funders.map(funder => ({ id: funder.id })),
             attributeValues: [
                 ...baseAttributeValues,
                 {
                     value: dashboard.id,
-                    attribute: { id: attributesByCode.getOrFail(config.projectDashboardCode).id },
+                    attribute: {
+                        id: attributesByCode.getOrFail(config.base.attributes.projectDashboard).id,
+                    },
                 },
             ],
         };
+
+        const { organisationUnitGroups: existingOrgUnitGroupFunders } = await api.metadata
+            .get({
+                organisationUnitGroups: {
+                    fields: { $owner: true },
+                    filter: { id: { in: project.funders.map(funder => funder.id) } },
+                },
+            })
+            .getData();
+
+        const newOrgUnitGroupFunders = existingOrgUnitGroupFunders.map(ouGroup => ({
+            ...ouGroup,
+            organisationUnits: [...ouGroup.organisationUnits, { id: orgUnit.id }],
+        }));
 
         const targetPeriods = getMonthsRange(startDate, endDate).map(date => ({
             period: { id: date.format("YYYYMM") },
@@ -86,7 +92,9 @@ export default class ProjectDb {
             ...baseAttributeValues,
             {
                 value: orgUnit.id,
-                attribute: { id: attributesByCode.getOrFail(config.orgUnitProjectCode).id },
+                attribute: {
+                    id: attributesByCode.getOrFail(config.base.attributes.orgUnitProject).id,
+                },
             },
         ];
 
@@ -117,8 +125,14 @@ export default class ProjectDb {
             attributeValues: dataSetAttributeValues,
         });
 
+        const baseMetadata = {
+            organisationUnits: [orgUnit],
+            organisationUnitGroups: newOrgUnitGroupFunders,
+            dashboards: [dashboard],
+        };
+
         const metadata = flattenPayloads([
-            { organisationUnits: [orgUnit], dashboards: [dashboard] },
+            baseMetadata,
             dataSetTargetMetadata,
             dataSetActualMetadata,
         ]);
@@ -130,10 +144,16 @@ export default class ProjectDb {
 
     getDataSetsMetadata(orgUnit: { id: string }, baseDataSet: RecursivePartial<D2DataSet>) {
         const { project } = this;
-
         const dataSetId = generateUid();
 
-        const dataSetElements = project.dataElements.getSelected().map(dataElement => ({
+        const dataElements = project.dataElements.get({ onlySelected: true, includePaired: true });
+
+        const dataElementsInSectors = _(dataElements)
+            .filter(de => project.sectors.some(sector => sector.id === de.sectorId))
+            .uniqBy(de => de.id)
+            .value();
+
+        const dataSetElements = dataElementsInSectors.map(dataElement => ({
             dataSet: { id: dataSetId },
             dataElement: { id: dataElement.id },
             categoryCombo: { id: dataElement.categoryComboId },
@@ -145,8 +165,8 @@ export default class ProjectDb {
                 dataSet: { id: dataSetId },
                 sortOrder: index,
                 name: sector.displayName,
-                dataElements: project.dataElements
-                    .getSelected({ sectorId: sector.id })
+                dataElements: dataElements
+                    .filter(de => de.sectorId === sector.id)
                     .map(de => ({ id: de.id })),
                 greyedFields: [],
             };

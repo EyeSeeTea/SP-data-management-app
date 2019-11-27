@@ -1,4 +1,4 @@
-import { Config } from "./../models/config";
+import { Config } from "../models/Config";
 import React, { useContext } from "react";
 import { D2Api } from "d2-api";
 import User from "../models/user";

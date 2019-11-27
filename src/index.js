@@ -5,6 +5,7 @@ import { Provider } from "@dhis2/app-runtime";
 
 import App from "./components/app/App";
 import "./locales";
+import "./utils/lodash-mixins";
 
 async function getBaseUrl() {
     if (process.env.NODE_ENV === "development") {

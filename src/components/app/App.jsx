@@ -15,7 +15,7 @@ import muiThemeLegacy from "./themes/dhis2-legacy.theme";
 import Root from "../../pages/root/Root";
 import Share from "../share/Share";
 import { ApiContext } from "../../contexts/api-context";
-import { getConfig } from "../../models/config";
+import { getConfig } from "../../models/Config";
 import User from "../../models/user";
 
 const isLangRTL = code => {
@@ -68,7 +68,7 @@ const App = () => {
             const isFeedbackRole =
                 _.intersection(
                     config.currentUser.userRoles.map(userRole => userRole.name),
-                    config.userRoles.feedback
+                    config.base.userRoles.feedback
                 ).length > 0;
             if (isFeedbackRole) {
                 initFeedbackTool(d2, appConfig);
