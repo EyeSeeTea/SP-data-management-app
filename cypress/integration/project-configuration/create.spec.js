@@ -53,7 +53,6 @@ describe("Projects - Create", () => {
         cy.contains("Next").click();
         cy.contains("One Organisation Unit should be selected");
 
-        // expandOrgUnit("IQ");
         selectOrgUnit("Sierra Leona");
 
         cy.contains("Next").click();
