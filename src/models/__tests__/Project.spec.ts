@@ -264,9 +264,9 @@ describe("Project", () => {
             filter: ["level:eq:4"],
         };
 
-        it("returns list of organisation units of level 4", async () => {
+        it("returns list of organisation units of level 3", async () => {
             mock.onGet("/organisationUnits", {
-                params: { ...baseRequest, filter: ["level:eq:4"] },
+                params: { ...baseRequest, filter: ["level:eq:3"] },
             }).replyOnce(200, objectsPaginated);
 
             const { objects, pager } = await Project.getList(
@@ -284,7 +284,7 @@ describe("Project", () => {
             mock.onGet("/organisationUnits", {
                 params: {
                     ...baseRequest,
-                    filter: ["level:eq:4", "name:ilike:abc", "user.id:eq:M5zQapPyTZI"],
+                    filter: ["level:eq:3", "name:ilike:abc", "user.id:eq:M5zQapPyTZI"],
                 },
             }).replyOnce(200, objectsPaginated);
 
