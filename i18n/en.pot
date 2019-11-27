@@ -167,7 +167,7 @@ msgstr ""
 msgid "Monthly Executive Report"
 msgstr ""
 
-msgid "Data Entry"
+msgid "Add Actual Values"
 msgstr ""
 
 msgid "Cannot load project"
@@ -239,9 +239,6 @@ msgid "API link"
 msgstr ""
 
 msgid "Details"
-msgstr ""
-
-msgid "Add Actual Values"
 msgstr ""
 
 msgid "Go to Dashboard"
