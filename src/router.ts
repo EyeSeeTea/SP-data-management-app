@@ -4,9 +4,11 @@ const routes = {
     "projects.edit": ({ id }: { id: string }) => `/projects/${id}`,
     report: () => "/report",
     actualValues: () => "/actual-values",
-    // "dataEntry.edit": ({ id }: { id: string }) => `/dataEntry/${id}`,
+    "actual-values": () => `/actual-values`,
+    "actual-values.edit": ({ id }: { id: string }) => `/actual-values/${id}`,
     targetValues: () => "/target-values",
-    // "targetValues.edit": ({ id }: { id: string }) => `/targetValues/${id}`,
+    "target-values": () => `/target-values`,
+    "target-values.edit": ({ id }: { id: string }) => `/target-values/${id}`,
     dashboard: () => "/dashboard",
 };
 

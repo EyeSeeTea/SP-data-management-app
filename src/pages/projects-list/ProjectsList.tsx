@@ -93,7 +93,8 @@ function getConfig(history: History, currentUser: CurrentUser) {
             icon: "library_books",
             text: i18n.t("Add Actual Values"),
             multiple: false,
-            onClick: () => history.push(generateUrl("actualValues")),
+            onClick: (project: ProjectForList) =>
+                history.push(generateUrl("actual-values.edit", { id: project.id })),
         },
 
         dashboard: {
@@ -109,7 +110,8 @@ function getConfig(history: History, currentUser: CurrentUser) {
             icon: "assignment",
             text: i18n.t("Add Target Values"),
             multiple: false,
-            onClick: () => history.push(generateUrl("targetValues")),
+            onClick: (project: ProjectForList) =>
+                history.push(generateUrl("target-values.edit", { id: project.id })),
         },
 
         downloadData: {

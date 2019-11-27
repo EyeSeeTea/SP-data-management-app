@@ -16,8 +16,8 @@ const TargetValuesPage: React.FC = () => {
     const history = useHistory();
     const goBack = () => goTo(history, "/projects");
 
-    const orgUnitId = "YratZYNMnk7";
-    const datasetId = "Dhu7bwd7aXc";
+    const orgUnitId = "xJAERyCHClH";
+    const datasetId = "xxCzCNwNWsw";
     return (
         <React.Fragment>
             <PageHeader title={title} help={help} onBackClick={goBack} />

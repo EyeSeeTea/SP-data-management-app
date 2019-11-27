@@ -90,10 +90,6 @@ const getDataEntryForm = async (
     setDropdownHasValues: Function,
     dropdownValue: string
 ) => {
-    // Constants (to be deleted)
-
-    const iframeSelection = iframe.contentWindow.selection;
-
     // await waitforElementToLoad(iframeDocument, "#selectedDataSetId");
     setEntryStyling(iframe);
 
@@ -103,12 +99,9 @@ const getDataEntryForm = async (
             if (organisationUnitId[0] == orgUnitId) {
                 await setDatasetAndPeriod(iframe, datasetId, dropdownValue);
                 setDropdownHasValues();
-            } else {
-                iframeSelection.select(orgUnitId);
             }
         }
     );
-    iframeSelection.select(orgUnitId);
 };
 
 const DataEntry = (props: { orgUnitId: any; datasetId: string }) => {
