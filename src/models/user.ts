@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { Config } from "./config";
+import { Config } from "./Config";
 
 export default class User {
     constructor(private config: Config) {}
@@ -8,8 +8,9 @@ export default class User {
         return this.hasRole("reportingAnalyst") || this.hasRole("superUser");
     }
 
-    hasRole(roleKey: keyof Config["userRoles"]): boolean {
-        const { currentUser, userRoles } = this.config;
+    hasRole(roleKey: keyof Config["base"]["userRoles"]): boolean {
+        const { currentUser } = this.config;
+        const { userRoles } = this.config.base;
         return (
             _(currentUser.userRoles)
                 .map(userRole => userRole.name)

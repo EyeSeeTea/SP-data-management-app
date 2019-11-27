@@ -47,26 +47,28 @@ describe("Projects - Create", () => {
 
         cy.contains("Next").click();
 
-        // Organisation Units Step
+        // Organisation Unit Step
 
-        waitForStep("Organisation Units");
+        waitForStep("Organisation Unit");
         cy.contains("Next").click();
-        cy.contains("Select at least one item for Organisation Units");
+        cy.contains("One Organisation Unit should be selected");
 
         expandOrgUnit("Africa");
         selectOrgUnit("Sierra Leone");
 
         cy.contains("Next").click();
 
-        // Data Elements
+        // Indicators selection
 
-        waitForStep("Data Elements");
-        cy.contains("# of agriculture groups receiving support for improved livelihoods")
+        waitForStep("Indicators Selection");
+        cy.contains("# of agriculture groups receiving support for improved")
+            .parent("td")
             .prev("td")
             .click();
 
         cy.contains("Livelihoods").click();
         cy.contains("# of HH-level storage equipment provided")
+            .parent("td")
             .prev("td")
             .click();
 
@@ -88,7 +90,12 @@ describe("Projects - Create", () => {
 
         cy.contains("Description");
 
-        cy.contains("Organisation Units");
+        cy.contains("Selected country");
+        cy.contains("Sierra Leone");
+
+        cy.contains("Sectors");
+        cy.contains("# of agriculture groups receiving support for improved");
+        cy.contains("# of HH-level storage equipment provided");
 
         /*
         cy.get("[data-wizard-contents] button")

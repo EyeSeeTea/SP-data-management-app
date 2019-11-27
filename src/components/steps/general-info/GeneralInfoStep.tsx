@@ -1,4 +1,5 @@
 import React from "react";
+import _ from "lodash";
 import { Moment } from "moment";
 import { Card, CardContent } from "@material-ui/core";
 import { DatePicker } from "d2-ui-components";
@@ -35,13 +36,33 @@ class GeneralInfoStep extends React.Component<StepProps> {
             }),
             getTextField("awardNumber", i18n.t("Award Number"), project.awardNumber, {
                 props: { type: "number" },
+                validators: [
+                    validators.length({
+                        min: Project.lengths.awardNumber,
+                        max: Project.lengths.awardNumber,
+                    }),
+                ],
             }),
             getTextField(
                 "subsequentLettering",
                 i18n.t("Subsequent Lettering"),
-                project.subsequentLettering
+                project.subsequentLettering,
+                {
+                    validators: [
+                        validators.length({
+                            min: Project.lengths.subsequentLettering,
+                            max: Project.lengths.subsequentLettering,
+                        }),
+                    ],
+                }
             ),
-            getTextField("speedKey", i18n.t("Speed Key"), project.speedKey),
+            getTextField("speedKey", i18n.t("Speed Key"), project.speedKey, {
+                validators: [
+                    validators.length({
+                        max: Project.lengths.speedKey,
+                    }),
+                ],
+            }),
             getDateField("startDate", i18n.t("Start Date"), project.startDate, {
                 onUpdateField: this.onUpdateField,
             }),
@@ -67,6 +88,14 @@ const validators = {
         message: i18n.t("Field cannot be blank"),
         validator: Validators.isRequired,
     },
+    length: ({ min, max }: { min?: number; max?: number }) => ({
+        message:
+            i18n.t("Field length is invalid") +
+            ": " +
+            _.compact([min && `min=${min}`, max && `max=${max}`]).join(", "),
+        validator: (s: string) =>
+            (min === undefined || s.length >= min) && (max == undefined || s.length <= max),
+    }),
 };
 
 function getTextField(

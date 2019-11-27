@@ -38,9 +38,8 @@ const DataElementsStep: React.FC<StepProps> = ({ onChange, project }) => {
     );
 
     function onSelectionChange(dataElementIds: string[]) {
-        const { related, project: projectUpdated } = project.updateDataElementSelection(
-            dataElementIds
-        );
+        const result = project.updateDataElementsSelectionForSector(dataElementIds, sectorId || "");
+        const { related, project: projectUpdated } = result;
 
         showRelatedMessage(snackbar, related);
         onChange(projectUpdated);
@@ -54,7 +53,7 @@ const DataElementsStep: React.FC<StepProps> = ({ onChange, project }) => {
             contents={
                 <div style={{ width: "100%" }}>
                     <DataElementsTable
-                        dataElements={dataElements}
+                        dataElementsSet={dataElements}
                         sectorId={sectorId}
                         onSelectionChange={onSelectionChange}
                     />

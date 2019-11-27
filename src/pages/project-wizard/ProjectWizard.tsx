@@ -17,6 +17,8 @@ import SectorsFundersStep from "../../components/steps/sectors-funders/SectorsFu
 import OrgUnitsStep from "../../components/steps/org-units/OrgUnitsStep";
 import SaveStep from "../../components/steps/save/SaveStep";
 import DataElementsStep from "../../components/steps/data-elements/DataElementsStep";
+import { getDevProject } from "../../models/dev-project";
+import { Config } from "../../models/Config";
 
 export interface StepProps {
     api: D2Api;
@@ -27,6 +29,7 @@ export interface StepProps {
 
 interface Props {
     api: D2Api;
+    config: Config;
     history: History;
     location: Location;
     snackbar: any;
@@ -57,13 +60,14 @@ class ProjectWizardImpl extends React.Component<Props, State> {
     };
 
     async componentDidMount() {
-        const { api, match } = this.props;
+        const { api, config, match, location } = this.props;
+        const isDevMode = location.hash.split("#")[2] == "dev";
 
         try {
             const project =
                 match && match.params.id
-                    ? await Project.get(api, match.params.id)
-                    : await Project.create(api);
+                    ? await Project.get(api, config, match.params.id)
+                    : getDevProject(await Project.create(api, config), isDevMode);
             this.setState({ project });
         } catch (err) {
             console.error(err);
@@ -88,6 +92,7 @@ class ProjectWizardImpl extends React.Component<Props, State> {
                     "endDate",
                     "awardNumber",
                     "subsequentLettering",
+                    "code",
                 ],
                 description: i18n.t(
                     `Choose a name for the project and define the period for which data entry will be enabled`
@@ -104,17 +109,17 @@ class ProjectWizardImpl extends React.Component<Props, State> {
             },
             {
                 key: "organisation-units",
-                label: i18n.t("Organisation Units"),
+                label: i18n.t("Organisation Unit"),
                 component: OrgUnitsStep,
-                validationKeys: ["organisationUnits"],
+                validationKeys: ["organisationUnit"],
                 description: i18n.t(
                     `Select the organisation unit associated with the project. At least one must be selected.`
                 ),
                 help: i18n.t("TODO"),
             },
             {
-                key: "data-elements",
-                label: i18n.t("Data Elements"),
+                key: "indicators",
+                label: i18n.t("Indicators Selection"),
                 component: DataElementsStep,
                 validationKeys: ["dataElements"],
                 help: i18n.t("TODO"),
@@ -179,7 +184,7 @@ class ProjectWizardImpl extends React.Component<Props, State> {
             },
         }));
 
-        const urlHash = location.hash.slice(1);
+        const urlHash = location.hash.split("#")[1];
         const stepExists = steps.find(step => step.key === urlHash);
         const firstStepKey = steps.map(step => step.key)[0];
         const initialStepKey = stepExists ? urlHash : firstStepKey;
@@ -232,13 +237,14 @@ const ProjectWizard: React.FC<{}> = () => {
     const snackbar = useSnackbar();
     const history = useHistory();
     const location = useLocation();
-    const { api } = useAppContext();
+    const { api, config } = useAppContext();
     const match = useRouteMatch();
 
     return (
         <ProjectWizardImpl
             snackbar={snackbar}
             api={api}
+            config={config}
             history={history}
             location={location}
             match={match}
