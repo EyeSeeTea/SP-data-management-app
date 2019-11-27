@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import _ from "lodash";
 import { Card, CardContent } from "@material-ui/core";
 
@@ -9,21 +9,6 @@ import { useAppContext } from "../../../contexts/api-context";
 import { CSSProperties } from "@material-ui/core/styles/withStyles";
 
 type Option = { value: string; text: string };
-
-const sectorOptions = [
-    { value: "mGQ5ckOTU8A", text: "Agriculture" },
-    { value: "m4Cg6FOPPR7", text: "Livelihoods" },
-];
-
-const fundersOptions = [
-    { value: "1", text: "Atlas Copco" },
-    { value: "2", text: "ACWME" },
-    { value: "3", text: "Adventist Development Relief Agency" },
-    { value: "4", text: "AECOM International Sudan" },
-    { value: "5", text: "Academy for Educational Development" },
-    { value: "6", text: "Agridius Foundation" },
-];
-
 type ModelCollectionField = "sectors" | "funders";
 
 const defaultTitleStyle = { fontSize: "1.3em", color: "grey" };
@@ -34,7 +19,7 @@ const Title: React.FC<{ style?: CSSProperties }> = ({ style, children }) => {
 };
 
 const SectorsFundersStep: React.FC<StepProps> = ({ project, onChange }) => {
-    const { d2 } = useAppContext();
+    const { d2, config } = useAppContext();
 
     const onUpdateField = <K extends ModelCollectionField>(
         fieldName: K,
@@ -42,13 +27,21 @@ const SectorsFundersStep: React.FC<StepProps> = ({ project, onChange }) => {
         selected: string[]
     ) => {
         const newValue = _(options)
-            .keyBy("value")
+            .keyBy(option => option.value)
             .at(selected)
+            .compact()
             .map(({ value, text }) => ({ id: value, displayName: text }))
             .value();
         const newProject = project.set(fieldName, newValue);
         onChange(newProject);
     };
+
+    const [sectorOptions, funderOptions] = useMemo(() => {
+        return [
+            config.sectors.map(sector => ({ value: sector.id, text: sector.displayName })),
+            config.funders.map(funder => ({ value: funder.id, text: funder.displayName })),
+        ];
+    }, [config]);
 
     return (
         <Card>
@@ -75,9 +68,9 @@ const SectorsFundersStep: React.FC<StepProps> = ({ project, onChange }) => {
                         ordered={false}
                         height={300}
                         onChange={(selected: string[]) =>
-                            onUpdateField("funders", fundersOptions, selected)
+                            onUpdateField("funders", funderOptions, selected)
                         }
-                        options={fundersOptions}
+                        options={funderOptions}
                         selected={project.funders.map(funders => funders.id)}
                     />
                 </div>

@@ -1,3 +1,12 @@
+/* Like Partial<T>, but recursive on object values */
+export type RecursivePartial<T> = {
+    [P in keyof T]?: T[P] extends (infer U)[]
+        ? RecursivePartial<U>[]
+        : T[P] extends object
+        ? RecursivePartial<T[P]>
+        : T[P];
+};
+
 /*
 Extract properties from an object of a certain type:
 
@@ -9,3 +18,6 @@ Extract properties from an object of a certain type:
 export type GetPropertiesByType<T, FieldType> = {
     [Key in keyof T]: T[Key] extends FieldType ? Key : never;
 }[keyof T];
+
+/* Get inner type of array */
+export type GetItemType<T> = T extends (infer U)[] ? U : never;

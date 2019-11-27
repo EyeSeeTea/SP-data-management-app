@@ -33,11 +33,12 @@ const OrgUnitsStep: React.FC<StepProps> = ({ project, onChange }) => {
 
     const setOrgUnits = (orgUnitsPaths: string[]) => {
         const orgUnits = orgUnitsPaths.map(path => ({ path }));
-        const orgUnitsLast = orgUnits.slice(orgUnits.length - 1, orgUnits.length);
-        const newProject = project.set("organisationUnits", orgUnitsLast);
+        const newProject = project.set("organisationUnit", _.last(orgUnits));
         onChange(newProject);
     };
-    const selectableLevels = [3];
+
+    const selectableLevels = [2];
+    const selectedPaths = project.organisationUnit ? [project.organisationUnit.path] : [];
 
     return (
         <React.Fragment>
@@ -45,7 +46,7 @@ const OrgUnitsStep: React.FC<StepProps> = ({ project, onChange }) => {
                 <OrgUnitsSelector
                     d2={d2}
                     onChange={setOrgUnits}
-                    selected={project.organisationUnits.map(ou => ou.path)}
+                    selected={selectedPaths}
                     controls={controls}
                     rootIds={rootIds}
                     typeInput="radio"
