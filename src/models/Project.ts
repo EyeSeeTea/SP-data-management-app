@@ -263,7 +263,7 @@ class Project {
                 pageSize: pagination.pageSize,
                 filter: {
                     name: { ilike: filters.search },
-                    level: { eq: "4" },
+                    level: { eq: "3" },
                     "user.id": { eq: filters.createdByCurrentUser ? userId : undefined },
                 },
             })

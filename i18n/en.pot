@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2019-11-25T13:18:33.982Z\n"
-"PO-Revision-Date: 2019-11-25T13:18:33.982Z\n"
+"POT-Creation-Date: 2019-11-27T10:56:20.811Z\n"
+"PO-Revision-Date: 2019-11-27T10:56:20.811Z\n"
 
 msgid "<No value>"
 msgstr ""
@@ -17,10 +17,10 @@ msgstr ""
 msgid "Back"
 msgstr ""
 
-msgid "Series"
+msgid "Indicator Type"
 msgstr ""
 
-msgid "Indicator Type"
+msgid "Series"
 msgstr ""
 
 msgid "Only selected"

@@ -37,7 +37,7 @@ const OrgUnitsStep: React.FC<StepProps> = ({ project, onChange }) => {
         onChange(newProject);
     };
 
-    const selectableLevels = [3];
+    const selectableLevels = [2];
     const selectedPaths = project.organisationUnit ? [project.organisationUnit.path] : [];
 
     return (
