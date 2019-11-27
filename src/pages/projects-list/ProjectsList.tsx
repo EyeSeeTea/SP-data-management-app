@@ -149,9 +149,16 @@ function getConfig(history: History, currentUser: CurrentUser) {
     };
 
     const actionsForUserRoles: ActionsRoleMapping<typeof allActions> = {
-        reportingAnalyst: ["edit", "delete", "targetValues", "configMER"],
+        reportingAnalyst: [
+            "dashboard",
+            "edit",
+            "actualValues",
+            "targetValues",
+            "downloadData",
+            "configMER",
+        ],
         superUser: _.without(_.keys(allActions), "details") as Array<keyof typeof allActions>,
-        encode: ["actualValues"],
+        encode: ["actualValues", "targetValues", "dashboard", "downloadData"],
         analyser: ["dashboard", "downloadData"],
     };
 
@@ -188,6 +195,7 @@ const ProjectsList: React.FC = () => {
     const newProjectPageHandler = currentUser.canCreateProject()
         ? () => goTo(history, generateUrl("projects.new"))
         : null;
+
     return (
         <React.Fragment>
             <PageHeader
