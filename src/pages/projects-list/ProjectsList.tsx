@@ -52,6 +52,11 @@ function getConfig(history: History, currentUser: CurrentUser) {
     const columns: TableColumn<ProjectForList>[] = [
         { name: "displayName", text: i18n.t("Name"), sortable: true },
         { ...columnDate("lastUpdated", "datetime"), text: i18n.t("Last updated"), sortable: true },
+        {
+            ...columnDate("created", "datetime"),
+            text: i18n.t("Creation date"),
+            sortable: true,
+        },
         { ...columnDate("openingDate", "date"), text: i18n.t("Opening date"), sortable: true },
         { ...columnDate("closedDate", "date"), text: i18n.t("Closed date"), sortable: true },
     ];

@@ -107,6 +107,7 @@ const orgUnitFields = {
     displayDescription: yes,
     href: yes,
     publicAccess: yes,
+    creationDate: yes,
     lastUpdated: yes,
     openingDate: yes,
     closedDate: yes,
