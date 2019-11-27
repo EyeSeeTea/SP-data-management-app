@@ -11,7 +11,7 @@ context("Landing page", () => {
     it("shows the main sections of the app", () => {
         cy.contains("Project Configuration");
         cy.contains("Monthly Executive Report");
-        cy.contains("Data Entry");
+        cy.contains("Add Actual Values");
         cy.contains("Dashboard");
     });
 });

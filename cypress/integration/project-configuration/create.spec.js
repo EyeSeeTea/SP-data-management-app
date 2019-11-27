@@ -1,4 +1,4 @@
-// import moment from "moment";
+import moment from "moment";
 
 describe("Projects - Create", () => {
     before(() => {
@@ -8,7 +8,7 @@ describe("Projects - Create", () => {
         cy.get("[data-test=list-action-bar]").click();
     });
     it("gets data from the user and creates a project", () => {
-        cy.contains("New project").click();
+        cy.contains("New project");
 
         // General Info step
         waitForStep("General info");
@@ -21,7 +21,7 @@ describe("Projects - Create", () => {
         cy.contains("Subsequent Lettering must have 2 characters");
 
         cy.get("[data-field='name']").type("Cypress Project");
-        cy.get("[data-field='awardNumber']").type("12345");
+        cy.get("[data-field='awardNumber']").type(Math.floor(10000 + Math.random() * 90000));
         cy.get("[data-field='subsequentLettering']").type("SL");
 
         cy.contains("Start Date").click({ force: true });
@@ -47,64 +47,69 @@ describe("Projects - Create", () => {
 
         cy.contains("Next").click();
 
-        // Organisation Units Step
+        // Organisation Unit Step
 
-        waitForStep("Organisation Units");
+        waitForStep("Organisation Unit");
         cy.contains("Next").click();
-        cy.contains("Select at least one item for Organisation Units");
+        cy.contains("One Organisation Unit should be selected");
 
-        // selectOrgUnit("Africa");
+        selectOrgUnit("Sierra Leona");
 
-        // cy.contains("Next").click();
+        cy.contains("Next").click();
 
-        // Data Elements
+        // Indicators selection
 
-        // waitForStep("Data Elements");
-        // cy.contains("# of agriculture groups receiving support for improved livelihoods")
-        //     .prev("td")
-        //     .click();
+        waitForStep("Indicators Selection");
+        cy.contains("# of agriculture groups receiving support for improved")
+            .parent("td")
+            .prev("td")
+            .click();
 
-        // cy.contains("Livelihoods").click();
-        // cy.contains("# of HH-level storage equipment provided")
-        //     .prev("td")
-        //     .click();
+        cy.contains("Livelihoods").click();
+        cy.contains("# of HH-level storage equipment provided")
+            .parent("td")
+            .prev("td")
+            .click();
 
-        // cy.contains("Next").click();
+        cy.contains("Next").click();
 
         // Save step
 
-        // waitForStep("Summary and Save");
-        // cy.get("[data-test-current=true]").contains("Save");
+        waitForStep("Summary and Save");
+        cy.get("[data-test-current=true]").contains("Save");
 
-        // cy.contains("Name");
-        // cy.contains("Cypress Project");
+        cy.contains("Name");
+        cy.contains("Cypress Project");
 
-        // cy.contains("Period dates");
-        // const now = moment();
-        // const expectedDataStart = now.set("date", 11).format("LL");
-        // const expectedDataEnd = now.set("date", 13).format("LL");
-        // cy.contains(`${expectedDataStart} -> ${expectedDataEnd}`);
+        cy.contains("Period dates");
+        const now = moment();
+        const expectedDataStart = now.set("date", 11).format("LL");
+        const expectedDataEnd = now.set("date", 13).format("LL");
+        cy.contains(`${expectedDataStart} -> ${expectedDataEnd}`);
 
-        // cy.contains("Description");
+        cy.contains("Description");
 
-        // cy.contains("Organisation Units");
+        cy.contains("Selected country");
+        cy.contains("Sierra Leona");
 
-        /*
+        cy.contains("Sectors");
+        cy.contains("# of agriculture groups receiving support for improved");
+        cy.contains("# of HH-level storage equipment provided");
+
         cy.get("[data-wizard-contents] button")
             .contains("Save")
             .click();
-        */
     });
 });
 
-// function selectOrgUnit(label) {
-//     cy.contains(label)
-//         .find("input")
-//         .click();
-//     cy.contains(label)
-//         .should("have.css", "color")
-//         .and("not.equal", "rgba(0, 0, 0, 0.87)");
-// }
+function selectOrgUnit(label) {
+    cy.contains(label)
+        .find("input")
+        .click();
+    cy.contains(label)
+        .should("have.css", "color")
+        .and("not.equal", "rgba(0, 0, 0, 0.87)");
+}
 
 function clickDay(dayOfMonth) {
     cy.xpath(`//p[contains(text(), '${dayOfMonth}')]`).then(spans => {
