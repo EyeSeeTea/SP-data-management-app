@@ -90,7 +90,6 @@ const getDataEntryForm = async (
     setDropdownHasValues: Function,
     dropdownValue: string
 ) => {
-
     const iframeSelection = iframe.contentWindow.selection;
     setEntryStyling(iframe);
 
@@ -103,7 +102,6 @@ const getDataEntryForm = async (
             } else {
                 iframeSelection.select(orgUnitId);
             }
-
         }
     );
     iframeSelection.select(orgUnitId);
