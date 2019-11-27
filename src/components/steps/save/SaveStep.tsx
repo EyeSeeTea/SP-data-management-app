@@ -1,7 +1,5 @@
 import React, { useState, useEffect, ReactNode } from "react";
-import _ from "lodash";
 import { Button, LinearProgress } from "@material-ui/core";
-import { PaginatedObjects } from "d2-api";
 import { makeStyles } from "@material-ui/core/styles";
 
 import ExitWizardButton from "../../wizard/ExitWizardButton";
@@ -23,20 +21,16 @@ const useStyles = makeStyles({
     },
 });
 
-type OrganisationUnit = { id: string; displayName: string };
-
 const SaveStep: React.FC<StepProps> = ({ project, onCancel }) => {
     const [isSaving] = useState(false);
-    const [orgUnits, setOrgUnits] = useState<undefined | PaginatedObjects<OrganisationUnit>>(
-        undefined
-    );
+    const [orgUnit, setOrgUnitName] = useState("...");
     const [dialogOpen, setDialogOpen] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const snackbar = useSnackbar();
     const history = useHistory();
 
     useEffect(() => {
-        project.getOrganisationUnitsWithName().then(paginatedOus => setOrgUnits(paginatedOus));
+        project.getOrganisationUnitName().then(name => setOrgUnitName(name || "unknown"));
     }, [project]);
 
     const classes = useStyles();
@@ -77,10 +71,7 @@ const SaveStep: React.FC<StepProps> = ({ project, onCancel }) => {
 
                     <LiEntry label={i18n.t("Funders")} value={getNames(project.funders)} />
 
-                    <LiEntry
-                        label={i18n.t("Organisation Units")}
-                        value={getNamesFromPaginated(orgUnits)}
-                    />
+                    <LiEntry label={i18n.t("Selected country")} value={orgUnit} />
 
                     <LiEntry label={i18n.t("Sectors")} value={getSectorsInfo(project)} />
                 </ul>
@@ -112,48 +103,27 @@ const LiEntry = ({ label, value }: { label: string; value?: React.ReactNode }) =
 function getSectorsInfo(project: Project): ReactNode {
     return (
         <ul>
-            {project.sectors.map(sector => (
-                <LiEntry
-                    key={sector.id}
-                    label={sector.displayName}
-                    value={
-                        project.dataElements.getSelected({ sectorId: sector.id }).length +
-                        " " +
-                        i18n.t("data elements")
-                    }
-                />
-            ))}
+            {project.sectors.map(sector => {
+                const dataElements = project.dataElements.get({
+                    onlySelected: true,
+                    sectorId: sector.id,
+                    includePaired: true,
+                });
+                const value = (
+                    <ul>
+                        {dataElements.map(de => (
+                            <li key={de.id}>{de.name}</li>
+                        ))}
+                    </ul>
+                );
+                return <LiEntry key={sector.id} label={sector.displayName} value={value} />;
+            })}
         </ul>
     );
 }
 
 function getNames(objects: { displayName: string }[]) {
     return objects.map(obj => obj.displayName).join(", ");
-}
-
-function getNamesFromPaginated(
-    paginatedObjects: PaginatedObjects<{ displayName: string }> | undefined
-) {
-    if (!paginatedObjects) {
-        return i18n.t("Loading...");
-    } else {
-        const { pager, objects } = paginatedObjects;
-        const othersCount = pager.total - objects.length;
-        const names =
-            _(objects)
-                .map(obj => obj.displayName)
-                .sortBy()
-                .join(", ") || i18n.t("[None]");
-        if (othersCount > 0) {
-            return i18n.t("[{{total}}] {{names}} and {{othersCount}} other(s)", {
-                total: pager.total,
-                names,
-                othersCount,
-            });
-        } else {
-            return `[${pager.total}] ${names}`;
-        }
-    }
 }
 
 function getProjectPeriodDateString(project: Project): string {

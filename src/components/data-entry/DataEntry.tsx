@@ -90,7 +90,7 @@ const getDataEntryForm = async (
     setDropdownHasValues: Function,
     dropdownValue: string
 ) => {
-    // await waitforElementToLoad(iframeDocument, "#selectedDataSetId");
+    const iframeSelection = iframe.contentWindow.selection;
     setEntryStyling(iframe);
 
     iframe.contentWindow.dhis2.util.on(
@@ -99,9 +99,12 @@ const getDataEntryForm = async (
             if (organisationUnitId[0] == orgUnitId) {
                 await setDatasetAndPeriod(iframe, datasetId, dropdownValue);
                 setDropdownHasValues();
+            } else {
+                iframeSelection.select(orgUnitId);
             }
         }
     );
+    iframeSelection.select(orgUnitId);
 };
 
 const DataEntry = (props: { orgUnitId: any; datasetId: string }) => {
