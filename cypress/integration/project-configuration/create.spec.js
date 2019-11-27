@@ -21,7 +21,7 @@ describe("Projects - Create", () => {
         cy.contains("Subsequent Lettering must have 2 characters");
 
         cy.get("[data-field='name']").type("Cypress Project");
-        cy.get("[data-field='awardNumber']").type("12345");
+        cy.get("[data-field='awardNumber']").type(Math.floor(10000 + Math.random() * 90000));
         cy.get("[data-field='subsequentLettering']").type("SL");
 
         cy.contains("Start Date").click({ force: true });
@@ -53,8 +53,8 @@ describe("Projects - Create", () => {
         cy.contains("Next").click();
         cy.contains("One Organisation Unit should be selected");
 
-        expandOrgUnit("Africa");
-        selectOrgUnit("Sierra Leone");
+        // expandOrgUnit("IQ");
+        selectOrgUnit("Sierra Leona");
 
         cy.contains("Next").click();
 
@@ -91,17 +91,15 @@ describe("Projects - Create", () => {
         cy.contains("Description");
 
         cy.contains("Selected country");
-        cy.contains("Sierra Leone");
+        cy.contains("Sierra Leona");
 
         cy.contains("Sectors");
         cy.contains("# of agriculture groups receiving support for improved");
         cy.contains("# of HH-level storage equipment provided");
 
-        /*
         cy.get("[data-wizard-contents] button")
             .contains("Save")
             .click();
-        */
     });
 });
 
@@ -123,17 +121,6 @@ function clickDay(dayOfMonth) {
     });
 
     cy.wait(100); // eslint-disable-line cypress/no-unnecessary-waiting
-}
-function expandOrgUnit(label) {
-    cy.server()
-        .route("GET", "/api/organisationUnits/*")
-        .as("getChildrenOrgUnits");
-    cy.get("[data-wizard-contents]")
-        .contains(label)
-        .parents(".label")
-        .prev()
-        .click();
-    cy.wait("@getChildrenOrgUnits");
 }
 
 function selectInMultiSelector(selectorName, label) {
