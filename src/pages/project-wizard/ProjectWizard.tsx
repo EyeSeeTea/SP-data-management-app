@@ -13,7 +13,7 @@ import ExitWizardButton from "../../components/wizard/ExitWizardButton";
 import PageHeader from "../../components/page-header/PageHeader";
 import { useAppContext } from "../../contexts/api-context";
 import GeneralInfoStep from "../../components/steps/general-info/GeneralInfoStep";
-import SectorsFundersStep from "../../components/steps/sectors-funders/SectorsFundersStep";
+import SectorsStep from "../../components/steps/sectors/SectorsStep";
 import OrgUnitsStep from "../../components/steps/org-units/OrgUnitsStep";
 import SaveStep from "../../components/steps/save/SaveStep";
 import DataElementsStep from "../../components/steps/data-elements/DataElementsStep";
@@ -93,18 +93,19 @@ class ProjectWizardImpl extends React.Component<Props, State> {
                     "awardNumber",
                     "subsequentLettering",
                     "code",
+                    "funders",
                 ],
                 description: i18n.t(
-                    `Choose a name for the project and define the period for which data entry will be enabled`
+                    `Choose a name for the project and define the period for which data entry will be enabled and select funders for your project`
                 ),
                 help: i18n.t("TODO"),
             },
             {
-                key: "sectors-funders",
-                label: i18n.t("Sectors & Project Funders"),
-                component: SectorsFundersStep,
-                validationKeys: ["sectors", "funders"],
-                description: i18n.t(`Select sectors and funders for your project.`),
+                key: "sectors",
+                label: i18n.t("Sectors"),
+                component: SectorsStep,
+                validationKeys: ["sectors"],
+                description: i18n.t(`Select sectors for your project.`),
                 help: i18n.t("TODO"),
             },
             {

@@ -7,7 +7,7 @@ describe("Projects - Create", () => {
         cy.contains("Project Configuration").click();
         cy.get("[data-test=list-action-bar]").click();
     });
-    it("gets data from the user and creates a project", () => {
+    it.only("gets data from the user and creates a project", () => {
         cy.contains("New project");
 
         // General Info step
@@ -30,20 +30,20 @@ describe("Projects - Create", () => {
         cy.contains("End Date").click({ force: true });
         clickDay(13);
 
+        cy.contains("Project funders");
+        selectInMultiSelector("funders", "ACWME");
+
         cy.contains("Next").click();
 
         // Sectors & Funders
 
-        waitForStep("Sectors & Project Funders");
+        waitForStep("Sectors");
 
         cy.contains("Next").click();
         cy.contains("Select at least one item for Sectors");
-        cy.contains("Select at least one item for Funders");
 
         selectInMultiSelector("sectors", "Agriculture");
         selectInMultiSelector("sectors", "Livelihoods");
-
-        selectInMultiSelector("funders", "ACWME");
 
         cy.contains("Next").click();
 

@@ -5,7 +5,7 @@ import { CSSProperties } from "@material-ui/core/styles/withStyles";
 import { StepProps } from "../../../pages/project-wizard/ProjectWizard";
 import i18n from "../../../locales";
 
-import { Card, CardContent } from "@material-ui/core";
+import { CardContent } from "@material-ui/core";
 import { useAppContext } from "../../../contexts/api-context";
 
 import { MultiSelector } from "d2-ui-components";
@@ -16,11 +16,10 @@ const Title: React.FC<{ style?: CSSProperties }> = ({ style, children }) => {
     const finalStyle = style ? { ...defaultTitleStyle, ...style } : defaultTitleStyle;
     return <div style={finalStyle}>{children}</div>;
 };
-type ModelCollectionField = "sectors" | "funders";
+type ModelCollectionField = "funders";
 type Option = { value: string; text: string };
 
 const FundersStep: React.FC<StepProps> = ({ project, onChange }) => {
-    // const { project } = props;
     const { d2, config } = useAppContext();
     const onUpdateField = <K extends ModelCollectionField>(
         fieldName: K,
@@ -34,16 +33,12 @@ const FundersStep: React.FC<StepProps> = ({ project, onChange }) => {
             .map(({ value, text }) => ({ id: value, displayName: text }))
             .value();
         const newProject = project.set(fieldName, newValue);
-        const result = project.funders.map((funders: { id: any }) => funders.id);
-
         onChange(newProject);
     };
-    const [sectorOptions, funderOptions] = useMemo(() => {
-        return [
-            config.sectors.map(sector => ({ value: sector.id, text: sector.displayName })),
-            config.funders.map(funder => ({ value: funder.id, text: funder.displayName })),
-        ];
+    const [funderOptions] = useMemo(() => {
+        return [config.funders.map(funder => ({ value: funder.id, text: funder.displayName }))];
     }, [config]);
+
     return (
         <CardContent>
             <Title style={{ marginTop: 35 }}>{i18n.t("Project funders")}</Title>

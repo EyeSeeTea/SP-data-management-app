@@ -3,12 +3,11 @@ import _ from "lodash";
 import { Moment } from "moment";
 import { Card, CardContent } from "@material-ui/core";
 import { DatePicker } from "d2-ui-components";
-import { useAppContext } from "../../../contexts/api-context";
 
 import i18n from "../../../locales";
 import { StepProps } from "../../../pages/project-wizard/ProjectWizard";
 import Project from "../../../models/Project";
-import FundersStep from "../sectors-funders/FundersStep";
+import Funders from "./Funders";
 
 /* eslint-disable @typescript-eslint/no-var-requires */
 const { TextField } = require("@dhis2/d2-ui-core");
@@ -77,7 +76,7 @@ class GeneralInfoStep extends React.Component<StepProps> {
             <Card>
                 <CardContent>
                     <FormBuilder fields={fields} onUpdateField={this.onUpdateField} />
-                    <FundersStep
+                    <Funders
                         project={project}
                         api={project.api}
                         onChange={this.props.onChange}
