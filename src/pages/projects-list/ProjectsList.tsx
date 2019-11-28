@@ -95,7 +95,7 @@ function getConfig(history: History, currentUser: CurrentUser) {
             isPrimary: true,
         },
 
-        dataEntry: {
+        actualValues: {
             name: "data-entry",
             icon: "library_books",
             text: i18n.t("Go to Data Entry"),
@@ -152,10 +152,17 @@ function getConfig(history: History, currentUser: CurrentUser) {
     };
 
     const actionsForUserRoles: ActionsRoleMapping<typeof allActions> = {
-        reportingAnalyst: ["edit", "delete", "targetValues", "configMER"],
-        superUser: _.without(_.keys(allActions), "details") as Array<keyof typeof allActions>,
-        encode: ["dataEntry"],
-        analyser: ["dashboard", "downloadData"],
+        dataReviewer: [
+            "dashboard",
+            "edit",
+            "actualValues",
+            "targetValues",
+            "downloadData",
+            "configMER",
+        ],
+        admin: _.without(_.keys(allActions), "details") as Array<keyof typeof allActions>,
+        dataEntry: ["actualValues"],
+        dataViewer: ["dashboard", "downloadData"],
     };
 
     const roleKeys = (_.keys(actionsForUserRoles) as unknown) as Array<keyof UserRolesConfig>;

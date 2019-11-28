@@ -9,10 +9,10 @@ const yes = true as const;
 const baseConfig = {
     userRoles: {
         feedback: ["PM Feedback"],
-        reportingAnalyst: ["PM Reporting Analyst"],
-        superUser: ["PM Superuser"],
-        encode: ["PM Encoder"],
-        analyser: ["PM Analyser"],
+        dataReviewer: ["Data Reviewer"],
+        dataViewer: ["Data Viewer"],
+        admin: ["PM Admin"],
+        dataEntry: ["Data Entry"],
     },
     dataElementGroupSets: {
         sector: "SECTOR",

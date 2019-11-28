@@ -257,11 +257,11 @@ describe("Project", () => {
         const baseRequest = {
             paging: true,
             fields:
-                "closedDate,created,displayDescription,displayName,href,id,lastUpdated,openingDate,publicAccess,user[displayName,id]",
+                "closedDate,created,creationDate,displayDescription,displayName,href,id,lastUpdated,openingDate,publicAccess,user[displayName,id]",
             order: "displayName:idesc",
             page: 1,
             pageSize: 10,
-            filter: ["level:eq:4"],
+            filter: ["level:eq:3"],
         };
 
         it("returns list of organisation units of level 3", async () => {
