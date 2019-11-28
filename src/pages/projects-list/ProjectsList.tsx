@@ -149,7 +149,7 @@ function getConfig(history: History, currentUser: CurrentUser) {
     };
 
     const actionsForUserRoles: ActionsRoleMapping<typeof allActions> = {
-        reportingAnalyst: [
+        dataReviewer: [
             "dashboard",
             "edit",
             "actualValues",
@@ -157,9 +157,9 @@ function getConfig(history: History, currentUser: CurrentUser) {
             "downloadData",
             "configMER",
         ],
-        superUser: _.without(_.keys(allActions), "details") as Array<keyof typeof allActions>,
-        encode: ["actualValues", "targetValues", "dashboard", "downloadData"],
-        analyser: ["dashboard", "downloadData"],
+        dataViewer: ["dashboard", "downloadData"],
+        admin: _.without(_.keys(allActions), "details") as Array<keyof typeof allActions>,
+        dataEntry: ["actualValues", "targetValues", "dashboard", "downloadData"],
     };
 
     const roleKeys = (_.keys(actionsForUserRoles) as unknown) as Array<keyof UserRolesConfig>;

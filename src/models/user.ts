@@ -5,7 +5,7 @@ export default class User {
     constructor(private config: Config) {}
 
     canCreateProject(): boolean {
-        return this.hasRole("superUser");
+        return this.hasRole("admin");
     }
 
     hasRole(roleKey: keyof Config["base"]["userRoles"]): boolean {
