@@ -95,6 +95,7 @@ const defaultProjectData = {
     sectors: [],
     funders: [],
     organisationUnit: undefined,
+    code: "",
 };
 
 const yes = true as const;
@@ -108,8 +109,10 @@ const orgUnitFields = {
     publicAccess: yes,
     created: yes,
     lastUpdated: yes,
+    lastUpdatedBy: {name: yes },
     openingDate: yes,
     closedDate: yes,
+    code: yes,
 };
 
 export type ProjectForList = SelectedPick<D2OrganisationUnitSchema, typeof orgUnitFields>;
