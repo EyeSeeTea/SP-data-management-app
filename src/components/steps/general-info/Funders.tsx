@@ -1,16 +1,14 @@
 import React, { useMemo } from "react";
 import _ from "lodash";
-
-import { CSSProperties } from "@material-ui/core/styles/withStyles";
-import { StepProps } from "../../../pages/project-wizard/ProjectWizard";
 import i18n from "../../../locales";
 
-import { CardContent } from "@material-ui/core";
 import { useAppContext } from "../../../contexts/api-context";
-
+import { StepProps } from "../../../pages/project-wizard/ProjectWizard";
+import { CardContent } from "@material-ui/core";
 import { MultiSelector } from "d2-ui-components";
+import { CSSProperties } from "@material-ui/core/styles/withStyles";
 
-const defaultTitleStyle = { fontSize: "1.3em", color: "grey" };
+const defaultTitleStyle = { fontSize: "1.1em", color: "grey" };
 
 const Title: React.FC<{ style?: CSSProperties }> = ({ style, children }) => {
     const finalStyle = style ? { ...defaultTitleStyle, ...style } : defaultTitleStyle;
@@ -40,7 +38,7 @@ const FundersStep: React.FC<StepProps> = ({ project, onChange }) => {
     }, [config]);
 
     return (
-        <CardContent>
+        <CardContent style={{ padding: "5px 0 0 0" }}>
             <Title style={{ marginTop: 35 }}>{i18n.t("Project funders")}</Title>
             <div data-test-selector="funders" style={{ paddingRight: 40 }}>
                 <MultiSelector
@@ -52,6 +50,7 @@ const FundersStep: React.FC<StepProps> = ({ project, onChange }) => {
                         onUpdateField("funders", funderOptions, selected)
                     }
                     options={funderOptions}
+                    selected={project.funders.map(funder => funder.id)}
                 />
             </div>
         </CardContent>
