@@ -261,12 +261,12 @@ describe("Project", () => {
             order: "displayName:idesc",
             page: 1,
             pageSize: 10,
-            filter: ["level:eq:4"],
+            filter: ["level:eq:3"],
         };
 
         it("returns list of organisation units of level 3", async () => {
             mock.onGet("/organisationUnits", {
-                params: { ...baseRequest, filter: ["level:eq:3"] },
+                params: { ...baseRequest },
             }).replyOnce(200, objectsPaginated);
 
             const { objects, pager } = await Project.getList(
