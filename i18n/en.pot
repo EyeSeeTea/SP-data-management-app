@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2019-11-27T12:10:10.193Z\n"
-"PO-Revision-Date: 2019-11-27T12:10:10.193Z\n"
+"POT-Creation-Date: 2019-11-29T05:27:35.915Z\n"
+"PO-Revision-Date: 2019-11-29T05:27:35.915Z\n"
 
 msgid "<No value>"
 msgstr ""
@@ -220,6 +220,9 @@ msgstr ""
 msgid "Last updated"
 msgstr ""
 
+msgid "Created"
+msgstr ""
+
 msgid "Opening date"
 msgstr ""
 
@@ -227,9 +230,6 @@ msgid "Closed date"
 msgstr ""
 
 msgid "Id"
-msgstr ""
-
-msgid "Created"
 msgstr ""
 
 msgid "Created By"
