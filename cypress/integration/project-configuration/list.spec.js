@@ -23,7 +23,7 @@ describe("Project Configuration - List page", () => {
             .trigger("contextmenu");
 
         cy.contains("Details");
-        cy.contains("Go to Data Entry");
+        cy.contains("Add Actual Values");
         cy.contains("Go to Dashboard");
         cy.contains("Add Target Values");
         cy.contains("Download Data");
@@ -88,14 +88,14 @@ describe("Project Configuration - List page", () => {
             cy.url().should("include", "/dashboard");
         });
 
-        it("will navegate to data-entry from the actions menu", () => {
+        it("will navegate to actual values from the actions menu", () => {
             cy.get(".data-table__rows > :nth-child(1) button").click();
             cy.get("span[role=menuitem]")
-                .contains("Go to Data Entry")
+                .contains("Add Actual Values")
                 .click();
 
-            cy.get("h5").contains("Data Entry");
-            cy.url().should("include", "/data-entry/");
+            cy.get("h5").contains("Set Actual Values for Project");
+            cy.url().should("include", "/actual-values/");
         });
     });
 
