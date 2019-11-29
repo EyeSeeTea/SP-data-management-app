@@ -52,6 +52,11 @@ function getConfig(history: History, currentUser: CurrentUser) {
     const columns: TableColumn<ProjectForList>[] = [
         { name: "displayName", text: i18n.t("Name"), sortable: true },
         { ...columnDate("lastUpdated", "datetime"), text: i18n.t("Last updated"), sortable: true },
+        {
+            ...columnDate("created", "datetime"),
+            text: i18n.t("Created"),
+            sortable: true,
+        },
         { ...columnDate("openingDate", "date"), text: i18n.t("Opening date"), sortable: true },
         { ...columnDate("closedDate", "date"), text: i18n.t("Closed date"), sortable: true },
     ];
@@ -149,10 +154,17 @@ function getConfig(history: History, currentUser: CurrentUser) {
     };
 
     const actionsForUserRoles: ActionsRoleMapping<typeof allActions> = {
-        reportingAnalyst: ["edit", "delete", "targetValues", "configMER"],
-        superUser: _.without(_.keys(allActions), "details") as Array<keyof typeof allActions>,
-        encode: ["actualValues"],
-        analyser: ["dashboard", "downloadData"],
+        dataReviewer: [
+            "dashboard",
+            "edit",
+            "actualValues",
+            "targetValues",
+            "downloadData",
+            "configMER",
+        ],
+        admin: _.without(_.keys(allActions), "details") as Array<keyof typeof allActions>,
+        dataEntry: ["actualValues"],
+        dataViewer: ["dashboard", "downloadData"],
     };
 
     const roleKeys = (_.keys(actionsForUserRoles) as unknown) as Array<keyof UserRolesConfig>;
