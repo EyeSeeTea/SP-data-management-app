@@ -257,7 +257,7 @@ describe("Project", () => {
         const baseRequest = {
             paging: true,
             fields:
-                "closedDate,created,creationDate,displayDescription,displayName,href,id,lastUpdated,openingDate,publicAccess,user[displayName,id]",
+                "closedDate,created,displayDescription,displayName,href,id,lastUpdated,openingDate,publicAccess,user[displayName,id]",
             order: "displayName:idesc",
             page: 1,
             pageSize: 10,
@@ -266,7 +266,7 @@ describe("Project", () => {
 
         it("returns list of organisation units of level 3", async () => {
             mock.onGet("/organisationUnits", {
-                params: { ...baseRequest, filter: ["level:eq:3"] },
+                params: { ...baseRequest },
             }).replyOnce(200, objectsPaginated);
 
             const { objects, pager } = await Project.getList(

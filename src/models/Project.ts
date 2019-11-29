@@ -101,13 +101,12 @@ const yes = true as const;
 
 const orgUnitFields = {
     id: yes,
-    created: yes,
     user: { id: yes, displayName: yes },
     displayName: yes,
     displayDescription: yes,
     href: yes,
     publicAccess: yes,
-    creationDate: yes,
+    created: yes,
     lastUpdated: yes,
     openingDate: yes,
     closedDate: yes,

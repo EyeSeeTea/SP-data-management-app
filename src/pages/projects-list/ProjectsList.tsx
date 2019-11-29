@@ -54,7 +54,7 @@ function getConfig(history: History, currentUser: CurrentUser) {
         { ...columnDate("lastUpdated", "datetime"), text: i18n.t("Last updated"), sortable: true },
         {
             ...columnDate("created", "datetime"),
-            text: i18n.t("Creation date"),
+            text: i18n.t("Created"),
             sortable: true,
         },
         { ...columnDate("openingDate", "date"), text: i18n.t("Opening date"), sortable: true },
