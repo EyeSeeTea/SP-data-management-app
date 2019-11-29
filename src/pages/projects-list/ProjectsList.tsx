@@ -162,9 +162,9 @@ function getConfig(history: History, currentUser: CurrentUser) {
             "downloadData",
             "configMER",
         ],
-        admin: _.without(_.keys(allActions), "details") as Array<keyof typeof allActions>,
-        dataEntry: ["actualValues"],
         dataViewer: ["dashboard", "downloadData"],
+        admin: _.without(_.keys(allActions), "details") as Array<keyof typeof allActions>,
+        dataEntry: ["actualValues", "targetValues", "dashboard", "downloadData"],
     };
 
     const roleKeys = (_.keys(actionsForUserRoles) as unknown) as Array<keyof UserRolesConfig>;
@@ -200,6 +200,7 @@ const ProjectsList: React.FC = () => {
     const newProjectPageHandler = currentUser.canCreateProject()
         ? () => goTo(history, generateUrl("projects.new"))
         : null;
+
     return (
         <React.Fragment>
             <PageHeader
