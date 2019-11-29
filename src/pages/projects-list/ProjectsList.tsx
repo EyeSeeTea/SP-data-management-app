@@ -96,12 +96,12 @@ function getConfig(history: History, currentUser: CurrentUser) {
         },
 
         actualValues: {
-            name: "data-entry",
+            name: "add-actual-values",
             icon: "library_books",
-            text: i18n.t("Go to Data Entry"),
+            text: i18n.t("Add Actual Values"),
             multiple: false,
             onClick: (project: ProjectForList) =>
-                history.push(generateUrl("dataEntry.edit", { id: project.id })),
+                history.push(generateUrl("actual-values.edit", { id: project.id })),
         },
 
         dashboard: {
@@ -117,6 +117,8 @@ function getConfig(history: History, currentUser: CurrentUser) {
             icon: "assignment",
             text: i18n.t("Add Target Values"),
             multiple: false,
+            onClick: (project: ProjectForList) =>
+                history.push(generateUrl("target-values.edit", { id: project.id })),
         },
 
         downloadData: {
@@ -198,7 +200,6 @@ const ProjectsList: React.FC = () => {
     const newProjectPageHandler = currentUser.canCreateProject()
         ? () => goTo(history, generateUrl("projects.new"))
         : null;
-
     return (
         <React.Fragment>
             <PageHeader

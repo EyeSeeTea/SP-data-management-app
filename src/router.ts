@@ -3,8 +3,12 @@ const routes = {
     "projects.new": () => `/projects/new`,
     "projects.edit": ({ id }: { id: string }) => `/projects/${id}`,
     report: () => "/report",
-    dataEntry: () => "/data-entry",
-    "dataEntry.edit": ({ id }: { id: string }) => `/data-entry/${id}`,
+    actualValues: () => "/actual-values",
+    "actual-values": () => `/actual-values`,
+    "actual-values.edit": ({ id }: { id: string }) => `/actual-values/${id}`,
+    targetValues: () => "/target-values",
+    "target-values": () => `/target-values`,
+    "target-values.edit": ({ id }: { id: string }) => `/target-values/${id}`,
     dashboard: () => "/dashboard",
 };
 
