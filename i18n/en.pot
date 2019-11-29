@@ -229,7 +229,7 @@ msgstr ""
 msgid "Closed date"
 msgstr ""
 
-msgid "Id"
+msgid "Last updated By"
 msgstr ""
 
 msgid "Created By"
