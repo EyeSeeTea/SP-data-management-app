@@ -16,7 +16,6 @@ function autoResizeIframeByContent(iframe: HTMLIFrameElement) {
 }
 
 function setEntryStyling(iframe: any) {
-    //hide actual-target filter
     const iframeDocument = iframe.contentWindow.document;
     iframeDocument.querySelector("#currentSelection").remove();
     iframeDocument.querySelector("#header").remove();
@@ -60,8 +59,12 @@ const obtainDropdownItems = (iframeDocument: HTMLIFrameElement) => {
         dropdownItems.push(item);
     }
 };
-
-const setDatasetAndPeriod = async (iframe: any, datasetId: string, dropdownValue: string) => {
+const setDatasetPeriodAndCategory = async (
+    iframe: any,
+    datasetId: string,
+    category: string,
+    dropdownValue: string
+) => {
     const iframeDocument = iframe.contentWindow.document;
 
     // Constants (to be deleted)
@@ -80,6 +83,11 @@ const setDatasetAndPeriod = async (iframe: any, datasetId: string, dropdownValue
     await waitForChildren(periodSelector, period);
     periodSelector.value = period;
     periodSelector.onchange();
+    const actualTargetSelector = iframeDocument.querySelector("#category-GIIHAr9BzzO");
+
+    await waitForChildren(actualTargetSelector, category);
+    actualTargetSelector.value = category;
+    actualTargetSelector.onchange();
 
     obtainDropdownItems(iframeDocument);
 };
@@ -88,6 +96,7 @@ const getDataEntryForm = async (
     iframe: any,
     datasetId: string,
     orgUnitId: any,
+    category: string,
     setDropdownHasValues: Function,
     dropdownValue: string
 ) => {
@@ -98,7 +107,7 @@ const getDataEntryForm = async (
         "dhis2.ou.event.orgUnitSelected",
         async (event: any, organisationUnitId: any) => {
             if (organisationUnitId[0] == orgUnitId) {
-                await setDatasetAndPeriod(iframe, datasetId, dropdownValue);
+                await setDatasetPeriodAndCategory(iframe, datasetId, category, dropdownValue);
                 setDropdownHasValues();
             } else {
                 iframeSelection.select(orgUnitId);
@@ -108,8 +117,8 @@ const getDataEntryForm = async (
     iframeSelection.select(orgUnitId);
 };
 
-const DataEntry = (props: { orgUnitId: any; datasetId: string }) => {
-    const { orgUnitId, datasetId } = props;
+const DataEntry = (props: { orgUnitId: any; datasetId: string; category: string }) => {
+    const { orgUnitId, datasetId, category } = props;
     const [state, setState] = useState({
         loading: false,
         dropdownHasValues: false,
@@ -150,6 +159,7 @@ const DataEntry = (props: { orgUnitId: any; datasetId: string }) => {
                     iframe,
                     datasetId,
                     orgUnitId,
+                    category,
                     setDropdownHasValues,
                     state.dropdownValue
                 )

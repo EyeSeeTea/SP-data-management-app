@@ -2,13 +2,8 @@ import React, { useEffect, useState } from "react";
 import i18n from "../../locales";
 import PageHeader from "../../components/page-header/PageHeader";
 import { useHistory } from "react-router";
-import { History } from "history";
 //@ts-ignore
 import { useConfig } from "@dhis2/app-runtime";
-
-function goTo(history: History, url: string) {
-    history.push(url);
-}
 
 function getConfig() {
     const help = i18n.t(
@@ -44,7 +39,7 @@ function waitforElementToLoad(iframeDocument: any, selector: string) {
 const Dashboard: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const history = useHistory();
-    const goToLandingPage = () => goTo(history, "/");
+    const goToLandingPage = () => history.goBack();
     const subtitle = i18n.t(`Dashboard project to analyse your data...`);
     const stylesSubtitle = { marginBottom: 10, marginLeft: 15 };
     const config = getConfig();
