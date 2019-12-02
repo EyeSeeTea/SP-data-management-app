@@ -229,13 +229,22 @@ msgstr ""
 msgid "Closed date"
 msgstr ""
 
-msgid "Last updated By"
+msgid "Last Updated"
+msgstr ""
+
+msgid "Last Updated By"
 msgstr ""
 
 msgid "Created By"
 msgstr ""
 
-msgid "API link"
+msgid "Opening Date"
+msgstr ""
+
+msgid "Closed Date"
+msgstr ""
+
+msgid "API Link"
 msgstr ""
 
 msgid "Details"
