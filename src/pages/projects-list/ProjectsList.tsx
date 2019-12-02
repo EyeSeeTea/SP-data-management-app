@@ -70,10 +70,10 @@ function getConfig(history: History, currentUser: CurrentUser) {
             getValue: (project: ProjectForList) => `${project.code}`,
         },
         { name: "displayDescription", text: i18n.t("Description") },
-        { ...columnDate("lastUpdated", "datetime"), text: i18n.t("Last updated") },
+        { ...columnDate("lastUpdated", "datetime"), text: i18n.t("Last Updated") },
         {
             name: "lastUpdatedBy",
-            text: i18n.t("Last updated By"),
+            text: i18n.t("Last Updated By"),
             getValue: (project: ProjectForList) => ` ${project.lastUpdatedBy.name}`,
         },
         { ...columnDate("created", "datetime"), text: i18n.t("Created") },
@@ -82,11 +82,11 @@ function getConfig(history: History, currentUser: CurrentUser) {
             text: i18n.t("Created By"),
             getValue: (project: ProjectForList) => `${project.user.displayName}`,
         },
-        { ...columnDate("openingDate", "date"), text: i18n.t("Opening date") },
-        { ...columnDate("closedDate", "date"), text: i18n.t("Closed date") },
+        { ...columnDate("openingDate", "date"), text: i18n.t("Opening Date") },
+        { ...columnDate("closedDate", "date"), text: i18n.t("Closed Date") },
         {
             name: "href",
-            text: i18n.t("API link"),
+            text: i18n.t("API Link"),
             getValue: function getDataSetLink(project: ProjectForList) {
                 return <Link url={project.href + ".json"} />;
             },

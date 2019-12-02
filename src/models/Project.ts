@@ -96,7 +96,6 @@ const defaultProjectData = {
     sectors: [],
     funders: [],
     organisationUnit: undefined,
-    code: "",
 };
 
 const yes = true as const;
