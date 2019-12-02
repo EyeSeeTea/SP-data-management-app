@@ -106,15 +106,15 @@ export default class ProjectDb {
             dashboards: [dashboard],
         };
 
-        const metadata = flattenPayloads([
+        const payload = flattenPayloads([
             baseMetadata,
             dataSetTargetMetadata,
             dataSetActualMetadata,
         ]);
 
-        const response = await api.metadata.post(metadata).getData();
+        const response = await api.metadata.post(payload).getData();
 
-        return { response, project: this.project };
+        return { payload, response, project: this.project };
     }
 
     getDataSetsMetadata(orgUnit: { id: string }, baseDataSet: RecursivePartial<D2DataSet>) {
@@ -153,6 +153,7 @@ export default class ProjectDb {
             periodType: "Monthly",
             dataElementDecoration: true,
             renderAsTabs: true,
+            categoryCombo: { id: project.config.categoryCombos.targetActual.id },
             organisationUnits: [{ id: orgUnit.id }],
             dataSetElements,
             timelyDays: 0,
