@@ -30,20 +30,22 @@ describe("Projects - Create", () => {
         cy.contains("End Date").click({ force: true });
         clickDay(13);
 
+        // Funders
+
+        cy.contains("Project funders");
+        selectInMultiSelector("funders", "ACWME");
+
         cy.contains("Next").click();
 
-        // Sectors & Funders
+        // Sectors
 
-        waitForStep("Sectors & Project Funders");
+        waitForStep("Sectors");
 
         cy.contains("Next").click();
         cy.contains("Select at least one item for Sectors");
-        cy.contains("Select at least one item for Funders");
 
         selectInMultiSelector("sectors", "Agriculture");
         selectInMultiSelector("sectors", "Livelihoods");
-
-        selectInMultiSelector("funders", "ACWME");
 
         cy.contains("Next").click();
 

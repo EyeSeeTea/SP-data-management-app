@@ -7,6 +7,7 @@ import { DatePicker } from "d2-ui-components";
 import i18n from "../../../locales";
 import { StepProps } from "../../../pages/project-wizard/ProjectWizard";
 import Project from "../../../models/Project";
+import Funders from "./Funders";
 
 /* eslint-disable @typescript-eslint/no-var-requires */
 const { TextField } = require("@dhis2/d2-ui-core");
@@ -75,6 +76,7 @@ class GeneralInfoStep extends React.Component<StepProps> {
             <Card>
                 <CardContent>
                     <FormBuilder fields={fields} onUpdateField={this.onUpdateField} />
+                    <Funders project={project} onChange={this.props.onChange} />
                 </CardContent>
             </Card>
         );

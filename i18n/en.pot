@@ -47,6 +47,9 @@ msgstr ""
 msgid "Search by name / code"
 msgstr ""
 
+msgid "Project funders"
+msgstr ""
+
 msgid "Description"
 msgstr ""
 
@@ -90,9 +93,6 @@ msgid "Cancel"
 msgstr ""
 
 msgid "Save"
-msgstr ""
-
-msgid "Project funders"
 msgstr ""
 
 msgid "Cancel Project creation?"
@@ -172,16 +172,13 @@ msgstr ""
 
 msgid ""
 "Choose a name for the project and define the period for which data entry "
-"will be enabled"
+"will be enabled and select funders for your project"
 msgstr ""
 
 msgid "TODO"
 msgstr ""
 
-msgid "Sectors & Project Funders"
-msgstr ""
-
-msgid "Select sectors and funders for your project."
+msgid "Select sectors for your project."
 msgstr ""
 
 msgid "Organisation Unit"
