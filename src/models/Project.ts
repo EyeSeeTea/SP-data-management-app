@@ -55,7 +55,6 @@ import { Pager } from "d2-api/api/models";
 import i18n from "../locales";
 import DataElementsSet, { SelectionUpdate } from "./dataElementsSet";
 import ProjectDb from "./ProjectDb";
-import { MetadataResponse } from "d2-api/api/metadata";
 
 export interface ProjectData {
     name: string;
@@ -227,7 +226,7 @@ class Project {
         return new Project(api, config, await Project.getData(config, defaultProjectData));
     }
 
-    save(): Promise<{ response: MetadataResponse; project: Project }> {
+    save() {
         return new ProjectDb(this).save();
     }
 

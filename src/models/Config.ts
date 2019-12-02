@@ -26,6 +26,9 @@ const baseConfig = {
         orgUnitProject: "PM_ORGUNIT_PROJECT_ID",
         projectDashboard: "PM_PROJECT_DASHBOARD_ID",
     },
+    categoryCombos: {
+        targetActual: "ACTUAL_TARGET",
+    },
     dataElementGroups: {
         global: "GLOBAL",
         sub: "SUB",
@@ -37,13 +40,16 @@ const baseConfig = {
     },
 };
 
+function getParamsForIndexables(indexedCodes: _.Dictionary<string>) {
+    return {
+        fields: { id: yes, code: yes },
+        filter: { code: { in: _.values(indexedCodes) } },
+    };
+}
+
 const metadataParams = {
-    attributes: {
-        fields: {
-            id: yes,
-            code: yes,
-        },
-    },
+    attributes: getParamsForIndexables(baseConfig.attributes),
+    categoryCombos: getParamsForIndexables(baseConfig.categoryCombos),
     dataElements: {
         fields: {
             id: yes,
@@ -101,9 +107,12 @@ export type DataElementGroupSet = GetItemType<Metadata["dataElementGroupSets"]>;
 export type Attribute = GetItemType<Metadata["attributes"]>;
 
 type NamedObject = { id: Id; displayName: string };
+type CodedObject = { id: Id; code: string };
 
 export type Sector = NamedObject;
 export type Funder = NamedObject;
+
+type IndexedObjs<Key extends keyof BaseConfig> = Record<keyof BaseConfig[Key], CodedObject>;
 
 export type Config = {
     base: typeof baseConfig;
@@ -111,7 +120,8 @@ export type Config = {
     dataElements: DataElement[];
     sectors: Sector[];
     funders: Funder[];
-    attributes: Attribute[];
+    attributes: IndexedObjs<"attributes">;
+    categoryCombos: IndexedObjs<"categoryCombos">;
 };
 
 class ConfigLoader {
@@ -135,9 +145,10 @@ class ConfigLoader {
         const config = {
             base: baseConfig,
             currentUser: currentUser,
-            attributes: metadata.attributes,
             ...dataElementsMetadata,
             funders: _.sortBy(funders, funder => funder.displayName),
+            attributes: indexObjects(metadata, "attributes"),
+            categoryCombos: indexObjects(metadata, "categoryCombos"),
         };
 
         return config;
@@ -163,6 +174,14 @@ class ConfigLoader {
             .getOrFail(baseConfig.dataElementGroupSets.sector).dataElementGroups;
         return { sectors, dataElements };
     }
+}
+
+type IndexableKeys = "attributes" | "categoryCombos";
+
+function indexObjects<Key extends IndexableKeys>(metadata: Metadata, key: Key): IndexedObjs<Key> {
+    const keyByCodes = _.invert(baseConfig[key]) as Record<string, keyof BaseConfig[Key]>;
+    const objects = metadata[key];
+    return _.keyBy(objects, obj => _(keyByCodes).getOrFail(obj.code)) as IndexedObjs<Key>;
 }
 
 export async function getConfig(api: D2Api): Promise<Config> {

@@ -21,7 +21,6 @@ export default class ProjectDb {
         const { api, config } = project;
         const { attributes } = project.config;
 
-        const attributesByCode = _(attributes).keyBy(attr => attr.code);
         const { startDate, endDate } = project;
         const parentOrgUnit = project.organisationUnit;
 
@@ -34,9 +33,7 @@ export default class ProjectDb {
         const baseAttributeValues = [
             {
                 value: "true",
-                attribute: {
-                    id: attributesByCode.getOrFail(config.base.attributes.createdByApp).id,
-                },
+                attribute: { id: config.attributes.createdByApp.id },
             },
         ];
 
@@ -61,9 +58,7 @@ export default class ProjectDb {
                 ...baseAttributeValues,
                 {
                     value: dashboard.id,
-                    attribute: {
-                        id: attributesByCode.getOrFail(config.base.attributes.projectDashboard).id,
-                    },
+                    attribute: { id: config.attributes.projectDashboard.id },
                 },
             ],
         };
@@ -92,9 +87,7 @@ export default class ProjectDb {
             ...baseAttributeValues,
             {
                 value: orgUnit.id,
-                attribute: {
-                    id: attributesByCode.getOrFail(config.base.attributes.orgUnitProject).id,
-                },
+                attribute: { id: config.attributes.orgUnitProject.id },
             },
         ];
 
@@ -131,15 +124,15 @@ export default class ProjectDb {
             dashboards: [dashboard],
         };
 
-        const metadata = flattenPayloads([
+        const payload = flattenPayloads([
             baseMetadata,
             dataSetTargetMetadata,
             dataSetActualMetadata,
         ]);
 
-        const response = await api.metadata.post(metadata).getData();
+        const response = await api.metadata.post(payload).getData();
 
-        return { response, project: this.project };
+        return { payload, response, project: this.project };
     }
 
     getDataSetsMetadata(orgUnit: { id: string }, baseDataSet: RecursivePartial<D2DataSet>) {
@@ -178,6 +171,7 @@ export default class ProjectDb {
             periodType: "Monthly",
             dataElementDecoration: true,
             renderAsTabs: true,
+            categoryCombo: { id: project.config.categoryCombos.targetActual.id },
             organisationUnits: [{ id: orgUnit.id }],
             dataSetElements,
             timelyDays: 0,
