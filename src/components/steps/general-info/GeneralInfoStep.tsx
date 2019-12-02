@@ -76,12 +76,7 @@ class GeneralInfoStep extends React.Component<StepProps> {
             <Card>
                 <CardContent>
                     <FormBuilder fields={fields} onUpdateField={this.onUpdateField} />
-                    <Funders
-                        project={project}
-                        api={project.api}
-                        onChange={this.props.onChange}
-                        onCancel={this.props.onCancel}
-                    />
+                    <Funders project={project} onChange={this.props.onChange} />
                 </CardContent>
             </Card>
         );

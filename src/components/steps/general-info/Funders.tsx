@@ -3,10 +3,10 @@ import _ from "lodash";
 import i18n from "../../../locales";
 
 import { useAppContext } from "../../../contexts/api-context";
-import { StepProps } from "../../../pages/project-wizard/ProjectWizard";
 import { CardContent } from "@material-ui/core";
 import { MultiSelector } from "d2-ui-components";
 import { CSSProperties } from "@material-ui/core/styles/withStyles";
+import Project from "../../../models/Project";
 
 const defaultTitleStyle = { fontSize: "1.1em", color: "grey" };
 
@@ -14,10 +14,15 @@ const Title: React.FC<{ style?: CSSProperties }> = ({ style, children }) => {
     const finalStyle = style ? { ...defaultTitleStyle, ...style } : defaultTitleStyle;
     return <div style={finalStyle}>{children}</div>;
 };
+
+interface FundersProps {
+    project: Project;
+    onChange: (project: Project) => void;
+}
 type ModelCollectionField = "funders";
 type Option = { value: string; text: string };
 
-const FundersStep: React.FC<StepProps> = ({ project, onChange }) => {
+const Funders: React.FC<FundersProps> = ({ project, onChange }) => {
     const { d2, config } = useAppContext();
     const onUpdateField = <K extends ModelCollectionField>(
         fieldName: K,
@@ -57,4 +62,4 @@ const FundersStep: React.FC<StepProps> = ({ project, onChange }) => {
     );
 };
 
-export default FundersStep;
+export default Funders;
