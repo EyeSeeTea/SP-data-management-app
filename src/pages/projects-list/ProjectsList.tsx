@@ -62,24 +62,31 @@ function getConfig(history: History, currentUser: CurrentUser) {
     ];
 
     const initialSorting = ["displayName", "asc"];
-
     const detailsFields = [
         { name: "displayName", text: i18n.t("Name") },
-        { name: "id", text: i18n.t("Id") },
+        {
+            name: "code",
+            text: i18n.t("Code"),
+            getValue: (project: ProjectForList) => `${project.code}`,
+        },
         { name: "displayDescription", text: i18n.t("Description") },
-        { name: "created", text: i18n.t("Created") },
+        { ...columnDate("lastUpdated", "datetime"), text: i18n.t("Last Updated") },
+        {
+            name: "lastUpdatedBy",
+            text: i18n.t("Last Updated By"),
+            getValue: (project: ProjectForList) => ` ${project.lastUpdatedBy.name}`,
+        },
+        { ...columnDate("created", "datetime"), text: i18n.t("Created") },
         {
             name: "createdBy",
             text: i18n.t("Created By"),
-            getValue: (project: ProjectForList) =>
-                `${project.user.displayName} (${project.user.id})`,
+            getValue: (project: ProjectForList) => `${project.user.displayName}`,
         },
-        { ...columnDate("lastUpdated", "datetime"), text: i18n.t("Last updated") },
-        { ...columnDate("openingDate", "date"), text: i18n.t("Opening date") },
-        { ...columnDate("closedDate", "date"), text: i18n.t("Closed date") },
+        { ...columnDate("openingDate", "date"), text: i18n.t("Opening Date") },
+        { ...columnDate("closedDate", "date"), text: i18n.t("Closed Date") },
         {
             name: "href",
-            text: i18n.t("API link"),
+            text: i18n.t("API Link"),
             getValue: function getDataSetLink(project: ProjectForList) {
                 return <Link url={project.href + ".json"} />;
             },

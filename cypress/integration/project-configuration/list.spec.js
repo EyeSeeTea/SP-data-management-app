@@ -13,8 +13,16 @@ describe("Project Configuration - List page", () => {
 
     it("opens details window when mouse clicked", () => {
         cy.get(".data-table__rows > :nth-child(1) > :nth-child(4) span").click();
-        cy.contains("API link");
-        cy.contains("Id");
+        cy.get(".detail-field").contains("Name");
+        cy.get(".detail-field").contains("Code");
+        cy.get(".detail-field").contains("Description");
+        cy.get(".detail-field").contains("Last Updated");
+        cy.get(".detail-field").contains("Last Updated By");
+        cy.get(".detail-field").contains("Created");
+        cy.get(".detail-field").contains("Created By");
+        cy.get(".detail-field").contains("Opening Date");
+        cy.get(".detail-field").contains("Closed Date");
+        cy.get(".detail-field").contains("API Link");
     });
 
     it("opens context window when right button mouse is clicked", () => {

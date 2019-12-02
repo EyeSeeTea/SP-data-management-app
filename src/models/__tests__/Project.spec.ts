@@ -257,8 +257,8 @@ describe("Project", () => {
         const baseRequest = {
             paging: true,
             fields:
-                "closedDate,created,displayDescription,displayName,href,id,lastUpdated,openingDate,publicAccess,user[displayName,id]",
-            order: "displayName:idesc",
+                "closedDate,code,created,displayDescription,displayName,href,id,lastUpdated,lastUpdatedBy[name],openingDate,publicAccess,user[displayName,id]",
+            order: "displayName:iasc",
             page: 1,
             pageSize: 10,
             filter: ["level:eq:3"],
@@ -273,7 +273,7 @@ describe("Project", () => {
                 api,
                 config,
                 {},
-                { page: 1, pageSize: 10, sorting: ["displayName", "desc"] }
+                { page: 1, pageSize: 10, sorting: ["displayName", "asc"] }
             );
 
             expect(pager).toEqual(objectsPaginated.pager);
@@ -292,7 +292,7 @@ describe("Project", () => {
                 api,
                 config,
                 { search: "abc", createdByCurrentUser: true },
-                { page: 1, pageSize: 10, sorting: ["displayName", "desc"] }
+                { page: 1, pageSize: 10, sorting: ["displayName", "asc"] }
             );
 
             expect(pager).toEqual(objectsPaginated.pager);
