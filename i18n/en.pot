@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2019-12-03T10:44:35.257Z\n"
-"PO-Revision-Date: 2019-12-03T10:44:35.257Z\n"
+"POT-Creation-Date: 2019-12-03T11:21:05.698Z\n"
+"PO-Revision-Date: 2019-12-03T11:21:05.698Z\n"
 
 msgid "<No value>"
 msgstr ""
@@ -133,17 +133,6 @@ msgstr ""
 msgid "{{field}} must have {{length}} characters"
 msgstr ""
 
-msgid "This is an example of help message."
-msgstr ""
-
-msgid ""
-"Once cells turn into green, all information is saved and you can leave the "
-"Data Entry Section"
-msgstr ""
-
-msgid "Set Actual Values for Project"
-msgstr ""
-
 msgid ""
 "Please click on the grey arrow next to the chart/table title if you want to "
 "modify the layout."
@@ -155,7 +144,21 @@ msgstr ""
 msgid "Dashboard"
 msgstr ""
 
+msgid "Cannot load project relations"
+msgstr ""
+
 msgid "Set Target Values for Project"
+msgstr ""
+
+msgid "Set Actual Values for Project"
+msgstr ""
+
+msgid ""
+"Once cells turn into green, all information is saved and you can leave the "
+"Data Entry Section"
+msgstr ""
+
+msgid "This is an example of help message."
 msgstr ""
 
 msgid "Project Configuration"
@@ -283,7 +286,4 @@ msgid "Create Project"
 msgstr ""
 
 msgid "Help message for MER"
-msgstr ""
-
-msgid "This is just an example of a description"
 msgstr ""

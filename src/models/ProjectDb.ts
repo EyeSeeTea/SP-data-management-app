@@ -19,7 +19,6 @@ export default class ProjectDb {
     async save() {
         const { project } = this;
         const { api, config } = project;
-        const { attributes } = project.config;
 
         const { startDate, endDate } = project;
         const parentOrgUnit = project.organisationUnit;

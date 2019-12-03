@@ -10,6 +10,8 @@ import { History } from "history";
 import { useAppContext } from "../../contexts/api-context";
 import Project from "../../models/Project";
 import { generateUrl } from "../../router";
+import { D2Api } from "d2-api";
+import { Config } from "../../models/Config";
 
 function goTo(history: History, url: string) {
     history.push(url);
@@ -53,27 +55,20 @@ function goToBack(history: History, projectId: string | undefined | null) {
 
 type RouterParams = { id?: string };
 
+type State = { loading: boolean; data?: string; error?: string };
+
 const Dashboard: React.FC = () => {
     const { api, config } = useAppContext();
     const match = useRouteMatch<RouterParams>();
-    const [loading, setLoading] = useState(false);
     const history = useHistory();
     const stylesSubtitle = { marginBottom: 10, marginLeft: 15 };
     const translations = getTranslations();
     const { baseUrl } = useConfig();
-    const [iFrameSrc, setIFrameSrc] = useState<string | undefined>(undefined);
+    const [state, setState] = useState<State>({ loading: true });
+    const { data: iFrameSrc, loading, error } = state;
 
     const projectId = match ? match.params.id : null;
-    useEffect(() => {
-        const dashboardUrlBase = `${baseUrl}/dhis-web-dashboard`;
-        if (projectId) {
-            Project.getRelations(api, config, projectId).then(({ dashboardId }) => {
-                setIFrameSrc(dashboardUrlBase + (dashboardId ? `/#/${dashboardId}` : ""));
-            });
-        } else {
-            setIFrameSrc(dashboardUrlBase);
-        }
-    }, [projectId]);
+    useEffect(() => loadData(baseUrl, projectId, api, config, setState), [projectId]);
     const iframeRef: React.RefObject<HTMLIFrameElement> = React.createRef();
 
     const setDashboardStyling = async (iframe: any) => {
@@ -97,10 +92,9 @@ const Dashboard: React.FC = () => {
         const iframe = iframeRef.current;
 
         if (iframe !== null && !loading) {
-            setLoading(true);
             iframe.addEventListener("load", setDashboardStyling.bind(null, iframe));
         }
-    });
+    }, [iframeRef]);
 
     return (
         <React.Fragment>
@@ -110,7 +104,9 @@ const Dashboard: React.FC = () => {
                 onBackClick={() => goToBack(history, projectId)}
             />
             <div style={stylesSubtitle}>{translations.subtitle}</div>
-            {iFrameSrc ? (
+            {loading && <LinearProgress />}
+            {error && <p>{error}</p>}
+            {iFrameSrc && (
                 <iframe
                     ref={iframeRef}
                     id="iframe"
@@ -119,8 +115,6 @@ const Dashboard: React.FC = () => {
                     height="10000px"
                     style={styles.iframe}
                 />
-            ) : (
-                <LinearProgress />
             )}
         </React.Fragment>
     );
@@ -129,5 +123,32 @@ const Dashboard: React.FC = () => {
 const styles = {
     iframe: { width: "100%", border: 0, overflow: "hidden" },
 };
+
+function loadData(
+    baseUrl: string,
+    projectId: string | null | undefined,
+    api: D2Api,
+    config: Config,
+    setState: React.Dispatch<React.SetStateAction<State>>
+) {
+    const setIFrameSrc = (url: string) => setState({ data: url, loading: false });
+    const dashboardUrlBase = `${baseUrl}/dhis-web-dashboard`;
+    if (projectId) {
+        Project.getRelations(api, config, projectId)
+            .then(({ dashboardId }) => {
+                if (dashboardId) {
+                    setIFrameSrc(dashboardUrlBase + `/#/${dashboardId}`);
+                } else {
+                    setState({
+                        error: i18n.t("Cannot load project relations"),
+                        loading: false,
+                    });
+                }
+            })
+            .catch(err => setState({ error: err.message || err.toString(), loading: false }));
+    } else {
+        setIFrameSrc(dashboardUrlBase);
+    }
+}
 
 export default Dashboard;

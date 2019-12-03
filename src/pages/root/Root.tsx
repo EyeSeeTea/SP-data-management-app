@@ -3,8 +3,6 @@ import { Route, Switch, HashRouter } from "react-router-dom";
 import LandingPage from "../landing-page/LandingPage";
 import ProjectsList from "../projects-list/ProjectsList";
 import Report from "../report/Report";
-import ActualValues from "../actual-values/ActualValues";
-import TargetValues from "../target-values/TargetValues";
 import Dashboard from "../dashboard/Dashboard";
 import { generateUrl } from "../../router";
 import ProjectWizard from "../project-wizard/ProjectWizard";
