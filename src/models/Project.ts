@@ -55,6 +55,7 @@ import { Pager } from "d2-api/api/models";
 import i18n from "../locales";
 import DataElementsSet, { SelectionUpdate } from "./dataElementsSet";
 import ProjectDb from "./ProjectDb";
+import { Maybe } from "../types/utils";
 
 export interface ProjectData {
     name: string;
@@ -208,6 +209,28 @@ class Project {
         const [keys, promises] = _.unzip(_.toPairs(obj));
         const values = await Promise.all(promises);
         return _.fromPairs(_.zip(keys, values)) as Validations;
+    }
+
+    static async getDashboardId(api: D2Api, config: Config, projectId: string): Promise<Maybe<Id>> {
+        const { organisationUnits } = await api.metadata
+            .get({
+                organisationUnits: {
+                    fields: { attributeValues: { attribute: { id: true }, value: true } },
+                    filter: { id: { eq: projectId } },
+                },
+            })
+            .getData();
+        const orgUnit = organisationUnits[0];
+
+        if (!orgUnit) {
+            return;
+        } else {
+            const { projectDashboard } = config.attributes;
+            return _(orgUnit.attributeValues)
+                .map(av => (av.attribute.id === projectDashboard.id ? av.value : null))
+                .compact()
+                .first();
+        }
     }
 
     static async getData(

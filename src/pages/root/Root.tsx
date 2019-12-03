@@ -18,7 +18,11 @@ const Root = () => {
                 <Route path={generateUrl("report")} render={() => <Report />} />
                 <Route path={generateUrl("actual-values")} render={() => <ActualValues />} />
                 <Route path={generateUrl("target-values")} render={() => <TargetValues />} />
-                <Route path={generateUrl("dashboard")} render={() => <Dashboard />} />
+                <Route
+                    path={generateUrl("dashboard", { id: ":id" })}
+                    render={() => <Dashboard />}
+                />
+                <Route path={generateUrl("dashboards")} render={() => <Dashboard />} />
                 <Route render={() => <LandingPage />} />
             </Switch>
         </HashRouter>

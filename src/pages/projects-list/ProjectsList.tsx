@@ -108,7 +108,7 @@ function getConfig(history: History, currentUser: CurrentUser) {
             text: i18n.t("Add Actual Values"),
             multiple: false,
             onClick: (project: ProjectForList) =>
-                history.push(generateUrl("actual-values.edit", { id: project.id })),
+                goTo(history, generateUrl("actual-values.edit", { id: project.id })),
         },
 
         dashboard: {
@@ -116,7 +116,8 @@ function getConfig(history: History, currentUser: CurrentUser) {
             icon: "dashboard",
             text: i18n.t("Go to Dashboard"),
             multiple: false,
-            onClick: () => history.push(generateUrl("dashboard")),
+            onClick: (project: ProjectForList) =>
+                goTo(history, generateUrl("dashboard", { id: project.id })),
         },
 
         targetValues: {
@@ -125,7 +126,7 @@ function getConfig(history: History, currentUser: CurrentUser) {
             text: i18n.t("Add Target Values"),
             multiple: false,
             onClick: (project: ProjectForList) =>
-                history.push(generateUrl("target-values.edit", { id: project.id })),
+                goTo(history, generateUrl("target-values.edit", { id: project.id })),
         },
 
         downloadData: {
@@ -147,7 +148,7 @@ function getConfig(history: History, currentUser: CurrentUser) {
             text: i18n.t("Edit"),
             multiple: false,
             onClick: (project: ProjectForList) =>
-                history.push(generateUrl("projects.edit", { id: project.id })),
+                goTo(history, generateUrl("projects.edit", { id: project.id })),
         },
 
         delete: {

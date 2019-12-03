@@ -1,21 +1,26 @@
 import React, { useEffect, useState } from "react";
-import i18n from "../../locales";
-import PageHeader from "../../components/page-header/PageHeader";
-import { useHistory } from "react-router";
-import { History } from "history";
+import { LinearProgress } from "@material-ui/core";
+import { useHistory, useRouteMatch } from "react-router";
 //@ts-ignore
 import { useConfig } from "@dhis2/app-runtime";
+
+import i18n from "../../locales";
+import PageHeader from "../../components/page-header/PageHeader";
+import { History } from "history";
+import { useAppContext } from "../../contexts/api-context";
+import Project from "../../models/Project";
 
 function goTo(history: History, url: string) {
     history.push(url);
 }
 
-function getConfig() {
-    const help = i18n.t(
-        `Please click on the grey arrow next to the chart/table title if you want to modify the layout.`
-    );
-
-    return { help };
+function getTranslations() {
+    return {
+        help: i18n.t(
+            `Please click on the grey arrow next to the chart/table title if you want to modify the layout.`
+        ),
+        subtitle: i18n.t(`Dashboard project to analyse your data...`),
+    };
 }
 
 function autoResizeIframeByContent(iframe: HTMLIFrameElement) {
@@ -41,15 +46,30 @@ function waitforElementToLoad(iframeDocument: any, selector: string) {
     });
 }
 
+type RouterParams = { id?: string };
+
 const Dashboard: React.FC = () => {
+    const { api, config } = useAppContext();
+    const match = useRouteMatch<RouterParams>();
     const [loading, setLoading] = useState(false);
     const history = useHistory();
     const goToLandingPage = () => goTo(history, "/");
-    const subtitle = i18n.t(`Dashboard project to analyse your data...`);
     const stylesSubtitle = { marginBottom: 10, marginLeft: 15 };
-    const config = getConfig();
+    const translations = getTranslations();
     const { baseUrl } = useConfig();
-    const iFrameSrc = `${baseUrl}/dhis-web-dashboard/#/CrpCenwxWwl`;
+    const [iFrameSrc, setIFrameSrc] = useState<string | undefined>(undefined);
+
+    const projectId = match ? match.params.id : null;
+    useEffect(() => {
+        const dashboardUrlBase = `${baseUrl}/dhis-web-dashboard`;
+        if (projectId) {
+            Project.getDashboardId(api, config, projectId).then(dashboardId => {
+                setIFrameSrc(dashboardUrlBase + (dashboardId ? `/#/${dashboardId}` : ""));
+            });
+        } else {
+            setIFrameSrc(dashboardUrlBase);
+        }
+    }, [projectId]);
     const iframeRef: React.RefObject<HTMLIFrameElement> = React.createRef();
 
     const setDashboardStyling = async (iframe: any) => {
@@ -82,18 +102,22 @@ const Dashboard: React.FC = () => {
         <React.Fragment>
             <PageHeader
                 title={i18n.t("Dashboard")}
-                help={config.help}
+                help={translations.help}
                 onBackClick={goToLandingPage}
             />
-            <div style={stylesSubtitle}>{subtitle}</div>
-            <iframe
-                ref={iframeRef}
-                id="iframe"
-                title={i18n.t("Dashboard")}
-                src={iFrameSrc}
-                height="10000px"
-                style={styles.iframe}
-            />
+            <div style={stylesSubtitle}>{translations.subtitle}</div>
+            {iFrameSrc ? (
+                <iframe
+                    ref={iframeRef}
+                    id="iframe"
+                    title={i18n.t("Dashboard")}
+                    src={iFrameSrc}
+                    height="10000px"
+                    style={styles.iframe}
+                />
+            ) : (
+                <LinearProgress />
+            )}
         </React.Fragment>
     );
 };

@@ -70,7 +70,7 @@ export default function LandingPage() {
         },
         {
             key: "dashboard",
-            url: generateUrl("dashboard"),
+            url: generateUrl("dashboards"),
             title: i18n.t("Dashboard"),
             icon: "dashboard",
             width: 6,
