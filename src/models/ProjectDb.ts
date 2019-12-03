@@ -179,7 +179,7 @@ export default class ProjectDb {
             formType: "DEFAULT",
             sections: sections.map(section => ({ id: section.id })),
             ...baseDataSet,
-            code: baseDataSet.code ? `${dataSetId}_${baseDataSet.code}` : undefined,
+            code: baseDataSet.code ? `${orgUnit.id}_${baseDataSet.code}` : undefined,
         };
 
         return { dataSets: [dataSet], sections };
