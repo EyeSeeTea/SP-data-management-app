@@ -9,6 +9,7 @@ import PageHeader from "../../components/page-header/PageHeader";
 import { History } from "history";
 import { useAppContext } from "../../contexts/api-context";
 import Project from "../../models/Project";
+import { generateUrl } from "../../router";
 
 function goTo(history: History, url: string) {
     history.push(url);
@@ -46,6 +47,10 @@ function waitforElementToLoad(iframeDocument: any, selector: string) {
     });
 }
 
+function goToBack(history: History, projectId: string | undefined | null) {
+    goTo(history, projectId ? generateUrl("projects") : generateUrl("home"));
+}
+
 type RouterParams = { id?: string };
 
 const Dashboard: React.FC = () => {
@@ -53,7 +58,6 @@ const Dashboard: React.FC = () => {
     const match = useRouteMatch<RouterParams>();
     const [loading, setLoading] = useState(false);
     const history = useHistory();
-    const goToLandingPage = () => goTo(history, "/");
     const stylesSubtitle = { marginBottom: 10, marginLeft: 15 };
     const translations = getTranslations();
     const { baseUrl } = useConfig();
@@ -103,7 +107,7 @@ const Dashboard: React.FC = () => {
             <PageHeader
                 title={i18n.t("Dashboard")}
                 help={translations.help}
-                onBackClick={goToLandingPage}
+                onBackClick={() => goToBack(history, projectId)}
             />
             <div style={stylesSubtitle}>{translations.subtitle}</div>
             {iFrameSrc ? (
