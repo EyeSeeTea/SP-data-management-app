@@ -67,7 +67,7 @@ const Dashboard: React.FC = () => {
     useEffect(() => {
         const dashboardUrlBase = `${baseUrl}/dhis-web-dashboard`;
         if (projectId) {
-            Project.getDashboardId(api, config, projectId).then(dashboardId => {
+            Project.getRelations(api, config, projectId).then(({ dashboardId }) => {
                 setIFrameSrc(dashboardUrlBase + (dashboardId ? `/#/${dashboardId}` : ""));
             });
         } else {

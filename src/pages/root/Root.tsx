@@ -8,20 +8,25 @@ import TargetValues from "../target-values/TargetValues";
 import Dashboard from "../dashboard/Dashboard";
 import { generateUrl } from "../../router";
 import ProjectWizard from "../project-wizard/ProjectWizard";
+import DataValues from "../data-values/DataValues";
 
 const Root = () => {
+    const idParam = { id: ":id" };
     return (
         <HashRouter>
             <Switch>
                 <Route path={generateUrl("projects.new")} render={() => <ProjectWizard />} />
                 <Route path={generateUrl("projects")} render={() => <ProjectsList />} />
                 <Route path={generateUrl("report")} render={() => <Report />} />
-                <Route path={generateUrl("actual-values")} render={() => <ActualValues />} />
-                <Route path={generateUrl("target-values")} render={() => <TargetValues />} />
                 <Route
-                    path={generateUrl("dashboard", { id: ":id" })}
-                    render={() => <Dashboard />}
+                    path={generateUrl("actualValues", idParam)}
+                    render={() => <DataValues type="actual" />}
                 />
+                <Route
+                    path={generateUrl("targetValues", idParam)}
+                    render={() => <DataValues type="target" />}
+                />
+                <Route path={generateUrl("dashboard", idParam)} render={() => <Dashboard />} />
                 <Route path={generateUrl("dashboards")} render={() => <Dashboard />} />
                 <Route render={() => <LandingPage />} />
             </Switch>

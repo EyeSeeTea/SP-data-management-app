@@ -108,7 +108,7 @@ function getConfig(history: History, currentUser: CurrentUser) {
             text: i18n.t("Add Actual Values"),
             multiple: false,
             onClick: (project: ProjectForList) =>
-                goTo(history, generateUrl("actual-values.edit", { id: project.id })),
+                goTo(history, generateUrl("actualValues", { id: project.id })),
         },
 
         dashboard: {
@@ -126,7 +126,7 @@ function getConfig(history: History, currentUser: CurrentUser) {
             text: i18n.t("Add Target Values"),
             multiple: false,
             onClick: (project: ProjectForList) =>
-                goTo(history, generateUrl("target-values.edit", { id: project.id })),
+                goTo(history, generateUrl("targetValues", { id: project.id })),
         },
 
         downloadData: {

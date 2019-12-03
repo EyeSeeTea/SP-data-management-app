@@ -17,6 +17,7 @@ function autoResizeIframeByContent(iframe: HTMLIFrameElement) {
 
 function setEntryStyling(iframe: any) {
     const iframeDocument = iframe.contentWindow.document;
+
     iframeDocument.querySelector("#currentSelection").remove();
     iframeDocument.querySelector("#header").remove();
     iframeDocument.querySelector("html").style.overflow = "hidden";
@@ -157,7 +158,7 @@ const DataEntry = (props: { orgUnitId: any; datasetId: string }) => {
         if (iframe !== null && state.dropdownHasValues) {
             iframe.style.display = "";
         }
-    });
+    }); //, [iframeRef, state]);
 
     return (
         <React.Fragment>

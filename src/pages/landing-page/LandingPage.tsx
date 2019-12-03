@@ -63,7 +63,7 @@ export default function LandingPage() {
         },
         {
             key: "actualValues",
-            url: generateUrl("actual-values"),
+            url: generateUrl("actualValues", { id: "NOT-IMPLEMENTED" }),
             title: i18n.t("Add Actual Values"),
             icon: "library_books",
             width: 6,

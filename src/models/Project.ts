@@ -211,26 +211,46 @@ class Project {
         return _.fromPairs(_.zip(keys, values)) as Validations;
     }
 
-    static async getDashboardId(api: D2Api, config: Config, projectId: string): Promise<Maybe<Id>> {
-        const { organisationUnits } = await api.metadata
+    static async getRelations(
+        api: D2Api,
+        config: Config,
+        projectId: string
+    ): Promise<{
+        organisationUnitId: Maybe<Id>;
+        dashboardId: Maybe<Id>;
+        dataSetIds: { actual: Maybe<Id>; target: Maybe<Id> };
+    }> {
+        const { organisationUnits, dataSets } = await api.metadata
             .get({
                 organisationUnits: {
                     fields: { attributeValues: { attribute: { id: true }, value: true } },
                     filter: { id: { eq: projectId } },
                 },
+                dataSets: {
+                    fields: { id: true, code: true },
+                    filter: { code: { $like: projectId } },
+                },
             })
             .getData();
         const orgUnit = organisationUnits[0];
 
-        if (!orgUnit) {
-            return;
-        } else {
-            const { projectDashboard } = config.attributes;
-            return _(orgUnit.attributeValues)
-                .map(av => (av.attribute.id === projectDashboard.id ? av.value : null))
+        const { projectDashboard } = config.attributes;
+        const dashboardId = _(orgUnit ? orgUnit.attributeValues : [])
+            .map(av => (av.attribute.id === projectDashboard.id ? av.value : null))
+            .compact()
+            .first();
+
+        const getDataSetId = (type: "actual" | "target") =>
+            _(dataSets)
+                .map(dataSet => (dataSet.code.endsWith(type.toUpperCase()) ? dataSet.id : null))
                 .compact()
                 .first();
-        }
+
+        return {
+            organisationUnitId: projectId,
+            dashboardId,
+            dataSetIds: { actual: getDataSetId("actual"), target: getDataSetId("target") },
+        };
     }
 
     static async getData(

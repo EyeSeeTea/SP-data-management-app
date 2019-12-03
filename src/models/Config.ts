@@ -181,7 +181,10 @@ type IndexableKeys = "attributes" | "categoryCombos";
 function indexObjects<Key extends IndexableKeys>(metadata: Metadata, key: Key): IndexedObjs<Key> {
     const keyByCodes = _.invert(baseConfig[key]) as Record<string, keyof BaseConfig[Key]>;
     const objects = metadata[key];
-    return _.keyBy(objects, obj => _(keyByCodes).getOrFail(obj.code)) as IndexedObjs<Key>;
+    return _(objects)
+        .keyBy(obj => _(keyByCodes).get(obj.code))
+        .pickBy()
+        .value() as IndexedObjs<Key>;
 }
 
 export async function getConfig(api: D2Api): Promise<Config> {
