@@ -49,7 +49,7 @@ Project model.
 
 import { Moment } from "moment";
 import _ from "lodash";
-import { D2Api, SelectedPick, Id, D2OrganisationUnitSchema } from "d2-api";
+import { D2Api, SelectedPick, Id, D2OrganisationUnitSchema, Ref } from "d2-api";
 import { Pagination } from "./../types/ObjectsList";
 import { Pager } from "d2-api/api/models";
 import i18n from "../locales";
@@ -78,6 +78,12 @@ interface NamedObject {
 
 export type Sector = NamedObject;
 export type Funder = NamedObject;
+
+export interface DataSetWithPeriods {
+    id: string;
+    code: string;
+    dataInputPeriods: Array<{ period: { id: string } }>;
+}
 
 // TODO: Add also displayName
 interface OrganisationUnit {
@@ -216,9 +222,9 @@ class Project {
         config: Config,
         projectId: string
     ): Promise<{
-        organisationUnitId: Maybe<Id>;
-        dashboardId: Maybe<Id>;
-        dataSetIds: { actual: Maybe<Id>; target: Maybe<Id> };
+        organisationUnit: Maybe<Ref>;
+        dashboard: Maybe<Ref>;
+        dataSets: { actual: Maybe<DataSetWithPeriods>; target: Maybe<DataSetWithPeriods> };
     }> {
         const { organisationUnits, dataSets } = await api.metadata
             .get({
@@ -227,7 +233,7 @@ class Project {
                     filter: { id: { eq: projectId } },
                 },
                 dataSets: {
-                    fields: { id: true, code: true },
+                    fields: { id: true, code: true, dataInputPeriods: { period: true } },
                     filter: { code: { $like: projectId } },
                 },
             })
@@ -240,16 +246,13 @@ class Project {
             .compact()
             .first();
 
-        const getDataSetId = (type: "actual" | "target") =>
-            _(dataSets)
-                .map(dataSet => (dataSet.code.endsWith(type.toUpperCase()) ? dataSet.id : null))
-                .compact()
-                .first();
+        const getDataSet = (type: "actual" | "target") =>
+            dataSets.find(ds => ds.code.endsWith(type.toUpperCase()));
 
         return {
-            organisationUnitId: projectId,
-            dashboardId,
-            dataSetIds: { actual: getDataSetId("actual"), target: getDataSetId("target") },
+            organisationUnit: { id: projectId },
+            dashboard: dashboardId ? { id: dashboardId } : undefined,
+            dataSets: { actual: getDataSet("actual"), target: getDataSet("target") },
         };
     }
 

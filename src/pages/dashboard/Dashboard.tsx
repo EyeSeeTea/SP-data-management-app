@@ -135,9 +135,9 @@ function loadData(
     const dashboardUrlBase = `${baseUrl}/dhis-web-dashboard`;
     if (projectId) {
         Project.getRelations(api, config, projectId)
-            .then(({ dashboardId }) => {
-                if (dashboardId) {
-                    setIFrameSrc(dashboardUrlBase + `/#/${dashboardId}`);
+            .then(({ dashboard }) => {
+                if (dashboard) {
+                    setIFrameSrc(dashboardUrlBase + `/#/${dashboard.id}`);
                 } else {
                     setState({
                         error: i18n.t("Cannot load project relations"),

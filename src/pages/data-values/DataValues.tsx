@@ -7,9 +7,9 @@ import { useHistory, useRouteMatch } from "react-router";
 import DataEntry from "../../components/data-entry/DataEntry";
 import { generateUrl } from "../../router";
 import { LinearProgress } from "@material-ui/core";
-import Project from "../../models/Project";
+import Project, { DataSetWithPeriods } from "../../models/Project";
 import { useAppContext } from "../../contexts/api-context";
-import { D2Api } from "d2-api";
+import { D2Api, Ref } from "d2-api";
 import { Config } from "../../models/Config";
 
 type Type = "target" | "actual";
@@ -21,7 +21,7 @@ interface DataValuesProps {
 type RouterParams = { id: string };
 
 type GetState<Data> = { loading: boolean; data?: Data; error?: string };
-type State = GetState<Record<"dataSetId" | "orgUnitId", string>>;
+type State = GetState<{ orgUnit: Ref; dataSet: DataSetWithPeriods }>;
 
 const DataValues: React.FC<DataValuesProps> = ({ type }) => {
     const { api, config } = useAppContext();
@@ -46,8 +46,8 @@ const DataValues: React.FC<DataValuesProps> = ({ type }) => {
             {loading && <LinearProgress />}
             {data && (
                 <DataEntry
-                    orgUnitId={data.orgUnitId}
-                    datasetId={data.dataSetId}
+                    orgUnitId={data.orgUnit.id}
+                    dataSet={data.dataSet}
                     attributes={attributes}
                 />
             )}
@@ -73,10 +73,13 @@ function loadData(
 
     Project.getRelations(api, config, projectId)
         .then(relations => {
-            const orgUnitId = relations.organisationUnitId;
-            const dataSetId = relations.dataSetIds[type];
-            if (orgUnitId && dataSetId) {
-                setState({ data: { orgUnitId, dataSetId }, loading: false });
+            const orgUnit = relations.organisationUnit;
+            const dataSet = relations.dataSets[type];
+            if (orgUnit && dataSet) {
+                setState({
+                    data: { orgUnit, dataSet },
+                    loading: false,
+                });
             } else {
                 setState({ error: i18n.t("Cannot load project relations"), loading: false });
             }
