@@ -44,7 +44,7 @@ const Funders: React.FC<FundersProps> = ({ project, onChange }) => {
 
     return (
         <CardContent style={{ padding: "5px 0 0 0" }}>
-            <Title style={{ marginTop: 35 }}>{i18n.t("Project funders")}</Title>
+            <Title style={{ marginTop: 35 }}>{i18n.t("Project funders (*)")}</Title>
             <div data-test-selector="funders" style={{ paddingRight: 40 }}>
                 <MultiSelector
                     d2={d2}
