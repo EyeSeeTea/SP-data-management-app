@@ -6,6 +6,7 @@ import Spinner from "../spinner/Spinner";
 import { useConfig } from "@dhis2/app-runtime";
 import Dropdown from "../../components/dropdown/Dropdown";
 import { DataSetWithPeriods } from "../../models/Project";
+import { GetItemType } from "../../types/utils";
 
 type Attributes = Record<string, string>;
 
@@ -80,16 +81,16 @@ const setDatasetPeriodAndCategory = async (
 
     // getting periodSelector options and select it
     periodSelector.querySelectorAll("option").forEach(option => periodSelector.removeChild(option));
-    const periods = _.sortBy(dataSet.dataInputPeriods.map(dip => dip.period.id));
-    periods.forEach(period => {
+    const periodIds = getPeriodIds(dataSet);
+    periodIds.forEach(periodId => {
         const option = document.createElement("option");
-        option.value = period;
-        option.innerHTML = period;
+        option.value = periodId;
+        option.innerHTML = periodId;
         periodSelector.appendChild(option);
     });
 
-    await waitForChildren(periodSelector, periods[0]);
-    periodSelector.value = periods[0];
+    await waitForChildren(periodSelector, periodIds[0]);
+    periodSelector.value = periodIds[0];
     if (periodSelector.onchange) periodSelector.onchange(stubEvent);
 
     _(attributes).each(async (categoryOptionId, categoryId) => {
@@ -217,8 +218,22 @@ function setSelectPeriod(
     }
 }
 
+function getPeriodIds(dataSet: DataSetWithPeriods): string[] {
+    const now = moment();
+    const isDipInPastOrOpen = (dip: GetItemType<DataSetWithPeriods["dataInputPeriods"]>) => {
+        const periodStart = moment(dip.period.id, "YYYYMM").startOf("month");
+        return periodStart.isBefore(now) || now.isBetween(dip.openingDate, dip.closingDate);
+    };
+
+    return _(dataSet.dataInputPeriods)
+        .filter(isDipInPastOrOpen)
+        .map(dip => dip.period.id)
+        .sortBy()
+        .value();
+}
+
 function getPeriodsData(dataSet: DataSetWithPeriods) {
-    const periodIds = _.sortBy(dataSet.dataInputPeriods.map(dip => dip.period.id));
+    const periodIds = getPeriodIds(dataSet);
     const isTarget = dataSet.code.endsWith("TARGET");
     const currentPeriod = moment().format("YYYYMM");
 

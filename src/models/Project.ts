@@ -82,7 +82,7 @@ export type Funder = NamedObject;
 export interface DataSetWithPeriods {
     id: string;
     code: string;
-    dataInputPeriods: Array<{ period: { id: string } }>;
+    dataInputPeriods: Array<{ period: { id: string }; openingDate: string; closingDate: string }>;
 }
 
 // TODO: Add also displayName
@@ -233,7 +233,11 @@ class Project {
                     filter: { id: { eq: projectId } },
                 },
                 dataSets: {
-                    fields: { id: true, code: true, dataInputPeriods: { period: true } },
+                    fields: {
+                        id: true,
+                        code: true,
+                        dataInputPeriods: { period: true, openingDate: true, closingDate: true },
+                    },
                     filter: { code: { $like: projectId } },
                 },
             })
