@@ -111,16 +111,9 @@ class GeneralInfoStep extends React.Component<StepProps> {
 type Validator<T> = { message: string; validator: (value: T) => boolean };
 
 const isCompulsory = (field: string) => {
-    if (
-        field === "name" ||
-        field === "awardNumber" ||
-        field === "subsequentLettering" ||
-        field === "startDate" ||
-        field === "endDate"
-    ) {
+    const compulsoryFields = ["name", "awardNumber", "subsequentLettering", "startDate", "endDate"];
+    if (compulsoryFields.includes(field)) {
         return "(*)";
-    } else {
-        return "";
     }
 };
 
