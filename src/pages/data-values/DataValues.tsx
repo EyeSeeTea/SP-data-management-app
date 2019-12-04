@@ -42,7 +42,13 @@ const DataValues: React.FC<DataValuesProps> = ({ type }) => {
             />
             <div style={stylesSubtitle}>{translations.subtitle}</div>
             {loading && <LinearProgress />}
-            {data && <DataEntry orgUnitId={data.orgUnitId} datasetId={data.dataSetId} />}
+            {data && (
+                <DataEntry
+                    category="eWeQoOlAcxV"
+                    orgUnitId={data.orgUnitId}
+                    datasetId={data.dataSetId}
+                />
+            )}
             {error && <p>{error}</p>}
         </React.Fragment>
     );

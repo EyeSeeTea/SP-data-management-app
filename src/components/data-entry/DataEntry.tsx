@@ -103,7 +103,6 @@ const getDataEntryForm = async (
     datasetId: string,
     orgUnitId: any,
     category: string,
-
     dropdownValue: Function
 ) => {
     const iframeSelection = iframe.contentWindow.selection;
