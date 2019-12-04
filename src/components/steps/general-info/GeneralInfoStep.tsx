@@ -29,24 +29,34 @@ class GeneralInfoStep extends React.Component<StepProps> {
     render() {
         const { project } = this.props;
         const fields = [
-            getTextField("name", i18n.t("Name"), project.name, {
+            getTextField("name", i18n.t(`Name ${isCompulsory("name")}`), project.name, {
                 validators: [validators.presence],
             }),
-            getTextField("description", i18n.t("Description"), project.description, {
-                props: { multiLine: true },
-            }),
-            getTextField("awardNumber", i18n.t("Award Number"), project.awardNumber, {
-                props: { type: "number" },
-                validators: [
-                    validators.length({
-                        min: Project.lengths.awardNumber,
-                        max: Project.lengths.awardNumber,
-                    }),
-                ],
-            }),
+            getTextField(
+                "description",
+                i18n.t(`Description ${isCompulsory("description")}`),
+                project.description,
+                {
+                    props: { multiLine: true },
+                }
+            ),
+            getTextField(
+                "awardNumber",
+                i18n.t(`Award Number ${isCompulsory("awardNumber")}`),
+                project.awardNumber,
+                {
+                    props: { type: "number" },
+                    validators: [
+                        validators.length({
+                            min: Project.lengths.awardNumber,
+                            max: Project.lengths.awardNumber,
+                        }),
+                    ],
+                }
+            ),
             getTextField(
                 "subsequentLettering",
-                i18n.t("Subsequent Lettering"),
+                i18n.t(`Subsequent Lettering ${isCompulsory("subsequentLettering")}`),
                 project.subsequentLettering,
                 {
                     validators: [
@@ -57,19 +67,34 @@ class GeneralInfoStep extends React.Component<StepProps> {
                     ],
                 }
             ),
-            getTextField("speedKey", i18n.t("Speed Key"), project.speedKey, {
-                validators: [
-                    validators.length({
-                        max: Project.lengths.speedKey,
-                    }),
-                ],
-            }),
-            getDateField("startDate", i18n.t("Start Date"), project.startDate, {
-                onUpdateField: this.onUpdateField,
-            }),
-            getDateField("endDate", i18n.t("End Date"), project.endDate, {
-                onUpdateField: this.onUpdateField,
-            }),
+            getTextField(
+                "speedKey",
+                i18n.t(`Speed Key ${isCompulsory("speedKey")}`),
+                project.speedKey,
+                {
+                    validators: [
+                        validators.length({
+                            max: Project.lengths.speedKey,
+                        }),
+                    ],
+                }
+            ),
+            getDateField(
+                "startDate",
+                i18n.t(`Start Date ${isCompulsory("startDate")}`),
+                project.startDate,
+                {
+                    onUpdateField: this.onUpdateField,
+                }
+            ),
+            getDateField(
+                "endDate",
+                i18n.t(`End Date ${isCompulsory("endDate")}`),
+                project.endDate,
+                {
+                    onUpdateField: this.onUpdateField,
+                }
+            ),
         ];
 
         return (
@@ -84,6 +109,20 @@ class GeneralInfoStep extends React.Component<StepProps> {
 }
 
 type Validator<T> = { message: string; validator: (value: T) => boolean };
+
+const isCompulsory = (field: string) => {
+    if (
+        field === "name" ||
+        field === "awardNumber" ||
+        field === "subsequentLettering" ||
+        field === "startDate" ||
+        field === "endDate"
+    ) {
+        return "(*)";
+    } else {
+        return "";
+    }
+};
 
 const validators = {
     presence: {

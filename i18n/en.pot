@@ -47,7 +47,16 @@ msgstr ""
 msgid "Search by name / code"
 msgstr ""
 
-msgid "Project funders"
+msgid "Project funders (*)"
+msgstr ""
+
+msgid "Field cannot be blank"
+msgstr ""
+
+msgid "Field length is invalid"
+msgstr ""
+
+msgid "This user has no Data output and analytic organisation units assigned"
 msgstr ""
 
 msgid "Description"
@@ -60,21 +69,6 @@ msgid "Subsequent Lettering"
 msgstr ""
 
 msgid "Speed Key"
-msgstr ""
-
-msgid "Start Date"
-msgstr ""
-
-msgid "End Date"
-msgstr ""
-
-msgid "Field cannot be blank"
-msgstr ""
-
-msgid "Field length is invalid"
-msgstr ""
-
-msgid "This user has no Data output and analytic organisation units assigned"
 msgstr ""
 
 msgid "Period dates"
@@ -107,6 +101,12 @@ msgid "Yes"
 msgstr ""
 
 msgid "No"
+msgstr ""
+
+msgid "Start Date"
+msgstr ""
+
+msgid "End Date"
 msgstr ""
 
 msgid "Award Number should be a number of 5 digits"
