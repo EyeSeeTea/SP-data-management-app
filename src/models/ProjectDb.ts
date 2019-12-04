@@ -7,6 +7,8 @@ import { getMonthsRange, toISOString } from "../utils/date";
 import "../utils/lodash-mixins";
 import { RecursivePartial } from "../types/utils";
 
+const expiryDaysInMonthActual = 6;
+
 function getOrgUnitId(orgUnit: { path: string }): string {
     const id = _.last(orgUnit.path.split("/"));
     if (id) return id;
@@ -84,6 +86,7 @@ export default class ProjectDb {
             code: "TARGET",
             openFuturePeriods: endDate.diff(moment(), "month") + 1,
             dataInputPeriods: targetPeriods,
+            expiryDays: 0,
             attributeValues: dataSetAttributeValues,
         });
 
@@ -92,6 +95,7 @@ export default class ProjectDb {
             code: "ACTUAL",
             openFuturePeriods: 1,
             dataInputPeriods: actualPeriods,
+            expiryDays: expiryDaysInMonthActual + 1,
             attributeValues: dataSetAttributeValues,
         });
 
@@ -152,7 +156,6 @@ export default class ProjectDb {
             organisationUnits: [{ id: orgUnit.id }],
             dataSetElements,
             timelyDays: 0,
-            expiryDays: 1,
             formType: "DEFAULT",
             sections: sections.map(section => ({ id: section.id })),
             ...baseDataSet,
@@ -176,7 +179,7 @@ function getDataSetPeriods(startDate: moment.Moment, endDate: moment.Moment) {
             date
                 .startOf("month")
                 .add(1, "month")
-                .date(6)
+                .date(expiryDaysInMonthActual)
         ),
     }));
     return { targetPeriods, actualPeriods };
