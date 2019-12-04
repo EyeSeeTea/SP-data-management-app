@@ -16,6 +16,7 @@ function autoResizeIframeByContent(iframe: HTMLIFrameElement) {
 }
 
 function setEntryStyling(iframe: any) {
+    //hide actual-target filter
     const iframeDocument = iframe.contentWindow.document;
 
     iframeDocument.querySelector("#currentSelection").remove();
