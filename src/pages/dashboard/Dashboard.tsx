@@ -61,9 +61,7 @@ const Dashboard: React.FC = () => {
     const { api, config } = useAppContext();
     const match = useRouteMatch<RouterParams>();
     const history = useHistory();
-    const goToLandingPage = () => history.goBack();
     const translations = getTranslations();
-    const subtitle = translations.subtitle;
     const stylesSubtitle = { marginBottom: 10, marginLeft: 15 };
     const { baseUrl } = useConfig();
     const [state, setState] = useState<State>({ loading: true });

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import _ from "lodash";
 import i18n from "../../locales";
 import PageHeader from "../../components/page-header/PageHeader";
 import { History } from "history";
@@ -29,6 +30,7 @@ const DataValues: React.FC<DataValuesProps> = ({ type }) => {
     const [state, setState] = useState<State>({ loading: true });
     const { data, loading, error } = state;
     const translations = getTranslations(type);
+    const attributes = getAttributes(config, type);
     const projectId = match ? match.params.id : null;
 
     useEffect(() => loadData(projectId, type, api, config, setState), [projectId]);
@@ -44,9 +46,9 @@ const DataValues: React.FC<DataValuesProps> = ({ type }) => {
             {loading && <LinearProgress />}
             {data && (
                 <DataEntry
-                    category="eWeQoOlAcxV"
                     orgUnitId={data.orgUnitId}
                     datasetId={data.dataSetId}
+                    attributes={attributes}
                 />
             )}
             {error && <p>{error}</p>}
@@ -93,6 +95,14 @@ function getTranslations(type: Type) {
         ),
         help: i18n.t(`This is an example of help message.`),
     };
+}
+
+function getAttributes(config: Config, type: Type) {
+    const category = config.categories.targetActual;
+    const categoryOption = _(category.categoryOptions)
+        .keyBy(co => co.code)
+        .getOrFail(type.toUpperCase());
+    return { [category.id]: categoryOption.id };
 }
 
 export default DataValues;

@@ -31,11 +31,11 @@ function setEntryStyling(iframe: any) {
     autoResizeIframeByContent(iframe);
 }
 
-const waitForChildren = (el: HTMLSelectElement, datasetId: string) => {
+const waitForChildren = (el: HTMLSelectElement, value: string) => {
     return new Promise(resolve => {
         const check = () => {
             const option = _.filter(el.options, (option: any) => {
-                return option.value === datasetId;
+                return option.value === value;
             })[0];
             if (option) {
                 resolve();
@@ -66,7 +66,7 @@ const obtainDropdownItems = (iframeDocument: HTMLIFrameElement) => {
 const setDatasetPeriodAndCategory = async (
     iframe: any,
     datasetId: string,
-    category: string,
+    attributes: Attributes,
     dropdownValue: Function
 ) => {
     const iframeDocument = iframe.contentWindow.document;
@@ -86,13 +86,16 @@ const setDatasetPeriodAndCategory = async (
     periodSelector.value = period;
     periodSelector.onchange();
 
-    const actualTargetSelector = iframeDocument
-        .querySelector("#attributeComboDiv")
-        .firstChild.querySelector("select");
-
-    await waitForChildren(actualTargetSelector, category);
-    actualTargetSelector.value = category;
-    actualTargetSelector.onchange();
+    _(attributes).each(async (categoryOptionId, categoryId) => {
+        const selector = iframeDocument.querySelector("#category-" + categoryId);
+        if (!selector) {
+            console.error(`Cannot find attribute selector with categoryId=${categoryId}`);
+            return;
+        } else {
+            selector.value = categoryOptionId;
+            selector.onchange();
+        }
+    });
 
     obtainDropdownItems(iframeDocument);
     dropdownValue(period);
@@ -102,7 +105,7 @@ const getDataEntryForm = async (
     iframe: any,
     datasetId: string,
     orgUnitId: any,
-    category: string,
+    attributes: Attributes,
     dropdownValue: Function
 ) => {
     const iframeSelection = iframe.contentWindow.selection;
@@ -113,7 +116,7 @@ const getDataEntryForm = async (
         "dhis2.ou.event.orgUnitSelected",
         async (event: any, organisationUnitId: any) => {
             if (organisationUnitId[0] == orgUnitId) {
-                await setDatasetPeriodAndCategory(iframe, datasetId, category, dropdownValue);
+                await setDatasetPeriodAndCategory(iframe, datasetId, attributes, dropdownValue);
             } else {
                 iframeSelection.select(orgUnitId);
             }
@@ -122,8 +125,10 @@ const getDataEntryForm = async (
     iframeSelection.select(orgUnitId);
 };
 
-const DataEntry = (props: { orgUnitId: any; datasetId: string; category: string }) => {
-    const { orgUnitId, datasetId, category } = props;
+type Attributes = Record<string, string>;
+
+const DataEntry = (props: { orgUnitId: any; datasetId: string; attributes: Attributes }) => {
+    const { orgUnitId, datasetId, attributes } = props;
     const [state, setState] = useState({
         loading: false,
         dropdownHasValues: false,
@@ -160,7 +165,7 @@ const DataEntry = (props: { orgUnitId: any; datasetId: string; category: string 
             setState({ ...state, loading: true });
             iframe.addEventListener(
                 "load",
-                getDataEntryForm.bind(null, iframe, datasetId, orgUnitId, category, dropdownValue)
+                getDataEntryForm.bind(null, iframe, datasetId, orgUnitId, attributes, dropdownValue)
             );
         }
         if (iframe !== null && state.dropdownHasValues) {
