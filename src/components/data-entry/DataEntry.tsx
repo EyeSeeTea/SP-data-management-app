@@ -26,19 +26,25 @@ function autoResizeIframeByContent(iframe: HTMLIFrameElement) {
     window.setInterval(resize, 1000);
 }
 
-function setEntryStyling(iframe: any) {
+function on<T extends HTMLElement>(document: Document, selector: string, action: (el: T) => void) {
+    const el = document.querySelector(selector) as T;
+    if (el) action(el);
+}
+
+function setEntryStyling(iframe: HTMLIFrameElement) {
+    if (!iframe.contentWindow) return;
     const iframeDocument = iframe.contentWindow.document;
 
-    iframeDocument.querySelector("#currentSelection").remove();
-    iframeDocument.querySelector("#header").remove();
-    iframeDocument.querySelector("html").style.overflow = "hidden";
-    iframeDocument.querySelector("#leftBar").style.display = "none";
-    // DEBUG iframeDocument.querySelector("#selectionBox").style.display = "none";
-    iframeDocument.querySelector("body").style.marginTop = "-55px";
-    iframeDocument.querySelector("#mainPage").style.margin = "65px 10px 10px 10px";
-    iframeDocument.querySelector("#completenessDiv").style.backgroundColor = "#5c9ccc";
-    iframeDocument.querySelector("#completenessDiv").style.border = "#5c9ccc";
-    iframeDocument.querySelector("#moduleHeader").remove();
+    on(iframeDocument, "#currentSelection", el => el.remove());
+    on(iframeDocument, "#header", el => el.remove());
+    on(iframeDocument, "html", html => (html.style.overflow = "hidden"));
+    on(iframeDocument, "#leftBar", el => (el.style.display = "none"));
+    on(iframeDocument, "#selectionBox", el => (el.style.display = "none"));
+    on(iframeDocument, "body", el => (el.style.marginTop = "-55px"));
+    on(iframeDocument, "#mainPage", el => (el.style.margin = "65px 10px 10px 10px"));
+    on(iframeDocument, "#completenessDiv", el => (el.style.backgroundColor = "#5c9ccc"));
+    on(iframeDocument, "#completenessDiv", el => (el.style.border = "#5c9ccc"));
+    on(iframeDocument, "#moduleHeader", el => el.remove());
     autoResizeIframeByContent(iframe);
 }
 
@@ -56,8 +62,6 @@ function waitForOption(el: HTMLSelectElement, predicate: (option: HTMLOptionElem
     });
 }
 
-const stubEvent = new Event("stub");
-
 const setDatasetPeriodAndCategory = async (
     iframe: HTMLIFrameElement,
     dataSet: DataSetWithPeriods,
@@ -74,14 +78,13 @@ const setDatasetPeriodAndCategory = async (
 
     // getting datasets options and select it
     await waitForOption(dataSetSelector, option => option.value === dataSet.id);
-    dataSetSelector.value = dataSet.id;
-    if (dataSetSelector.onchange) dataSetSelector.onchange(stubEvent);
+    selectOption(dataSetSelector, dataSet.id);
 
     // getting periodSelector options and select it
     await waitForOption(periodSelector, option => !!option.value);
     const options = periodSelector.querySelectorAll("option");
-    periodSelector.value = options[1].value;
-    if (periodSelector.onchange) periodSelector.onchange(stubEvent);
+    const firstPeriodOption = options[1];
+    if (firstPeriodOption) selectOption(periodSelector, firstPeriodOption.value);
 
     _(attributes).each((categoryOptionId, categoryId) => {
         const selector = iframeDocument.querySelector<HTMLSelectElement>("#category-" + categoryId);
@@ -89,8 +92,7 @@ const setDatasetPeriodAndCategory = async (
             console.error(`Cannot find attribute selector with categoryId=${categoryId}`);
             return;
         } else {
-            selector.value = categoryOptionId;
-            if (selector.onchange) selector.onchange(stubEvent);
+            selectOption(selector, categoryOptionId);
         }
     });
 
@@ -189,6 +191,12 @@ const styles = {
     selector: { padding: "65px  10px 10px 5px", backgroundColor: "white" },
 };
 
+function selectOption(select: HTMLSelectElement, value: string) {
+    const stubEvent = new Event("stub");
+    select.value = value;
+    if (select.onchange) select.onchange(stubEvent);
+}
+
 /* Globals variables used to interact with the data-entry form */
 interface DataEntryWindow {
     dhis2: { de: { currentPeriodOffset: number } };
@@ -205,15 +213,14 @@ function setSelectPeriod(
     const iframeWindow = iframe.contentWindow as (Window & DataEntryWindow);
     const periodSelector = iframeWindow.document.querySelector(
         "#selectedPeriodId"
-    ) as HTMLInputElement;
+    ) as HTMLSelectElement;
 
     if (periodSelector && dropdownValue) {
         const now = moment();
         const selectedDate = moment(dropdownValue, "YYYYMM");
         iframeWindow.dhis2.de.currentPeriodOffset = selectedDate.year() - now.year();
         iframeWindow.displayPeriods();
-        periodSelector.value = dropdownValue;
-        if (periodSelector.onchange) periodSelector.onchange(stubEvent);
+        selectOption(periodSelector, dropdownValue);
     }
 }
 
