@@ -10,8 +10,6 @@ import { CSSProperties } from "@material-ui/core/styles/withStyles";
 type Option = { value: string; text: string };
 type ModelCollectionField = "sectors";
 
-const defaultTitleStyle = { fontSize: "1.3em", color: "grey" };
-
 const Title: React.FC<{ style?: CSSProperties }> = ({ style, children }) => {
     const finalStyle = style ? { ...defaultTitleStyle, ...style } : defaultTitleStyle;
     return <div style={finalStyle}>{children}</div>;
@@ -39,9 +37,20 @@ const SectorsStep: React.FC<StepProps> = ({ project, onChange }) => {
         return [config.sectors.map(sector => ({ value: sector.id, text: sector.displayName }))];
     }, [config]);
 
+    // an example, to change when locations it's set up
+    const locations = [
+        { id: "BS", displayName: "Bahamas" },
+        { id: "BO", displayName: "Bolivia" },
+        { id: "KH", displayName: "Cambodia" },
+    ];
+    const locationOptions = locations.map(location => ({
+        value: location.id,
+        text: location.displayName,
+    }));
+
     return (
         <Card>
-            <CardContent>
+            <CardContent style={{ padding: "5px 0 0 0" }}>
                 <Title>{i18n.t("Sectors")}</Title>
                 <div data-test-selector="sectors">
                     <MultiSelector
@@ -55,9 +64,23 @@ const SectorsStep: React.FC<StepProps> = ({ project, onChange }) => {
                         selected={project.sectors.map(sector => sector.id)}
                     />
                 </div>
+                <Title style={{ marginTop: 35 }}>{i18n.t("Project Location (*)")}</Title>
+                <div data-test-selector="locations" style={{ paddingBottom: 10 }}>
+                    <MultiSelector
+                        d2={d2}
+                        ordered={true}
+                        height={300}
+                        onChange={
+                            (selected: string[]) =>
+                                onUpdateField("sectors", locationOptions, selected) //to change "sectors" to "locations" when config is ready
+                        }
+                        options={locationOptions}
+                    />
+                </div>
             </CardContent>
         </Card>
     );
 };
+const defaultTitleStyle = { fontSize: "1.1em", color: "grey" };
 
 export default SectorsStep;
