@@ -171,7 +171,15 @@ function getConfig(history: History, currentUser: CurrentUser) {
             "configMER",
         ],
         dataViewer: ["dashboard", "downloadData"],
-        admin: _.without(_.keys(allActions), "details") as Array<keyof typeof allActions>,
+        admin: [
+            "dashboard",
+            "edit",
+            "delete",
+            "actualValues",
+            "targetValues",
+            "downloadData",
+            "configMER",
+        ],
         dataEntry: ["actualValues", "targetValues", "dashboard", "downloadData"],
     };
 
