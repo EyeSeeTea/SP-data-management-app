@@ -33,7 +33,7 @@ function setEntryStyling(iframe: any) {
     iframeDocument.querySelector("#header").remove();
     iframeDocument.querySelector("html").style.overflow = "hidden";
     iframeDocument.querySelector("#leftBar").style.display = "none";
-    iframeDocument.querySelector("#selectionBox").style.display = "none";
+    // DEBUG iframeDocument.querySelector("#selectionBox").style.display = "none";
     iframeDocument.querySelector("body").style.marginTop = "-55px";
     iframeDocument.querySelector("#mainPage").style.margin = "65px 10px 10px 10px";
     iframeDocument.querySelector("#completenessDiv").style.backgroundColor = "#5c9ccc";
@@ -42,12 +42,10 @@ function setEntryStyling(iframe: any) {
     autoResizeIframeByContent(iframe);
 }
 
-const waitForChildren = (el: HTMLSelectElement, value: string) => {
+function waitForOption(el: HTMLSelectElement, predicate: (option: HTMLOptionElement) => boolean) {
     return new Promise(resolve => {
         const check = () => {
-            const option = _.filter(el.options, (option: any) => {
-                return option.value === value;
-            })[0];
+            const option = _.find(el.options, predicate);
             if (option) {
                 resolve();
             } else {
@@ -56,7 +54,7 @@ const waitForChildren = (el: HTMLSelectElement, value: string) => {
         };
         check();
     });
-};
+}
 
 const stubEvent = new Event("stub");
 
@@ -75,25 +73,17 @@ const setDatasetPeriodAndCategory = async (
     if (!dataSetSelector || !periodSelector) return;
 
     // getting datasets options and select it
-    await waitForChildren(dataSetSelector, dataSet.id);
+    await waitForOption(dataSetSelector, option => option.value === dataSet.id);
     dataSetSelector.value = dataSet.id;
     if (dataSetSelector.onchange) dataSetSelector.onchange(stubEvent);
 
     // getting periodSelector options and select it
-    periodSelector.querySelectorAll("option").forEach(option => periodSelector.removeChild(option));
-    const periodIds = getPeriodIds(dataSet);
-    periodIds.forEach(periodId => {
-        const option = document.createElement("option");
-        option.value = periodId;
-        option.innerHTML = periodId;
-        periodSelector.appendChild(option);
-    });
-
-    await waitForChildren(periodSelector, periodIds[0]);
-    periodSelector.value = periodIds[0];
+    await waitForOption(periodSelector, option => !!option.value);
+    const options = periodSelector.querySelectorAll("option");
+    periodSelector.value = options[1].value;
     if (periodSelector.onchange) periodSelector.onchange(stubEvent);
 
-    _(attributes).each(async (categoryOptionId, categoryId) => {
+    _(attributes).each((categoryOptionId, categoryId) => {
         const selector = iframeDocument.querySelector<HTMLSelectElement>("#category-" + categoryId);
         if (!selector) {
             console.error(`Cannot find attribute selector with categoryId=${categoryId}`);
@@ -199,22 +189,31 @@ const styles = {
     selector: { padding: "65px  10px 10px 5px", backgroundColor: "white" },
 };
 
+/* Globals variables used to interact with the data-entry form */
+interface DataEntryWindow {
+    dhis2: { de: { currentPeriodOffset: number } };
+    displayPeriods: () => void;
+}
+
 function setSelectPeriod(
     iframeRef: React.RefObject<HTMLIFrameElement>,
     dropdownValue: string | undefined
 ) {
     const iframe = iframeRef.current;
-    if (iframe) {
-        const iframeDocument = iframe.contentWindow;
-        if (iframeDocument) {
-            const periodSelector = iframeDocument.document.querySelector(
-                "#selectedPeriodId"
-            ) as HTMLInputElement;
-            if (periodSelector && dropdownValue) {
-                periodSelector.value = dropdownValue;
-                if (periodSelector.onchange) periodSelector.onchange({} as Event);
-            }
-        }
+    if (!iframe || !iframe.contentWindow) return;
+
+    const iframeWindow = iframe.contentWindow as (Window & DataEntryWindow);
+    const periodSelector = iframeWindow.document.querySelector(
+        "#selectedPeriodId"
+    ) as HTMLInputElement;
+
+    if (periodSelector && dropdownValue) {
+        const now = moment();
+        const selectedDate = moment(dropdownValue, "YYYYMM");
+        iframeWindow.dhis2.de.currentPeriodOffset = selectedDate.year() - now.year();
+        iframeWindow.displayPeriods();
+        periodSelector.value = dropdownValue;
+        if (periodSelector.onchange) periodSelector.onchange(stubEvent);
     }
 }
 
