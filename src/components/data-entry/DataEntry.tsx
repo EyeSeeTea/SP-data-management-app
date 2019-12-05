@@ -36,7 +36,6 @@ function setEntryStyling(iframe: HTMLIFrameElement) {
     if (!iframe.contentWindow) return;
     const iframeDocument = iframe.contentWindow.document;
     autoResizeIframeByContent(iframe);
-    return;
 
     on(iframeDocument, "#currentSelection", el => el.remove());
     on(iframeDocument, "#header", el => el.remove());
@@ -102,20 +101,22 @@ const setDatasetPeriodAndCategory = async (
 };
 
 const getDataEntryForm = async (
-    iframe: any,
+    iframe: HTMLIFrameElement,
     dataSet: DataSetWithPeriods,
-    orgUnitId: any,
+    orgUnitId: string,
     attributes: Attributes,
     onDone: () => void
 ) => {
-    const iframeSelection = iframe.contentWindow.selection;
+    const contentWindow = iframe.contentWindow as (Window & DataEntryWindow) | null;
+    if (!contentWindow) return;
 
+    const iframeSelection = contentWindow.selection;
     setEntryStyling(iframe);
 
-    iframe.contentWindow.dhis2.util.on(
+    contentWindow.dhis2.util.on(
         "dhis2.ou.event.orgUnitSelected",
-        async (event: any, organisationUnitId: any) => {
-            if (organisationUnitId[0] == orgUnitId) {
+        async (_event: unknown, organisationUnitIds: string[]) => {
+            if (organisationUnitIds[0] == orgUnitId) {
                 await setDatasetPeriodAndCategory(iframe, dataSet, attributes, onDone);
             } else {
                 iframeSelection.select(orgUnitId);
@@ -201,8 +202,12 @@ function selectOption(select: HTMLSelectElement, value: string) {
 
 /* Globals variables used to interact with the data-entry form */
 interface DataEntryWindow {
-    dhis2: { de: { currentPeriodOffset: number } };
+    dhis2: {
+        de: { currentPeriodOffset: number };
+        util: { on: Function };
+    };
     displayPeriods: () => void;
+    selection: { select: (orgUnitId: string) => void; isBusy(): boolean };
 }
 
 function setSelectPeriod(
