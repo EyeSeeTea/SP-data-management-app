@@ -114,6 +114,8 @@ const isCompulsory = (field: string) => {
     const compulsoryFields = ["name", "awardNumber", "subsequentLettering", "startDate", "endDate"];
     if (compulsoryFields.includes(field)) {
         return "(*)";
+    } else {
+        return "";
     }
 };
 
