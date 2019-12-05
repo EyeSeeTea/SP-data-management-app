@@ -31,22 +31,12 @@ export default class ProjectDb {
             throw new Error("No parent org unit");
         }
 
-        const baseAttributeValues = [
-            {
-                value: "true",
-                attribute: {
-                    id: attributesByCode.getOrFail(config.base.attributes.createdByApp).id,
-                },
-            },
-        ];
+        const createdByAppAttr = attributesByCode.getOrFail(config.base.attributes.createdByApp);
+        const baseAttributeValues = [{ value: "true", attribute: { id: createdByAppAttr.id } }];
 
-        const dashboard = {
-            id: generateUid(),
-            name: project.name,
-        };
+        const dashboard = { id: generateUid(), name: project.name };
 
         const parentOrgUnitId = getOrgUnitId(parentOrgUnit);
-
         const orgUnit = {
             id: generateUid(),
             name: project.name,
@@ -82,12 +72,6 @@ export default class ProjectDb {
             organisationUnits: [...ouGroup.organisationUnits, { id: orgUnit.id }],
         }));
 
-        const targetPeriods = getMonthsRange(startDate, endDate).map(date => ({
-            period: { id: date.format("YYYYMM") },
-            openingDate: toISOString(startDate.startOf("month")),
-            closingDate: toISOString(endDate.endOf("month")),
-        }));
-
         const dataSetAttributeValues = [
             ...baseAttributeValues,
             {
@@ -98,6 +82,8 @@ export default class ProjectDb {
             },
         ];
 
+        const { targetPeriods, actualPeriods } = getDataSetPeriods(startDate, endDate);
+
         const dataSetTargetMetadata = this.getDataSetsMetadata(orgUnit, {
             name: `${project.name} Target`,
             code: "TARGET",
@@ -105,17 +91,6 @@ export default class ProjectDb {
             dataInputPeriods: targetPeriods,
             attributeValues: dataSetAttributeValues,
         });
-
-        const actualPeriods = getMonthsRange(startDate, endDate).map(date => ({
-            period: { id: date.format("YYYYMM") },
-            openingDate: toISOString(date.startOf("month")),
-            closingDate: toISOString(
-                date
-                    .startOf("month")
-                    .add(1, "month")
-                    .date(6)
-            ),
-        }));
 
         const dataSetActualMetadata = this.getDataSetsMetadata(orgUnit, {
             name: `${project.name} Actual`,
@@ -131,15 +106,15 @@ export default class ProjectDb {
             dashboards: [dashboard],
         };
 
-        const metadata = flattenPayloads([
+        const payload = flattenPayloads([
             baseMetadata,
             dataSetTargetMetadata,
             dataSetActualMetadata,
         ]);
 
-        const response = await api.metadata.post(metadata).getData();
+        const response = await api.metadata.post(payload).getData();
 
-        return { response, project: this.project };
+        return { payload, response, project: this.project };
     }
 
     getDataSetsMetadata(orgUnit: { id: string }, baseDataSet: RecursivePartial<D2DataSet>) {
@@ -178,6 +153,7 @@ export default class ProjectDb {
             periodType: "Monthly",
             dataElementDecoration: true,
             renderAsTabs: true,
+            categoryCombo: { id: project.config.categoryCombos.targetActual.id },
             organisationUnits: [{ id: orgUnit.id }],
             dataSetElements,
             timelyDays: 0,
@@ -190,6 +166,25 @@ export default class ProjectDb {
 
         return { dataSets: [dataSet], sections };
     }
+}
+
+function getDataSetPeriods(startDate: moment.Moment, endDate: moment.Moment) {
+    const targetPeriods = getMonthsRange(startDate, endDate).map(date => ({
+        period: { id: date.format("YYYYMM") },
+        openingDate: toISOString(startDate.startOf("month")),
+        closingDate: toISOString(endDate.endOf("month")),
+    }));
+    const actualPeriods = getMonthsRange(startDate, endDate).map(date => ({
+        period: { id: date.format("YYYYMM") },
+        openingDate: toISOString(date.startOf("month")),
+        closingDate: toISOString(
+            date
+                .startOf("month")
+                .add(1, "month")
+                .date(6)
+        ),
+    }));
+    return { targetPeriods, actualPeriods };
 }
 
 /* Accumulate Array<{key1: [...], key2: [...]}> into {key1: [...], key2: [...]} */

@@ -5,7 +5,7 @@ export function getDevProject(initialProject: Project, enabled: boolean) {
     if (!enabled) return initialProject;
 
     return initialProject
-        .set("organisationUnit", { path: "/J0hschZVMBt/EaBSqFZQp2h/ag6s3ypoFK0" })
+        .set("organisationUnit", { path: "/J0hschZVMBt/PJb0RtEnqlf" })
         .set("sectors", [
             { id: "mGQ5ckOTU8A", displayName: "Agriculture" },
             { id: "m4Cg6FOPPR7", displayName: "Livelihoods" },

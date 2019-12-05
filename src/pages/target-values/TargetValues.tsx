@@ -1,28 +1,24 @@
 import React from "react";
 import i18n from "../../locales";
 import PageHeader from "../../components/page-header/PageHeader";
-import { History } from "history";
 import { useHistory } from "react-router";
 import DataEntry from "../../components/data-entry/DataEntry";
-
-function goTo(history: History, url: string) {
-    history.push(url);
-}
 
 const TargetValuesPage: React.FC = () => {
     const title = i18n.t("Set Target Values for Project");
     const subtitle = i18n.t(`This is just an example of a description`);
     const help = i18n.t(`This is an example of help message.`);
     const history = useHistory();
-    const goBack = () => goTo(history, "/projects");
+    const goBack = () => history.goBack();
 
     const orgUnitId = "xJAERyCHClH";
     const datasetId = "xxCzCNwNWsw";
+    const category = "imyqCWQ229K";
     return (
         <React.Fragment>
             <PageHeader title={title} help={help} onBackClick={goBack} />
             <div style={stylesSubtitle}>{subtitle}</div>
-            <DataEntry orgUnitId={orgUnitId} datasetId={datasetId} />
+            <DataEntry orgUnitId={orgUnitId} datasetId={datasetId} category={category} />
         </React.Fragment>
     );
 };

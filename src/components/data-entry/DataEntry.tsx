@@ -52,19 +52,23 @@ const obtainDropdownItems = (iframeDocument: HTMLIFrameElement) => {
     const options = selectedPeriod.options;
     dropdownItems = [];
     for (const option of options) {
-        const item = {
-            value: option.value,
-            text: option.text,
-        };
-        dropdownItems.push(item);
+        if (option.value !== "") {
+            const item = {
+                value: option.value,
+                text: option.text,
+            };
+            dropdownItems.push(item);
+        }
     }
 };
 
-const setDatasetAndPeriod = async (iframe: any, datasetId: string, dropdownValue: string) => {
+const setDatasetPeriodAndCategory = async (
+    iframe: any,
+    datasetId: string,
+    category: string,
+    dropdownValue: Function
+) => {
     const iframeDocument = iframe.contentWindow.document;
-
-    // Constants (to be deleted)
-    const period = dropdownValue;
 
     //get the form that we want
     const dataSetSelector = iframeDocument.querySelector("#selectedDataSetId");
@@ -76,29 +80,40 @@ const setDatasetAndPeriod = async (iframe: any, datasetId: string, dropdownValue
     dataSetSelector.onchange();
 
     // getting periodSelector options and select it
+    const period = periodSelector[1].value;
     await waitForChildren(periodSelector, period);
     periodSelector.value = period;
     periodSelector.onchange();
 
+    const actualTargetSelector = iframeDocument
+        .querySelector("#attributeComboDiv")
+        .firstChild.querySelector("select");
+
+    await waitForChildren(actualTargetSelector, category);
+    actualTargetSelector.value = category;
+    actualTargetSelector.onchange();
+
     obtainDropdownItems(iframeDocument);
+    dropdownValue(period);
 };
 
 const getDataEntryForm = async (
     iframe: any,
     datasetId: string,
     orgUnitId: any,
-    setDropdownHasValues: Function,
-    dropdownValue: string
+    category: string,
+
+    dropdownValue: Function
 ) => {
     const iframeSelection = iframe.contentWindow.selection;
+
     setEntryStyling(iframe);
 
     iframe.contentWindow.dhis2.util.on(
         "dhis2.ou.event.orgUnitSelected",
         async (event: any, organisationUnitId: any) => {
             if (organisationUnitId[0] == orgUnitId) {
-                await setDatasetAndPeriod(iframe, datasetId, dropdownValue);
-                setDropdownHasValues();
+                await setDatasetPeriodAndCategory(iframe, datasetId, category, dropdownValue);
             } else {
                 iframeSelection.select(orgUnitId);
             }
@@ -107,12 +122,12 @@ const getDataEntryForm = async (
     iframeSelection.select(orgUnitId);
 };
 
-const DataEntry = (props: { orgUnitId: any; datasetId: string }) => {
-    const { orgUnitId, datasetId } = props;
+const DataEntry = (props: { orgUnitId: any; datasetId: string; category: string }) => {
+    const { orgUnitId, datasetId, category } = props;
     const [state, setState] = useState({
         loading: false,
         dropdownHasValues: false,
-        dropdownValue: "201910",
+        dropdownValue: "",
     });
     const updateDropdown = (v: any) => {
         const iframe = iframeRef.current;
@@ -137,21 +152,15 @@ const DataEntry = (props: { orgUnitId: any; datasetId: string }) => {
 
     useEffect(() => {
         const iframe = iframeRef.current;
-        const setDropdownHasValues = () => setState({ ...state, dropdownHasValues: true });
+        const dropdownValue = (v: string) =>
+            setState({ ...state, dropdownHasValues: true, dropdownValue: v });
 
         if (iframe !== null && !state.loading) {
             iframe.style.display = "none";
             setState({ ...state, loading: true });
             iframe.addEventListener(
                 "load",
-                getDataEntryForm.bind(
-                    null,
-                    iframe,
-                    datasetId,
-                    orgUnitId,
-                    setDropdownHasValues,
-                    state.dropdownValue
-                )
+                getDataEntryForm.bind(null, iframe, datasetId, orgUnitId, category, dropdownValue)
             );
         }
         if (iframe !== null && state.dropdownHasValues) {

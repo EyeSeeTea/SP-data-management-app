@@ -26,6 +26,9 @@ const baseConfig = {
         orgUnitProject: "PM_ORGUNIT_PROJECT_ID",
         projectDashboard: "PM_PROJECT_DASHBOARD_ID",
     },
+    categoryCombos: {
+        targetActual: "ACTUAL_TARGET",
+    },
     dataElementGroups: {
         global: "GLOBAL",
         sub: "SUB",
@@ -43,6 +46,10 @@ const metadataParams = {
             id: yes,
             code: yes,
         },
+    },
+    categoryCombos: {
+        fields: { id: yes, code: yes },
+        filter: { code: { in: _.values(baseConfig.categoryCombos) } },
     },
     dataElements: {
         fields: {
@@ -101,6 +108,7 @@ export type DataElementGroupSet = GetItemType<Metadata["dataElementGroupSets"]>;
 export type Attribute = GetItemType<Metadata["attributes"]>;
 
 type NamedObject = { id: Id; displayName: string };
+type CodedObject = { id: Id; code: string };
 
 export type Sector = NamedObject;
 export type Funder = NamedObject;
@@ -109,6 +117,7 @@ export type Config = {
     base: typeof baseConfig;
     currentUser: CurrentUser;
     dataElements: DataElement[];
+    categoryCombos: Record<keyof BaseConfig["categoryCombos"], CodedObject>;
     sectors: Sector[];
     funders: Funder[];
     attributes: Attribute[];
@@ -138,6 +147,7 @@ class ConfigLoader {
             attributes: metadata.attributes,
             ...dataElementsMetadata,
             funders: _.sortBy(funders, funder => funder.displayName),
+            categoryCombos: indexObjects(metadata, "categoryCombos"),
         };
 
         return config;
@@ -163,6 +173,15 @@ class ConfigLoader {
             .getOrFail(baseConfig.dataElementGroupSets.sector).dataElementGroups;
         return { sectors, dataElements };
     }
+}
+
+type IndexableKeys = "categoryCombos";
+type Indexed<Key extends IndexableKeys> = Record<keyof BaseConfig[Key], CodedObject>;
+
+function indexObjects<Key extends IndexableKeys>(metadata: Metadata, key: Key): Indexed<Key> {
+    const keyByCodes = _.invert(baseConfig[key]) as Record<string, keyof BaseConfig[Key]>;
+    const objects = metadata[key];
+    return _.keyBy(objects, obj => _(keyByCodes).getOrFail(obj.code)) as Indexed<Key>;
 }
 
 export async function getConfig(api: D2Api): Promise<Config> {
