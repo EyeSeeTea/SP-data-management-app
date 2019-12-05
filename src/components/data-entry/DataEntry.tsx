@@ -8,6 +8,8 @@ import Dropdown from "../../components/dropdown/Dropdown";
 import { DataSetWithPeriods } from "../../models/Project";
 import { GetItemType } from "../../types/utils";
 
+const monthFormat = "YYYYMM";
+
 type Attributes = Record<string, string>;
 
 interface DataEntryProps {
@@ -157,7 +159,7 @@ const DataEntry = (props: DataEntryProps) => {
     }, [iframeRef, state]);
 
     const periodItems = periodIds.map(periodId => ({
-        text: moment(periodId, "YYYYMM").format("MMMM YYYY"),
+        text: moment(periodId, monthFormat).format("MMMM YYYY"),
         value: periodId,
     }));
 
@@ -211,28 +213,28 @@ function setSelectPeriod(
     if (!iframe || !iframe.contentWindow) return;
 
     const iframeWindow = iframe.contentWindow as (Window & DataEntryWindow);
-    const periodSelector = iframeWindow.document.querySelector(
-        "#selectedPeriodId"
-    ) as HTMLSelectElement;
+    const periodSelector = iframeWindow.document.querySelector("#selectedPeriodId");
 
     if (periodSelector && dropdownValue) {
         const now = moment();
-        const selectedDate = moment(dropdownValue, "YYYYMM");
+        const selectedDate = moment(dropdownValue, monthFormat);
         iframeWindow.dhis2.de.currentPeriodOffset = selectedDate.year() - now.year();
         iframeWindow.displayPeriods();
-        selectOption(periodSelector, dropdownValue);
+        selectOption(periodSelector as HTMLSelectElement, dropdownValue);
     }
 }
 
+type DataInputPeriod = GetItemType<DataSetWithPeriods["dataInputPeriods"]>;
+
 function getPeriodIds(dataSet: DataSetWithPeriods): string[] {
     const now = moment();
-    const isDipInPastOrOpen = (dip: GetItemType<DataSetWithPeriods["dataInputPeriods"]>) => {
-        const periodStart = moment(dip.period.id, "YYYYMM").startOf("month");
+    const isPeriodInPastOrOpen = (dip: DataInputPeriod) => {
+        const periodStart = moment(dip.period.id, monthFormat).startOf("month");
         return periodStart.isBefore(now) || now.isBetween(dip.openingDate, dip.closingDate);
     };
 
     return _(dataSet.dataInputPeriods)
-        .filter(isDipInPastOrOpen)
+        .filter(isPeriodInPastOrOpen)
         .map(dip => dip.period.id)
         .sortBy()
         .value();
@@ -241,13 +243,14 @@ function getPeriodIds(dataSet: DataSetWithPeriods): string[] {
 function getPeriodsData(dataSet: DataSetWithPeriods) {
     const periodIds = getPeriodIds(dataSet);
     const isTarget = dataSet.code.endsWith("TARGET");
-    const currentPeriod = moment().format("YYYYMM");
+    let currentPeriodId;
 
-    const currentPeriodId = isTarget
-        ? _.first(periodIds)
-        : periodIds.includes(currentPeriod)
-        ? currentPeriod
-        : _.last(periodIds);
+    if (isTarget) {
+        currentPeriodId = _.first(periodIds);
+    } else {
+        const nowPeriodId = moment().format(monthFormat);
+        currentPeriodId = periodIds.includes(nowPeriodId) ? nowPeriodId : _.last(periodIds);
+    }
 
     return { periodIds, currentPeriodId };
 }
