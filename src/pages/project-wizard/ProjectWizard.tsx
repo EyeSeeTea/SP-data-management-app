@@ -101,14 +101,6 @@ class ProjectWizardImpl extends React.Component<Props, State> {
                 help: i18n.t("TODO"),
             },
             {
-                key: "sectors",
-                label: i18n.t("Sectors"),
-                component: SectorsStep,
-                validationKeys: ["sectors"],
-                description: i18n.t(`Select sectors for your project.`),
-                help: i18n.t("TODO"),
-            },
-            {
                 key: "organisation-units",
                 label: i18n.t("Organisation Unit"),
                 component: OrgUnitsStep,
@@ -116,6 +108,14 @@ class ProjectWizardImpl extends React.Component<Props, State> {
                 description: i18n.t(
                     `Select the organisation unit associated with the project. At least one must be selected.`
                 ),
+                help: i18n.t("TODO"),
+            },
+            {
+                key: "sectors",
+                label: i18n.t("Sectors and Location"),
+                component: SectorsStep,
+                validationKeys: ["sectors"],
+                description: i18n.t(`Select sectors and location for your project.`),
                 help: i18n.t("TODO"),
             },
             {

@@ -37,7 +37,16 @@ describe("Projects - Create", () => {
 
         cy.contains("Next").click();
 
-        // Sectors
+        // Organisation Unit Step
+
+        waitForStep("Organisation Unit");
+        cy.contains("Next").click();
+        cy.contains("One Organisation Unit should be selected");
+
+        selectOrgUnit("Sierra Leona");
+        cy.contains("Next").click();
+
+        // Sectors and Location
 
         waitForStep("Sectors");
 
@@ -47,15 +56,7 @@ describe("Projects - Create", () => {
         selectInMultiSelector("sectors", "Agriculture");
         selectInMultiSelector("sectors", "Livelihoods");
 
-        cy.contains("Next").click();
-
-        // Organisation Unit Step
-
-        waitForStep("Organisation Unit");
-        cy.contains("Next").click();
-        cy.contains("One Organisation Unit should be selected");
-
-        selectOrgUnit("Sierra Leona");
+        // selectInMultiSelector("locations", "Bahamas");
 
         cy.contains("Next").click();
 
