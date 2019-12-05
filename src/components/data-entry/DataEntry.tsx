@@ -35,6 +35,8 @@ function on<T extends HTMLElement>(document: Document, selector: string, action:
 function setEntryStyling(iframe: HTMLIFrameElement) {
     if (!iframe.contentWindow) return;
     const iframeDocument = iframe.contentWindow.document;
+    autoResizeIframeByContent(iframe);
+    return;
 
     on(iframeDocument, "#currentSelection", el => el.remove());
     on(iframeDocument, "#header", el => el.remove());
@@ -46,7 +48,6 @@ function setEntryStyling(iframe: HTMLIFrameElement) {
     on(iframeDocument, "#completenessDiv", el => (el.style.backgroundColor = "#5c9ccc"));
     on(iframeDocument, "#completenessDiv", el => (el.style.border = "#5c9ccc"));
     on(iframeDocument, "#moduleHeader", el => el.remove());
-    autoResizeIframeByContent(iframe);
 }
 
 function waitForOption(el: HTMLSelectElement, predicate: (option: HTMLOptionElement) => boolean) {

@@ -163,22 +163,22 @@ function getConfig(history: History, currentUser: CurrentUser) {
 
     const actionsForUserRoles: ActionsRoleMapping<typeof allActions> = {
         dataReviewer: [
-            "dashboard",
-            "edit",
             "actualValues",
             "targetValues",
+            "dashboard",
             "downloadData",
             "configMER",
+            "edit",
         ],
         dataViewer: ["dashboard", "downloadData"],
         admin: [
-            "dashboard",
-            "edit",
-            "delete",
             "actualValues",
             "targetValues",
+            "dashboard",
             "downloadData",
             "configMER",
+            "edit",
+            "delete",
         ],
         dataEntry: ["actualValues", "targetValues", "dashboard", "downloadData"],
     };

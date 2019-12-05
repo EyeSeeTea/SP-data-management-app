@@ -57,6 +57,8 @@ import i18n from "../locales";
 import DataElementsSet, { SelectionUpdate } from "./dataElementsSet";
 import ProjectDb from "./ProjectDb";
 import { Maybe } from "../types/utils";
+import DataElementsStep from "../components/steps/data-elements/DataElementsStep";
+import { toISOString } from "../utils/date";
 
 export interface ProjectData {
     name: string;
@@ -327,7 +329,8 @@ class Project {
                     "user.id": { eq: filters.createdByCurrentUser ? userId : undefined },
                 },
             })
-            .getData();
+            .getData()
+            .then(data => ({ ...data, objects: data.objects.map(getProjectFromOrgUnit) }));
     }
 
     updateDataElementsSelection(
@@ -365,6 +368,14 @@ class Project {
 }
 
 interface Project extends ProjectData {}
+
+function getProjectFromOrgUnit(orgUnit: ProjectForList): ProjectForList {
+    return {
+        ...orgUnit,
+        openingDate: toISOString(moment(orgUnit.openingDate).add(1, "month")),
+        closedDate: toISOString(moment(orgUnit.closedDate).subtract(1, "month")),
+    };
+}
 
 function validatePresence(value: any, field: string): ValidationError {
     const isBlank =

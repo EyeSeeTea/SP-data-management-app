@@ -45,8 +45,8 @@ export default class ProjectDb {
             shortName: project.shortName,
             description: project.description,
             parent: { id: parentOrgUnitId },
-            openingDate: toISOString(startDate.startOf("month")),
-            closedDate: toISOString(endDate.endOf("month")),
+            openingDate: toISOString(startDate.clone().subtract(1, "month")),
+            closedDate: toISOString(endDate.clone().add(1, "month")),
             organisationUnitGroups: project.funders.map(funder => ({ id: funder.id })),
             attributeValues: [
                 ...baseAttributeValues,
@@ -167,21 +167,27 @@ export default class ProjectDb {
 }
 
 function getDataSetPeriods(startDate: moment.Moment, endDate: moment.Moment) {
+    const projectOpeningDate = startDate;
+    const projectClosingDate = startDate.clone().add(1, "month");
+
     const targetPeriods = getMonthsRange(startDate, endDate).map(date => ({
         period: { id: date.format("YYYYMM") },
-        openingDate: toISOString(startDate.startOf("month")),
-        closingDate: toISOString(endDate.endOf("month")),
+        openingDate: toISOString(projectOpeningDate),
+        closingDate: toISOString(projectClosingDate),
     }));
+
     const actualPeriods = getMonthsRange(startDate, endDate).map(date => ({
         period: { id: date.format("YYYYMM") },
-        openingDate: toISOString(date.startOf("month")),
+        openingDate: toISOString(date.clone().startOf("month")),
         closingDate: toISOString(
             date
+                .clone()
                 .startOf("month")
                 .add(1, "month")
                 .date(expiryDaysInMonthActual)
         ),
     }));
+
     return { targetPeriods, actualPeriods };
 }
 
