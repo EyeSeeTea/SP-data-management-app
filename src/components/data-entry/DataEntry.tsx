@@ -5,8 +5,7 @@ import Spinner from "../spinner/Spinner";
 //@ts-ignore
 import { useConfig } from "@dhis2/app-runtime";
 import Dropdown from "../../components/dropdown/Dropdown";
-import { DataSetWithPeriods } from "../../models/Project";
-import { GetItemType } from "../../types/utils";
+import { DataSetWithPeriods, getPeriodsData } from "../../models/Project";
 
 const monthFormat = "YYYYMM";
 
@@ -222,37 +221,6 @@ function setSelectPeriod(
         iframeWindow.displayPeriods();
         selectOption(periodSelector as HTMLSelectElement, dropdownValue);
     }
-}
-
-type DataInputPeriod = GetItemType<DataSetWithPeriods["dataInputPeriods"]>;
-
-function getPeriodIds(dataSet: DataSetWithPeriods): string[] {
-    const now = moment();
-    const isPeriodInPastOrOpen = (dip: DataInputPeriod) => {
-        const periodStart = moment(dip.period.id, monthFormat).startOf("month");
-        return periodStart.isBefore(now) || now.isBetween(dip.openingDate, dip.closingDate);
-    };
-
-    return _(dataSet.dataInputPeriods)
-        .filter(isPeriodInPastOrOpen)
-        .map(dip => dip.period.id)
-        .sortBy()
-        .value();
-}
-
-function getPeriodsData(dataSet: DataSetWithPeriods) {
-    const periodIds = getPeriodIds(dataSet);
-    const isTarget = dataSet.code.endsWith("TARGET");
-    let currentPeriodId;
-
-    if (isTarget) {
-        currentPeriodId = _.first(periodIds);
-    } else {
-        const nowPeriodId = moment().format(monthFormat);
-        currentPeriodId = periodIds.includes(nowPeriodId) ? nowPeriodId : _.last(periodIds);
-    }
-
-    return { periodIds, currentPeriodId };
 }
 
 export default DataEntry;

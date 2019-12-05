@@ -1,4 +1,5 @@
 import { Config } from "./Config";
+import moment from "moment";
 
 /*
 Project model.
@@ -78,17 +79,24 @@ interface NamedObject {
 
 export type Sector = NamedObject;
 export type Funder = NamedObject;
+interface DataInputPeriod {
+    period: { id: string };
+    openingDate: string;
+    closingDate: string;
+}
 
 export interface DataSetWithPeriods {
     id: string;
     code: string;
-    dataInputPeriods: Array<{ period: { id: string }; openingDate: string; closingDate: string }>;
+    dataInputPeriods: DataInputPeriod[];
 }
 
 // TODO: Add also displayName
 interface OrganisationUnit {
     path: string;
 }
+
+const monthFormat = "YYYYMM";
 
 const defaultProjectData = {
     name: "",
@@ -415,6 +423,35 @@ function validateLength(
     } else {
         return [];
     }
+}
+
+function getPeriodIds(dataSet: DataSetWithPeriods): string[] {
+    const now = moment();
+    const isPeriodInPastOrOpen = (dip: DataInputPeriod) => {
+        const periodStart = moment(dip.period.id, monthFormat).startOf("month");
+        return periodStart.isBefore(now) || now.isBetween(dip.openingDate, dip.closingDate);
+    };
+
+    return _(dataSet.dataInputPeriods)
+        .filter(isPeriodInPastOrOpen)
+        .map(dip => dip.period.id)
+        .sortBy()
+        .value();
+}
+
+export function getPeriodsData(dataSet: DataSetWithPeriods) {
+    const periodIds = getPeriodIds(dataSet);
+    const isTarget = dataSet.code.endsWith("TARGET");
+    let currentPeriodId;
+
+    if (isTarget) {
+        currentPeriodId = _.first(periodIds);
+    } else {
+        const nowPeriodId = moment().format(monthFormat);
+        currentPeriodId = periodIds.includes(nowPeriodId) ? nowPeriodId : _.last(periodIds);
+    }
+
+    return { periodIds, currentPeriodId };
 }
 
 export default Project;
