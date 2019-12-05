@@ -7,7 +7,7 @@ import { getMonthsRange, toISOString } from "../utils/date";
 import "../utils/lodash-mixins";
 import { RecursivePartial } from "../types/utils";
 
-const expiryDaysInMonthActual = 6;
+const expiryDaysInMonthActual = 10;
 
 function getOrgUnitId(orgUnit: { path: string }): string {
     const id = _.last(orgUnit.path.split("/"));
