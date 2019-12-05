@@ -1,5 +1,5 @@
 import { Config } from "./Config";
-import moment from "moment";
+import moment, { Moment } from "moment";
 
 /*
 Project model.
@@ -48,7 +48,6 @@ Project model.
     )
 */
 
-import { Moment } from "moment";
 import _ from "lodash";
 import { D2Api, SelectedPick, Id, D2OrganisationUnitSchema, Ref } from "d2-api";
 import { Pagination } from "./../types/ObjectsList";
@@ -57,7 +56,6 @@ import i18n from "../locales";
 import DataElementsSet, { SelectionUpdate } from "./dataElementsSet";
 import ProjectDb from "./ProjectDb";
 import { Maybe } from "../types/utils";
-import DataElementsStep from "../components/steps/data-elements/DataElementsStep";
 import { toISOString } from "../utils/date";
 
 export interface ProjectData {
@@ -370,10 +368,15 @@ class Project {
 interface Project extends ProjectData {}
 
 function getProjectFromOrgUnit(orgUnit: ProjectForList): ProjectForList {
+    const process = (s: string, mapper: (d: Moment) => Moment) => toISOString(mapper(moment(s)));
     return {
         ...orgUnit,
-        openingDate: toISOString(moment(orgUnit.openingDate).add(1, "month")),
-        closedDate: toISOString(moment(orgUnit.closedDate).subtract(1, "month")),
+        ...(orgUnit.openingDate
+            ? { openingDate: process(orgUnit.openingDate, d => d.add(1, "month")) }
+            : {}),
+        ...(orgUnit.closedDate
+            ? { closedDate: process(orgUnit.closedDate, d => d.subtract(1, "month")) }
+            : {}),
     };
 }
 
