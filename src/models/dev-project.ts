@@ -5,7 +5,7 @@ export function getDevProject(initialProject: Project, enabled: boolean) {
     if (!enabled) return initialProject;
 
     return initialProject
-        .set("organisationUnit", { path: "/J0hschZVMBt/EaBSqFZQp2h/ag6s3ypoFK0" })
+        .set("organisationUnit", { path: "/J0hschZVMBt/PJb0RtEnqlf" })
         .set("sectors", [
             { id: "mGQ5ckOTU8A", displayName: "Agriculture" },
             { id: "m4Cg6FOPPR7", displayName: "Livelihoods" },
@@ -21,10 +21,20 @@ export function getDevProject(initialProject: Project, enabled: boolean) {
         .set("name", "Test1")
         .set("awardNumber", "12345")
         .set("subsequentLettering", "en")
-        .set("startDate", moment().subtract(1, "month"))
+        .set(
+            "startDate",
+            moment()
+                .subtract(1, "month")
+                .set("date", 10)
+        )
+        .set(
+            "endDate",
+            moment()
+                .add(3, "month")
+                .set("date", 20)
+        )
         .set("funders", [
             { id: "OKEZCrPzqph", displayName: "Atlas Copco" },
             { id: "em8NIwi0KvM", displayName: "Agridius Foundation" },
-        ])
-        .set("endDate", moment().add(1, "month"));
+        ]);
 }
