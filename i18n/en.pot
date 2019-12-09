@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2019-12-09T19:01:47.789Z\n"
-"PO-Revision-Date: 2019-12-09T19:01:47.789Z\n"
+"POT-Creation-Date: 2019-12-09T19:41:29.550Z\n"
+"PO-Revision-Date: 2019-12-09T19:41:29.550Z\n"
 
 msgid "<No value>"
 msgstr ""
@@ -93,6 +93,9 @@ msgid "Cancel"
 msgstr ""
 
 msgid "Save"
+msgstr ""
+
+msgid "Project Location (*)"
 msgstr ""
 
 msgid "Cancel Project creation?"
