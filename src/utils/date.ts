@@ -22,7 +22,10 @@ export function formatDateShort(inputDate: string | Date | Moment | undefined): 
     }
 }
 
-export function getMonthsRange(startDate: Moment | null, endDate: Moment | null): Moment[] {
+export function getMonthsRange(
+    startDate: Moment | undefined,
+    endDate: Moment | undefined
+): Moment[] {
     if (!startDate || !endDate) {
         return [];
     } else {

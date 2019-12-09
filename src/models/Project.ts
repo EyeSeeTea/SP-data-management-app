@@ -56,7 +56,7 @@ import i18n from "../locales";
 import DataElementsSet, { SelectionUpdate } from "./dataElementsSet";
 import ProjectDb from "./ProjectDb";
 import { Maybe } from "../types/utils";
-import { toISOString } from "../utils/date";
+import { toISOString, getMonthsRange } from "../utils/date";
 
 export interface ProjectData {
     name: string;
@@ -372,6 +372,12 @@ class Project {
         return orgUnit
             ? [i18n.t(`There is a project with the same code '${code}': ${orgUnit.displayName}`)]
             : [];
+    }
+
+    getPeriods(): Array<{ id: string }> {
+        return getMonthsRange(this.startDate, this.endDate).map(date => ({
+            id: date.format("YYYYMM"),
+        }));
     }
 }
 

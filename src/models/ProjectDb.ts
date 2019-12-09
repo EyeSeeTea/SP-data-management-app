@@ -6,6 +6,7 @@ import { PartialModel, Ref, PartialMetadata, MetadataResponse } from "d2-api";
 import Project from "./Project";
 import { getMonthsRange, toISOString } from "../utils/date";
 import "../utils/lodash-mixins";
+import ProjectDashboard from "./CampaignDashboard";
 
 const expiryDaysInMonthActual = 10;
 
@@ -35,7 +36,10 @@ export default class ProjectDb {
             { value: "true", attribute: { id: config.attributes.createdByApp.id } },
         ];
 
-        const dashboard = { id: generateUid(), name: project.name };
+        const dashboardsMetadata = new ProjectDashboard(project).generate();
+        const dashboard = dashboardsMetadata.dashboards[0];
+
+        if (!dashboard) throw new Error("No dashboard defined");
 
         const parentOrgUnitId = getOrgUnitId(parentOrgUnit);
         const orgUnit = {
@@ -102,13 +106,13 @@ export default class ProjectDb {
         const baseMetadata = {
             organisationUnits: [orgUnit],
             organisationUnitGroups: newOrgUnitGroupFunders,
-            dashboards: [dashboard],
         };
 
         const payload = flattenPayloads([
             baseMetadata,
             dataSetTargetMetadata,
             dataSetActualMetadata,
+            dashboardsMetadata,
         ]);
 
         const response = await api.metadata.post(payload).getData();

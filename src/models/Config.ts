@@ -28,6 +28,8 @@ const baseConfig = {
     },
     categories: {
         targetActual: "ACTUAL_TARGET",
+        gender: "GENDER",
+        newRecurring: "NEW_RECURRING",
     },
     categoryCombos: {
         targetActual: "ACTUAL_TARGET",
@@ -123,8 +125,8 @@ type IndexedObjs<Key extends keyof BaseConfig, ValueType> = Record<
 >;
 
 type Attribute = CodedObject;
-type CategoryCombo = CodedObject;
-type Category = CodedObject & { categoryOptions: CodedObject[] };
+export type CategoryCombo = CodedObject;
+export type Category = CodedObject & { categoryOptions: CodedObject[] };
 
 export type Config = {
     base: typeof baseConfig;
