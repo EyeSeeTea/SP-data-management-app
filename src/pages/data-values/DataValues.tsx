@@ -9,7 +9,7 @@ import { generateUrl } from "../../router";
 import { LinearProgress } from "@material-ui/core";
 import Project, { DataSetWithPeriods } from "../../models/Project";
 import { useAppContext } from "../../contexts/api-context";
-import { D2Api, Ref } from "d2-api";
+import { D2Api } from "d2-api";
 import { Config } from "../../models/Config";
 
 type Type = "target" | "actual";
@@ -21,7 +21,12 @@ interface DataValuesProps {
 type RouterParams = { id: string };
 
 type GetState<Data> = { loading: boolean; data?: Data; error?: string };
-type State = GetState<{ orgUnit: Ref; dataSet: DataSetWithPeriods }>;
+
+type State = GetState<{
+    name: string;
+    orgUnit: { id: string; displayName: string };
+    dataSet: DataSetWithPeriods;
+}>;
 
 const DataValues: React.FC<DataValuesProps> = ({ type }) => {
     const { api, config } = useAppContext();
@@ -29,7 +34,7 @@ const DataValues: React.FC<DataValuesProps> = ({ type }) => {
     const match = useRouteMatch<RouterParams>();
     const [state, setState] = useState<State>({ loading: true });
     const { data, loading, error } = state;
-    const translations = getTranslations(type);
+    const translations = getTranslations(type, data ? data.name : undefined);
     const attributes = getAttributes(config, type);
     const projectId = match ? match.params.id : null;
 
@@ -73,11 +78,11 @@ function loadData(
 
     Project.getRelations(api, config, projectId)
         .then(relations => {
-            const orgUnit = relations.organisationUnit;
-            const dataSet = relations.dataSets[type];
-            if (orgUnit && dataSet) {
+            const orgUnit = relations ? relations.organisationUnit : null;
+            const dataSet = relations ? relations.dataSets[type] : null;
+            if (relations && orgUnit && dataSet) {
                 setState({
-                    data: { orgUnit, dataSet },
+                    data: { name: relations.name, orgUnit, dataSet },
                     loading: false,
                 });
             } else {
@@ -87,12 +92,13 @@ function loadData(
         .catch(err => setState({ error: err.message || err.toString(), loading: false }));
 }
 
-function getTranslations(type: Type) {
+function getTranslations(type: Type, projectName: string | undefined) {
     const isTarget = type === "target";
+    const baseTitle = isTarget
+        ? i18n.t("Set Target Values for Project")
+        : i18n.t("Set Actual Values for Project");
     return {
-        title: isTarget
-            ? i18n.t("Set Target Values for Project")
-            : i18n.t("Set Actual Values for Project"),
+        title: baseTitle + ": " + (projectName || "..."),
         subtitle: i18n.t(
             `Once cells turn into green, all information is saved and you can leave the Data Entry Section`
         ),

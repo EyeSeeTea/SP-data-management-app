@@ -135,7 +135,8 @@ function loadData(
     const dashboardUrlBase = `${baseUrl}/dhis-web-dashboard`;
     if (projectId) {
         Project.getRelations(api, config, projectId)
-            .then(({ dashboard }) => {
+            .then(relations => {
+                const dashboard = relations ? relations.dashboard : null;
                 if (dashboard) {
                     setIFrameSrc(dashboardUrlBase + `/#/${dashboard.id}`);
                 } else {

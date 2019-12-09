@@ -79,6 +79,14 @@ interface NamedObject {
 
 export type Sector = NamedObject;
 export type Funder = NamedObject;
+
+export interface Relations {
+    name: string;
+    organisationUnit: NamedObject;
+    dashboard: Maybe<Ref>;
+    dataSets: { actual: Maybe<DataSetWithPeriods>; target: Maybe<DataSetWithPeriods> };
+}
+
 interface DataInputPeriod {
     period: { id: string };
     openingDate: string;
@@ -229,15 +237,15 @@ class Project {
         api: D2Api,
         config: Config,
         projectId: string
-    ): Promise<{
-        organisationUnit: Maybe<Ref>;
-        dashboard: Maybe<Ref>;
-        dataSets: { actual: Maybe<DataSetWithPeriods>; target: Maybe<DataSetWithPeriods> };
-    }> {
+    ): Promise<Relations | undefined> {
         const { organisationUnits, dataSets } = await api.metadata
             .get({
                 organisationUnits: {
-                    fields: { attributeValues: { attribute: { id: true }, value: true } },
+                    fields: {
+                        id: true,
+                        displayName: true,
+                        attributeValues: { attribute: { id: true }, value: true },
+                    },
                     filter: { id: { eq: projectId } },
                 },
                 dataSets: {
@@ -251,9 +259,10 @@ class Project {
             })
             .getData();
         const orgUnit = organisationUnits[0];
+        if (!orgUnit) return;
 
         const { projectDashboard } = config.attributes;
-        const dashboardId = _(orgUnit ? orgUnit.attributeValues : [])
+        const dashboardId = _(orgUnit.attributeValues)
             .map(av => (av.attribute.id === projectDashboard.id ? av.value : null))
             .compact()
             .first();
@@ -262,7 +271,8 @@ class Project {
             dataSets.find(ds => ds.code.endsWith(type.toUpperCase()));
 
         return {
-            organisationUnit: { id: projectId },
+            name: orgUnit.displayName,
+            organisationUnit: orgUnit,
             dashboard: dashboardId ? { id: dashboardId } : undefined,
             dataSets: { actual: getDataSet("actual"), target: getDataSet("target") },
         };
