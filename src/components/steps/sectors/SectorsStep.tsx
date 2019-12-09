@@ -10,6 +10,8 @@ import { CSSProperties } from "@material-ui/core/styles/withStyles";
 type Option = { value: string; text: string };
 type ModelCollectionField = "sectors" | "locations";
 
+const defaultTitleStyle = { fontSize: "1.1em", color: "grey" };
+
 const Title: React.FC<{ style?: CSSProperties }> = ({ style, children }) => {
     const finalStyle = style ? { ...defaultTitleStyle, ...style } : defaultTitleStyle;
     return <div style={finalStyle}>{children}</div>;
@@ -81,6 +83,6 @@ const SectorsStep: React.FC<StepProps> = ({ project, onChange }) => {
         </Card>
     );
 };
-const defaultTitleStyle = { fontSize: "1.1em", color: "grey" };
+
 
 export default SectorsStep;
