@@ -68,6 +68,7 @@ export interface ProjectData {
     endDate?: Moment;
     sectors: Sector[];
     funders: Funder[];
+    locations: Location[];
     organisationUnit: OrganisationUnit | undefined;
     dataElements: DataElementsSet;
 }
@@ -79,6 +80,7 @@ interface NamedObject {
 
 export type Sector = NamedObject;
 export type Funder = NamedObject;
+export type Location = NamedObject;
 
 export interface Relations {
     name: string;
@@ -117,6 +119,7 @@ const defaultProjectData = {
     lastUpdatedBy: {},
     sectors: [],
     funders: [],
+    locations: [],
     organisationUnit: undefined,
 };
 
@@ -189,6 +192,7 @@ class Project {
             }),
         sectors: () => validateNonEmpty(this.sectors, i18n.t("Sectors")),
         funders: () => validateNonEmpty(this.funders, i18n.t("Funders")),
+        locations: () => validateNonEmpty(this.locations, i18n.t("Project Locations")),
         organisationUnit: () =>
             this.organisationUnit ? [] : [i18n.t("One Organisation Unit should be selected")],
         dataElements: () => this.dataElements.validate(this.sectors),
