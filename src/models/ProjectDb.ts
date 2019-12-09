@@ -1,11 +1,11 @@
 import _ from "lodash";
 import moment from "moment";
 import { generateUid } from "d2/uid";
-import { D2DataSet } from "d2-api";
+import { D2DataSet, D2OrganisationUnit } from "d2-api";
+import { PartialModel, Ref, PartialMetadata, MetadataResponse } from "d2-api";
 import Project from "./Project";
 import { getMonthsRange, toISOString } from "../utils/date";
 import "../utils/lodash-mixins";
-import { RecursivePartial } from "../types/utils";
 
 const expiryDaysInMonthActual = 10;
 
@@ -112,11 +112,38 @@ export default class ProjectDb {
         ]);
 
         const response = await api.metadata.post(payload).getData();
+        this.postSave(response, orgUnit);
 
         return { payload, response, project: this.project };
     }
 
-    getDataSetsMetadata(orgUnit: { id: string }, baseDataSet: RecursivePartial<D2DataSet>) {
+    /*
+    Creating the orgUnit in the metadata endpoint has two problems regarding the
+    getOrganisationUnitTree.action endpoint:
+
+    1. The version field is reset only when using the specific model endpoint, when using
+        a metadata POST, the orgUnit tree in data entry is not updated.
+
+    2. There seems to be a bug with fields odate/cdate: sometimes they will be saved as
+        a long date format ("Fri Nov 08 09:49:00 GMT 2019"), instead of the correct format "YYYY-MM-DD",
+        which breaks the data-entry JS code.
+
+    Solution: Re-save the orgUnit using a PUT /api/organisationUnits
+    */
+    async postSave(response: MetadataResponse, orgUnit: Ref & PartialModel<D2OrganisationUnit>) {
+        if (response.status === "OK") {
+            await this.project.api.models.organisationUnits
+                .put(orgUnit)
+                .getData()
+                .then(() => true)
+                .catch(() => false);
+        }
+    }
+
+    getDataSetsMetadata(
+        orgUnit: { id: string },
+        baseDataSet: PartialModel<D2DataSet>
+    ): PartialMetadata {
         const { project } = this;
         const dataSetId = generateUid();
 
@@ -156,7 +183,7 @@ export default class ProjectDb {
             organisationUnits: [{ id: orgUnit.id }],
             dataSetElements,
             timelyDays: 0,
-            formType: "DEFAULT",
+            formType: "DEFAULT" as const,
             sections: sections.map(section => ({ id: section.id })),
             ...baseDataSet,
             code: baseDataSet.code ? `${orgUnit.id}_${baseDataSet.code}` : undefined,
