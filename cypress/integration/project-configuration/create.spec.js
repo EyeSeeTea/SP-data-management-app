@@ -56,7 +56,9 @@ describe("Projects - Create", () => {
         selectInMultiSelector("sectors", "Agriculture");
         selectInMultiSelector("sectors", "Livelihoods");
 
-        // selectInMultiSelector("locations", "Bahamas");
+        cy.contains("Select at least one item for Project Locations");
+
+        selectInMultiSelector("locations", "Bahamas");
 
         cy.contains("Next").click();
 

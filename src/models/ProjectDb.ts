@@ -1,11 +1,13 @@
 import _ from "lodash";
 import moment from "moment";
 import { generateUid } from "d2/uid";
-import { D2DataSet } from "d2-api";
+import { D2DataSet, D2OrganisationUnit } from "d2-api";
+import { PartialModel, Ref, PartialMetadata, MetadataResponse } from "d2-api";
 import Project from "./Project";
 import { getMonthsRange, toISOString } from "../utils/date";
 import "../utils/lodash-mixins";
-import { RecursivePartial } from "../types/utils";
+
+const expiryDaysInMonthActual = 10;
 
 function getOrgUnitId(orgUnit: { path: string }): string {
     const id = _.last(orgUnit.path.split("/"));
@@ -19,9 +21,7 @@ export default class ProjectDb {
     async save() {
         const { project } = this;
         const { api, config } = project;
-        const { attributes } = project.config;
 
-        const attributesByCode = _(attributes).keyBy(attr => attr.code);
         const { startDate, endDate } = project;
         const parentOrgUnit = project.organisationUnit;
 
@@ -31,8 +31,9 @@ export default class ProjectDb {
             throw new Error("No parent org unit");
         }
 
-        const createdByAppAttr = attributesByCode.getOrFail(config.base.attributes.createdByApp);
-        const baseAttributeValues = [{ value: "true", attribute: { id: createdByAppAttr.id } }];
+        const baseAttributeValues = [
+            { value: "true", attribute: { id: config.attributes.createdByApp.id } },
+        ];
 
         const dashboard = { id: generateUid(), name: project.name };
 
@@ -44,16 +45,14 @@ export default class ProjectDb {
             shortName: project.shortName,
             description: project.description,
             parent: { id: parentOrgUnitId },
-            openingDate: toISOString(startDate.startOf("month")),
-            closedDate: toISOString(endDate.endOf("month")),
+            openingDate: toISOString(startDate.clone().subtract(1, "month")),
+            closedDate: toISOString(endDate.clone().add(1, "month")),
             organisationUnitGroups: project.funders.map(funder => ({ id: funder.id })),
             attributeValues: [
                 ...baseAttributeValues,
                 {
                     value: dashboard.id,
-                    attribute: {
-                        id: attributesByCode.getOrFail(config.base.attributes.projectDashboard).id,
-                    },
+                    attribute: { id: config.attributes.projectDashboard.id },
                 },
             ],
         };
@@ -76,9 +75,7 @@ export default class ProjectDb {
             ...baseAttributeValues,
             {
                 value: orgUnit.id,
-                attribute: {
-                    id: attributesByCode.getOrFail(config.base.attributes.orgUnitProject).id,
-                },
+                attribute: { id: config.attributes.orgUnitProject.id },
             },
         ];
 
@@ -89,6 +86,7 @@ export default class ProjectDb {
             code: "TARGET",
             openFuturePeriods: endDate.diff(moment(), "month") + 1,
             dataInputPeriods: targetPeriods,
+            expiryDays: 0,
             attributeValues: dataSetAttributeValues,
         });
 
@@ -97,6 +95,7 @@ export default class ProjectDb {
             code: "ACTUAL",
             openFuturePeriods: 1,
             dataInputPeriods: actualPeriods,
+            expiryDays: expiryDaysInMonthActual + 1,
             attributeValues: dataSetAttributeValues,
         });
 
@@ -113,11 +112,38 @@ export default class ProjectDb {
         ]);
 
         const response = await api.metadata.post(payload).getData();
+        this.postSave(response, orgUnit);
 
         return { payload, response, project: this.project };
     }
 
-    getDataSetsMetadata(orgUnit: { id: string }, baseDataSet: RecursivePartial<D2DataSet>) {
+    /*
+    Creating the orgUnit in the metadata endpoint has two problems regarding the
+    getOrganisationUnitTree.action endpoint:
+
+    1. The version field is reset only when using the specific model endpoint, when using
+        a metadata POST, the orgUnit tree in data entry is not updated.
+
+    2. There seems to be a bug with fields odate/cdate: sometimes they will be saved as
+        a long date format ("Fri Nov 08 09:49:00 GMT 2019"), instead of the correct format "YYYY-MM-DD",
+        which breaks the data-entry JS code.
+
+    Solution: Re-save the orgUnit using a PUT /api/organisationUnits
+    */
+    async postSave(response: MetadataResponse, orgUnit: Ref & PartialModel<D2OrganisationUnit>) {
+        if (response.status === "OK") {
+            await this.project.api.models.organisationUnits
+                .put(orgUnit)
+                .getData()
+                .then(() => true)
+                .catch(() => false);
+        }
+    }
+
+    getDataSetsMetadata(
+        orgUnit: { id: string },
+        baseDataSet: PartialModel<D2DataSet>
+    ): PartialMetadata {
         const { project } = this;
         const dataSetId = generateUid();
 
@@ -157,11 +183,10 @@ export default class ProjectDb {
             organisationUnits: [{ id: orgUnit.id }],
             dataSetElements,
             timelyDays: 0,
-            expiryDays: 1,
-            formType: "DEFAULT",
+            formType: "DEFAULT" as const,
             sections: sections.map(section => ({ id: section.id })),
             ...baseDataSet,
-            code: baseDataSet.code ? `${dataSetId}_${baseDataSet.code}` : undefined,
+            code: baseDataSet.code ? `${orgUnit.id}_${baseDataSet.code}` : undefined,
         };
 
         return { dataSets: [dataSet], sections };
@@ -169,21 +194,27 @@ export default class ProjectDb {
 }
 
 function getDataSetPeriods(startDate: moment.Moment, endDate: moment.Moment) {
+    const projectOpeningDate = startDate;
+    const projectClosingDate = startDate.clone().add(1, "month");
+
     const targetPeriods = getMonthsRange(startDate, endDate).map(date => ({
         period: { id: date.format("YYYYMM") },
-        openingDate: toISOString(startDate.startOf("month")),
-        closingDate: toISOString(endDate.endOf("month")),
+        openingDate: toISOString(projectOpeningDate),
+        closingDate: toISOString(projectClosingDate),
     }));
+
     const actualPeriods = getMonthsRange(startDate, endDate).map(date => ({
         period: { id: date.format("YYYYMM") },
-        openingDate: toISOString(date.startOf("month")),
+        openingDate: toISOString(date.clone().startOf("month")),
         closingDate: toISOString(
             date
+                .clone()
                 .startOf("month")
                 .add(1, "month")
-                .date(6)
+                .date(expiryDaysInMonthActual)
         ),
     }));
+
     return { targetPeriods, actualPeriods };
 }
 

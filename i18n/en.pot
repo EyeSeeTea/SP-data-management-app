@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2019-11-29T05:27:35.915Z\n"
-"PO-Revision-Date: 2019-11-29T05:27:35.915Z\n"
+"POT-Creation-Date: 2019-12-09T20:04:21.862Z\n"
+"PO-Revision-Date: 2019-12-09T20:04:21.862Z\n"
 
 msgid "<No value>"
 msgstr ""
@@ -89,6 +89,9 @@ msgstr ""
 msgid "Save"
 msgstr ""
 
+msgid "Project Locations (*)"
+msgstr ""
+
 msgid "Cancel Project creation?"
 msgstr ""
 
@@ -112,6 +115,9 @@ msgstr ""
 msgid "Award Number should be a number of 5 digits"
 msgstr ""
 
+msgid "Project Locations"
+msgstr ""
+
 msgid "One Organisation Unit should be selected"
 msgstr ""
 
@@ -133,17 +139,6 @@ msgstr ""
 msgid "{{field}} must have {{length}} characters"
 msgstr ""
 
-msgid "This is an example of help message."
-msgstr ""
-
-msgid ""
-"Once cells turn into green, all information is saved and you can leave the "
-"Data Entry Section"
-msgstr ""
-
-msgid "Set Actual Values for Project"
-msgstr ""
-
 msgid ""
 "Please click on the grey arrow next to the chart/table title if you want to "
 "modify the layout."
@@ -152,7 +147,21 @@ msgstr ""
 msgid "Dashboard project to analyse your data..."
 msgstr ""
 
-msgid "Dashboard"
+msgid "Cannot load project relations"
+msgstr ""
+
+msgid "Set Target Values for Project"
+msgstr ""
+
+msgid "Set Actual Values for Project"
+msgstr ""
+
+msgid ""
+"Once cells turn into green, all information is saved and you can leave the "
+"Data Entry Section"
+msgstr ""
+
+msgid "This is an example of help message."
 msgstr ""
 
 msgid "Project Configuration"
@@ -162,6 +171,9 @@ msgid "Monthly Executive Report"
 msgstr ""
 
 msgid "Add Actual Values"
+msgstr ""
+
+msgid "Dashboard"
 msgstr ""
 
 msgid "Cannot load project"
@@ -280,10 +292,4 @@ msgid "Create Project"
 msgstr ""
 
 msgid "Help message for MER"
-msgstr ""
-
-msgid "Set Target Values for Project"
-msgstr ""
-
-msgid "This is just an example of a description"
 msgstr ""

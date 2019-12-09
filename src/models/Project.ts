@@ -1,4 +1,5 @@
 import { Config } from "./Config";
+import moment, { Moment } from "moment";
 
 /*
 Project model.
@@ -47,14 +48,15 @@ Project model.
     )
 */
 
-import { Moment } from "moment";
 import _ from "lodash";
-import { D2Api, SelectedPick, Id, D2OrganisationUnitSchema } from "d2-api";
+import { D2Api, SelectedPick, Id, D2OrganisationUnitSchema, Ref } from "d2-api";
 import { Pagination } from "./../types/ObjectsList";
 import { Pager } from "d2-api/api/models";
 import i18n from "../locales";
 import DataElementsSet, { SelectionUpdate } from "./dataElementsSet";
 import ProjectDb from "./ProjectDb";
+import { Maybe } from "../types/utils";
+import { toISOString } from "../utils/date";
 
 export interface ProjectData {
     name: string;
@@ -66,6 +68,7 @@ export interface ProjectData {
     endDate?: Moment;
     sectors: Sector[];
     funders: Funder[];
+    locations: Location[];
     organisationUnit: OrganisationUnit | undefined;
     dataElements: DataElementsSet;
 }
@@ -77,11 +80,33 @@ interface NamedObject {
 
 export type Sector = NamedObject;
 export type Funder = NamedObject;
+export type Location = NamedObject;
+
+export interface Relations {
+    name: string;
+    organisationUnit: NamedObject;
+    dashboard: Maybe<Ref>;
+    dataSets: { actual: Maybe<DataSetWithPeriods>; target: Maybe<DataSetWithPeriods> };
+}
+
+interface DataInputPeriod {
+    period: { id: string };
+    openingDate: string;
+    closingDate: string;
+}
+
+export interface DataSetWithPeriods {
+    id: string;
+    code: string;
+    dataInputPeriods: DataInputPeriod[];
+}
 
 // TODO: Add also displayName
 interface OrganisationUnit {
     path: string;
 }
+
+const monthFormat = "YYYYMM";
 
 const defaultProjectData = {
     name: "",
@@ -94,6 +119,7 @@ const defaultProjectData = {
     lastUpdatedBy: {},
     sectors: [],
     funders: [],
+    locations: [],
     organisationUnit: undefined,
 };
 
@@ -166,6 +192,7 @@ class Project {
             }),
         sectors: () => validateNonEmpty(this.sectors, i18n.t("Sectors")),
         funders: () => validateNonEmpty(this.funders, i18n.t("Funders")),
+        locations: () => validateNonEmpty(this.locations, i18n.t("Project Locations")),
         organisationUnit: () =>
             this.organisationUnit ? [] : [i18n.t("One Organisation Unit should be selected")],
         dataElements: () => this.dataElements.validate(this.sectors),
@@ -208,6 +235,51 @@ class Project {
         const [keys, promises] = _.unzip(_.toPairs(obj));
         const values = await Promise.all(promises);
         return _.fromPairs(_.zip(keys, values)) as Validations;
+    }
+
+    static async getRelations(
+        api: D2Api,
+        config: Config,
+        projectId: string
+    ): Promise<Relations | undefined> {
+        const { organisationUnits, dataSets } = await api.metadata
+            .get({
+                organisationUnits: {
+                    fields: {
+                        id: true,
+                        displayName: true,
+                        attributeValues: { attribute: { id: true }, value: true },
+                    },
+                    filter: { id: { eq: projectId } },
+                },
+                dataSets: {
+                    fields: {
+                        id: true,
+                        code: true,
+                        dataInputPeriods: { period: true, openingDate: true, closingDate: true },
+                    },
+                    filter: { code: { $like: projectId } },
+                },
+            })
+            .getData();
+        const orgUnit = organisationUnits[0];
+        if (!orgUnit) return;
+
+        const { projectDashboard } = config.attributes;
+        const dashboardId = _(orgUnit.attributeValues)
+            .map(av => (av.attribute.id === projectDashboard.id ? av.value : null))
+            .compact()
+            .first();
+
+        const getDataSet = (type: "actual" | "target") =>
+            dataSets.find(ds => ds.code.endsWith(type.toUpperCase()));
+
+        return {
+            name: orgUnit.displayName,
+            organisationUnit: orgUnit,
+            dashboard: dashboardId ? { id: dashboardId } : undefined,
+            dataSets: { actual: getDataSet("actual"), target: getDataSet("target") },
+        };
     }
 
     static async getData(
@@ -269,7 +341,8 @@ class Project {
                     "user.id": { eq: filters.createdByCurrentUser ? userId : undefined },
                 },
             })
-            .getData();
+            .getData()
+            .then(data => ({ ...data, objects: data.objects.map(getProjectFromOrgUnit) }));
     }
 
     updateDataElementsSelection(
@@ -307,6 +380,19 @@ class Project {
 }
 
 interface Project extends ProjectData {}
+
+function getProjectFromOrgUnit(orgUnit: ProjectForList): ProjectForList {
+    const process = (s: string, mapper: (d: Moment) => Moment) => toISOString(mapper(moment(s)));
+    return {
+        ...orgUnit,
+        ...(orgUnit.openingDate
+            ? { openingDate: process(orgUnit.openingDate, d => d.add(1, "month")) }
+            : {}),
+        ...(orgUnit.closedDate
+            ? { closedDate: process(orgUnit.closedDate, d => d.subtract(1, "month")) }
+            : {}),
+    };
+}
 
 function validatePresence(value: any, field: string): ValidationError {
     const isBlank =
@@ -365,6 +451,35 @@ function validateLength(
     } else {
         return [];
     }
+}
+
+function getPeriodIds(dataSet: DataSetWithPeriods): string[] {
+    const now = moment();
+    const isPeriodInPastOrOpen = (dip: DataInputPeriod) => {
+        const periodStart = moment(dip.period.id, monthFormat).startOf("month");
+        return periodStart.isBefore(now) || now.isBetween(dip.openingDate, dip.closingDate);
+    };
+
+    return _(dataSet.dataInputPeriods)
+        .filter(isPeriodInPastOrOpen)
+        .map(dip => dip.period.id)
+        .sortBy()
+        .value();
+}
+
+export function getPeriodsData(dataSet: DataSetWithPeriods) {
+    const periodIds = getPeriodIds(dataSet);
+    const isTarget = dataSet.code.endsWith("TARGET");
+    let currentPeriodId;
+
+    if (isTarget) {
+        currentPeriodId = _.first(periodIds);
+    } else {
+        const nowPeriodId = moment().format(monthFormat);
+        currentPeriodId = periodIds.includes(nowPeriodId) ? nowPeriodId : _.last(periodIds);
+    }
+
+    return { periodIds, currentPeriodId };
 }
 
 export default Project;
