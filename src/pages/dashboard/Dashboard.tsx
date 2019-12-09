@@ -17,8 +17,9 @@ function goTo(history: History, url: string) {
     history.push(url);
 }
 
-function getTranslations() {
+function getTranslations(projectName: string | undefined) {
     return {
+        title: i18n.t("Dashboard for Project" + ": " + (projectName || "...")),
         help: i18n.t(
             `Please click on the grey arrow next to the chart/table title if you want to modify the layout.`
         ),
@@ -55,17 +56,25 @@ function goToBack(history: History, projectId: string | undefined | null) {
 
 type RouterParams = { id?: string };
 
-type State = { loading: boolean; data?: string; error?: string };
+type GetState<Data> = { loading: boolean; data?: Data; error?: string };
+
+type State = GetState<{
+    name?: string;
+    url: string;
+}>;
+
+// type State = { loading: boolean; name?: string; data?: string; error?: string };
 
 const Dashboard: React.FC = () => {
     const { api, config } = useAppContext();
     const match = useRouteMatch<RouterParams>();
     const history = useHistory();
-    const translations = getTranslations();
     const stylesSubtitle = { marginBottom: 10, marginLeft: 15 };
     const { baseUrl } = useConfig();
     const [state, setState] = useState<State>({ loading: true });
-    const { data: iFrameSrc, loading, error } = state;
+    const { data, loading, error } = state;
+
+    const translations = getTranslations(data ? data.name : undefined);
 
     const projectId = match ? match.params.id : null;
     useEffect(() => loadData(baseUrl, projectId, api, config, setState), [projectId]);
@@ -99,19 +108,19 @@ const Dashboard: React.FC = () => {
     return (
         <React.Fragment>
             <PageHeader
-                title={i18n.t("Dashboard")}
+                title={translations.title}
                 help={translations.help}
                 onBackClick={() => goToBack(history, projectId)}
             />
             <div style={stylesSubtitle}>{translations.subtitle}</div>
             {loading && <LinearProgress />}
             {error && <p>{error}</p>}
-            {iFrameSrc && (
+            {data && (
                 <iframe
                     ref={iframeRef}
                     id="iframe"
-                    title={i18n.t("Dashboard")}
-                    src={iFrameSrc}
+                    title={translations.title}
+                    src={data.url}
                     height="10000px"
                     style={styles.iframe}
                 />
@@ -131,14 +140,14 @@ function loadData(
     config: Config,
     setState: React.Dispatch<React.SetStateAction<State>>
 ) {
-    const setIFrameSrc = (url: string) => setState({ data: url, loading: false });
+    const setIFrameSrc = (url: string, name?: string) => setState({ data: {name, url}, loading: false });
     const dashboardUrlBase = `${baseUrl}/dhis-web-dashboard`;
     if (projectId) {
         Project.getRelations(api, config, projectId)
             .then(relations => {
                 const dashboard = relations ? relations.dashboard : null;
-                if (dashboard) {
-                    setIFrameSrc(dashboardUrlBase + `/#/${dashboard.id}`);
+                if (relations && dashboard) {
+                    setIFrameSrc(dashboardUrlBase + `/#/${dashboard.id}`, relations.name);
                 } else {
                     setState({
                         error: i18n.t("Cannot load project relations"),
@@ -151,5 +160,6 @@ function loadData(
         setIFrameSrc(dashboardUrlBase);
     }
 }
+
 
 export default Dashboard;

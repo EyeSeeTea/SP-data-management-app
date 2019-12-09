@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2019-12-03T11:21:05.698Z\n"
-"PO-Revision-Date: 2019-12-03T11:21:05.698Z\n"
+"POT-Creation-Date: 2019-12-09T19:01:47.789Z\n"
+"PO-Revision-Date: 2019-12-09T19:01:47.789Z\n"
 
 msgid "<No value>"
 msgstr ""
@@ -141,9 +141,6 @@ msgstr ""
 msgid "Dashboard project to analyse your data..."
 msgstr ""
 
-msgid "Dashboard"
-msgstr ""
-
 msgid "Cannot load project relations"
 msgstr ""
 
@@ -168,6 +165,9 @@ msgid "Monthly Executive Report"
 msgstr ""
 
 msgid "Add Actual Values"
+msgstr ""
+
+msgid "Dashboard"
 msgstr ""
 
 msgid "Cannot load project"
