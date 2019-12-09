@@ -108,7 +108,8 @@ const getDataEntryForm = async (
     onDone: () => void
 ) => {
     const contentWindow = iframe.contentWindow as (Window & DataEntryWindow) | null;
-    if (!contentWindow) return;
+    const iframeDocument = iframe.contentDocument;
+    if (!contentWindow || !iframeDocument) return;
 
     const iframeSelection = contentWindow.selection;
     setEntryStyling(iframe);
@@ -116,7 +117,8 @@ const getDataEntryForm = async (
     contentWindow.dhis2.util.on(
         "dhis2.ou.event.orgUnitSelected",
         async (_event: unknown, organisationUnitIds: string[]) => {
-            if (organisationUnitIds[0] == orgUnitId) {
+            const options = iframeDocument.querySelectorAll("#selectedDataSetId option");
+            if (organisationUnitIds[0] == orgUnitId && options.length > 1) {
                 await setDatasetPeriodAndCategory(iframe, dataSet, attributes, onDone);
             } else {
                 iframeSelection.select(orgUnitId);
