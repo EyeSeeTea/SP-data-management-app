@@ -140,7 +140,8 @@ function loadData(
     config: Config,
     setState: React.Dispatch<React.SetStateAction<State>>
 ) {
-    const setIFrameSrc = (url: string, name?: string) => setState({ data: {name, url}, loading: false });
+    const setIFrameSrc = (url: string, name?: string) =>
+        setState({ data: { name, url }, loading: false });
     const dashboardUrlBase = `${baseUrl}/dhis-web-dashboard`;
     if (projectId) {
         Project.getRelations(api, config, projectId)
@@ -160,6 +161,5 @@ function loadData(
         setIFrameSrc(dashboardUrlBase);
     }
 }
-
 
 export default Dashboard;
