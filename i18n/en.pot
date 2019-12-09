@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2019-12-09T19:41:29.550Z\n"
-"PO-Revision-Date: 2019-12-09T19:41:29.550Z\n"
+"POT-Creation-Date: 2019-12-09T20:04:21.862Z\n"
+"PO-Revision-Date: 2019-12-09T20:04:21.862Z\n"
 
 msgid "<No value>"
 msgstr ""
@@ -95,7 +95,7 @@ msgstr ""
 msgid "Save"
 msgstr ""
 
-msgid "Project Location (*)"
+msgid "Project Locations (*)"
 msgstr ""
 
 msgid "Cancel Project creation?"
@@ -113,6 +113,9 @@ msgid "No"
 msgstr ""
 
 msgid "Award Number should be a number of 5 digits"
+msgstr ""
+
+msgid "Project Locations"
 msgstr ""
 
 msgid "One Organisation Unit should be selected"

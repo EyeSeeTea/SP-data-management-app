@@ -47,6 +47,10 @@ describe("Projects - Create", () => {
         selectInMultiSelector("sectors", "Agriculture");
         selectInMultiSelector("sectors", "Livelihoods");
 
+        cy.contains("Select at least one item for Project Location");
+
+        selectInMultiSelector("locations", "Bahamas");
+
         cy.contains("Next").click();
 
         // Organisation Unit Step
