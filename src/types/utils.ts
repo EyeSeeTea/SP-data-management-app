@@ -1,3 +1,5 @@
+export type Maybe<T> = T | undefined;
+
 /* Like Partial<T>, but recursive on object values */
 export type RecursivePartial<T> = {
     [P in keyof T]?: T[P] extends (infer U)[]

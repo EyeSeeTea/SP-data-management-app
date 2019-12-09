@@ -1,9 +1,21 @@
 import React, { useEffect, useState } from "react";
+import moment from "moment";
 import _ from "lodash";
 import Spinner from "../spinner/Spinner";
 //@ts-ignore
 import { useConfig } from "@dhis2/app-runtime";
 import Dropdown from "../../components/dropdown/Dropdown";
+import { DataSetWithPeriods, getPeriodsData } from "../../models/Project";
+
+const monthFormat = "YYYYMM";
+
+type Attributes = Record<string, string>;
+
+interface DataEntryProps {
+    orgUnitId: string;
+    dataSet: DataSetWithPeriods;
+    attributes: Attributes;
+}
 
 function autoResizeIframeByContent(iframe: HTMLIFrameElement) {
     const resize = () => {
@@ -15,27 +27,32 @@ function autoResizeIframeByContent(iframe: HTMLIFrameElement) {
     window.setInterval(resize, 1000);
 }
 
-function setEntryStyling(iframe: any) {
-    const iframeDocument = iframe.contentWindow.document;
-    iframeDocument.querySelector("#currentSelection").remove();
-    iframeDocument.querySelector("#header").remove();
-    iframeDocument.querySelector("html").style.overflow = "hidden";
-    iframeDocument.querySelector("#leftBar").style.display = "none";
-    iframeDocument.querySelector("#selectionBox").style.display = "none";
-    iframeDocument.querySelector("body").style.marginTop = "-55px";
-    iframeDocument.querySelector("#mainPage").style.margin = "65px 10px 10px 10px";
-    iframeDocument.querySelector("#completenessDiv").style.backgroundColor = "#5c9ccc";
-    iframeDocument.querySelector("#completenessDiv").style.border = "#5c9ccc";
-    iframeDocument.querySelector("#moduleHeader").remove();
-    autoResizeIframeByContent(iframe);
+function on<T extends HTMLElement>(document: Document, selector: string, action: (el: T) => void) {
+    const el = document.querySelector(selector) as T;
+    if (el) action(el);
 }
 
-const waitForChildren = (el: HTMLSelectElement, datasetId: string) => {
+function setEntryStyling(iframe: HTMLIFrameElement) {
+    if (!iframe.contentWindow) return;
+    const iframeDocument = iframe.contentWindow.document;
+    autoResizeIframeByContent(iframe);
+
+    on(iframeDocument, "#currentSelection", el => el.remove());
+    on(iframeDocument, "#header", el => el.remove());
+    on(iframeDocument, "html", html => (html.style.overflow = "hidden"));
+    on(iframeDocument, "#leftBar", el => (el.style.display = "none"));
+    on(iframeDocument, "#selectionBox", el => (el.style.display = "none"));
+    on(iframeDocument, "body", el => (el.style.marginTop = "-55px"));
+    on(iframeDocument, "#mainPage", el => (el.style.margin = "65px 10px 10px 10px"));
+    on(iframeDocument, "#completenessDiv", el => (el.style.backgroundColor = "#5c9ccc"));
+    on(iframeDocument, "#completenessDiv", el => (el.style.border = "#5c9ccc"));
+    on(iframeDocument, "#moduleHeader", el => el.remove());
+}
+
+function waitForOption(el: HTMLSelectElement, predicate: (option: HTMLOptionElement) => boolean) {
     return new Promise(resolve => {
         const check = () => {
-            const option = _.filter(el.options, (option: any) => {
-                return option.value === datasetId;
-            })[0];
+            const option = _.find(el.options, predicate);
             if (option) {
                 resolve();
             } else {
@@ -44,61 +61,65 @@ const waitForChildren = (el: HTMLSelectElement, datasetId: string) => {
         };
         check();
     });
-};
-let dropdownItems: any[] = [];
+}
 
-const obtainDropdownItems = (iframeDocument: HTMLIFrameElement) => {
-    const selectedPeriod = iframeDocument.querySelector("#selectedPeriodId") as HTMLSelectElement;
-    const options = selectedPeriod.options;
-    dropdownItems = [];
-    for (const option of options) {
-        const item = {
-            value: option.value,
-            text: option.text,
-        };
-        dropdownItems.push(item);
-    }
-};
-
-const setDatasetAndPeriod = async (iframe: any, datasetId: string, dropdownValue: string) => {
+const setDatasetPeriodAndCategory = async (
+    iframe: HTMLIFrameElement,
+    dataSet: DataSetWithPeriods,
+    attributes: Attributes,
+    onDone: () => void
+) => {
+    if (!iframe.contentWindow) return;
     const iframeDocument = iframe.contentWindow.document;
 
-    // Constants (to be deleted)
-    const period = dropdownValue;
-
     //get the form that we want
-    const dataSetSelector = iframeDocument.querySelector("#selectedDataSetId");
-    const periodSelector = iframeDocument.querySelector("#selectedPeriodId");
+    const dataSetSelector = iframeDocument.querySelector<HTMLSelectElement>("#selectedDataSetId");
+    const periodSelector = iframeDocument.querySelector<HTMLSelectElement>("#selectedPeriodId");
+    if (!dataSetSelector || !periodSelector) return;
 
     // getting datasets options and select it
-    await waitForChildren(dataSetSelector, datasetId);
-    dataSetSelector.value = datasetId;
-    dataSetSelector.onchange();
+    await waitForOption(dataSetSelector, option => option.value === dataSet.id);
+    selectOption(dataSetSelector, dataSet.id);
 
     // getting periodSelector options and select it
-    await waitForChildren(periodSelector, period);
-    periodSelector.value = period;
-    periodSelector.onchange();
+    await waitForOption(periodSelector, option => !!option.value);
+    const options = periodSelector.querySelectorAll("option");
+    const firstPeriodOption = options[1];
+    if (firstPeriodOption) selectOption(periodSelector, firstPeriodOption.value);
 
-    obtainDropdownItems(iframeDocument);
+    _(attributes).each((categoryOptionId, categoryId) => {
+        const selector = iframeDocument.querySelector<HTMLSelectElement>("#category-" + categoryId);
+        if (!selector) {
+            console.error(`Cannot find attribute selector with categoryId=${categoryId}`);
+            return;
+        } else {
+            selectOption(selector, categoryOptionId);
+        }
+    });
+
+    onDone();
 };
 
 const getDataEntryForm = async (
-    iframe: any,
-    datasetId: string,
-    orgUnitId: any,
-    setDropdownHasValues: Function,
-    dropdownValue: string
+    iframe: HTMLIFrameElement,
+    dataSet: DataSetWithPeriods,
+    orgUnitId: string,
+    attributes: Attributes,
+    onDone: () => void
 ) => {
-    const iframeSelection = iframe.contentWindow.selection;
+    const contentWindow = iframe.contentWindow as (Window & DataEntryWindow) | null;
+    const iframeDocument = iframe.contentDocument;
+    if (!contentWindow || !iframeDocument) return;
+
+    const iframeSelection = contentWindow.selection;
     setEntryStyling(iframe);
 
-    iframe.contentWindow.dhis2.util.on(
+    contentWindow.dhis2.util.on(
         "dhis2.ou.event.orgUnitSelected",
-        async (event: any, organisationUnitId: any) => {
-            if (organisationUnitId[0] == orgUnitId) {
-                await setDatasetAndPeriod(iframe, datasetId, dropdownValue);
-                setDropdownHasValues();
+        async (_event: unknown, organisationUnitIds: string[]) => {
+            const options = iframeDocument.querySelectorAll("#selectedDataSetId option");
+            if (organisationUnitIds[0] == orgUnitId && options.length > 1) {
+                await setDatasetPeriodAndCategory(iframe, dataSet, attributes, onDone);
             } else {
                 iframeSelection.select(orgUnitId);
             }
@@ -107,57 +128,43 @@ const getDataEntryForm = async (
     iframeSelection.select(orgUnitId);
 };
 
-const DataEntry = (props: { orgUnitId: any; datasetId: string }) => {
-    const { orgUnitId, datasetId } = props;
+const DataEntry = (props: DataEntryProps) => {
+    const { orgUnitId, dataSet, attributes } = props;
+    const { periodIds, currentPeriodId } = getPeriodsData(dataSet);
+
     const [state, setState] = useState({
         loading: false,
         dropdownHasValues: false,
-        dropdownValue: "201910",
+        dropdownValue: currentPeriodId,
     });
-    const updateDropdown = (v: any) => {
-        const iframe = iframeRef.current;
-        if (iframe) {
-            const iframeDocument = iframe.contentWindow;
-            if (iframeDocument) {
-                const periodSelector = iframeDocument.document.querySelector(
-                    "#selectedPeriodId"
-                ) as HTMLInputElement;
-                if (periodSelector) {
-                    periodSelector.value = v;
-                    if (periodSelector.onchange) periodSelector.onchange({} as Event);
-                }
-            }
-        }
 
-        setState({ ...state, dropdownValue: v });
-    };
+    useEffect(() => setSelectPeriod(iframeRef, state.dropdownValue), [state]);
+
     const { baseUrl } = useConfig();
     const iFrameSrc = `${baseUrl}/dhis-web-dataentry/index.action`;
     const iframeRef: React.RefObject<HTMLIFrameElement> = React.createRef();
 
     useEffect(() => {
         const iframe = iframeRef.current;
-        const setDropdownHasValues = () => setState({ ...state, dropdownHasValues: true });
 
         if (iframe !== null && !state.loading) {
             iframe.style.display = "none";
             setState({ ...state, loading: true });
-            iframe.addEventListener(
-                "load",
-                getDataEntryForm.bind(
-                    null,
-                    iframe,
-                    datasetId,
-                    orgUnitId,
-                    setDropdownHasValues,
-                    state.dropdownValue
-                )
-            );
+            iframe.addEventListener("load", () => {
+                getDataEntryForm(iframe, dataSet, orgUnitId, attributes, () =>
+                    setState({ ...state, dropdownHasValues: true })
+                );
+            });
         }
         if (iframe !== null && state.dropdownHasValues) {
             iframe.style.display = "";
         }
-    });
+    }, [iframeRef, state]);
+
+    const periodItems = periodIds.map(periodId => ({
+        text: moment(periodId, monthFormat).format("MMMM YYYY"),
+        value: periodId,
+    }));
 
     return (
         <React.Fragment>
@@ -165,9 +172,9 @@ const DataEntry = (props: { orgUnitId: any; datasetId: string }) => {
                 {!state.dropdownHasValues && <Spinner isLoading={state.loading} />}
                 {state.dropdownHasValues && (
                     <Dropdown
-                        items={dropdownItems}
+                        items={periodItems}
                         value={state.dropdownValue}
-                        onChange={updateDropdown}
+                        onChange={value => setState({ ...state, dropdownValue: value })}
                         label="Period"
                         hideEmpty={true}
                     />
@@ -188,5 +195,40 @@ const styles = {
     backgroundIframe: { backgroundColor: "white" },
     selector: { padding: "65px  10px 10px 5px", backgroundColor: "white" },
 };
+
+function selectOption(select: HTMLSelectElement, value: string) {
+    const stubEvent = new Event("stub");
+    select.value = value;
+    if (select.onchange) select.onchange(stubEvent);
+}
+
+/* Globals variables used to interact with the data-entry form */
+interface DataEntryWindow {
+    dhis2: {
+        de: { currentPeriodOffset: number };
+        util: { on: Function };
+    };
+    displayPeriods: () => void;
+    selection: { select: (orgUnitId: string) => void; isBusy(): boolean };
+}
+
+function setSelectPeriod(
+    iframeRef: React.RefObject<HTMLIFrameElement>,
+    dropdownValue: string | undefined
+) {
+    const iframe = iframeRef.current;
+    if (!iframe || !iframe.contentWindow) return;
+
+    const iframeWindow = iframe.contentWindow as (Window & DataEntryWindow);
+    const periodSelector = iframeWindow.document.querySelector("#selectedPeriodId");
+
+    if (periodSelector && dropdownValue) {
+        const now = moment();
+        const selectedDate = moment(dropdownValue, monthFormat);
+        iframeWindow.dhis2.de.currentPeriodOffset = selectedDate.year() - now.year();
+        iframeWindow.displayPeriods();
+        selectOption(periodSelector as HTMLSelectElement, dropdownValue);
+    }
+}
 
 export default DataEntry;

@@ -63,14 +63,14 @@ export default function LandingPage() {
         },
         {
             key: "actualValues",
-            url: generateUrl("actual-values"),
+            url: generateUrl("actualValues", { id: "NOT-IMPLEMENTED" }),
             title: i18n.t("Add Actual Values"),
             icon: "library_books",
             width: 6,
         },
         {
             key: "dashboard",
-            url: generateUrl("dashboard"),
+            url: generateUrl("dashboards"),
             title: i18n.t("Dashboard"),
             icon: "dashboard",
             width: 6,

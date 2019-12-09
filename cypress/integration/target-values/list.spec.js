@@ -10,8 +10,6 @@ describe("Target Values", () => {
     });
 
     it("should have a title and correct url", () => {
-        cy.get('[data-test="Set Target Values for Project"').click();
         cy.get("h5").contains("Set Target Values for Project");
-        cy.url().should("include", "/target-values");
     });
 });
