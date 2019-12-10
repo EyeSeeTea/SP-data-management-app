@@ -65,7 +65,6 @@ msgstr ""
 msgid "Subsequent Lettering"
 msgstr ""
 
-msgid "This user has no Data output and analytic organisation units assigned"
 msgid "Speed Key"
 msgstr ""
 
@@ -198,9 +197,6 @@ msgstr ""
 
 msgid "Selection of Indicators"
 msgid "Sectors & Project Locations"
-msgstr ""
-
-msgid "Indicators Selection"
 msgstr ""
 
 msgid "Summary and Save"
