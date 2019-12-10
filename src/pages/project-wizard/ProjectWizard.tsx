@@ -104,7 +104,7 @@ class ProjectWizardImpl extends React.Component<Props, State> {
                 key: "sectors",
                 label: i18n.t("Sectors"),
                 component: SectorsStep,
-                validationKeys: ["sectors"],
+                validationKeys: ["sectors", "locations"],
                 description: i18n.t(`Select sectors for your project.`),
                 help: i18n.t("TODO"),
             },

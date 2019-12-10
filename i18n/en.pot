@@ -95,6 +95,9 @@ msgstr ""
 msgid "Save"
 msgstr ""
 
+msgid "Project Locations (*)"
+msgstr ""
+
 msgid "Cancel Project creation?"
 msgstr ""
 
@@ -110,6 +113,9 @@ msgid "No"
 msgstr ""
 
 msgid "Award Number should be a number of 5 digits"
+msgstr ""
+
+msgid "Project Locations"
 msgstr ""
 
 msgid "One Organisation Unit should be selected"
@@ -147,9 +153,6 @@ msgstr ""
 msgid "Dashboard project to analyse your data..."
 msgstr ""
 
-msgid "Dashboard"
-msgstr ""
-
 msgid "Cannot load project relations"
 msgstr ""
 
@@ -174,6 +177,9 @@ msgid "Monthly Executive Report"
 msgstr ""
 
 msgid "Add Actual Values"
+msgstr ""
+
+msgid "Dashboard"
 msgstr ""
 
 msgid "Cannot load project"
