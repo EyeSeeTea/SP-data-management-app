@@ -91,13 +91,7 @@ export default class DataElementsSet {
             .value();
 
         return missingSectors.length > 0
-            ? [
-                  i18n.t(
-                      `The following sectors have no indicators selected: ${missingSectors.join(
-                          ", "
-                      )}`
-                  ),
-              ]
+            ? [i18n.t(`The following sectors have no indicators selected: ${missingSectors.join(", ")}`)]
             : [];
     }
 
