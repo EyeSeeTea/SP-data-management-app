@@ -32,14 +32,23 @@ describe("Projects - Create", () => {
 
         // Funders
 
-        cy.contains("Project funders");
+        cy.contains("Funders");
         selectInMultiSelector("funders", "ACWME");
 
         cy.contains("Next").click();
 
-        // Sectors
+        // Organisation Unit Step
 
-        waitForStep("Sectors");
+        waitForStep("Organisation Unit");
+        cy.contains("Next").click();
+        cy.contains("One Organisation Unit should be selected");
+
+        selectOrgUnit("Sierra Leona");
+        cy.contains("Next").click();
+
+        // Sectors and Location
+
+        waitForStep("Sectors & Project Locations");
 
         cy.contains("Next").click();
         cy.contains("Select at least one item for Sectors");
