@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2019-12-09T20:04:21.862Z\n"
-"PO-Revision-Date: 2019-12-09T20:04:21.862Z\n"
+"POT-Creation-Date: 2019-12-10T11:06:01.583Z\n"
+"PO-Revision-Date: 2019-12-10T11:06:01.583Z\n"
 
 msgid "<No value>"
 msgstr ""
@@ -45,9 +45,6 @@ msgid "Paired DE"
 msgstr ""
 
 msgid "Search by name / code"
-msgstr ""
-
-msgid "Project funders (*)"
 msgstr ""
 
 msgid "Field cannot be blank"
@@ -89,9 +86,6 @@ msgstr ""
 msgid "Save"
 msgstr ""
 
-msgid "Project Locations (*)"
-msgstr ""
-
 msgid "Cancel Project creation?"
 msgstr ""
 
@@ -106,16 +100,22 @@ msgstr ""
 msgid "No"
 msgstr ""
 
+msgid "Data Elements"
+msgstr ""
+
 msgid "Start Date"
 msgstr ""
 
 msgid "End Date"
 msgstr ""
 
-msgid "Award Number should be a number of 5 digits"
+msgid "Locations"
 msgstr ""
 
-msgid "Project Locations"
+msgid "Organisation Unit"
+msgstr ""
+
+msgid "Award Number should be a number of 5 digits"
 msgstr ""
 
 msgid "One Organisation Unit should be selected"
@@ -188,12 +188,6 @@ msgid ""
 msgstr ""
 
 msgid "TODO"
-msgstr ""
-
-msgid "Select sectors for your project."
-msgstr ""
-
-msgid "Organisation Unit"
 msgstr ""
 
 msgid ""

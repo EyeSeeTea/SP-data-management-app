@@ -8,6 +8,7 @@ import i18n from "../../../locales";
 import { StepProps } from "../../../pages/project-wizard/ProjectWizard";
 import Project from "../../../models/Project";
 import Funders from "./Funders";
+import { getProjectFieldName } from "../../../utils/form";
 
 /* eslint-disable @typescript-eslint/no-var-requires */
 const { TextField } = require("@dhis2/d2-ui-core");
@@ -29,72 +30,42 @@ class GeneralInfoStep extends React.Component<StepProps> {
     render() {
         const { project } = this.props;
         const fields = [
-            getTextField("name", i18n.t(`Name ${isCompulsory("name")}`), project.name, {
+            getTextField("name", project.name, {
                 validators: [validators.presence],
             }),
-            getTextField(
-                "description",
-                i18n.t(`Description ${isCompulsory("description")}`),
-                project.description,
-                {
-                    props: { multiLine: true },
-                }
-            ),
-            getTextField(
-                "awardNumber",
-                i18n.t(`Award Number ${isCompulsory("awardNumber")}`),
-                project.awardNumber,
-                {
-                    props: { type: "number" },
-                    validators: [
-                        validators.length({
-                            min: Project.lengths.awardNumber,
-                            max: Project.lengths.awardNumber,
-                        }),
-                    ],
-                }
-            ),
-            getTextField(
-                "subsequentLettering",
-                i18n.t(`Subsequent Lettering ${isCompulsory("subsequentLettering")}`),
-                project.subsequentLettering,
-                {
-                    validators: [
-                        validators.length({
-                            min: Project.lengths.subsequentLettering,
-                            max: Project.lengths.subsequentLettering,
-                        }),
-                    ],
-                }
-            ),
-            getTextField(
-                "speedKey",
-                i18n.t(`Speed Key ${isCompulsory("speedKey")}`),
-                project.speedKey,
-                {
-                    validators: [
-                        validators.length({
-                            max: Project.lengths.speedKey,
-                        }),
-                    ],
-                }
-            ),
-            getDateField(
-                "startDate",
-                i18n.t(`Start Date ${isCompulsory("startDate")}`),
-                project.startDate,
-                {
-                    onUpdateField: this.onUpdateField,
-                }
-            ),
-            getDateField(
-                "endDate",
-                i18n.t(`End Date ${isCompulsory("endDate")}`),
-                project.endDate,
-                {
-                    onUpdateField: this.onUpdateField,
-                }
-            ),
+            getTextField("description", project.description, {
+                props: { multiLine: true },
+            }),
+            getTextField("awardNumber", project.awardNumber, {
+                props: { type: "number" },
+                validators: [
+                    validators.length({
+                        min: Project.lengths.awardNumber,
+                        max: Project.lengths.awardNumber,
+                    }),
+                ],
+            }),
+            getTextField("subsequentLettering", project.subsequentLettering, {
+                validators: [
+                    validators.length({
+                        min: Project.lengths.subsequentLettering,
+                        max: Project.lengths.subsequentLettering,
+                    }),
+                ],
+            }),
+            getTextField("speedKey", project.speedKey, {
+                validators: [
+                    validators.length({
+                        max: Project.lengths.speedKey,
+                    }),
+                ],
+            }),
+            getDateField("startDate", project.startDate, {
+                onUpdateField: this.onUpdateField,
+            }),
+            getDateField("endDate", project.endDate, {
+                onUpdateField: this.onUpdateField,
+            }),
         ];
 
         return (
@@ -109,15 +80,6 @@ class GeneralInfoStep extends React.Component<StepProps> {
 }
 
 type Validator<T> = { message: string; validator: (value: T) => boolean };
-
-const isCompulsory = (field: string) => {
-    const compulsoryFields = ["name", "awardNumber", "subsequentLettering", "startDate", "endDate"];
-    if (compulsoryFields.includes(field)) {
-        return "(*)";
-    } else {
-        return "";
-    }
-};
 
 const validators = {
     presence: {
@@ -136,10 +98,10 @@ const validators = {
 
 function getTextField(
     name: StringField,
-    humanName: string,
     value: string,
     { validators, props }: { validators?: Validator<string>[]; props?: _.Dictionary<any> } = {}
 ) {
+    const humanName = getProjectFieldName(name);
     return {
         name,
         value,
@@ -157,7 +119,6 @@ function getTextField(
 
 function getDateField(
     name: DateField,
-    humanName: string,
     value: Moment | undefined,
     {
         onUpdateField,
@@ -167,6 +128,7 @@ function getDateField(
         props?: Partial<DatePicker["props"]>;
     }
 ) {
+    const humanName = getProjectFieldName(name);
     return {
         name,
         value,

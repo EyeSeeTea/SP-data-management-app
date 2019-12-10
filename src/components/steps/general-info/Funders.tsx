@@ -1,12 +1,12 @@
 import React, { useMemo } from "react";
 import _ from "lodash";
-import i18n from "../../../locales";
 
 import { useAppContext } from "../../../contexts/api-context";
 import { CardContent } from "@material-ui/core";
 import { MultiSelector } from "d2-ui-components";
 import { CSSProperties } from "@material-ui/core/styles/withStyles";
 import Project from "../../../models/Project";
+import { getProjectFieldName } from "../../../utils/form";
 
 const defaultTitleStyle = { fontSize: "1.1em", color: "grey" };
 
@@ -44,7 +44,7 @@ const Funders: React.FC<FundersProps> = ({ project, onChange }) => {
 
     return (
         <CardContent style={{ padding: "5px 0 0 0" }}>
-            <Title style={{ marginTop: 35 }}>{i18n.t("Project funders (*)")}</Title>
+            <Title style={{ marginTop: 35 }}>{getProjectFieldName("funders")}</Title>
             <div data-test-selector="funders" style={{ paddingRight: 40 }}>
                 <MultiSelector
                     d2={d2}

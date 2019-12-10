@@ -116,7 +116,6 @@ const defaultProjectData = {
     speedKey: "",
     startDate: undefined,
     endDate: undefined,
-    lastUpdatedBy: {},
     sectors: [],
     funders: [],
     locations: [],
@@ -157,6 +156,7 @@ function defineGetters(sourceObject: any, targetObject: any) {
     });
 }
 
+export type ProjectField = keyof ProjectData;
 export type ValidationKey = keyof ProjectData | "code";
 type Validation = () => ValidationError | Promise<ValidationError>;
 type ValidationError = string[];
@@ -169,37 +169,76 @@ class Project {
         speedKey: 40,
     };
 
-    // TODO: create an object {[field: string]: string} with field translations
+    static fieldNames: Record<ProjectField, string> = {
+        name: i18n.t("Name"),
+        dataElements: i18n.t("Data Elements"),
+        description: i18n.t("Description"),
+        awardNumber: i18n.t("Award Number"),
+        subsequentLettering: i18n.t("Subsequent Lettering"),
+        speedKey: i18n.t("Speed Key"),
+        startDate: i18n.t("Start Date"),
+        endDate: i18n.t("End Date"),
+        sectors: i18n.t("Sectors"),
+        funders: i18n.t("Funders"),
+        locations: i18n.t("Locations"),
+        organisationUnit: i18n.t("Organisation Unit"),
+    };
+
+    static getFieldName(field: ProjectField): string {
+        return this.fieldNames[field];
+    }
+
+    f(field: ProjectField): string {
+        return Project.getFieldName(field);
+    }
+
     validations: Validations = {
-        name: () => validatePresence(this.name, i18n.t("Name")),
-        startDate: () => validatePresence(this.startDate, i18n.t("Start Date")),
-        endDate: () => validatePresence(this.endDate, i18n.t("End Date")),
+        name: () => validatePresence(this.name, this.f("name")),
+        startDate: () => validatePresence(this.startDate, this.f("startDate")),
+        endDate: () => validatePresence(this.endDate, this.f("endDate")),
         code: () => this.validateCodeUniqueness(),
         awardNumber: () =>
             validateRegexp(
                 this.awardNumber,
-                i18n.t("Award Number"),
+                this.f("awardNumber"),
                 new RegExp(`^\\d{${Project.lengths.awardNumber}}$`),
                 i18n.t("Award Number should be a number of 5 digits")
             ),
         subsequentLettering: () =>
-            validateLength(this.subsequentLettering, i18n.t("Subsequent Lettering"), {
+            validateLength(this.subsequentLettering, this.f("subsequentLettering"), {
                 length: Project.lengths.subsequentLettering,
             }),
         speedKey: () =>
-            validateNumber(this.speedKey.length, i18n.t("Speed Key"), {
+            validateNumber(this.speedKey.length, this.f("speedKey"), {
                 max: Project.lengths.speedKey,
             }),
-        sectors: () => validateNonEmpty(this.sectors, i18n.t("Sectors")),
-        funders: () => validateNonEmpty(this.funders, i18n.t("Funders")),
-        locations: () => validateNonEmpty(this.locations, i18n.t("Project Locations")),
+        sectors: () => validateNonEmpty(this.sectors, this.f("sectors")),
+        funders: () => validateNonEmpty(this.funders, this.f("funders")),
+        locations: () => validateNonEmpty(this.locations, this.f("locations")),
         organisationUnit: () =>
             this.organisationUnit ? [] : [i18n.t("One Organisation Unit should be selected")],
         dataElements: () => this.dataElements.validate(this.sectors),
     };
 
+    static requiredFields: Set<ProjectField> = new Set([
+        "name",
+        "startDate",
+        "endDate",
+        "awardNumber",
+        "subsequentLettering",
+        "sectors",
+        "funders",
+        "locations",
+        "organisationUnit",
+        "dataElements",
+    ]);
+
     constructor(public api: D2Api, public config: Config, private data: ProjectData) {
         defineGetters(data, this);
+    }
+
+    static isFieldRequired(field: ProjectField) {
+        return Project.requiredFields.has(field);
     }
 
     public set<K extends keyof ProjectData>(field: K, value: ProjectData[K]): Project {
