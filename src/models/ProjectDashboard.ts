@@ -1,8 +1,8 @@
-import { generateUid } from "d2/uid";
 import _ from "lodash";
-import Project from "./Project";
+import { generateUid } from "d2/uid";
 import { MetadataPayload, PartialModel, D2Dashboard, D2ReportTable } from "d2-api";
-import { Category } from "./Config";
+import Project from "./Project";
+import { Category, CategoryOption } from "./Config";
 import i18n from "../locales";
 
 export default class ProjectDashboard {
@@ -161,7 +161,15 @@ function peopleTable(project: Project): PartialModel<D2ReportTable> {
         columns: [{ id: "pe" }],
         periods: project.getPeriods(),
         organisationUnits: [{ id: orgUnitId }],
-        filters: [{ id: "ou" }],
-        ...getRowsInfo(categories),
+        filterDimensions: ["ou", categories.targetActual.id],
+        filters: [{ id: "ou" }, { id: categories.targetActual.id }],
+        categoryDimensions: dimensionsData.map(({ category, categoryOptions }) => ({
+            category: { id: category.id },
+            categoryOptions: (categoryOptions || category.categoryOptions).map(co => ({
+                id: co.id,
+            })),
+        })),
+        rows: [{ id: "dx" }, ...categoriesForRows.map(category => ({ id: category.id }))],
+        rowDimensions: ["dx", ...categoriesForRows.map(category => category.id)],
     };
 }

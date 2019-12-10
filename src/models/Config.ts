@@ -126,7 +126,9 @@ type IndexedObjs<Key extends keyof BaseConfig, ValueType> = Record<
 
 type Attribute = CodedObject;
 export type CategoryCombo = CodedObject;
-export type Category = CodedObject & { categoryOptions: CodedObject[] };
+export type CategoryOption = CodedObject;
+export type Category = CodedObject & { categoryOptions: CategoryOption[] };
+export type Indicator = CodedObject;
 
 export type Config = {
     base: typeof baseConfig;
