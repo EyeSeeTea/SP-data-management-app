@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2019-12-09T20:04:21.862Z\n"
-"PO-Revision-Date: 2019-12-09T20:04:21.862Z\n"
+"POT-Creation-Date: 2019-12-10T11:22:54.391Z\n"
+"PO-Revision-Date: 2019-12-10T11:22:54.391Z\n"
 
 msgid "<No value>"
 msgstr ""
@@ -47,7 +47,13 @@ msgstr ""
 msgid "Search by name / code"
 msgstr ""
 
-msgid "Project funders"
+msgid "Field cannot be blank"
+msgstr ""
+
+msgid "Field length is invalid"
+msgstr ""
+
+msgid "This user has no Data output and analytic organisation units assigned"
 msgstr ""
 
 msgid "Description"
@@ -60,21 +66,6 @@ msgid "Subsequent Lettering"
 msgstr ""
 
 msgid "Speed Key"
-msgstr ""
-
-msgid "Start Date"
-msgstr ""
-
-msgid "End Date"
-msgstr ""
-
-msgid "Field cannot be blank"
-msgstr ""
-
-msgid "Field length is invalid"
-msgstr ""
-
-msgid "This user has no Data output and analytic organisation units assigned"
 msgstr ""
 
 msgid "Period dates"
@@ -95,9 +86,6 @@ msgstr ""
 msgid "Save"
 msgstr ""
 
-msgid "Project Locations (*)"
-msgstr ""
-
 msgid "Cancel Project creation?"
 msgstr ""
 
@@ -112,10 +100,22 @@ msgstr ""
 msgid "No"
 msgstr ""
 
-msgid "Award Number should be a number of 5 digits"
+msgid "Data Elements"
+msgstr ""
+
+msgid "Start Date"
+msgstr ""
+
+msgid "End Date"
 msgstr ""
 
 msgid "Project Locations"
+msgstr ""
+
+msgid "Organisation Unit"
+msgstr ""
+
+msgid "Award Number should be a number of 5 digits"
 msgstr ""
 
 msgid "One Organisation Unit should be selected"
@@ -190,15 +190,12 @@ msgstr ""
 msgid "TODO"
 msgstr ""
 
-msgid "Select sectors for your project."
-msgstr ""
-
-msgid "Organisation Unit"
-msgstr ""
-
 msgid ""
 "Select the organisation unit associated with the project. At least one must "
 "be selected."
+msgstr ""
+
+msgid "Sectors & Project Locations"
 msgstr ""
 
 msgid "Indicators Selection"
