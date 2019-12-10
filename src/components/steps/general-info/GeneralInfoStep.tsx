@@ -8,6 +8,7 @@ import i18n from "../../../locales";
 import { StepProps } from "../../../pages/project-wizard/ProjectWizard";
 import Project from "../../../models/Project";
 import Funders from "./Funders";
+import { getProjectFieldName } from "../../../utils/form";
 
 /* eslint-disable @typescript-eslint/no-var-requires */
 const { TextField } = require("@dhis2/d2-ui-core");
@@ -29,13 +30,13 @@ class GeneralInfoStep extends React.Component<StepProps> {
     render() {
         const { project } = this.props;
         const fields = [
-            getTextField("name", i18n.t("Name"), project.name, {
+            getTextField("name", project.name, {
                 validators: [validators.presence],
             }),
-            getTextField("description", i18n.t("Description"), project.description, {
+            getTextField("description", project.description, {
                 props: { multiLine: true },
             }),
-            getTextField("awardNumber", i18n.t("Award Number"), project.awardNumber, {
+            getTextField("awardNumber", project.awardNumber, {
                 props: { type: "number" },
                 validators: [
                     validators.length({
@@ -44,25 +45,20 @@ class GeneralInfoStep extends React.Component<StepProps> {
                     }),
                 ],
             }),
-            getTextField(
-                "subsequentLettering",
-                i18n.t("Subsequent Lettering"),
-                project.subsequentLettering,
-                {
-                    validators: [validators.regexp(/^[a-zA-Z]{2}$/), validators.presence],
-                }
-            ),
-            getTextField("speedKey", i18n.t("Speed Key"), project.speedKey, {
+            getTextField("subsequentLettering", project.subsequentLettering, {
+                validators: [validators.regexp(/^[a-zA-Z]{2}$/), validators.presence],
+            }),
+            getTextField("speedKey", project.speedKey, {
                 validators: [
                     validators.length({
                         max: Project.lengths.speedKey,
                     }),
                 ],
             }),
-            getDateField("startDate", i18n.t("Start Date"), project.startDate, {
+            getDateField("startDate", project.startDate, {
                 onUpdateField: this.onUpdateField,
             }),
-            getDateField("endDate", i18n.t("End Date"), project.endDate, {
+            getDateField("endDate", project.endDate, {
                 onUpdateField: this.onUpdateField,
             }),
         ];
@@ -100,10 +96,10 @@ const validators = {
 
 function getTextField(
     name: StringField,
-    humanName: string,
     value: string,
     { validators, props }: { validators?: Validator<string>[]; props?: _.Dictionary<any> } = {}
 ) {
+    const humanName = getProjectFieldName(name);
     return {
         name,
         value,
@@ -121,7 +117,6 @@ function getTextField(
 
 function getDateField(
     name: DateField,
-    humanName: string,
     value: Moment | undefined,
     {
         onUpdateField,
@@ -131,6 +126,7 @@ function getDateField(
         props?: Partial<DatePicker["props"]>;
     }
 ) {
+    const humanName = getProjectFieldName(name);
     return {
         name,
         value,
