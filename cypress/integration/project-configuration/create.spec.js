@@ -32,7 +32,7 @@ describe("Projects - Create", () => {
 
         // Funders
 
-        cy.contains("Project funders");
+        cy.contains("Funders");
         selectInMultiSelector("funders", "ACWME");
 
         cy.contains("Next").click();
@@ -57,7 +57,7 @@ describe("Projects - Create", () => {
         selectInMultiSelector("sectors", "Livelihoods");
 
         cy.contains("Next").click();
-        cy.contains("Select at least one item for Project Locations");
+        cy.contains("Select at least one item for Locations");
 
         selectInMultiSelector("locations", "Bahamas");
 
