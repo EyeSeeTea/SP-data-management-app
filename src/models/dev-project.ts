@@ -3,6 +3,7 @@ import moment from "moment";
 
 export function getDevProject(initialProject: Project, enabled: boolean) {
     if (!enabled) return initialProject;
+    const n = (Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000).toString();
 
     return initialProject
         .set("organisationUnit", { path: "/J0hschZVMBt/PJb0RtEnqlf" })
@@ -18,15 +19,10 @@ export function getDevProject(initialProject: Project, enabled: boolean) {
                 "We61YNYyOX0",
             ]).dataElements
         )
-        .set("name", "Test1")
-        .set("awardNumber", "12345")
+        .set("name", "0Test-" + n)
+        .set("awardNumber", n)
         .set("subsequentLettering", "en")
-        .set(
-            "startDate",
-            moment()
-                .subtract(1, "month")
-                .set("date", 10)
-        )
+        .set("startDate", moment().set("date", 10))
         .set(
             "endDate",
             moment()
