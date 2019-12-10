@@ -1,14 +1,14 @@
 import { generateUid } from "d2/uid";
 import _ from "lodash";
 import Project from "./Project";
-import { PartialMetadata, PartialModel, D2Dashboard, D2ReportTable } from "d2-api";
+import { MetadataPayload, PartialModel, D2Dashboard, D2ReportTable } from "d2-api";
 import { Category } from "./Config";
 import i18n from "../locales";
 
 export default class ProjectDashboard {
     constructor(public project: Project) {}
 
-    generate(): Required<Pick<PartialMetadata, "dashboards" | "reportTables">> {
+    generate(): Pick<MetadataPayload, "dashboards" | "reportTables"> {
         const { project } = this;
         const reportTables: Array<PartialModel<D2ReportTable>> = [
             peopleTable(project),
@@ -19,7 +19,7 @@ export default class ProjectDashboard {
             name: project.name,
             dashboardItems: reportTables.map(reportTable => ({
                 id: generateUid(),
-                type: "REPORT_TABLE" as const,
+                type: "REPORT_TABLE",
                 reportTable: { id: reportTable.id },
             })),
         };
@@ -39,40 +39,49 @@ function getRowsInfo(categories: Category[]) {
     };
 }
 
-const targetVsActualTable = (project: Project) => {
+function getOrgUnitId(project: Project): string {
+    const ou = project.organisationUnit;
+    if (!ou) {
+        throw new Error("No organisation defined for project");
+    } else {
+        return _.last(ou.path.split("/")) || "";
+    }
+}
+
+function targetVsActualTable(project: Project): PartialModel<D2ReportTable> {
     const orgUnitId = getOrgUnitId(project);
-    const dataElements = project.dataElements.get({ onlySelected: true });
+    const dataElements = project.dataElements.get({ onlySelected: true, includePaired: true });
     const allCategories = project.config.categories;
     const categories = [allCategories.targetActual];
 
     return {
         id: generateUid(),
         name: `${project.name} - ` + i18n.t("PM Target vs Actual"),
-        numberType: "VALUE" as const,
+        numberType: "VALUE",
         publicAccess: "rw------",
         userOrganisationUnitChildren: false,
-        legendDisplayStyle: "FILL" as const,
+        legendDisplayStyle: "FILL",
         hideEmptyColumns: false,
         hideEmptyRows: false,
         userOrganisationUnit: false,
         rowSubTotals: true,
-        displayDensity: "NORMAL" as const,
+        displayDensity: "NORMAL",
         completedOnly: false,
         colTotals: false,
         showDimensionLabels: true,
         sortOrder: 0,
-        fontSize: "NORMAL" as const,
+        fontSize: "NORMAL",
         topLimit: 0,
-        aggregationType: "DEFAULT" as const,
+        aggregationType: "DEFAULT",
         userOrganisationUnitGrandChildren: false,
         hideSubtitle: false,
         externalAccess: false,
-        legendDisplayStrategy: "FIXED" as const,
+        legendDisplayStrategy: "FIXED",
         colSubTotals: false,
         showHierarchy: false,
         rowTotals: true,
         cumulative: false,
-        digitGroupSeparator: "SPACE" as const,
+        digitGroupSeparator: "SPACE",
         hideTitle: false,
         regression: false,
         skipRounding: false,
@@ -85,7 +94,7 @@ const targetVsActualTable = (project: Project) => {
         filterDimensions: ["ou"],
         columnDimensions: ["pe"],
         dataDimensionItems: dataElements.map(de => ({
-            dataDimensionItemType: "DATA_ELEMENT" as const,
+            dataDimensionItemType: "DATA_ELEMENT",
             dataElement: { id: de.id },
         })),
         columns: [{ id: "pe" }],
@@ -94,13 +103,14 @@ const targetVsActualTable = (project: Project) => {
         filters: [{ id: "ou" }],
         ...getRowsInfo(categories),
     };
-};
+}
 
-const peopleTable = (project: Project) => {
+function peopleTable(project: Project): PartialModel<D2ReportTable> {
     const orgUnitId = getOrgUnitId(project);
     const dataElementsPeople = project.dataElements.get({
         onlySelected: true,
         peopleOrBenefit: "people",
+        includePaired: true,
     });
     const allCategories = project.config.categories;
     const categories = [allCategories.gender, allCategories.newRecurring];
@@ -109,30 +119,30 @@ const peopleTable = (project: Project) => {
         id: generateUid(),
         name: `${project.name} - ` + i18n.t("PM People Indicators Gender Breakdown"),
         publicAccess: "rw------",
-        numberType: "VALUE" as const,
+        numberType: "VALUE",
         userOrganisationUnitChildren: false,
-        legendDisplayStyle: "FILL" as const,
+        legendDisplayStyle: "FILL",
         hideEmptyColumns: false,
         hideEmptyRows: false,
         userOrganisationUnit: false,
         rowSubTotals: false,
-        displayDensity: "NORMAL" as const,
+        displayDensity: "NORMAL",
         completedOnly: false,
         colTotals: false,
         showDimensionLabels: true,
         sortOrder: 0,
-        fontSize: "NORMAL" as const,
+        fontSize: "NORMAL",
         topLimit: 0,
-        aggregationType: "DEFAULT" as const,
+        aggregationType: "DEFAULT",
         userOrganisationUnitGrandChildren: false,
         hideSubtitle: false,
         externalAccess: false,
-        legendDisplayStrategy: "FIXED" as const,
+        legendDisplayStrategy: "FIXED",
         colSubTotals: true,
         showHierarchy: false,
         rowTotals: true,
         cumulative: false,
-        digitGroupSeparator: "SPACE" as const,
+        digitGroupSeparator: "SPACE",
         hideTitle: false,
         regression: false,
         skipRounding: false,
@@ -145,7 +155,7 @@ const peopleTable = (project: Project) => {
         filterDimensions: ["ou"],
         columnDimensions: ["pe"],
         dataDimensionItems: dataElementsPeople.map(de => ({
-            dataDimensionItemType: "DATA_ELEMENT" as const,
+            dataDimensionItemType: "DATA_ELEMENT",
             dataElement: { id: de.id },
         })),
         columns: [{ id: "pe" }],
@@ -154,13 +164,4 @@ const peopleTable = (project: Project) => {
         filters: [{ id: "ou" }],
         ...getRowsInfo(categories),
     };
-};
-
-function getOrgUnitId(project: Project): string {
-    const ou = project.organisationUnit;
-    if (!ou) {
-        throw new Error("No organisation defined for project");
-    } else {
-        return _.last(ou.path.split("/")) || "";
-    }
 }

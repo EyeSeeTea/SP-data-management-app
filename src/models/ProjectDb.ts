@@ -1,20 +1,15 @@
 import _ from "lodash";
 import moment from "moment";
 import { generateUid } from "d2/uid";
-import { D2DataSet, D2OrganisationUnit } from "d2-api";
-import { PartialModel, Ref, PartialMetadata, MetadataResponse } from "d2-api";
+import { D2DataSet, D2OrganisationUnit, MetadataPayload } from "d2-api";
+import { PartialModel, MetadataResponse } from "d2-api";
 import Project from "./Project";
 import { getMonthsRange, toISOString } from "../utils/date";
 import "../utils/lodash-mixins";
-import ProjectDashboard from "./CampaignDashboard";
+import ProjectDashboard from "./ProjectDashboard";
+import { PartialPersistedModel } from "d2-api/api/common";
 
 const expiryDaysInMonthActual = 10;
-
-function getOrgUnitId(orgUnit: { path: string }): string {
-    const id = _.last(orgUnit.path.split("/"));
-    if (id) return id;
-    else throw new Error(`Invalid path: ${orgUnit.path}`);
-}
 
 export default class ProjectDb {
     constructor(public project: Project) {}
@@ -38,11 +33,10 @@ export default class ProjectDb {
 
         const dashboardsMetadata = new ProjectDashboard(project).generate();
         const dashboard = dashboardsMetadata.dashboards[0];
-
         if (!dashboard) throw new Error("No dashboard defined");
 
         const parentOrgUnitId = getOrgUnitId(parentOrgUnit);
-        const orgUnit = {
+        const orgUnit: PartialPersistedModel<D2OrganisationUnit> = {
             id: generateUid(),
             name: project.name,
             code: project.code,
@@ -103,13 +97,16 @@ export default class ProjectDb {
             attributeValues: dataSetAttributeValues,
         });
 
-        const baseMetadata = {
+        const orgUnitsMetadata: Pick<
+            MetadataPayload,
+            "organisationUnits" | "organisationUnitGroups"
+        > = {
             organisationUnits: [orgUnit],
             organisationUnitGroups: newOrgUnitGroupFunders,
         };
 
         const payload = flattenPayloads([
-            baseMetadata,
+            orgUnitsMetadata,
             dataSetTargetMetadata,
             dataSetActualMetadata,
             dashboardsMetadata,
@@ -134,7 +131,7 @@ export default class ProjectDb {
 
     Solution: Re-save the orgUnit using a PUT /api/organisationUnits
     */
-    async postSave(response: MetadataResponse, orgUnit: Ref & PartialModel<D2OrganisationUnit>) {
+    async postSave(response: MetadataResponse, orgUnit: PartialPersistedModel<D2OrganisationUnit>) {
         if (response.status === "OK") {
             await this.project.api.models.organisationUnits
                 .put(orgUnit)
@@ -144,10 +141,10 @@ export default class ProjectDb {
         }
     }
 
-    getDataSetsMetadata(
-        orgUnit: { id: string },
+    getDataSetsMetadata<T extends PartialPersistedModel<D2OrganisationUnit>>(
+        orgUnit: T,
         baseDataSet: PartialModel<D2DataSet>
-    ): PartialMetadata {
+    ): Pick<MetadataPayload, "dataSets" | "sections"> {
         const { project } = this;
         const dataSetId = generateUid();
 
@@ -222,18 +219,19 @@ function getDataSetPeriods(startDate: moment.Moment, endDate: moment.Moment) {
     return { targetPeriods, actualPeriods };
 }
 
-/* Accumulate Array<{key1: [...], key2: [...]}> into {key1: [...], key2: [...]} */
-export function flattenPayloads(payloads: object[]): object {
-    return _(payloads)
-        .map(_.toPairs)
-        .flatten()
-        .groupBy(([key, _values]) => key)
-        .mapValues(pairs =>
-            _(pairs)
-                .flatMap(([_key, values]) => values)
-                .uniqBy("id")
-                .map(obj => _.omitBy(obj, (_v, k) => k === "key" || k.startsWith("$")))
-                .value()
-        )
-        .value();
+function getOrgUnitId(orgUnit: { path: string }): string {
+    const id = _.last(orgUnit.path.split("/"));
+    if (id) return id;
+    else throw new Error(`Invalid path: ${orgUnit.path}`);
+}
+
+export function flattenPayloads<Model extends keyof MetadataPayload>(
+    payloads: Array<Partial<Pick<MetadataPayload, Model>>>
+): Pick<MetadataPayload, Model> {
+    const concat = <T>(value1: T[] | undefined, value2: T[]): T[] => (value1 || []).concat(value2);
+    const payload = payloads.reduce(
+        (payloadAcc, payload) => _.mergeWith(payloadAcc, payload, concat),
+        {} as Pick<MetadataPayload, Model>
+    );
+    return payload as Pick<MetadataPayload, Model>;
 }
