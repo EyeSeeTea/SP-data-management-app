@@ -43,6 +43,9 @@ const baseConfig = {
     organitionUnitGroupSets: {
         funder: "FUNDER",
     },
+    indicators: {
+        actualTargetPrefix: "ACTUAL_TARGET_",
+    },
 };
 
 function getParamsForIndexables(indexedCodes: _.Dictionary<string>) {
@@ -81,6 +84,15 @@ const metadataParams = {
         },
         filter: {
             code: { in: _.values(baseConfig.dataElementGroupSets) },
+        },
+    },
+    indicators: {
+        fields: {
+            id: yes,
+            code: yes,
+        },
+        filter: {
+            code: { $like: baseConfig.indicators.actualTargetPrefix },
         },
     },
     organisationUnitGroupSets: {
@@ -139,6 +151,7 @@ export type Config = {
     attributes: IndexedObjs<"attributes", Attribute>;
     categories: IndexedObjs<"categories", Category>;
     categoryCombos: IndexedObjs<"categoryCombos", CategoryCombo>;
+    indicators: Indicator[];
 };
 
 class ConfigLoader {
@@ -164,6 +177,7 @@ class ConfigLoader {
             currentUser: currentUser,
             ...dataElementsMetadata,
             funders: _.sortBy(funders, funder => funder.displayName),
+            indicators: metadata.indicators,
             attributes: indexObjects<Attribute, "attributes">(metadata, "attributes"),
             categories: indexObjects<Category, "categories">(metadata, "categories"),
             categoryCombos: indexObjects<CategoryCombo, "categoryCombos">(

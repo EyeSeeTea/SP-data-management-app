@@ -49,7 +49,7 @@ Project model.
 */
 
 import _ from "lodash";
-import { D2Api, SelectedPick, Id, D2OrganisationUnitSchema, Ref } from "d2-api";
+import { D2Api, SelectedPick, Id, D2OrganisationUnitSchema, Ref, D2IndicatorSchema } from "d2-api";
 import { Pagination } from "./../types/ObjectsList";
 import { Pager } from "d2-api/api/models";
 import i18n from "../locales";
@@ -382,6 +382,27 @@ class Project {
         return getMonthsRange(this.startDate, this.endDate).map(date => ({
             id: date.format("YYYYMM"),
         }));
+    }
+
+    getActualTargetIndicators(
+        dataElements: Array<{ code: string }>
+    ): Array<SelectedPick<D2IndicatorSchema, { id: true; code: true }>> {
+        const indicatorsByCode = _.keyBy(this.config.indicators, indicator => indicator.code);
+        const { actualTargetPrefix } = this.config.base.indicators;
+
+        return _(dataElements)
+            .map(de => {
+                const indicatorCode = actualTargetPrefix + de.code;
+                const indicator = _(indicatorsByCode).get(indicatorCode, undefined);
+                if (indicator) {
+                    return indicator;
+                } else {
+                    console.error("Data element has no indicator associated: ${de.id}");
+                    return null;
+                }
+            })
+            .compact()
+            .value();
     }
 }
 

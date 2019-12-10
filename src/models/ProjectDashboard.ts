@@ -13,6 +13,7 @@ export default class ProjectDashboard {
         const reportTables: Array<PartialModel<D2ReportTable>> = [
             peopleTable(project),
             targetVsActualTable(project),
+            targetVsActualIndicatorsTable(project),
         ];
         const dashboard: PartialModel<D2Dashboard> = {
             id: generateUid(),
@@ -28,17 +29,6 @@ export default class ProjectDashboard {
     }
 }
 
-function getRowsInfo(categories: Category[]) {
-    return {
-        categoryDimensions: categories.map(category => ({
-            category: { id: category.id },
-            categoryOptions: category.categoryOptions.map(co => ({ id: co.id })),
-        })),
-        rows: [{ id: "dx" }, ...categories.map(category => ({ id: category.id }))],
-        rowDimensions: ["dx", ...categories.map(category => category.id)],
-    };
-}
-
 function getOrgUnitId(project: Project): string {
     const ou = project.organisationUnit;
     if (!ou) {
@@ -51,46 +41,22 @@ function getOrgUnitId(project: Project): string {
 function targetVsActualTable(project: Project): PartialModel<D2ReportTable> {
     const orgUnitId = getOrgUnitId(project);
     const dataElements = project.dataElements.get({ onlySelected: true, includePaired: true });
-    const allCategories = project.config.categories;
-    const categories = [allCategories.targetActual];
+    const categories = [project.config.categories.targetActual];
 
     return {
         id: generateUid(),
         name: `${project.name} - ` + i18n.t("PM Target vs Actual"),
         numberType: "VALUE",
         publicAccess: "rw------",
-        userOrganisationUnitChildren: false,
         legendDisplayStyle: "FILL",
-        hideEmptyColumns: false,
-        hideEmptyRows: false,
-        userOrganisationUnit: false,
         rowSubTotals: true,
-        displayDensity: "NORMAL",
-        completedOnly: false,
-        colTotals: false,
         showDimensionLabels: true,
         sortOrder: 0,
-        fontSize: "NORMAL",
         topLimit: 0,
         aggregationType: "DEFAULT",
-        userOrganisationUnitGrandChildren: false,
-        hideSubtitle: false,
-        externalAccess: false,
         legendDisplayStrategy: "FIXED",
-        colSubTotals: false,
-        showHierarchy: false,
         rowTotals: true,
-        cumulative: false,
         digitGroupSeparator: "SPACE",
-        hideTitle: false,
-        regression: false,
-        skipRounding: false,
-        reportParams: {
-            paramGrandParentOrganisationUnit: false,
-            paramReportingPeriod: false,
-            paramOrganisationUnit: false,
-            paramParentOrganisationUnit: false,
-        },
         filterDimensions: ["ou"],
         columnDimensions: ["pe"],
         dataDimensionItems: dataElements.map(de => ({
@@ -101,7 +67,47 @@ function targetVsActualTable(project: Project): PartialModel<D2ReportTable> {
         periods: project.getPeriods(),
         organisationUnits: [{ id: orgUnitId }],
         filters: [{ id: "ou" }],
-        ...getRowsInfo(categories),
+        categoryDimensions: categories.map(category => ({
+            category: { id: category.id },
+            categoryOptions: category.categoryOptions.map(co => ({ id: co.id })),
+        })),
+        rows: [{ id: "dx" }, ...categories.map(category => ({ id: category.id }))],
+        rowDimensions: ["dx", ...categories.map(category => category.id)],
+    };
+}
+
+function targetVsActualIndicatorsTable(project: Project): PartialModel<D2ReportTable> {
+    const orgUnitId = getOrgUnitId(project);
+    const dataElements = project.dataElements.get({ onlySelected: true, includePaired: true });
+    const indicators = project.getActualTargetIndicators(dataElements);
+
+    return {
+        id: generateUid(),
+        name: `${project.name} - ` + i18n.t("PM Target vs Actual achieved (%)"),
+        numberType: "VALUE",
+        publicAccess: "rw------",
+        legendDisplayStyle: "FILL",
+        rowSubTotals: true,
+        showDimensionLabels: true,
+        sortOrder: 0,
+        topLimit: 0,
+        aggregationType: "DEFAULT",
+        legendDisplayStrategy: "FIXED",
+        rowTotals: true,
+        digitGroupSeparator: "SPACE",
+        filterDimensions: ["ou"],
+        columnDimensions: ["pe"],
+        dataDimensionItems: indicators.map(indicator => ({
+            dataDimensionItemType: "INDICATOR",
+            indicator: { id: indicator.id },
+        })),
+        columns: [{ id: "pe" }],
+        periods: project.getPeriods(),
+        organisationUnits: [{ id: orgUnitId }],
+        filters: [{ id: "ou" }],
+        categoryDimensions: [],
+        rows: [{ id: "dx" }],
+        rowDimensions: ["dx"],
     };
 }
 
@@ -112,47 +118,33 @@ function peopleTable(project: Project): PartialModel<D2ReportTable> {
         peopleOrBenefit: "people",
         includePaired: true,
     });
-    const allCategories = project.config.categories;
-    const categories = [allCategories.gender, allCategories.newRecurring];
+    const categories = project.config.categories;
+    const categoriesForRows = [categories.gender, categories.newRecurring];
+    const dimensionsData: Array<{ category: Category; categoryOptions?: CategoryOption[] }> = [
+        { category: categories.gender },
+        { category: categories.newRecurring },
+        {
+            category: categories.targetActual,
+            categoryOptions: categories.targetActual.categoryOptions.filter(
+                co => co.code === "ACTUAL"
+            ),
+        },
+    ];
 
     return {
         id: generateUid(),
         name: `${project.name} - ` + i18n.t("PM People Indicators Gender Breakdown"),
         publicAccess: "rw------",
         numberType: "VALUE",
-        userOrganisationUnitChildren: false,
         legendDisplayStyle: "FILL",
-        hideEmptyColumns: false,
-        hideEmptyRows: false,
-        userOrganisationUnit: false,
-        rowSubTotals: false,
-        displayDensity: "NORMAL",
-        completedOnly: false,
-        colTotals: false,
         showDimensionLabels: true,
         sortOrder: 0,
-        fontSize: "NORMAL",
         topLimit: 0,
         aggregationType: "DEFAULT",
-        userOrganisationUnitGrandChildren: false,
-        hideSubtitle: false,
-        externalAccess: false,
         legendDisplayStrategy: "FIXED",
         colSubTotals: true,
-        showHierarchy: false,
         rowTotals: true,
-        cumulative: false,
         digitGroupSeparator: "SPACE",
-        hideTitle: false,
-        regression: false,
-        skipRounding: false,
-        reportParams: {
-            paramGrandParentOrganisationUnit: false,
-            paramReportingPeriod: false,
-            paramOrganisationUnit: false,
-            paramParentOrganisationUnit: false,
-        },
-        filterDimensions: ["ou"],
         columnDimensions: ["pe"],
         dataDimensionItems: dataElementsPeople.map(de => ({
             dataDimensionItemType: "DATA_ELEMENT",
