@@ -180,7 +180,7 @@ class Project {
         endDate: i18n.t("End Date"),
         sectors: i18n.t("Sectors"),
         funders: i18n.t("Funders"),
-        locations: i18n.t("Locations"),
+        locations: i18n.t("Project Locations"),
         organisationUnit: i18n.t("Organisation Unit"),
     };
 

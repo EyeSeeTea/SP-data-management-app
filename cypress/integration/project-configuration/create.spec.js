@@ -48,7 +48,7 @@ describe("Projects - Create", () => {
 
         // Sectors and Location
 
-        waitForStep("Sectors");
+        waitForStep("Sectors & Project Locations");
 
         cy.contains("Next").click();
         cy.contains("Select at least one item for Sectors");
@@ -57,7 +57,7 @@ describe("Projects - Create", () => {
         selectInMultiSelector("sectors", "Livelihoods");
 
         cy.contains("Next").click();
-        cy.contains("Select at least one item for Locations");
+        cy.contains("Select at least one item for Project Locations");
 
         selectInMultiSelector("locations", "Bahamas");
 
