@@ -183,9 +183,12 @@ class Project {
                 i18n.t("Award Number should be a number of 5 digits")
             ),
         subsequentLettering: () =>
-            validateLength(this.subsequentLettering, i18n.t("Subsequent Lettering"), {
-                length: Project.lengths.subsequentLettering,
-            }),
+            validateRegexp(
+                this.subsequentLettering,
+                i18n.t("Subsequent Lettering"),
+                new RegExp(`^[a-zA-Z]{2}$`),
+                i18n.t("Subsequent Lettering must be a string of two letters only")
+            ),
         speedKey: () =>
             validateNumber(this.speedKey.length, i18n.t("Speed Key"), {
                 max: Project.lengths.speedKey,
@@ -439,18 +442,6 @@ function validateRegexp(
                       pattern: regexp.source,
                   }),
           ];
-}
-
-function validateLength(
-    value: string,
-    field: string,
-    { length }: { length?: number } = {}
-): ValidationError {
-    if (value.length !== 2) {
-        return [i18n.t("{{field}} must have {{length}} characters", { field, length })];
-    } else {
-        return [];
-    }
 }
 
 function getPeriodIds(dataSet: DataSetWithPeriods): string[] {

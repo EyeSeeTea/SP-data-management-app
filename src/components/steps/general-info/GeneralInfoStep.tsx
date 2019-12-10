@@ -49,12 +49,7 @@ class GeneralInfoStep extends React.Component<StepProps> {
                 i18n.t("Subsequent Lettering"),
                 project.subsequentLettering,
                 {
-                    validators: [
-                        validators.length({
-                            min: Project.lengths.subsequentLettering,
-                            max: Project.lengths.subsequentLettering,
-                        }),
-                    ],
+                    validators: [validators.regexp(/^[a-zA-Z]{2}$/), validators.presence],
                 }
             ),
             getTextField("speedKey", i18n.t("Speed Key"), project.speedKey, {
@@ -71,7 +66,6 @@ class GeneralInfoStep extends React.Component<StepProps> {
                 onUpdateField: this.onUpdateField,
             }),
         ];
-
         return (
             <Card>
                 <CardContent>
@@ -97,6 +91,10 @@ const validators = {
             _.compact([min && `min=${min}`, max && `max=${max}`]).join(", "),
         validator: (s: string) =>
             (min === undefined || s.length >= min) && (max == undefined || s.length <= max),
+    }),
+    regexp: (regexp: RegExp) => ({
+        message: i18n.t("Field must be composed by two letter characters"),
+        validator: (s: string) => new RegExp(regexp).test(s),
     }),
 };
 
