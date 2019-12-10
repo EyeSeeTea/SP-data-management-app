@@ -74,6 +74,9 @@ msgstr ""
 msgid "Field length is invalid"
 msgstr ""
 
+msgid "Field must be composed by two letter characters"
+msgstr ""
+
 msgid "This user has no Data output and analytic organisation units assigned"
 msgstr ""
 
@@ -115,6 +118,9 @@ msgstr ""
 msgid "Award Number should be a number of 5 digits"
 msgstr ""
 
+msgid "Subsequent Lettering must be a string of two letters only"
+msgstr ""
+
 msgid "Project Locations"
 msgstr ""
 
@@ -134,9 +140,6 @@ msgid "{{field}} must be less than or equal to {{value}}"
 msgstr ""
 
 msgid "{{field}} does not match pattern {{pattern}}"
-msgstr ""
-
-msgid "{{field}} must have {{length}} characters"
 msgstr ""
 
 msgid ""
@@ -201,7 +204,7 @@ msgid ""
 "be selected."
 msgstr ""
 
-msgid "Indicators Selection"
+msgid "Selection of Indicators"
 msgstr ""
 
 msgid "Summary and Save"
