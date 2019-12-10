@@ -109,9 +109,6 @@ msgstr ""
 msgid "End Date"
 msgstr ""
 
-msgid "Subsequent Lettering must be a string of two letters only"
-msgstr ""
-
 msgid "Project Locations"
 msgstr ""
 
@@ -119,6 +116,9 @@ msgid "Organisation Unit"
 msgstr ""
 
 msgid "Award Number should be a number of 5 digits"
+msgstr ""
+
+msgid "Subsequent Lettering must be a string of two letters only"
 msgstr ""
 
 msgid "One Organisation Unit should be selected"
@@ -195,8 +195,10 @@ msgid ""
 "be selected."
 msgstr ""
 
-msgid "Selection of Indicators"
 msgid "Sectors & Project Locations"
+msgstr ""
+
+msgid "Selection of Indicators"
 msgstr ""
 
 msgid "Summary and Save"
