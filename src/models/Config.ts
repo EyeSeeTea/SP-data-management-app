@@ -192,7 +192,7 @@ class ConfigLoader {
     }
 
     async getCurrentUser() {
-        return this.api.currrentUser
+        return this.api.currentUser
             .get({
                 fields: {
                     id: true,
