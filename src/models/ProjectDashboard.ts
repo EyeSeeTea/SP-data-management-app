@@ -1,25 +1,26 @@
+import { PartialPersistedModel } from "d2-api/api/common";
 import _ from "lodash";
-import { generateUid } from "d2/uid";
 import { MetadataPayload, PartialModel, D2Dashboard, D2ReportTable } from "d2-api";
 import Project from "./Project";
 import { Category, CategoryOption } from "./Config";
 import i18n from "../locales";
+import { getUid } from "../utils/dhis2";
 
 export default class ProjectDashboard {
     constructor(public project: Project) {}
 
     generate(): Pick<MetadataPayload, "dashboards" | "reportTables"> {
         const { project } = this;
-        const reportTables: Array<PartialModel<D2ReportTable>> = [
+        const reportTables: Array<PartialPersistedModel<D2ReportTable>> = [
             peopleTable(project),
             targetVsActualTable(project),
             targetVsActualIndicatorsTable(project),
         ];
         const dashboard: PartialModel<D2Dashboard> = {
-            id: generateUid(),
+            id: getUid("dashboard", project.uid),
             name: project.name,
             dashboardItems: reportTables.map(reportTable => ({
-                id: generateUid(),
+                id: getUid("dashboardItem", reportTable.id),
                 type: "REPORT_TABLE",
                 reportTable: { id: reportTable.id },
             })),
@@ -38,13 +39,13 @@ function getOrgUnitId(project: Project): string {
     }
 }
 
-function targetVsActualTable(project: Project): PartialModel<D2ReportTable> {
+function targetVsActualTable(project: Project): PartialPersistedModel<D2ReportTable> {
     const orgUnitId = getOrgUnitId(project);
     const dataElements = project.dataElements.get({ onlySelected: true, includePaired: true });
     const categories = [project.config.categories.targetActual];
 
     return {
-        id: generateUid(),
+        id: getUid("reportTable-target-actual", project.uid),
         name: `${project.name} - ` + i18n.t("PM Target vs Actual"),
         numberType: "VALUE",
         publicAccess: "rw------",
@@ -76,13 +77,13 @@ function targetVsActualTable(project: Project): PartialModel<D2ReportTable> {
     };
 }
 
-function targetVsActualIndicatorsTable(project: Project): PartialModel<D2ReportTable> {
+function targetVsActualIndicatorsTable(project: Project): PartialPersistedModel<D2ReportTable> {
     const orgUnitId = getOrgUnitId(project);
     const dataElements = project.dataElements.get({ onlySelected: true, includePaired: true });
     const indicators = project.getActualTargetIndicators(dataElements);
 
     return {
-        id: generateUid(),
+        id: getUid("reportTable-indicators", project.uid),
         name: `${project.name} - ` + i18n.t("PM Target vs Actual achieved (%)"),
         numberType: "VALUE",
         publicAccess: "rw------",
@@ -111,7 +112,7 @@ function targetVsActualIndicatorsTable(project: Project): PartialModel<D2ReportT
     };
 }
 
-function peopleTable(project: Project): PartialModel<D2ReportTable> {
+function peopleTable(project: Project): PartialPersistedModel<D2ReportTable> {
     const orgUnitId = getOrgUnitId(project);
     const dataElementsPeople = project.dataElements.get({
         onlySelected: true,
@@ -132,7 +133,7 @@ function peopleTable(project: Project): PartialModel<D2ReportTable> {
     ];
 
     return {
-        id: generateUid(),
+        id: getUid("reportTable-people", project.uid),
         name: `${project.name} - ` + i18n.t("PM People Indicators Gender Breakdown"),
         publicAccess: "rw------",
         numberType: "VALUE",

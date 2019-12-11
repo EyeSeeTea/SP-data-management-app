@@ -1,0 +1,1646 @@
+{
+    "base": {
+        "userRoles": {
+            "feedback": [
+                "PM Feedback"
+            ],
+            "dataReviewer": [
+                "Data Reviewer"
+            ],
+            "dataViewer": [
+                "Data Viewer"
+            ],
+            "admin": [
+                "PM Admin"
+            ],
+            "dataEntry": [
+                "Data Entry"
+            ]
+        },
+        "dataElementGroupSets": {
+            "sector": "SECTOR",
+            "series": "SERIES",
+            "type1": "TYPE_1",
+            "type2": "TYPE_2"
+        },
+        "attributes": {
+            "pairedDataElement": "PM_PAIRED_DE",
+            "createdByApp": "PM_CREATED_BY_PROJECT_MONITORING",
+            "orgUnitProject": "PM_ORGUNIT_PROJECT_ID",
+            "projectDashboard": "PM_PROJECT_DASHBOARD_ID"
+        },
+        "categories": {
+            "targetActual": "ACTUAL_TARGET",
+            "gender": "GENDER",
+            "newRecurring": "NEW_RECURRING"
+        },
+        "categoryCombos": {
+            "targetActual": "ACTUAL_TARGET"
+        },
+        "dataElementGroups": {
+            "global": "GLOBAL",
+            "sub": "SUB",
+            "people": "PEOPLE",
+            "benefit": "BENEFIT"
+        },
+        "organitionUnitGroupSets": {
+            "funder": "FUNDER"
+        },
+        "indicators": {
+            "actualTargetPrefix": "ACTUAL_TARGET_"
+        }
+    },
+    "currentUser": {
+        "id": "M5zQapPyTZI",
+        "userRoles": [
+            {
+                "name": "Superuser"
+            },
+            {
+                "name": "PM Admin"
+            }
+        ],
+        "organisationUnits": [
+            {
+                "id": "J0hschZVMBt",
+                "displayName": "IHQ2"
+            }
+        ]
+    },
+    "sectors": [
+        {
+            "code": "SECTOR_AGRICULTURE",
+            "id": "mGQ5ckOTU8A",
+            "displayName": "Agriculture",
+            "dataElements": [
+                {
+                    "id": "qQy0N1xdwQ1"
+                },
+                {
+                    "id": "C24wpyjZTGe"
+                },
+                {
+                    "id": "WS8XV4WWPE7"
+                },
+                {
+                    "id": "KecRLspBj0V"
+                },
+                {
+                    "id": "KSKcmBgYrov"
+                },
+                {
+                    "id": "ik0ICagvIjm"
+                },
+                {
+                    "id": "aOUffyMug7t"
+                },
+                {
+                    "id": "i0wZ2ZFmfkW"
+                },
+                {
+                    "id": "Ou41h46tMcD"
+                },
+                {
+                    "id": "aqCOXJ5URiL"
+                },
+                {
+                    "id": "mEY5CsRrI0P"
+                },
+                {
+                    "id": "WMAhrqMkpeN"
+                },
+                {
+                    "id": "yIqYlJnhYyj"
+                },
+                {
+                    "id": "q8C2wnYFK3T"
+                },
+                {
+                    "id": "K6mAC5SiO29"
+                },
+                {
+                    "id": "qCqieUNUMCb"
+                },
+                {
+                    "id": "uG8477tQT0d"
+                },
+                {
+                    "id": "e87Q0bPAPFJ"
+                },
+                {
+                    "id": "C0QLSs6ymHL"
+                },
+                {
+                    "id": "SeYl64icyGD"
+                }
+            ]
+        },
+        {
+            "code": "SECTOR_LIVELIHOODS",
+            "id": "m4Cg6FOPPR7",
+            "displayName": "Livelihoods",
+            "dataElements": [
+                {
+                    "id": "iyQBe9Xv7bk"
+                },
+                {
+                    "id": "ayoVLBc4lFq"
+                },
+                {
+                    "id": "iQCoaXYxswJ"
+                },
+                {
+                    "id": "W40WQqgOVuV"
+                },
+                {
+                    "id": "a8izG9FuLzQ"
+                },
+                {
+                    "id": "iyAnflVLHS3"
+                },
+                {
+                    "id": "yMqK9DKbA3X"
+                },
+                {
+                    "id": "CQPwg8Nipro"
+                },
+                {
+                    "id": "e6wdrrz9ZS6"
+                },
+                {
+                    "id": "OWQzKQcWkqp"
+                },
+                {
+                    "id": "Wk0ONOEwrQy"
+                },
+                {
+                    "id": "CQkzkkkzpRT"
+                },
+                {
+                    "id": "OKIqOe51jVq"
+                },
+                {
+                    "id": "WwMbFHHKGgW"
+                },
+                {
+                    "id": "eeqkGzLMaSD"
+                },
+                {
+                    "id": "We61YNYyOX0"
+                },
+                {
+                    "id": "yUGuwPFkBrj"
+                },
+                {
+                    "id": "u24zk6wAgFE"
+                },
+                {
+                    "id": "imakJ22nlwc"
+                },
+                {
+                    "id": "C4WY1eUmXkX"
+                }
+            ]
+        }
+    ],
+    "dataElements": [
+        {
+            "id": "qQy0N1xdwQ1",
+            "name": "# of people trained on post-harvest handling",
+            "code": "P010105",
+            "sectorId": "mGQ5ckOTU8A",
+            "indicatorType": "sub",
+            "peopleOrBenefit": "people",
+            "series": "101",
+            "pairedDataElementCode": "",
+            "categoryComboId": "GKWiemQPU5U"
+        },
+        {
+            "id": "C24wpyjZTGe",
+            "name": "# of farmer field schools (FFS) established",
+            "code": "B010201",
+            "sectorId": "mGQ5ckOTU8A",
+            "indicatorType": "sub",
+            "peopleOrBenefit": "benefit",
+            "series": "102",
+            "pairedDataElementCode": "P010100",
+            "categoryComboId": "bjDvmb4bfuf",
+            "pairedDataElement": {
+                "id": "K6mAC5SiO29",
+                "name": "# of people trained on improved agriculture technologies/practices",
+                "code": "P010100",
+                "sectorId": "mGQ5ckOTU8A",
+                "indicatorType": "global",
+                "peopleOrBenefit": "people",
+                "series": "101",
+                "pairedDataElementCode": "",
+                "categoryComboId": "GKWiemQPU5U"
+            },
+            "pairedDataElementName": "# of people trained on improved agriculture technologies/practices"
+        },
+        {
+            "id": "WS8XV4WWPE7",
+            "name": "# of agriculture groups receiving support for improved livelihoods",
+            "code": "B010200",
+            "description": "Description for of agriculture groups receiving support for improved livelihoods\nSecond line",
+            "sectorId": "mGQ5ckOTU8A",
+            "indicatorType": "global",
+            "peopleOrBenefit": "benefit",
+            "series": "102",
+            "pairedDataElementCode": "P010100",
+            "categoryComboId": "bjDvmb4bfuf",
+            "pairedDataElement": {
+                "id": "K6mAC5SiO29",
+                "name": "# of people trained on improved agriculture technologies/practices",
+                "code": "P010100",
+                "sectorId": "mGQ5ckOTU8A",
+                "indicatorType": "global",
+                "peopleOrBenefit": "people",
+                "series": "101",
+                "pairedDataElementCode": "",
+                "categoryComboId": "GKWiemQPU5U"
+            },
+            "pairedDataElementName": "# of people trained on improved agriculture technologies/practices"
+        },
+        {
+            "id": "KecRLspBj0V",
+            "name": "# of people trained on pest control",
+            "code": "P010104",
+            "sectorId": "mGQ5ckOTU8A",
+            "indicatorType": "sub",
+            "peopleOrBenefit": "people",
+            "series": "101",
+            "pairedDataElementCode": "",
+            "categoryComboId": "GKWiemQPU5U"
+        },
+        {
+            "id": "KSKcmBgYrov",
+            "name": "# ofpeople trained on irrigation methods and techniques",
+            "code": "P010109",
+            "sectorId": "mGQ5ckOTU8A",
+            "indicatorType": "sub",
+            "peopleOrBenefit": "people",
+            "series": "101",
+            "pairedDataElementCode": "",
+            "categoryComboId": "GKWiemQPU5U"
+        },
+        {
+            "id": "ik0ICagvIjm",
+            "name": "# of people trained on agronomic practices",
+            "code": "P010101",
+            "sectorId": "mGQ5ckOTU8A",
+            "indicatorType": "sub",
+            "peopleOrBenefit": "people",
+            "series": "101",
+            "pairedDataElementCode": "",
+            "categoryComboId": "GKWiemQPU5U"
+        },
+        {
+            "id": "aOUffyMug7t",
+            "name": "# of community animal health workers (CAHWs) trained",
+            "code": "P010110",
+            "sectorId": "mGQ5ckOTU8A",
+            "indicatorType": "sub",
+            "peopleOrBenefit": "people",
+            "series": "101",
+            "pairedDataElementCode": "",
+            "categoryComboId": "GKWiemQPU5U"
+        },
+        {
+            "id": "i0wZ2ZFmfkW",
+            "name": "# of people receiving vocational training",
+            "code": "P020105",
+            "sectorId": "mGQ5ckOTU8A",
+            "indicatorType": "sub",
+            "peopleOrBenefit": "people",
+            "series": "101",
+            "pairedDataElementCode": "",
+            "categoryComboId": "GKWiemQPU5U"
+        },
+        {
+            "id": "Ou41h46tMcD",
+            "name": "# of people trained on food hygiene and security",
+            "code": "P010107",
+            "sectorId": "mGQ5ckOTU8A",
+            "indicatorType": "sub",
+            "peopleOrBenefit": "people",
+            "series": "101",
+            "pairedDataElementCode": "",
+            "categoryComboId": "GKWiemQPU5U"
+        },
+        {
+            "id": "aqCOXJ5URiL",
+            "name": "# of people trained on other agricultural topics",
+            "code": "P010112",
+            "sectorId": "mGQ5ckOTU8A",
+            "indicatorType": "sub",
+            "peopleOrBenefit": "people",
+            "series": "101",
+            "pairedDataElementCode": "",
+            "categoryComboId": "GKWiemQPU5U"
+        },
+        {
+            "id": "mEY5CsRrI0P",
+            "name": "# of people participating in internal/external exchange visits or experience sharing visits",
+            "code": "P010111",
+            "sectorId": "mGQ5ckOTU8A",
+            "indicatorType": "sub",
+            "peopleOrBenefit": "people",
+            "series": "101",
+            "pairedDataElementCode": "",
+            "categoryComboId": "GKWiemQPU5U"
+        },
+        {
+            "id": "WMAhrqMkpeN",
+            "name": "# of people trained on productive livestock rearing",
+            "code": "P010108",
+            "sectorId": "mGQ5ckOTU8A",
+            "indicatorType": "sub",
+            "peopleOrBenefit": "people",
+            "series": "101",
+            "pairedDataElementCode": "",
+            "categoryComboId": "GKWiemQPU5U"
+        },
+        {
+            "id": "yIqYlJnhYyj",
+            "name": "# of market groups formed",
+            "code": "B010202",
+            "sectorId": "mGQ5ckOTU8A",
+            "indicatorType": "sub",
+            "peopleOrBenefit": "benefit",
+            "series": "102",
+            "pairedDataElementCode": "P010100",
+            "categoryComboId": "bjDvmb4bfuf",
+            "pairedDataElement": {
+                "id": "K6mAC5SiO29",
+                "name": "# of people trained on improved agriculture technologies/practices",
+                "code": "P010100",
+                "sectorId": "mGQ5ckOTU8A",
+                "indicatorType": "global",
+                "peopleOrBenefit": "people",
+                "series": "101",
+                "pairedDataElementCode": "",
+                "categoryComboId": "GKWiemQPU5U"
+            },
+            "pairedDataElementName": "# of people trained on improved agriculture technologies/practices"
+        },
+        {
+            "id": "q8C2wnYFK3T",
+            "name": "# of irrigation groups or associations trained in water management",
+            "code": "B010204",
+            "sectorId": "mGQ5ckOTU8A",
+            "indicatorType": "sub",
+            "peopleOrBenefit": "benefit",
+            "series": "102",
+            "pairedDataElementCode": "P010100",
+            "categoryComboId": "bjDvmb4bfuf",
+            "pairedDataElement": {
+                "id": "K6mAC5SiO29",
+                "name": "# of people trained on improved agriculture technologies/practices",
+                "code": "P010100",
+                "sectorId": "mGQ5ckOTU8A",
+                "indicatorType": "global",
+                "peopleOrBenefit": "people",
+                "series": "101",
+                "pairedDataElementCode": "",
+                "categoryComboId": "GKWiemQPU5U"
+            },
+            "pairedDataElementName": "# of people trained on improved agriculture technologies/practices"
+        },
+        {
+            "id": "qCqieUNUMCb",
+            "name": "# of cooperatives/associations established",
+            "code": "B010203",
+            "sectorId": "mGQ5ckOTU8A",
+            "indicatorType": "sub",
+            "peopleOrBenefit": "benefit",
+            "series": "102",
+            "pairedDataElementCode": "P010100",
+            "categoryComboId": "bjDvmb4bfuf",
+            "pairedDataElement": {
+                "id": "K6mAC5SiO29",
+                "name": "# of people trained on improved agriculture technologies/practices",
+                "code": "P010100",
+                "sectorId": "mGQ5ckOTU8A",
+                "indicatorType": "global",
+                "peopleOrBenefit": "people",
+                "series": "101",
+                "pairedDataElementCode": "",
+                "categoryComboId": "GKWiemQPU5U"
+            },
+            "pairedDataElementName": "# of people trained on improved agriculture technologies/practices"
+        },
+        {
+            "id": "uG8477tQT0d",
+            "name": "# of people trained on marketing skills",
+            "code": "P010103",
+            "sectorId": "mGQ5ckOTU8A",
+            "indicatorType": "sub",
+            "peopleOrBenefit": "people",
+            "series": "101",
+            "pairedDataElementCode": "",
+            "categoryComboId": "GKWiemQPU5U"
+        },
+        {
+            "id": "e87Q0bPAPFJ",
+            "name": "# of people trained on accounting/finances/bookkeeping",
+            "code": "P010106",
+            "sectorId": "mGQ5ckOTU8A",
+            "indicatorType": "sub",
+            "peopleOrBenefit": "people",
+            "series": "101",
+            "pairedDataElementCode": "",
+            "categoryComboId": "GKWiemQPU5U"
+        },
+        {
+            "id": "C0QLSs6ymHL",
+            "name": "# of people trained on crop value addition",
+            "code": "P010102",
+            "sectorId": "mGQ5ckOTU8A",
+            "indicatorType": "sub",
+            "peopleOrBenefit": "people",
+            "series": "101",
+            "pairedDataElementCode": "",
+            "categoryComboId": "GKWiemQPU5U"
+        },
+        {
+            "id": "SeYl64icyGD",
+            "name": "# of small business provided with capital for business start-up and/or upgrade",
+            "code": "B010205",
+            "sectorId": "mGQ5ckOTU8A",
+            "indicatorType": "sub",
+            "peopleOrBenefit": "benefit",
+            "series": "102",
+            "pairedDataElementCode": "P010100",
+            "categoryComboId": "bjDvmb4bfuf",
+            "pairedDataElement": {
+                "id": "K6mAC5SiO29",
+                "name": "# of people trained on improved agriculture technologies/practices",
+                "code": "P010100",
+                "sectorId": "mGQ5ckOTU8A",
+                "indicatorType": "global",
+                "peopleOrBenefit": "people",
+                "series": "101",
+                "pairedDataElementCode": "",
+                "categoryComboId": "GKWiemQPU5U"
+            },
+            "pairedDataElementName": "# of people trained on improved agriculture technologies/practices"
+        },
+        {
+            "id": "iyQBe9Xv7bk",
+            "name": "# of other productive assets (specify) distributed",
+            "code": "B020211",
+            "sectorId": "m4Cg6FOPPR7",
+            "indicatorType": "sub",
+            "peopleOrBenefit": "benefit",
+            "series": "202",
+            "pairedDataElementCode": "P020311",
+            "categoryComboId": "bjDvmb4bfuf"
+        },
+        {
+            "id": "ayoVLBc4lFq",
+            "name": "# of processing centers built (specify type)",
+            "code": "B020207",
+            "sectorId": "m4Cg6FOPPR7",
+            "indicatorType": "sub",
+            "peopleOrBenefit": "benefit",
+            "series": "202",
+            "pairedDataElementCode": "P020307",
+            "categoryComboId": "bjDvmb4bfuf"
+        },
+        {
+            "id": "iQCoaXYxswJ",
+            "name": "# of people trained in other (specify) livelihood trainings",
+            "code": "P020107",
+            "sectorId": "m4Cg6FOPPR7",
+            "indicatorType": "sub",
+            "peopleOrBenefit": "people",
+            "series": "201",
+            "pairedDataElementCode": "",
+            "categoryComboId": "GKWiemQPU5U"
+        },
+        {
+            "id": "W40WQqgOVuV",
+            "name": "# of people trained on micro-enterprise management",
+            "code": "P020101",
+            "sectorId": "m4Cg6FOPPR7",
+            "indicatorType": "sub",
+            "peopleOrBenefit": "people",
+            "series": "201",
+            "pairedDataElementCode": "",
+            "categoryComboId": "GKWiemQPU5U"
+        },
+        {
+            "id": "a8izG9FuLzQ",
+            "name": "# of tools distributed",
+            "code": "B020201",
+            "sectorId": "m4Cg6FOPPR7",
+            "indicatorType": "sub",
+            "peopleOrBenefit": "benefit",
+            "series": "202",
+            "pairedDataElementCode": "P020301",
+            "categoryComboId": "bjDvmb4bfuf"
+        },
+        {
+            "id": "iyAnflVLHS3",
+            "name": "# of livestock watering points constructed/rehabilitated",
+            "code": "B020208",
+            "sectorId": "m4Cg6FOPPR7",
+            "indicatorType": "sub",
+            "peopleOrBenefit": "benefit",
+            "series": "202",
+            "pairedDataElementCode": "P020308",
+            "categoryComboId": "bjDvmb4bfuf"
+        },
+        {
+            "id": "yMqK9DKbA3X",
+            "name": "# of livelihood inputs/ assets provided",
+            "code": "B020200",
+            "sectorId": "m4Cg6FOPPR7",
+            "indicatorType": "global",
+            "peopleOrBenefit": "benefit",
+            "series": "202",
+            "pairedDataElementCode": "P020300",
+            "categoryComboId": "bjDvmb4bfuf"
+        },
+        {
+            "id": "CQPwg8Nipro",
+            "name": "# of people trained on construction",
+            "code": "P020104",
+            "sectorId": "m4Cg6FOPPR7",
+            "indicatorType": "sub",
+            "peopleOrBenefit": "people",
+            "series": "201",
+            "pairedDataElementCode": "",
+            "categoryComboId": "GKWiemQPU5U"
+        },
+        {
+            "id": "e6wdrrz9ZS6",
+            "name": "# of people trained in livelihood topics",
+            "code": "P020100",
+            "sectorId": "m4Cg6FOPPR7",
+            "indicatorType": "global",
+            "peopleOrBenefit": "people",
+            "series": "201",
+            "pairedDataElementCode": "",
+            "categoryComboId": "GKWiemQPU5U"
+        },
+        {
+            "id": "OWQzKQcWkqp",
+            "name": "# of people participating in literacy and/or numeracy classes",
+            "code": "P020102",
+            "sectorId": "m4Cg6FOPPR7",
+            "indicatorType": "sub",
+            "peopleOrBenefit": "people",
+            "series": "201",
+            "pairedDataElementCode": "",
+            "categoryComboId": "GKWiemQPU5U"
+        },
+        {
+            "id": "Wk0ONOEwrQy",
+            "name": "# of grain store houses constructed",
+            "code": "B020206",
+            "sectorId": "m4Cg6FOPPR7",
+            "indicatorType": "sub",
+            "peopleOrBenefit": "benefit",
+            "series": "202",
+            "pairedDataElementCode": "P020306",
+            "categoryComboId": "bjDvmb4bfuf"
+        },
+        {
+            "id": "CQkzkkkzpRT",
+            "name": "# of improved \"seed packages\" distributed",
+            "code": "B020204",
+            "sectorId": "m4Cg6FOPPR7",
+            "indicatorType": "sub",
+            "peopleOrBenefit": "benefit",
+            "series": "202",
+            "pairedDataElementCode": "P020304",
+            "categoryComboId": "bjDvmb4bfuf"
+        },
+        {
+            "id": "OKIqOe51jVq",
+            "name": "# of other (specify type) ag/livestock shelters constructed",
+            "code": "B020212",
+            "sectorId": "m4Cg6FOPPR7",
+            "indicatorType": "sub",
+            "peopleOrBenefit": "benefit",
+            "series": "202",
+            "pairedDataElementCode": "P020312",
+            "categoryComboId": "bjDvmb4bfuf"
+        },
+        {
+            "id": "WwMbFHHKGgW",
+            "name": "# of fishing kits distributed",
+            "code": "B020202",
+            "sectorId": "m4Cg6FOPPR7",
+            "indicatorType": "sub",
+            "peopleOrBenefit": "benefit",
+            "series": "202",
+            "pairedDataElementCode": "P020302",
+            "categoryComboId": "bjDvmb4bfuf"
+        },
+        {
+            "id": "eeqkGzLMaSD",
+            "name": "# of people trained on savings schemes",
+            "code": "P020106",
+            "sectorId": "m4Cg6FOPPR7",
+            "indicatorType": "sub",
+            "peopleOrBenefit": "people",
+            "series": "201",
+            "pairedDataElementCode": "",
+            "categoryComboId": "GKWiemQPU5U"
+        },
+        {
+            "id": "We61YNYyOX0",
+            "name": "# of biogas digesters installed",
+            "code": "B020205",
+            "sectorId": "m4Cg6FOPPR7",
+            "indicatorType": "sub",
+            "peopleOrBenefit": "benefit",
+            "series": "202",
+            "pairedDataElementCode": "P020305",
+            "categoryComboId": "bjDvmb4bfuf"
+        },
+        {
+            "id": "yUGuwPFkBrj",
+            "name": "# of energy-saving stoves installed",
+            "code": "B020210",
+            "sectorId": "m4Cg6FOPPR7",
+            "indicatorType": "sub",
+            "peopleOrBenefit": "benefit",
+            "series": "202",
+            "pairedDataElementCode": "P020310",
+            "categoryComboId": "bjDvmb4bfuf"
+        },
+        {
+            "id": "u24zk6wAgFE",
+            "name": "# of HH-level storage equipment provided",
+            "code": "B020209",
+            "sectorId": "m4Cg6FOPPR7",
+            "indicatorType": "sub",
+            "peopleOrBenefit": "benefit",
+            "series": "202",
+            "pairedDataElementCode": "P020309",
+            "categoryComboId": "bjDvmb4bfuf"
+        },
+        {
+            "id": "imakJ22nlwc",
+            "name": "# of people trained on microfinance",
+            "code": "P020103",
+            "sectorId": "m4Cg6FOPPR7",
+            "indicatorType": "sub",
+            "peopleOrBenefit": "people",
+            "series": "201",
+            "pairedDataElementCode": "",
+            "categoryComboId": "GKWiemQPU5U"
+        },
+        {
+            "id": "C4WY1eUmXkX",
+            "name": "# of trees/saplings/seedlings distributed",
+            "code": "B020203",
+            "sectorId": "m4Cg6FOPPR7",
+            "indicatorType": "sub",
+            "peopleOrBenefit": "benefit",
+            "series": "202",
+            "pairedDataElementCode": "P020303",
+            "categoryComboId": "bjDvmb4bfuf"
+        }
+    ],
+    "funders": [
+        {
+            "id": "OE0KdZRX2FC",
+            "displayName": "2018 World Food Program"
+        },
+        {
+            "id": "WKUXmz4LIUG",
+            "displayName": "ACWME"
+        },
+        {
+            "id": "KqWm4Q0ftG1",
+            "displayName": "AECOM International Sudan"
+        },
+        {
+            "id": "CeApFdQGS5x",
+            "displayName": "AMREF Health Africa"
+        },
+        {
+            "id": "qMyQJENdWHU",
+            "displayName": "Academy for Educational Development"
+        },
+        {
+            "id": "qkWv2nJuDZm",
+            "displayName": "Accelerating Sustainable Agriculture Program"
+        },
+        {
+            "id": "OuCMgEfgH0t",
+            "displayName": "Adventist Development Relief Agency"
+        },
+        {
+            "id": "em8NIwi0KvM",
+            "displayName": "Agridius Foundation"
+        },
+        {
+            "id": "aQ0gknbAqz8",
+            "displayName": "Alive and Thrive Small Grant Program"
+        },
+        {
+            "id": "mMy6d6ZdhNG",
+            "displayName": "American Refugee Committee International"
+        },
+        {
+            "id": "iAIFhMckvcd",
+            "displayName": "American Schools and Hospitals Abroad"
+        },
+        {
+            "id": "OKEZCrPzqph",
+            "displayName": "Atlas Copco"
+        },
+        {
+            "id": "q0UBc5ICNsY",
+            "displayName": "Australian AID"
+        },
+        {
+            "id": "eMsPGWHPMOB",
+            "displayName": "Australian Embassy"
+        },
+        {
+            "id": "Kee2Kbq3Cbz",
+            "displayName": "Boeing Southeast Asia"
+        },
+        {
+            "id": "Oy8vfnbECv0",
+            "displayName": "Brandel"
+        },
+        {
+            "id": "auwZQHGO7HZ",
+            "displayName": "British Embassy"
+        },
+        {
+            "id": "m4D0iNkqQ6J",
+            "displayName": "British and Foreign School Society"
+        },
+        {
+            "id": "um0YmX3pvoE",
+            "displayName": "Bureau of Global Health"
+        },
+        {
+            "id": "G8GO8qUUSR4",
+            "displayName": "Bureau of Population, Refugees, and Migration"
+        },
+        {
+            "id": "muk9Io6cQZY",
+            "displayName": "CARE"
+        },
+        {
+            "id": "mmCapChrwTz",
+            "displayName": "Campus Crusade for Christ (Cambodia)"
+        },
+        {
+            "id": "WMcNAj8RqMT",
+            "displayName": "Canadian Embassy"
+        },
+        {
+            "id": "augXxnVGyDh",
+            "displayName": "Canadian Food Grains Bank"
+        },
+        {
+            "id": "KAC8FIiJWJC",
+            "displayName": "Canadian Funding for Local Initiatives"
+        },
+        {
+            "id": "awim8iLig8D",
+            "displayName": "Canadian International Development Agency"
+        },
+        {
+            "id": "i8qsB9FOOYo",
+            "displayName": "Canadian International Food Security Research Fund"
+        },
+        {
+            "id": "y6QD2bM9ei9",
+            "displayName": "Caquiaviri Municipality"
+        },
+        {
+            "id": "aeaySCerEku",
+            "displayName": "Catholic Relief Services"
+        },
+        {
+            "id": "uewF4JCrz0T",
+            "displayName": "Centers for Disease Control"
+        },
+        {
+            "id": "iguw4lRKpT1",
+            "displayName": "Central Emergency Response Fund"
+        },
+        {
+            "id": "yQKIZzBl22A",
+            "displayName": "Centro Internacional de Agricultura Tropical"
+        },
+        {
+            "id": "GYcrcUqI7sV",
+            "displayName": "Charity Water"
+        },
+        {
+            "id": "yYQA330fBd4",
+            "displayName": "Chemonics International"
+        },
+        {
+            "id": "CcW6HCeq0DG",
+            "displayName": "Child Health Foundation"
+        },
+        {
+            "id": "SkkNYkxK9tj",
+            "displayName": "Christian Blind Mission"
+        },
+        {
+            "id": "OKmlvZAYBzh",
+            "displayName": "Civil Society Fund"
+        },
+        {
+            "id": "e2Ok8xNwwie",
+            "displayName": "Comic Relief"
+        },
+        {
+            "id": "Co6vOTsmcw0",
+            "displayName": "Common Humanitarian Fund"
+        },
+        {
+            "id": "OSmilCtvqu6",
+            "displayName": "Cultural Center for Inter-American Development"
+        },
+        {
+            "id": "CMWeyLF30mT",
+            "displayName": "Cush For Christ"
+        },
+        {
+            "id": "GUgb9bk7EoQ",
+            "displayName": "DFAIT Glyn Berry"
+        },
+        {
+            "id": "OE0UWhX4eIR",
+            "displayName": "DFATD - Bilateral"
+        },
+        {
+            "id": "SKgXRGi0n1W",
+            "displayName": "Department for International Development"
+        },
+        {
+            "id": "GmWPE2eaHbJ",
+            "displayName": "Department of Foreign Affairs, Trade, and Developm"
+        },
+        {
+            "id": "SC0mdhkOdPR",
+            "displayName": "Deutsche Gesellschaft fur Technische Zussamennarbe"
+        },
+        {
+            "id": "mag3Sbe3dmF",
+            "displayName": "Development Alternatives, Inc."
+        },
+        {
+            "id": "y6A4d15Hyp6",
+            "displayName": "Dorcas"
+        },
+        {
+            "id": "uq295YAlMaq",
+            "displayName": "EU Humanitarian Aid & Civil Protection"
+        },
+        {
+            "id": "eQ4jSHmD1nA",
+            "displayName": "Eden Ministry"
+        },
+        {
+            "id": "SSmMoIPfcYc",
+            "displayName": "Eleanor Crook Foundation"
+        },
+        {
+            "id": "C6iSCQNy0Tk",
+            "displayName": "Emergency Humanitarian Response Plan"
+        },
+        {
+            "id": "eWQRfsCal9b",
+            "displayName": "European Commission"
+        },
+        {
+            "id": "mAcRvuHaAEH",
+            "displayName": "European Union"
+        },
+        {
+            "id": "mYmSF3QXLoX",
+            "displayName": "Every Village "
+        },
+        {
+            "id": "C6ElUSWH3mt",
+            "displayName": "Feed the Future"
+        },
+        {
+            "id": "ieGbNzx9K48",
+            "displayName": "First Fruit, Inc."
+        },
+        {
+            "id": "iC442ceo1rv",
+            "displayName": "Food For Peace"
+        },
+        {
+            "id": "CQQ1uuI9CFQ",
+            "displayName": "Food and Agricultural Organization"
+        },
+        {
+            "id": "qm6xlguIyCh",
+            "displayName": "Ford Foundation"
+        },
+        {
+            "id": "uOETXU27FB6",
+            "displayName": "Foursquare Foundation"
+        },
+        {
+            "id": "C8UI3H4ngy0",
+            "displayName": "French Agency for International Development"
+        },
+        {
+            "id": "KYCylA3SgWy",
+            "displayName": "GH"
+        },
+        {
+            "id": "S4COyypuEdb",
+            "displayName": "GOAL"
+        },
+        {
+            "id": "iqywtWPCz52",
+            "displayName": "Genesis Foundation"
+        },
+        {
+            "id": "WkmR2BjForW",
+            "displayName": "German Embassy"
+        },
+        {
+            "id": "Kgbrlg0y8Eg",
+            "displayName": "German International Cooperation Agency"
+        },
+        {
+            "id": "mVzjSERf7za",
+            "displayName": "Geschenke der Hoffnung"
+        },
+        {
+            "id": "WYAFZkSDigf",
+            "displayName": "Global Affairs Canada (IHA and GAC bilateral)"
+        },
+        {
+            "id": "uIIdxzWMA8U",
+            "displayName": "Global Aid"
+        },
+        {
+            "id": "qcEF6pN5LP1",
+            "displayName": "Global Communities"
+        },
+        {
+            "id": "WgK8oYv2Skl",
+            "displayName": "Global Fund"
+        },
+        {
+            "id": "Gck77m0sPgu",
+            "displayName": "Global Sanitation Fund"
+        },
+        {
+            "id": "aUqWMrVibYb",
+            "displayName": "Gobierno Municipal Caquiaviri"
+        },
+        {
+            "id": "qgC4146ErxG",
+            "displayName": "Grand Challenges Canada"
+        },
+        {
+            "id": "uaQZHv6WSyK",
+            "displayName": "Guernsey Government"
+        },
+        {
+            "id": "O8dc4eqg3vJ",
+            "displayName": "Harpur Memorial Hospital"
+        },
+        {
+            "id": "K6KVKtgxzuz",
+            "displayName": "Human Rights Foundation"
+        },
+        {
+            "id": "ecycnHqZjzV",
+            "displayName": "Humanitarian Innovation Fund"
+        },
+        {
+            "id": "eauMi7LNc5o",
+            "displayName": "Humanitarian Response Plan"
+        },
+        {
+            "id": "eSCQ4qD9E1g",
+            "displayName": "Inter-American Development Bank"
+        },
+        {
+            "id": "WO4whsMxaLQ",
+            "displayName": "Inter-American Foundation"
+        },
+        {
+            "id": "K4sfIynMcS8",
+            "displayName": "International Development Research Centre"
+        },
+        {
+            "id": "ysWyS5qQylp",
+            "displayName": "International Fund for Agricultural Development"
+        },
+        {
+            "id": "yUCqjHAkYki",
+            "displayName": "International Humanitarian Pooled Fund "
+        },
+        {
+            "id": "eCQTwhsYnnT",
+            "displayName": "International Labour Organization"
+        },
+        {
+            "id": "yuEThNMyKME",
+            "displayName": "International Organization of Migration"
+        },
+        {
+            "id": "acIR5aXFE6A",
+            "displayName": "International Rescue Committee"
+        },
+        {
+            "id": "qIEF2lNNipH",
+            "displayName": "Isle of Man"
+        },
+        {
+            "id": "SAuSOmdM1qd",
+            "displayName": "Izumi Foundation"
+        },
+        {
+            "id": "KUoB6nsWLda",
+            "displayName": "JSI Research and Training Institute"
+        },
+        {
+            "id": "WYskNgVjQra",
+            "displayName": "Japanese Embassy"
+        },
+        {
+            "id": "iE1hKxf3sUu",
+            "displayName": "Karen Department of Health and Welfare"
+        },
+        {
+            "id": "Co8gOVjqtZX",
+            "displayName": "Kids Around the World"
+        },
+        {
+            "id": "GswpscIbBlo",
+            "displayName": "Knights of Columbus"
+        },
+        {
+            "id": "CcOkDj0jPb5",
+            "displayName": "LACES"
+        },
+        {
+            "id": "a2wh7RIO2RB",
+            "displayName": "Last Well"
+        },
+        {
+            "id": "SQOwDPHMxuY",
+            "displayName": "LeMay Engineering"
+        },
+        {
+            "id": "SaGYvEenjZd",
+            "displayName": "Liberian Government"
+        },
+        {
+            "id": "SAOiSpMAN3M",
+            "displayName": "Malteser International "
+        },
+        {
+            "id": "WWeGzmrcy3e",
+            "displayName": "Medical & Emergency Relief Cooperative Internation"
+        },
+        {
+            "id": "Sa6ZLHG72cY",
+            "displayName": "Mennonite Central Committee"
+        },
+        {
+            "id": "uSaHNNmnzie",
+            "displayName": "Mercury One "
+        },
+        {
+            "id": "KoCm1IeDY6X",
+            "displayName": "Mercy Corps"
+        },
+        {
+            "id": "e4onhu5fuWD",
+            "displayName": "Messiah College"
+        },
+        {
+            "id": "qwwpWxd2FJ9",
+            "displayName": "MidEast Initiative"
+        },
+        {
+            "id": "uMaoQpksqFy",
+            "displayName": "Ministry of European Affairs"
+        },
+        {
+            "id": "WkolC4cbfWl",
+            "displayName": "Ministry of Health"
+        },
+        {
+            "id": "eqywPlzSpLt",
+            "displayName": "Myanmar Ministry of Health"
+        },
+        {
+            "id": "GkADjWIsyww",
+            "displayName": "NGO Education Partnership "
+        },
+        {
+            "id": "WckjSL8NMDC",
+            "displayName": "National Leprosy/TB Control Program (Liberia)"
+        },
+        {
+            "id": "WSuo6IysXAP",
+            "displayName": "NetHope"
+        },
+        {
+            "id": "WyUVaCoWMli",
+            "displayName": "New Haven, Inc."
+        },
+        {
+            "id": "Ogg3ujymAJN",
+            "displayName": "Nippon Foundation"
+        },
+        {
+            "id": "yi2b9Pqv6jU",
+            "displayName": "Office Foreign Disaster Assistance"
+        },
+        {
+            "id": "mY4EhyiRdRB",
+            "displayName": "PAZ Group Canada"
+        },
+        {
+            "id": "GAuuld9PCQS",
+            "displayName": "PRODEZA II"
+        },
+        {
+            "id": "imUThN9szEJ",
+            "displayName": "Paul G Allen Family Foundation"
+        },
+        {
+            "id": "u8c7FbCZLzi",
+            "displayName": "Pentecostal Mission Union"
+        },
+        {
+            "id": "KaykPHYcKqa",
+            "displayName": "Population Services International"
+        },
+        {
+            "id": "OGktJOeZZ9B",
+            "displayName": "Powering Agriculture: An Energy Grand Challenge fo"
+        },
+        {
+            "id": "O2SUcgPcayE",
+            "displayName": "Project Concern International"
+        },
+        {
+            "id": "uegLBPAOi78",
+            "displayName": "Ratanak International"
+        },
+        {
+            "id": "Osa2nbl074d",
+            "displayName": "Reed Elsevier Environmental Challenge"
+        },
+        {
+            "id": "W4UrikiGiZ3",
+            "displayName": "Rockefeller Foundation"
+        },
+        {
+            "id": "KWwdI2Fk3ZF",
+            "displayName": "SAGA Charitable Trust"
+        },
+        {
+            "id": "COacCLBVgGC",
+            "displayName": "STARTNETWORK"
+        },
+        {
+            "id": "Ke65WZ3hG73",
+            "displayName": "Samaritan's Purse - Australia"
+        },
+        {
+            "id": "qOWKxQ6wFjH",
+            "displayName": "Samaritan's Purse - Canada"
+        },
+        {
+            "id": "aOe4GYBdlBl",
+            "displayName": "Samaritan's Purse - Germany"
+        },
+        {
+            "id": "Csszav7cRzz",
+            "displayName": "Samaritan's Purse - UK"
+        },
+        {
+            "id": "SeMUgKohfme",
+            "displayName": "Samaritan's Purse - US"
+        },
+        {
+            "id": "O8Si3ZS4L7J",
+            "displayName": "Saving Lives at Birth"
+        },
+        {
+            "id": "C4AjdrwlwQe",
+            "displayName": "Sexual Violence Research Initiative"
+        },
+        {
+            "id": "qmQkiWswdYq",
+            "displayName": "Starbucks Foundation"
+        },
+        {
+            "id": "KkA3DxSuxP4",
+            "displayName": "State of Alaska"
+        },
+        {
+            "id": "OCg6rB32emm",
+            "displayName": "Stavros Narchos Foundation"
+        },
+        {
+            "id": "OwmsqEdiUCt",
+            "displayName": "Tearfund Christian Relief Organization"
+        },
+        {
+            "id": "KS2jdQRekmu",
+            "displayName": "Technical & Operational Performance Support"
+        },
+        {
+            "id": "O4augmXiWYi",
+            "displayName": "The Bill & Melinda Gates Foundation"
+        },
+        {
+            "id": "GacbwRQXDev",
+            "displayName": "The Blue Moon Fund"
+        },
+        {
+            "id": "meM0nfUWG9e",
+            "displayName": "The United Nations Children's Fund"
+        },
+        {
+            "id": "awAPppKBb1B",
+            "displayName": "UKAID Match"
+        },
+        {
+            "id": "O8qkvCfxMcv",
+            "displayName": "UN Economic and Social Commission for Asia/Pacific"
+        },
+        {
+            "id": "OWEnZZ8RK8T",
+            "displayName": "UN High Commissioner for Refugees-Greece 2017"
+        },
+        {
+            "id": "yYq6fx0ELLK",
+            "displayName": "UN Pooled Fund"
+        },
+        {
+            "id": "aslzkh0nGBf",
+            "displayName": "UN TF to End Violence"
+        },
+        {
+            "id": "ew2TU7JiR6B",
+            "displayName": "UN Voluntary TF on Contemporary Forms of Slavery"
+        },
+        {
+            "id": "Sm6ufjIyQDH",
+            "displayName": "UN Women"
+        },
+        {
+            "id": "CgMTjscZeuu",
+            "displayName": "UN-CAPS"
+        },
+        {
+            "id": "mSYHikzoUxD",
+            "displayName": "UN-Habitat"
+        },
+        {
+            "id": "uYCkewJ9Lto",
+            "displayName": "UNOPS"
+        },
+        {
+            "id": "eOoJLxv3hpR",
+            "displayName": "United Nations Development Fund for Women"
+        },
+        {
+            "id": "W4CQN9MGXRa",
+            "displayName": "United Nations Development Programme"
+        },
+        {
+            "id": "SGKOtCbaSye",
+            "displayName": "United Nations Educational, Scientific, and Cultur"
+        },
+        {
+            "id": "S8e2qP56SPB",
+            "displayName": "United Nations High Commission for Refugees"
+        },
+        {
+            "id": "ikGtpCHY4Fg",
+            "displayName": "United Nations High Commission for Refugees (GR)"
+        },
+        {
+            "id": "OaIDC17P8fM",
+            "displayName": "United Nations High Commissioner for Refugees 2017"
+        },
+        {
+            "id": "SWYryJ6NamX",
+            "displayName": "United Nations Office for the Coordination of Huma"
+        },
+        {
+            "id": "qmANxWw6XlU",
+            "displayName": "United Nations Organization Mission in the Democra"
+        },
+        {
+            "id": "WwQfMgGVoYu",
+            "displayName": "United Nations Population Fund"
+        },
+        {
+            "id": "ekAr5F6Nv6f",
+            "displayName": "United Nations Voluntary Trust Fund for Victims of"
+        },
+        {
+            "id": "qMyOZAHdsAU",
+            "displayName": "United Nations Women's Guild"
+        },
+        {
+            "id": "G2ITs3sy78N",
+            "displayName": "United States Agency International Development"
+        },
+        {
+            "id": "qMgjSKnHsyF",
+            "displayName": "United States Department of Agriculture"
+        },
+        {
+            "id": "u4Urw7BRmjU",
+            "displayName": "United States Department of Labor"
+        },
+        {
+            "id": "yqslhqVuFr2",
+            "displayName": "United States Department of State"
+        },
+        {
+            "id": "Gg6dxy9i0cR",
+            "displayName": "Voice of the Martyrs"
+        },
+        {
+            "id": "CcOcznABVfI",
+            "displayName": "Water Missions International"
+        },
+        {
+            "id": "eSyqswktU9I",
+            "displayName": "Water Supply and Sanitation Collaborative Council"
+        },
+        {
+            "id": "yUIxn70NkcH",
+            "displayName": "Waterloo Foundation"
+        },
+        {
+            "id": "qS4GKgy23sj",
+            "displayName": "Winrock International"
+        },
+        {
+            "id": "WmU1P8u8P1n",
+            "displayName": "Word and Deed"
+        },
+        {
+            "id": "q06zljX55bN",
+            "displayName": "World Food Program "
+        },
+        {
+            "id": "iImiD2PRNJa",
+            "displayName": "World Health Organization"
+        },
+        {
+            "id": "qC6q3HQmdDO",
+            "displayName": "World Vision"
+        }
+    ],
+    "indicators": [
+        {
+            "code": "ACTUAL_TARGET_B010200",
+            "id": "eCufXa6RkTm"
+        },
+        {
+            "code": "ACTUAL_TARGET_B020205",
+            "id": "CaWKoWg00oo"
+        },
+        {
+            "code": "ACTUAL_TARGET_P010110",
+            "id": "CmamEjf3pfK"
+        },
+        {
+            "code": "ACTUAL_TARGET_B010203",
+            "id": "KEK4JEQkH6D"
+        },
+        {
+            "code": "ACTUAL_TARGET_B020210",
+            "id": "qcI12aprWyB"
+        },
+        {
+            "code": "ACTUAL_TARGET_B010201",
+            "id": "W4wRa4w6jHq"
+        },
+        {
+            "code": "ACTUAL_TARGET_B020202",
+            "id": "eCuocEM1IZw"
+        },
+        {
+            "code": "ACTUAL_TARGET_B020206",
+            "id": "aKWOKySzegJ"
+        },
+        {
+            "code": "ACTUAL_TARGET_B020209",
+            "id": "Cik3r5TlbC9"
+        },
+        {
+            "code": "ACTUAL_TARGET_B020204",
+            "id": "KkKzTkn0zW3"
+        },
+        {
+            "code": "ACTUAL_TARGET_B010204",
+            "id": "ewYH6W9w5xR"
+        },
+        {
+            "code": "ACTUAL_TARGET_B020200",
+            "id": "i01veyO4Cuw"
+        },
+        {
+            "code": "ACTUAL_TARGET_B020208",
+            "id": "O4OE3h5q0MC"
+        },
+        {
+            "code": "ACTUAL_TARGET_B010202",
+            "id": "KuQNbQm437w"
+        },
+        {
+            "code": "ACTUAL_TARGET_B020212",
+            "id": "yMea9jkxwrF"
+        },
+        {
+            "code": "ACTUAL_TARGET_B020211",
+            "id": "qgC0pOTJrKR"
+        },
+        {
+            "code": "ACTUAL_TARGET_P010111",
+            "id": "awzLbPuvkPg"
+        },
+        {
+            "code": "ACTUAL_TARGET_P020102",
+            "id": "SKKHQBIaMC7"
+        },
+        {
+            "code": "ACTUAL_TARGET_P020105",
+            "id": "GwMFHuy7zzk"
+        },
+        {
+            "code": "ACTUAL_TARGET_P020100",
+            "id": "GC6L6ZDiCLM"
+        },
+        {
+            "code": "ACTUAL_TARGET_P020107",
+            "id": "C02nPf86Okg"
+        },
+        {
+            "code": "ACTUAL_TARGET_P010106",
+            "id": "iMCiFXzbIF4"
+        },
+        {
+            "code": "ACTUAL_TARGET_P010101",
+            "id": "u404ICrBKj3"
+        },
+        {
+            "code": "ACTUAL_TARGET_P020104",
+            "id": "WkumJlHVj6s"
+        },
+        {
+            "code": "ACTUAL_TARGET_P010102",
+            "id": "GoS43elkg5M"
+        },
+        {
+            "code": "ACTUAL_TARGET_P010107",
+            "id": "u2o1NJTMKUm"
+        },
+        {
+            "code": "ACTUAL_TARGET_P010100",
+            "id": "eYmeRzhBFV4"
+        },
+        {
+            "code": "ACTUAL_TARGET_P010103",
+            "id": "GG2PLLneSzf"
+        },
+        {
+            "code": "ACTUAL_TARGET_P020101",
+            "id": "C4oZsMaVKyL"
+        },
+        {
+            "code": "ACTUAL_TARGET_P020103",
+            "id": "uUonzaa3n8d"
+        },
+        {
+            "code": "ACTUAL_TARGET_P010112",
+            "id": "yGJpNm5qnxI"
+        },
+        {
+            "code": "ACTUAL_TARGET_P010104",
+            "id": "iw87EPHXiYP"
+        },
+        {
+            "code": "ACTUAL_TARGET_P010105",
+            "id": "K2Cq9YsANFr"
+        },
+        {
+            "code": "ACTUAL_TARGET_P010108",
+            "id": "OSolmXhmkIq"
+        },
+        {
+            "code": "ACTUAL_TARGET_P020106",
+            "id": "mIagFWuWSt4"
+        },
+        {
+            "code": "ACTUAL_TARGET_B020207",
+            "id": "WMcbfM7c4RP"
+        },
+        {
+            "code": "ACTUAL_TARGET_B010205",
+            "id": "Cyus0WpfqB3"
+        },
+        {
+            "code": "ACTUAL_TARGET_B020201",
+            "id": "uWIFJJactlQ"
+        },
+        {
+            "code": "ACTUAL_TARGET_B020203",
+            "id": "aKY3tKyL3Yl"
+        },
+        {
+            "code": "ACTUAL_TARGET_P010109",
+            "id": "uowl0RbRykP"
+        }
+    ],
+    "attributes": {
+        "createdByApp": {
+            "code": "PM_CREATED_BY_PROJECT_MONITORING",
+            "id": "mgCKcJuP5n0"
+        },
+        "orgUnitProject": {
+            "code": "PM_ORGUNIT_PROJECT_ID",
+            "id": "qgSqj6sBF7j"
+        },
+        "pairedDataElement": {
+            "code": "PM_PAIRED_DE",
+            "id": "qeayiIiTONg"
+        },
+        "projectDashboard": {
+            "code": "PM_PROJECT_DASHBOARD_ID",
+            "id": "aywduilEjPQ"
+        }
+    },
+    "categories": {
+        "targetActual": {
+            "code": "ACTUAL_TARGET",
+            "id": "GIIHAr9BzzO",
+            "categoryOptions": [
+                {
+                    "code": "ACTUAL",
+                    "id": "eWeQoOlAcxV"
+                },
+                {
+                    "code": "TARGET",
+                    "id": "imyqCWQ229K"
+                }
+            ]
+        },
+        "gender": {
+            "code": "GENDER",
+            "id": "Kyg1O6YEGa9",
+            "categoryOptions": [
+                {
+                    "code": "MALE",
+                    "id": "qk2FihwV6IL"
+                },
+                {
+                    "code": "FEMALE",
+                    "id": "yW2hYVS3S4u"
+                }
+            ]
+        },
+        "newRecurring": {
+            "code": "NEW_RECURRING",
+            "id": "a0Cy1qwUuZv",
+            "categoryOptions": [
+                {
+                    "code": "NEW",
+                    "id": "S2y8dcmR2kD"
+                },
+                {
+                    "code": "RECURRING",
+                    "id": "CyILz2yY8ey"
+                }
+            ]
+        }
+    },
+    "categoryCombos": {
+        "targetActual": {
+            "code": "ACTUAL_TARGET",
+            "id": "qAgB0mD1wC6"
+        }
+    }
+}

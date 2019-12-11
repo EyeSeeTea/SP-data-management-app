@@ -361,6 +361,10 @@ class Project {
         return this.updateDataElementsSelection(ids);
     }
 
+    public get uid() {
+        return this.code;
+    }
+
     async validateCodeUniqueness(): Promise<ValidationError> {
         const { api, code } = this;
         if (!code) return [];

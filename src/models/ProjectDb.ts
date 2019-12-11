@@ -1,6 +1,5 @@
 import _ from "lodash";
 import moment from "moment";
-import { generateUid } from "d2/uid";
 import { D2DataSet, D2OrganisationUnit, MetadataPayload } from "d2-api";
 import { PartialModel, MetadataResponse } from "d2-api";
 import Project from "./Project";
@@ -8,6 +7,7 @@ import { getMonthsRange, toISOString } from "../utils/date";
 import "../utils/lodash-mixins";
 import ProjectDashboard from "./ProjectDashboard";
 import { PartialPersistedModel } from "d2-api/api/common";
+import { getUid } from "../utils/dhis2";
 
 const expiryDaysInMonthActual = 10;
 
@@ -37,7 +37,7 @@ export default class ProjectDb {
 
         const parentOrgUnitId = getOrgUnitId(parentOrgUnit);
         const orgUnit: PartialPersistedModel<D2OrganisationUnit> = {
-            id: generateUid(),
+            id: getUid("organisationUnit", project.uid),
             name: project.name,
             code: project.code,
             shortName: project.shortName,
@@ -143,10 +143,10 @@ export default class ProjectDb {
 
     getDataSetsMetadata<T extends PartialPersistedModel<D2OrganisationUnit>>(
         orgUnit: T,
-        baseDataSet: PartialModel<D2DataSet>
+        baseDataSet: PartialModel<D2DataSet> & { code: string }
     ): Pick<MetadataPayload, "dataSets" | "sections"> {
         const { project } = this;
-        const dataSetId = generateUid();
+        const dataSetId = getUid("dataSet", project.uid + baseDataSet.code);
 
         const dataElements = project.dataElements.get({ onlySelected: true, includePaired: true });
 
@@ -163,7 +163,7 @@ export default class ProjectDb {
 
         const sections = project.sectors.map((sector, index) => {
             return {
-                id: generateUid(),
+                id: getUid("section", project.uid + baseDataSet.code + sector.id),
                 dataSet: { id: dataSetId },
                 sortOrder: index,
                 name: sector.displayName,
@@ -187,7 +187,7 @@ export default class ProjectDb {
             formType: "DEFAULT" as const,
             sections: sections.map(section => ({ id: section.id })),
             ...baseDataSet,
-            code: baseDataSet.code ? `${orgUnit.id}_${baseDataSet.code}` : undefined,
+            code: `${orgUnit.id}_${baseDataSet.code}`,
         };
 
         return { dataSets: [dataSet], sections };

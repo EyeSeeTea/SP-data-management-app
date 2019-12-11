@@ -1,5 +1,7 @@
 import _ from "lodash";
-import { D2Api, Id, MetadataPick } from "d2-api";
+import { D2ApiDefault, D2Api, Id, MetadataPick } from "d2-api";
+import fs from "fs";
+import path from "path";
 import DataElementsSet, { DataElement } from "./dataElementsSet";
 import { GetItemType } from "../types/utils";
 import "../utils/lodash-mixins";
@@ -227,4 +229,20 @@ function indexObjects<ValueType, Key extends IndexableKeys, RetValue = IndexedOb
 
 export async function getConfig(api: D2Api): Promise<Config> {
     return new ConfigLoader(api).get();
+}
+
+/* Runnable script to generate __tests__/config.json */
+
+async function getFromApp(baseUrl: string) {
+    const api = new D2ApiDefault({ baseUrl });
+    const config = await getConfig(api);
+    const jsonPath = path.join(__dirname, "__tests__", "config.json");
+    fs.writeFileSync(jsonPath, JSON.stringify(config, null, 4) + "\n");
+    console.log(`Written: ${jsonPath}`);
+}
+
+if (require.main === module) {
+    const [baseUrl] = process.argv.slice(2);
+    if (!baseUrl) throw new Error("Usage: config.ts DHIS2_URL");
+    getFromApp(baseUrl);
 }
