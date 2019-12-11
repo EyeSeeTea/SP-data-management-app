@@ -2,10 +2,10 @@ import React, { useMemo } from "react";
 import _ from "lodash";
 import { Card, CardContent } from "@material-ui/core";
 import { MultiSelector } from "d2-ui-components";
-import i18n from "../../../locales";
 import { StepProps } from "../../../pages/project-wizard/ProjectWizard";
 import { useAppContext } from "../../../contexts/api-context";
 import { CSSProperties } from "@material-ui/core/styles/withStyles";
+import { getProjectFieldName } from "../../../utils/form";
 
 type Option = { value: string; text: string };
 type ModelCollectionField = "sectors" | "locations";
@@ -53,7 +53,7 @@ const SectorsStep: React.FC<StepProps> = ({ project, onChange }) => {
     return (
         <Card>
             <CardContent style={{ padding: "5px 0 0 0" }}>
-                <Title>{i18n.t("Sectors")}</Title>
+                <Title>{getProjectFieldName("sectors")}</Title>
                 <div data-test-selector="sectors">
                     <MultiSelector
                         d2={d2}
@@ -66,7 +66,7 @@ const SectorsStep: React.FC<StepProps> = ({ project, onChange }) => {
                         selected={project.sectors.map(sector => sector.id)}
                     />
                 </div>
-                <Title style={{ marginTop: 35 }}>{i18n.t("Project Locations (*)")}</Title>
+                <Title style={{ marginTop: 35 }}>{getProjectFieldName("locations")}</Title>
                 <div data-test-selector="locations" style={{ paddingBottom: 10 }}>
                     <MultiSelector
                         d2={d2}
