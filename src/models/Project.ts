@@ -169,6 +169,10 @@ class Project {
         speedKey: 40,
     };
 
+    static formats = {
+        subsequentLettering: /^[a-zA-Z]{2}$/,
+    };
+
     static fieldNames: Record<ProjectField, string> = {
         name: i18n.t("Name"),
         dataElements: i18n.t("Data Elements"),
@@ -205,9 +209,12 @@ class Project {
                 i18n.t("Award Number should be a number of 5 digits")
             ),
         subsequentLettering: () =>
-            validateLength(this.subsequentLettering, this.f("subsequentLettering"), {
-                length: Project.lengths.subsequentLettering,
-            }),
+            validateRegexp(
+                this.subsequentLettering,
+                this.f("subsequentLettering"),
+                Project.formats.subsequentLettering,
+                i18n.t("Subsequent Lettering must be a string of two letters only")
+            ),
         speedKey: () =>
             validateNumber(this.speedKey.length, this.f("speedKey"), {
                 max: Project.lengths.speedKey,
@@ -413,7 +420,12 @@ class Project {
             .getData();
         const orgUnit = organisationUnits[0];
         return orgUnit
-            ? [i18n.t(`There is a project with the same code '${code}': ${orgUnit.displayName}`)]
+            ? [
+                  i18n.t("There is a project with the same code '{{code}}': {{orgUnit}}", {
+                      code,
+                      orgUnit: orgUnit.displayName,
+                  }),
+              ]
             : [];
     }
 }
@@ -478,18 +490,6 @@ function validateRegexp(
                       pattern: regexp.source,
                   }),
           ];
-}
-
-function validateLength(
-    value: string,
-    field: string,
-    { length }: { length?: number } = {}
-): ValidationError {
-    if (value.length !== 2) {
-        return [i18n.t("{{field}} must have {{length}} characters", { field, length })];
-    } else {
-        return [];
-    }
 }
 
 function getPeriodIds(dataSet: DataSetWithPeriods): string[] {
