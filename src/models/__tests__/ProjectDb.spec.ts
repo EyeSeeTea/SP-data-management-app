@@ -12,6 +12,7 @@ async function getProject(): Promise<Project> {
     const initialProject = await Project.create(api, config);
     return initialProject
         .setObj({
+            name: "MyProject",
             startDate: moment("2019-10-01"),
             endDate: moment("2020-03-01"),
             organisationUnit: { path: "/J0hschZVMBt/PJb0RtEnqlf" },
@@ -54,9 +55,9 @@ describe("ProjectDb", () => {
 
 const expectedOrgUnitPut = {
     id: "WGC0DJ0YSis",
-    name: "",
+    name: "MyProject",
     code: "en12345",
-    shortName: "",
+    shortName: "MyProject",
     description: "",
     parent: { id: "PJb0RtEnqlf" },
     openingDate: "2019-09-01T00:00:00",
@@ -72,9 +73,9 @@ const expectedMetadataPost = {
     organisationUnits: [
         {
             id: "WGC0DJ0YSis",
-            name: "",
+            name: "MyProject",
             code: "en12345",
-            shortName: "",
+            shortName: "MyProject",
             description: "",
             parent: {
                 id: "PJb0RtEnqlf",
@@ -188,7 +189,7 @@ const expectedMetadataPost = {
                     id: "qIOamX0NQ5e",
                 },
             ],
-            name: " Target",
+            name: "MyProject Target",
             code: "WGC0DJ0YSis_TARGET",
             openFuturePeriods: 3,
             dataInputPeriods: [
@@ -332,7 +333,7 @@ const expectedMetadataPost = {
                     id: "iCYfUcmklv4",
                 },
             ],
-            name: " Actual",
+            name: "MyProject Actual",
             code: "WGC0DJ0YSis_ACTUAL",
             openFuturePeriods: 1,
             dataInputPeriods: [
@@ -475,7 +476,7 @@ const expectedMetadataPost = {
     dashboards: [
         {
             id: "ySkG9zkINIY",
-            name: "",
+            name: "MyProject",
             dashboardItems: [
                 {
                     id: "SOGigOHr1pL",
@@ -504,7 +505,7 @@ const expectedMetadataPost = {
     reportTables: [
         {
             id: "auqMvs2BvGM",
-            name: " - PM People Indicators Gender Breakdown",
+            name: "MyProject - PM People Indicators Gender Breakdown",
             publicAccess: "rw------",
             numberType: "VALUE",
             legendDisplayStyle: "FILL",
@@ -617,7 +618,7 @@ const expectedMetadataPost = {
         },
         {
             id: "uqkTSD5ZADF",
-            name: " - PM Target vs Actual",
+            name: "MyProject - PM Target vs Actual",
             numberType: "VALUE",
             publicAccess: "rw------",
             legendDisplayStyle: "FILL",
@@ -725,7 +726,7 @@ const expectedMetadataPost = {
         },
         {
             id: "qOAZdSf1dqI",
-            name: " - PM Target vs Actual achieved (%)",
+            name: "MyProject - PM Target vs Actual achieved (%)",
             numberType: "VALUE",
             publicAccess: "rw------",
             legendDisplayStyle: "FILL",
