@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2019-12-09T20:04:21.862Z\n"
-"PO-Revision-Date: 2019-12-09T20:04:21.862Z\n"
+"POT-Creation-Date: 2019-12-11T12:03:16.063Z\n"
+"PO-Revision-Date: 2019-12-11T12:03:16.063Z\n"
 
 msgid "<No value>"
 msgstr ""
@@ -45,6 +45,12 @@ msgid "Paired DE"
 msgstr ""
 
 msgid "Search by name / code"
+msgstr ""
+
+msgid "Field should be a 5-digit number"
+msgstr ""
+
+msgid "Field must be composed by two letter characters"
 msgstr ""
 
 msgid "Field cannot be blank"

@@ -169,6 +169,10 @@ class Project {
         speedKey: 40,
     };
 
+    static formats = {
+        subsequentLettering: /^[a-zA-Z]{2}$/,
+    };
+
     static fieldNames: Record<ProjectField, string> = {
         name: i18n.t("Name"),
         dataElements: i18n.t("Data Elements"),
@@ -207,8 +211,8 @@ class Project {
         subsequentLettering: () =>
             validateRegexp(
                 this.subsequentLettering,
-                i18n.t("Subsequent Lettering"),
-                new RegExp(`^[a-zA-Z]{2}$`),
+                this.f("subsequentLettering"),
+                Project.formats.subsequentLettering,
                 i18n.t("Subsequent Lettering must be a string of two letters only")
             ),
         speedKey: () =>

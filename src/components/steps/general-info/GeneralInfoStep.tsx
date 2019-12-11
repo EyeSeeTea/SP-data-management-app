@@ -42,11 +42,18 @@ class GeneralInfoStep extends React.Component<StepProps> {
                     validators.length({
                         min: Project.lengths.awardNumber,
                         max: Project.lengths.awardNumber,
+                        message: i18n.t("Field should be a 5-digit number"),
                     }),
                 ],
             }),
             getTextField("subsequentLettering", project.subsequentLettering, {
-                validators: [validators.regexp(/^[a-zA-Z]{2}$/), validators.presence],
+                validators: [
+                    validators.presence,
+                    validators.regexp(
+                        /^[a-zA-Z]{2}$/,
+                        i18n.t("Field must be composed by two letter characters")
+                    ),
+                ],
             }),
             getTextField("speedKey", project.speedKey, {
                 validators: [
@@ -80,17 +87,18 @@ const validators = {
         message: i18n.t("Field cannot be blank"),
         validator: Validators.isRequired,
     },
-    length: ({ min, max }: { min?: number; max?: number }) => ({
+    length: ({ min, max, message }: { min?: number; max?: number; message?: string }) => ({
         message:
+            message ||
             i18n.t("Field length is invalid") +
-            ": " +
-            _.compact([min && `min=${min}`, max && `max=${max}`]).join(", "),
+                ": " +
+                _.compact([min && `min=${min}`, max && `max=${max}`]).join(", "),
         validator: (s: string) =>
             (min === undefined || s.length >= min) && (max == undefined || s.length <= max),
     }),
-    regexp: (regexp: RegExp) => ({
-        message: i18n.t("Field must be composed by two letter characters"),
-        validator: (s: string) => new RegExp(regexp).test(s),
+    regexp: (regexp: RegExp, message: string) => ({
+        message,
+        validator: (s: string) => regexp.test(s),
     }),
 };
 
