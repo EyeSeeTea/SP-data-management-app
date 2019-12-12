@@ -193,7 +193,7 @@ describe("Project", () => {
 
             const errors = await project.validate(["code"]);
             expect(errors.code).toEqual([
-                "There is a project with the same code 'au19234-key': Asia",
+                "There is a project with the same code 'au19234-key' -> Asia",
             ]);
         });
 

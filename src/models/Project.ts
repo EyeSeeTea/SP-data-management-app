@@ -421,7 +421,7 @@ class Project {
         const orgUnit = organisationUnits[0];
         return orgUnit
             ? [
-                  i18n.t("There is a project with the same code '{{code}}': {{orgUnit}}", {
+                  i18n.t("There is a project with the same code '{{code}}' -> {{orgUnit}}", {
                       code,
                       orgUnit: orgUnit.displayName,
                   }),
