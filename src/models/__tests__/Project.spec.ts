@@ -68,7 +68,7 @@ describe("Project", () => {
         it("gets organisation unit with display name", async () => {
             const project1 = await getProject();
             const orgUnit = { path: "/3/2/1" };
-            const project2 = project1.set("organisationUnit", orgUnit);
+            const project2 = project1.set("parentOrgUnit", orgUnit);
             const orgUnitName = await project2.getOrganisationUnitName();
 
             expect(orgUnitName).toEqual("Asia");
@@ -144,7 +144,7 @@ describe("Project", () => {
         });
 
         it("requires one organisation unit", async () => {
-            expectFieldPresence("organisationUnit");
+            expectFieldPresence("parentOrgUnit");
         });
 
         it("requires a unique code", async () => {
@@ -206,7 +206,7 @@ describe("Project", () => {
                     "speedKey",
                     "sectors",
                     "funders",
-                    "organisationUnit",
+                    "parentOrgUnit",
                     "dataElements",
                 ])
             );

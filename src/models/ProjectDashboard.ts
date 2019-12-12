@@ -1,6 +1,6 @@
 import { PartialPersistedModel } from "d2-api/api/common";
 import _ from "lodash";
-import { MetadataPayload, PartialModel, D2Dashboard, D2ReportTable } from "d2-api";
+import { D2Dashboard, D2ReportTable } from "d2-api";
 import Project from "./Project";
 import { Category, CategoryOption } from "./Config";
 import i18n from "../locales";
@@ -9,14 +9,14 @@ import { getUid } from "../utils/dhis2";
 export default class ProjectDashboard {
     constructor(public project: Project) {}
 
-    generate(): Pick<MetadataPayload, "dashboards" | "reportTables"> {
+    generate() {
         const { project } = this;
         const reportTables: Array<PartialPersistedModel<D2ReportTable>> = [
             peopleTable(project),
             targetVsActualTable(project),
             targetVsActualIndicatorsTable(project),
         ];
-        const dashboard: PartialModel<D2Dashboard> = {
+        const dashboard: PartialPersistedModel<D2Dashboard> = {
             id: getUid("dashboard", project.uid),
             name: project.name,
             dashboardItems: reportTables.map(reportTable => ({
@@ -31,7 +31,7 @@ export default class ProjectDashboard {
 }
 
 function getOrgUnitId(project: Project): string {
-    const ou = project.organisationUnit;
+    const ou = project.orgUnit;
     if (!ou) {
         throw new Error("No organisation defined for project");
     } else {

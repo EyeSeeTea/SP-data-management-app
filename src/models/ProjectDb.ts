@@ -1,6 +1,6 @@
 import _ from "lodash";
 import moment from "moment";
-import { D2DataSet, D2OrganisationUnit, MetadataPayload } from "d2-api";
+import { D2DataSet, D2OrganisationUnit, MetadataPayload, Ref } from "d2-api";
 import { PartialModel, MetadataResponse } from "d2-api";
 import Project from "./Project";
 import { getMonthsRange, toISOString } from "../utils/date";
@@ -17,13 +17,11 @@ export default class ProjectDb {
     async save() {
         const { project } = this;
         const { api, config } = project;
-
         const { startDate, endDate } = project;
-        const parentOrgUnit = project.organisationUnit;
 
         if (!startDate || !endDate) {
             throw new Error("Missing dates");
-        } else if (!parentOrgUnit) {
+        } else if (!project.parentOrgUnit) {
             throw new Error("No parent org unit");
         }
 
@@ -31,14 +29,12 @@ export default class ProjectDb {
             { value: "true", attribute: { id: config.attributes.createdByApp.id } },
         ];
 
-        const dashboardsMetadata = new ProjectDashboard(project).generate();
-        const dashboard = dashboardsMetadata.dashboards[0];
-        if (!dashboard) throw new Error("No dashboard defined");
-
-        const parentOrgUnitId = getOrgUnitId(parentOrgUnit);
-        const orgUnit: PartialPersistedModel<D2OrganisationUnit> = {
-            id: getUid("organisationUnit", project.uid),
+        const parentOrgUnitId = getOrgUnitId(project.parentOrgUnit);
+        const orgUnitId = getUid("organisationUnit", project.uid);
+        const orgUnit = {
+            id: orgUnitId,
             name: project.name,
+            path: project.parentOrgUnit.path + "/" + orgUnitId,
             code: project.code,
             shortName: project.shortName,
             description: project.description,
@@ -46,13 +42,22 @@ export default class ProjectDb {
             openingDate: toISOString(startDate.clone().subtract(1, "month")),
             closedDate: toISOString(endDate.clone().add(1, "month")),
             organisationUnitGroups: project.funders.map(funder => ({ id: funder.id })),
-            attributeValues: [
-                ...baseAttributeValues,
-                {
-                    value: dashboard.id,
-                    attribute: { id: config.attributes.projectDashboard.id },
-                },
-            ],
+            attributeValues: baseAttributeValues,
+        };
+
+        const projectWithOrgUnit = project.set("orgUnit", { path: orgUnit.path });
+
+        const dashboardsMetadata = new ProjectDashboard(projectWithOrgUnit).generate();
+        const dashboard = dashboardsMetadata.dashboards[0];
+        if (!dashboard) throw new Error("No dashboard defined");
+
+        const orgUnitToSave = {
+            ...orgUnit,
+            attributeValues: addAttributeValue(
+                orgUnit.attributeValues,
+                config.attributes.projectDashboard,
+                dashboard.id
+            ),
         };
 
         const { organisationUnitGroups: existingOrgUnitGroupFunders } = await api.metadata
@@ -69,13 +74,11 @@ export default class ProjectDb {
             organisationUnits: [...ouGroup.organisationUnits, { id: orgUnit.id }],
         }));
 
-        const dataSetAttributeValues = [
-            ...baseAttributeValues,
-            {
-                value: orgUnit.id,
-                attribute: { id: config.attributes.orgUnitProject.id },
-            },
-        ];
+        const dataSetAttributeValues = addAttributeValue(
+            baseAttributeValues,
+            config.attributes.orgUnitProject,
+            orgUnit.id
+        );
 
         const { targetPeriods, actualPeriods } = getDataSetPeriods(startDate, endDate);
 
@@ -101,7 +104,7 @@ export default class ProjectDb {
             MetadataPayload,
             "organisationUnits" | "organisationUnitGroups"
         > = {
-            organisationUnits: [orgUnit],
+            organisationUnits: [orgUnitToSave],
             organisationUnitGroups: newOrgUnitGroupFunders,
         };
 
@@ -113,7 +116,7 @@ export default class ProjectDb {
         ]);
 
         const response = await api.metadata.post(payload).getData();
-        this.postSave(response, orgUnit);
+        this.postSave(response, orgUnitToSave);
 
         return { payload, response, project: this.project };
     }
@@ -223,6 +226,14 @@ function getOrgUnitId(orgUnit: { path: string }): string {
     const id = _.last(orgUnit.path.split("/"));
     if (id) return id;
     else throw new Error(`Invalid path: ${orgUnit.path}`);
+}
+
+function addAttributeValue<Attribute extends Ref>(
+    attributeValues: Array<{ attribute: Ref; value: string }>,
+    attribute: Attribute,
+    value: string
+) {
+    return attributeValues.concat([{ value, attribute: { id: attribute.id } }]);
 }
 
 export function flattenPayloads<Model extends keyof MetadataPayload>(

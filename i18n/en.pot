@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2019-12-11T21:23:38.272Z\n"
-"PO-Revision-Date: 2019-12-11T21:23:38.272Z\n"
+"POT-Creation-Date: 2019-12-12T08:43:53.262Z\n"
+"PO-Revision-Date: 2019-12-12T08:43:53.262Z\n"
 
 msgid "<No value>"
 msgstr ""
@@ -113,6 +113,9 @@ msgid "Project Locations"
 msgstr ""
 
 msgid "Organisation Unit"
+msgstr ""
+
+msgid "Parent Organisation Unit"
 msgstr ""
 
 msgid "Award Number should be a number of 5 digits"

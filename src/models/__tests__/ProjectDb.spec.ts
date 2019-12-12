@@ -15,7 +15,7 @@ async function getProject(): Promise<Project> {
             name: "MyProject",
             startDate: moment("2019-10-01"),
             endDate: moment("2020-03-01"),
-            organisationUnit: { path: "/J0hschZVMBt/PJb0RtEnqlf" },
+            parentOrgUnit: { path: "/J0hschZVMBt/PJb0RtEnqlf" },
             funders: config.funders.slice(0, 2),
             awardNumber: "12345",
             subsequentLettering: "en",
@@ -56,6 +56,7 @@ describe("ProjectDb", () => {
 const expectedOrgUnitPut = {
     id: "WGC0DJ0YSis",
     name: "MyProject",
+    path: "/J0hschZVMBt/PJb0RtEnqlf/WGC0DJ0YSis",
     code: "en12345",
     shortName: "MyProject",
     description: "",
@@ -73,6 +74,7 @@ const expectedMetadataPost = {
     organisationUnits: [
         {
             id: "WGC0DJ0YSis",
+            path: "/J0hschZVMBt/PJb0RtEnqlf/WGC0DJ0YSis",
             name: "MyProject",
             code: "en12345",
             shortName: "MyProject",
@@ -553,7 +555,7 @@ const expectedMetadataPost = {
             ],
             organisationUnits: [
                 {
-                    id: "PJb0RtEnqlf",
+                    id: "WGC0DJ0YSis",
                 },
             ],
             filterDimensions: ["ou", "GIIHAr9BzzO"],
@@ -691,7 +693,7 @@ const expectedMetadataPost = {
             ],
             organisationUnits: [
                 {
-                    id: "PJb0RtEnqlf",
+                    id: "WGC0DJ0YSis",
                 },
             ],
             filters: [
@@ -799,7 +801,7 @@ const expectedMetadataPost = {
             ],
             organisationUnits: [
                 {
-                    id: "PJb0RtEnqlf",
+                    id: "WGC0DJ0YSis",
                 },
             ],
             filters: [

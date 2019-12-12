@@ -6,7 +6,7 @@ export function getDevProject(initialProject: Project, enabled: boolean) {
     const n = (Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000).toString();
 
     return initialProject
-        .set("organisationUnit", { path: "/J0hschZVMBt/PJb0RtEnqlf" })
+        .set("parentOrgUnit", { path: "/J0hschZVMBt/PJb0RtEnqlf" })
         .set("sectors", [
             { id: "mGQ5ckOTU8A", displayName: "Agriculture" },
             { id: "m4Cg6FOPPR7", displayName: "Livelihoods" },
