@@ -119,7 +119,7 @@ class ProjectWizardImpl extends React.Component<Props, State> {
             },
             {
                 key: "indicators",
-                label: i18n.t("Indicators Selection"),
+                label: i18n.t("Selection of Indicators"),
                 component: DataElementsStep,
                 validationKeys: ["dataElements"],
                 help: i18n.t("TODO"),

@@ -92,9 +92,10 @@ export default class DataElementsSet {
             .differenceBy(sectorsWithSelectedItems, sector => sector.id)
             .map(s => s.displayName)
             .value();
+        const missingInfo = missingSectors.join(", ");
 
         return missingSectors.length > 0
-            ? [i18n.t(`Those sectors have no indicators selected: ${missingSectors.join(", ")}`)]
+            ? [i18n.t("The following sectors have no indicators selected:" + " " + missingInfo)]
             : [];
     }
 
