@@ -1,4 +1,5 @@
 import React, { useState, useEffect, ReactNode } from "react";
+import _ from "lodash";
 import { Button, LinearProgress } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -104,15 +105,22 @@ function getSectorsInfo(project: Project): ReactNode {
     return (
         <ul>
             {project.sectors.map(sector => {
-                const dataElements = project.dataElements.get({
-                    onlySelected: true,
-                    sectorId: sector.id,
-                    includePaired: true,
-                });
+                const dataElements = _.sortBy(
+                    project.dataElements.get({
+                        onlySelected: true,
+                        sectorId: sector.id,
+                        includePaired: true,
+                    }),
+                    de => de.name
+                );
+                const selectedMER = new Set(project.dataElements.selectedMER);
                 const value = (
                     <ul>
                         {dataElements.map(de => (
-                            <li key={de.id}>{de.name}</li>
+                            <li key={de.id}>
+                                {de.name}
+                                {selectedMER.has(de.id) ? ` [${i18n.t("MER")}]` : ""}
+                            </li>
                         ))}
                     </ul>
                 );

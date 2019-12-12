@@ -12,11 +12,9 @@ export function getDevProject(initialProject: Project, enabled: boolean) {
         ])
         .set(
             "dataElements",
-            initialProject.dataElements.updateSelection([
-                "WS8XV4WWPE7",
-                "ik0ICagvIjm",
-                "We61YNYyOX0",
-            ]).dataElements
+            initialProject.dataElements
+                .updateSelection(["WS8XV4WWPE7", "ik0ICagvIjm", "We61YNYyOX0"])
+                .dataElements.updateMERSelection(["WS8XV4WWPE7", "We61YNYyOX0"])
         )
         .set("name", "Test1")
         .set("awardNumber", "12345")

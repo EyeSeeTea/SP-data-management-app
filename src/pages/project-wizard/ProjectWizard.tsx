@@ -120,8 +120,15 @@ class ProjectWizardImpl extends React.Component<Props, State> {
             {
                 key: "indicators",
                 label: i18n.t("Selection of Indicators"),
-                component: DataElementsStep,
+                component: DataElementsSelection,
                 validationKeys: ["dataElements"],
+                help: i18n.t("TODO"),
+            },
+            {
+                key: "mer-indicators",
+                label: i18n.t("Selection of MER Indicators"),
+                component: DataElementsMER,
+                validationKeys: ["dataElementsMER"],
                 help: i18n.t("TODO"),
             },
             {
@@ -251,5 +258,11 @@ const ProjectWizard: React.FC<{}> = () => {
         />
     );
 };
+
+const DataElementsSelection: React.FC<StepProps> = props => (
+    <DataElementsStep {...props} field="selection" />
+);
+
+const DataElementsMER: React.FC<StepProps> = props => <DataElementsStep {...props} field="MER" />;
 
 export default ProjectWizard;

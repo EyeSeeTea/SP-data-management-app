@@ -66,7 +66,25 @@ describe("Projects - Create", () => {
         // Selection of Indicators
 
         waitForStep("Selection of Indicators");
+
         cy.contains("# of agriculture groups receiving support for improved")
+            .parent("td")
+            .prev("td")
+            .click();
+
+        cy.contains("Livelihoods").click();
+        cy.contains("# of HH-level storage equipment provided")
+            .parent("td")
+            .prev("td")
+            .click();
+
+        cy.contains("Next").click();
+
+        // Selection of MER Indicators
+
+        waitForStep("Selection of MER Indicators");
+
+        cy.contains("# of people trained on improved agriculture technologies/practices")
             .parent("td")
             .prev("td")
             .click();
@@ -100,7 +118,9 @@ describe("Projects - Create", () => {
 
         cy.contains("Sectors");
         cy.contains("# of agriculture groups receiving support for improved");
-        cy.contains("# of HH-level storage equipment provided");
+        cy.contains("# of people trained on improved agriculture technologies/practices [MER]");
+
+        cy.contains("# of HH-level storage equipment provided [MER]");
 
         cy.get("[data-wizard-contents] button")
             .contains("Save")
