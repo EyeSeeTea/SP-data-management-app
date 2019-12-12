@@ -121,7 +121,7 @@ function getConfig(history: History, currentUser: CurrentUser) {
         },
         reopenDatasets: {
             name: "reopen-datasets",
-            icon: "edit",
+            icon: "lock_open",
             text: i18n.t("Reopen Datasets"),
             multiple: false,
         },
