@@ -1,3 +1,4 @@
+import { useLocation } from "react-router";
 import { Config } from "../models/Config";
 import React, { useContext } from "react";
 import { D2Api } from "d2-api";
@@ -8,6 +9,7 @@ interface Context {
     d2: object;
     config: Config;
     currentUser: User;
+    isDev: boolean;
 }
 
 export type CurrentUser = Context["currentUser"];
