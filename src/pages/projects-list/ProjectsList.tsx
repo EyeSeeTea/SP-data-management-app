@@ -119,6 +119,12 @@ function getConfig(history: History, currentUser: CurrentUser) {
             onClick: (project: ProjectForList) =>
                 goTo(history, generateUrl("dashboard", { id: project.id })),
         },
+        reopenDatasets: {
+            name: "reopen-datasets",
+            icon: "lock_open",
+            text: i18n.t("Reopen Datasets"),
+            multiple: false,
+        },
 
         targetValues: {
             name: "add-target-values",
@@ -176,6 +182,7 @@ function getConfig(history: History, currentUser: CurrentUser) {
             "targetValues",
             "dashboard",
             "downloadData",
+            "reopenDatasets",
             "configMER",
             "edit",
             "delete",
