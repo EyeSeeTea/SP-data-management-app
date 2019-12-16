@@ -1,5 +1,7 @@
 import _ from "lodash";
-import { D2Api, Id, MetadataPick } from "d2-api";
+import { D2ApiDefault, D2Api, Id, MetadataPick } from "d2-api";
+import fs from "fs";
+import path from "path";
 import DataElementsSet, { DataElement } from "./dataElementsSet";
 import { GetItemType } from "../types/utils";
 import "../utils/lodash-mixins";
@@ -28,6 +30,8 @@ const baseConfig = {
     },
     categories: {
         targetActual: "ACTUAL_TARGET",
+        gender: "GENDER",
+        newRecurring: "NEW_RECURRING",
     },
     categoryCombos: {
         targetActual: "ACTUAL_TARGET",
@@ -40,6 +44,9 @@ const baseConfig = {
     },
     organitionUnitGroupSets: {
         funder: "FUNDER",
+    },
+    indicators: {
+        actualTargetPrefix: "ACTUAL_TARGET_",
     },
 };
 
@@ -79,6 +86,15 @@ const metadataParams = {
         },
         filter: {
             code: { in: _.values(baseConfig.dataElementGroupSets) },
+        },
+    },
+    indicators: {
+        fields: {
+            id: yes,
+            code: yes,
+        },
+        filter: {
+            code: { $like: baseConfig.indicators.actualTargetPrefix },
         },
     },
     organisationUnitGroupSets: {
@@ -123,8 +139,10 @@ type IndexedObjs<Key extends keyof BaseConfig, ValueType> = Record<
 >;
 
 type Attribute = CodedObject;
-type CategoryCombo = CodedObject;
-type Category = CodedObject & { categoryOptions: CodedObject[] };
+export type CategoryCombo = CodedObject;
+export type CategoryOption = CodedObject;
+export type Category = CodedObject & { categoryOptions: CategoryOption[] };
+export type Indicator = CodedObject;
 
 export type Config = {
     base: typeof baseConfig;
@@ -135,6 +153,7 @@ export type Config = {
     attributes: IndexedObjs<"attributes", Attribute>;
     categories: IndexedObjs<"categories", Category>;
     categoryCombos: IndexedObjs<"categoryCombos", CategoryCombo>;
+    indicators: Indicator[];
 };
 
 class ConfigLoader {
@@ -160,6 +179,7 @@ class ConfigLoader {
             currentUser: currentUser,
             ...dataElementsMetadata,
             funders: _.sortBy(funders, funder => funder.displayName),
+            indicators: metadata.indicators,
             attributes: indexObjects<Attribute, "attributes">(metadata, "attributes"),
             categories: indexObjects<Category, "categories">(metadata, "categories"),
             categoryCombos: indexObjects<CategoryCombo, "categoryCombos">(
@@ -172,7 +192,7 @@ class ConfigLoader {
     }
 
     async getCurrentUser() {
-        return this.api.currrentUser
+        return this.api.currentUser
             .get({
                 fields: {
                     id: true,
@@ -209,4 +229,20 @@ function indexObjects<ValueType, Key extends IndexableKeys, RetValue = IndexedOb
 
 export async function getConfig(api: D2Api): Promise<Config> {
     return new ConfigLoader(api).get();
+}
+
+/* Runnable script to generate __tests__/config.json */
+
+async function getFromApp(baseUrl: string) {
+    const api = new D2ApiDefault({ baseUrl });
+    const config = await getConfig(api);
+    const jsonPath = path.join(__dirname, "__tests__", "config.json");
+    fs.writeFileSync(jsonPath, JSON.stringify(config, null, 4) + "\n");
+    console.log(`Written: ${jsonPath}`);
+}
+
+if (require.main === module) {
+    const [baseUrl] = process.argv.slice(2);
+    if (!baseUrl) throw new Error("Usage: config.ts DHIS2_URL");
+    getFromApp(baseUrl);
 }

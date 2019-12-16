@@ -1,22 +1,12 @@
 import { getMockApi } from "d2-api";
 import _ from "lodash";
-import { Config, getConfig } from "./../Config";
 import { ProjectData } from "./../Project";
 import Project from "../Project";
-import { metadata } from "./metadata";
-
-const pmSuperuser = {
-    id: "M5zQapPyTZI",
-    displayName: "admin admin",
-    userCredentials: {
-        userRoles: [{ name: "PM Superuser" }],
-    },
-    organisationUnits: [{ id: "J0hschZVMBt", displayName: "IHQ" }],
-};
+import { Config } from "../Config";
+import configJson from "./config.json";
 
 const { api, mock } = getMockApi();
-
-let config: Config;
+const config = (configJson as unknown) as Config;
 
 function getProject() {
     return Project.create(api, config);
@@ -29,26 +19,6 @@ async function expectFieldPresence(field: keyof ProjectData) {
 }
 
 describe("Project", () => {
-    beforeEach(async () => {
-        mock.reset();
-        mock.onGet("/metadata", {
-            "attributes:fields": "code,id",
-            "attributes:filter": ["code:eq:PM_PAIRED_DE"],
-            "dataElementGroupSets:fields":
-                "code,dataElementGroups[code,dataElements[attributeValues[attribute[id],value],categoryCombo[id],code,displayName,id],displayName,id]",
-            "dataElementGroupSets:filter": ["code:eq:SECTOR"],
-            "dataElementGroups:fields": "code,dataElements[id]",
-            "dataElementGroups:filter": [],
-        }).replyOnce(200, metadata);
-
-        mock.onGet("/me", {
-            fields:
-                "displayName,id,organisationUnits[displayName,id],userCredentials[userRoles[name]]",
-        }).replyOnce(200, pmSuperuser);
-
-        config = await getConfig(api);
-    });
-
     describe("set", () => {
         it("sets immutable data fields using field name", async () => {
             const project1 = await getProject();
@@ -98,7 +68,7 @@ describe("Project", () => {
         it("gets organisation unit with display name", async () => {
             const project1 = await getProject();
             const orgUnit = { path: "/3/2/1" };
-            const project2 = project1.set("organisationUnit", orgUnit);
+            const project2 = project1.set("parentOrgUnit", orgUnit);
             const orgUnitName = await project2.getOrganisationUnitName();
 
             expect(orgUnitName).toEqual("Asia");
@@ -174,7 +144,7 @@ describe("Project", () => {
         });
 
         it("requires one organisation unit", async () => {
-            expectFieldPresence("organisationUnit");
+            expectFieldPresence("parentOrgUnit");
         });
 
         it("requires a unique code", async () => {
@@ -193,7 +163,7 @@ describe("Project", () => {
 
             const errors = await project.validate(["code"]);
             expect(errors.code).toEqual([
-                "There is a project with the same code 'au19234-key': Asia",
+                "There is a project with the same code 'au19234-key' -> Asia",
             ]);
         });
 
@@ -236,7 +206,7 @@ describe("Project", () => {
                     "speedKey",
                     "sectors",
                     "funders",
-                    "organisationUnit",
+                    "parentOrgUnit",
                     "dataElements",
                 ])
             );
