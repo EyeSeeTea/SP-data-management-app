@@ -25,10 +25,11 @@ describe("Projects - Create", () => {
         cy.get("[data-field='subsequentLettering']").type("SL");
 
         cy.contains("Start Date").click({ force: true });
-        clickDay(11);
+        const projectYear = moment().year() + 1;
+        selectDatePicker(projectYear, "Feb");
 
         cy.contains("End Date").click({ force: true });
-        clickDay(13);
+        selectDatePicker(projectYear, "Jun");
 
         // Funders
 
@@ -88,10 +89,7 @@ describe("Projects - Create", () => {
         cy.contains("Cypress Project");
 
         cy.contains("Period dates");
-        const now = moment();
-        const expectedDataStart = now.set("date", 11).format("LL");
-        const expectedDataEnd = now.set("date", 13).format("LL");
-        cy.contains(`${expectedDataStart} -> ${expectedDataEnd}`);
+        cy.contains(`February 1, ${projectYear} -> June 30, ${projectYear}`);
 
         cy.contains("Description");
 
@@ -117,15 +115,14 @@ function selectOrgUnit(label) {
         .and("not.equal", "rgba(0, 0, 0, 0.87)");
 }
 
-function clickDay(dayOfMonth) {
-    cy.xpath(`//p[contains(text(), '${dayOfMonth}')]`).then(spans => {
-        const span = spans[spans.length - 1];
-        if (span && span.parentElement) {
-            span.parentElement.click();
-        }
-    });
-
-    cy.wait(100); // eslint-disable-line cypress/no-unnecessary-waiting
+function selectDatePicker(year, month) {
+    const pickerSelector = "[class^=MuiPickersBasePicker-pickerView]";
+    cy.get(pickerSelector)
+        .contains(year.toString())
+        .click();
+    cy.get(pickerSelector)
+        .contains(month)
+        .click();
 }
 
 function selectInMultiSelector(selectorName, label) {
