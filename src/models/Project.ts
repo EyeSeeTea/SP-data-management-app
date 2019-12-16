@@ -49,14 +49,14 @@ Project model.
 */
 
 import _ from "lodash";
-import { D2Api, SelectedPick, Id, D2OrganisationUnitSchema, Ref } from "d2-api";
+import { D2Api, SelectedPick, Id, D2OrganisationUnitSchema, Ref, D2IndicatorSchema } from "d2-api";
 import { Pagination } from "./../types/ObjectsList";
 import { Pager } from "d2-api/api/models";
 import i18n from "../locales";
 import DataElementsSet, { SelectionUpdate } from "./dataElementsSet";
 import ProjectDb from "./ProjectDb";
 import { Maybe } from "../types/utils";
-import { toISOString } from "../utils/date";
+import { toISOString, getMonthsRange } from "../utils/date";
 
 export interface ProjectData {
     name: string;
@@ -69,7 +69,8 @@ export interface ProjectData {
     sectors: Sector[];
     funders: Funder[];
     locations: Location[];
-    organisationUnit: OrganisationUnit | undefined;
+    orgUnit: OrganisationUnit | undefined;
+    parentOrgUnit: OrganisationUnit | undefined;
     dataElements: DataElementsSet;
 }
 
@@ -119,7 +120,8 @@ const defaultProjectData = {
     sectors: [],
     funders: [],
     locations: [],
-    organisationUnit: undefined,
+    orgUnit: undefined,
+    parentOrgUnit: undefined,
 };
 
 const yes = true as const;
@@ -169,6 +171,10 @@ class Project {
         speedKey: 40,
     };
 
+    static formats = {
+        subsequentLettering: /^[a-zA-Z]{2}$/,
+    };
+
     static fieldNames: Record<ProjectField, string> = {
         name: i18n.t("Name"),
         dataElements: i18n.t("Data Elements"),
@@ -181,7 +187,8 @@ class Project {
         sectors: i18n.t("Sectors"),
         funders: i18n.t("Funders"),
         locations: i18n.t("Project Locations"),
-        organisationUnit: i18n.t("Organisation Unit"),
+        orgUnit: i18n.t("Organisation Unit"),
+        parentOrgUnit: i18n.t("Parent Organisation Unit"),
     };
 
     static getFieldName(field: ProjectField): string {
@@ -205,9 +212,12 @@ class Project {
                 i18n.t("Award Number should be a number of 5 digits")
             ),
         subsequentLettering: () =>
-            validateLength(this.subsequentLettering, this.f("subsequentLettering"), {
-                length: Project.lengths.subsequentLettering,
-            }),
+            validateRegexp(
+                this.subsequentLettering,
+                this.f("subsequentLettering"),
+                Project.formats.subsequentLettering,
+                i18n.t("Subsequent Lettering must be a string of two letters only")
+            ),
         speedKey: () =>
             validateNumber(this.speedKey.length, this.f("speedKey"), {
                 max: Project.lengths.speedKey,
@@ -215,8 +225,8 @@ class Project {
         sectors: () => validateNonEmpty(this.sectors, this.f("sectors")),
         funders: () => validateNonEmpty(this.funders, this.f("funders")),
         locations: () => validateNonEmpty(this.locations, this.f("locations")),
-        organisationUnit: () =>
-            this.organisationUnit ? [] : [i18n.t("One Organisation Unit should be selected")],
+        parentOrgUnit: () =>
+            this.parentOrgUnit ? [] : [i18n.t("One Organisation Unit should be selected")],
         dataElements: () => this.dataElements.validate(this.sectors),
     };
 
@@ -229,7 +239,7 @@ class Project {
         "sectors",
         "funders",
         "locations",
-        "organisationUnit",
+        "parentOrgUnit",
         "dataElements",
     ]);
 
@@ -342,9 +352,9 @@ class Project {
     }
 
     public async getOrganisationUnitName(): Promise<string | undefined> {
-        const { organisationUnit } = this.data;
-        if (!organisationUnit) return;
-        const id = _.last(organisationUnit.path.split("/")) || "";
+        const { parentOrgUnit } = this.data;
+        if (!parentOrgUnit) return;
+        const id = _.last(parentOrgUnit.path.split("/")) || "";
 
         const { objects } = await this.api.models.organisationUnits
             .get({
@@ -400,6 +410,10 @@ class Project {
         return this.updateDataElementsSelection(ids);
     }
 
+    public get uid() {
+        return this.code;
+    }
+
     async validateCodeUniqueness(): Promise<ValidationError> {
         const { api, code } = this;
         if (!code) return [];
@@ -413,8 +427,40 @@ class Project {
             .getData();
         const orgUnit = organisationUnits[0];
         return orgUnit
-            ? [i18n.t(`There is a project with the same code '${code}': ${orgUnit.displayName}`)]
+            ? [
+                  i18n.t("There is a project with the same code '{{code}}' -> {{orgUnit}}", {
+                      code,
+                      orgUnit: orgUnit.displayName,
+                  }),
+              ]
             : [];
+    }
+
+    getPeriods(): Array<{ id: string }> {
+        return getMonthsRange(this.startDate, this.endDate).map(date => ({
+            id: date.format("YYYYMM"),
+        }));
+    }
+
+    getActualTargetIndicators(
+        dataElements: Array<{ code: string }>
+    ): Array<SelectedPick<D2IndicatorSchema, { id: true; code: true }>> {
+        const indicatorsByCode = _.keyBy(this.config.indicators, indicator => indicator.code);
+        const { actualTargetPrefix } = this.config.base.indicators;
+
+        return _(dataElements)
+            .map(de => {
+                const indicatorCode = actualTargetPrefix + de.code;
+                const indicator = _(indicatorsByCode).get(indicatorCode, undefined);
+                if (indicator) {
+                    return indicator;
+                } else {
+                    console.error("Data element has no indicator associated: ${de.id}");
+                    return null;
+                }
+            })
+            .compact()
+            .value();
     }
 }
 
@@ -478,18 +524,6 @@ function validateRegexp(
                       pattern: regexp.source,
                   }),
           ];
-}
-
-function validateLength(
-    value: string,
-    field: string,
-    { length }: { length?: number } = {}
-): ValidationError {
-    if (value.length !== 2) {
-        return [i18n.t("{{field}} must have {{length}} characters", { field, length })];
-    } else {
-        return [];
-    }
 }
 
 function getPeriodIds(dataSet: DataSetWithPeriods): string[] {

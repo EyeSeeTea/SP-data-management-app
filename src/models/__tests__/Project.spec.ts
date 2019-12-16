@@ -1,22 +1,12 @@
 import { getMockApi } from "d2-api";
 import _ from "lodash";
-import { Config, getConfig } from "./../Config";
 import { ProjectData } from "./../Project";
 import Project from "../Project";
-import { metadata } from "./metadata";
-
-const pmSuperuser = {
-    id: "M5zQapPyTZI",
-    displayName: "admin admin",
-    userCredentials: {
-        userRoles: [{ name: "PM Superuser" }],
-    },
-    organisationUnits: [{ id: "J0hschZVMBt", displayName: "IHQ" }],
-};
+import { Config } from "../Config";
+import configJson from "./config.json";
 
 const { api, mock } = getMockApi();
-
-let config: Config;
+const config = (configJson as unknown) as Config;
 
 function getProject() {
     return Project.create(api, config);
@@ -29,26 +19,6 @@ async function expectFieldPresence(field: keyof ProjectData) {
 }
 
 describe("Project", () => {
-    beforeEach(async () => {
-        mock.reset();
-        mock.onGet("/metadata", {
-            "attributes:fields": "code,id",
-            "attributes:filter": ["code:eq:PM_PAIRED_DE"],
-            "dataElementGroupSets:fields":
-                "code,dataElementGroups[code,dataElements[attributeValues[attribute[id],value],categoryCombo[id],code,displayName,id],displayName,id]",
-            "dataElementGroupSets:filter": ["code:eq:SECTOR"],
-            "dataElementGroups:fields": "code,dataElements[id]",
-            "dataElementGroups:filter": [],
-        }).replyOnce(200, metadata);
-
-        mock.onGet("/me", {
-            fields:
-                "displayName,id,organisationUnits[displayName,id],userCredentials[userRoles[name]]",
-        }).replyOnce(200, pmSuperuser);
-
-        config = await getConfig(api);
-    });
-
     describe("set", () => {
         it("sets immutable data fields using field name", async () => {
             const project1 = await getProject();
@@ -98,7 +68,7 @@ describe("Project", () => {
         it("gets organisation unit with display name", async () => {
             const project1 = await getProject();
             const orgUnit = { path: "/3/2/1" };
-            const project2 = project1.set("organisationUnit", orgUnit);
+            const project2 = project1.set("parentOrgUnit", orgUnit);
             const orgUnitName = await project2.getOrganisationUnitName();
 
             expect(orgUnitName).toEqual("Asia");
@@ -145,7 +115,7 @@ describe("Project", () => {
             expect(errors3["awardNumber"]).toContain("Award Number should be a number of 5 digits");
         });
 
-        it("requires a string with 2 characters in subsequent lettering", async () => {
+        it("requires a string of two letters in subsequent lettering", async () => {
             const project = (await getProject()).set("subsequentLettering", "NG");
             const errors = await project.validate(["subsequentLettering"]);
             expect(errors["subsequentLettering"]).toHaveLength(0);
@@ -154,14 +124,14 @@ describe("Project", () => {
             const errors2 = await project2.validate(["subsequentLettering"]);
             expect(errors2["subsequentLettering"]).toHaveLength(1);
             expect(errors2["subsequentLettering"]).toContain(
-                "Subsequent Lettering must have 2 characters"
+                "Subsequent Lettering must be a string of two letters only"
             );
 
             const project3 = project.set("subsequentLettering", "NGO");
             const errors3 = await project3.validate(["subsequentLettering"]);
             expect(errors3["subsequentLettering"]).toHaveLength(1);
             expect(errors3["subsequentLettering"]).toContain(
-                "Subsequent Lettering must have 2 characters"
+                "Subsequent Lettering must be a string of two letters only"
             );
         });
 
@@ -174,7 +144,7 @@ describe("Project", () => {
         });
 
         it("requires one organisation unit", async () => {
-            expectFieldPresence("organisationUnit");
+            expectFieldPresence("parentOrgUnit");
         });
 
         it("requires a unique code", async () => {
@@ -193,7 +163,7 @@ describe("Project", () => {
 
             const errors = await project.validate(["code"]);
             expect(errors.code).toEqual([
-                "There is a project with the same code 'au19234-key': Asia",
+                "There is a project with the same code 'au19234-key' -> Asia",
             ]);
         });
 
@@ -206,13 +176,13 @@ describe("Project", () => {
             });
             const errors = await project.validate(["dataElements"]);
             expect(errors.dataElements).toEqual([
-                "Those sectors have no indicators selected: Agriculture, Livelihoods",
+                "The following sectors have no indicators selected: Agriculture, Livelihoods",
             ]);
 
             const { project: project2 } = project.updateDataElementsSelection(["qQy0N1xdwQ1"]);
             const errors2 = await project2.validate(["dataElements"]);
             expect(errors2.dataElements).toEqual([
-                "Those sectors have no indicators selected: Livelihoods",
+                "The following sectors have no indicators selected: Livelihoods",
             ]);
 
             const { project: project3 } = project2.updateDataElementsSelection([
@@ -236,7 +206,7 @@ describe("Project", () => {
                     "speedKey",
                     "sectors",
                     "funders",
-                    "organisationUnit",
+                    "parentOrgUnit",
                     "dataElements",
                 ])
             );

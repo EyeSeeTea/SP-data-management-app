@@ -20,7 +20,14 @@ $ yarn start
 
 ## Tests
 
-Run unit tests:
+Setup (only when config object changes):
+
+```
+$ export TS_NODE_COMPILER_OPTIONS='{"module":"commonjs"}'
+$ npx ts-node src/models/Config.ts 'http://admin:PASSWORD@SERVER:PORT'
+```
+
+Unit testing:
 
 ```
 $ yarn test
@@ -37,7 +44,7 @@ $ yarn cy:e2e:open # interactive UI
 $ [xvfb-run] yarn cy:e2e:run # non-interactive UI
 ```
 
-For this to work in Travis CI, you will have to create an environment variable CYPRESS_DHIS2_AUTH (Settings -> Environment Variables) with the authentication userd in your testing DHIS2 instance.
+For cypress tests to work in Travis CI, you will have to create an environment variable CYPRESS_DHIS2_AUTH (Settings -> Environment Variables) with the authentication used in your testing DHIS2 instance.
 
 ## Build
 

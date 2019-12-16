@@ -104,7 +104,7 @@ class ProjectWizardImpl extends React.Component<Props, State> {
                 key: "organisation-units",
                 label: i18n.t("Organisation Unit"),
                 component: OrgUnitsStep,
-                validationKeys: ["organisationUnit"],
+                validationKeys: ["parentOrgUnit"],
                 description: i18n.t(
                     `Select the organisation unit associated with the project. At least one must be selected.`
                 ),
@@ -119,7 +119,7 @@ class ProjectWizardImpl extends React.Component<Props, State> {
             },
             {
                 key: "indicators",
-                label: i18n.t("Indicators Selection"),
+                label: i18n.t("Selection of Indicators"),
                 component: DataElementsStep,
                 validationKeys: ["dataElements"],
                 help: i18n.t("TODO"),

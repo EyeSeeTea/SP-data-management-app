@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2019-12-10T11:22:54.391Z\n"
-"PO-Revision-Date: 2019-12-10T11:22:54.391Z\n"
+"POT-Creation-Date: 2019-12-12T09:06:03.088Z\n"
+"PO-Revision-Date: 2019-12-12T09:06:03.088Z\n"
 
 msgid "<No value>"
 msgstr ""
@@ -45,6 +45,12 @@ msgid "Paired DE"
 msgstr ""
 
 msgid "Search by name / code"
+msgstr ""
+
+msgid "Field should be a 5-digit number"
+msgstr ""
+
+msgid "Field must be composed by two letter characters"
 msgstr ""
 
 msgid "Field cannot be blank"
@@ -115,10 +121,19 @@ msgstr ""
 msgid "Organisation Unit"
 msgstr ""
 
+msgid "Parent Organisation Unit"
+msgstr ""
+
 msgid "Award Number should be a number of 5 digits"
 msgstr ""
 
+msgid "Subsequent Lettering must be a string of two letters only"
+msgstr ""
+
 msgid "One Organisation Unit should be selected"
+msgstr ""
+
+msgid "There is a project with the same code '{{code}}' -> {{orgUnit}}"
 msgstr ""
 
 msgid "{{field}} cannot be blank"
@@ -136,7 +151,13 @@ msgstr ""
 msgid "{{field}} does not match pattern {{pattern}}"
 msgstr ""
 
-msgid "{{field}} must have {{length}} characters"
+msgid "PM Target vs Actual"
+msgstr ""
+
+msgid "PM Target vs Actual achieved (%)"
+msgstr ""
+
+msgid "PM People Indicators Gender Breakdown"
 msgstr ""
 
 msgid ""
@@ -198,7 +219,7 @@ msgstr ""
 msgid "Sectors & Project Locations"
 msgstr ""
 
-msgid "Indicators Selection"
+msgid "Selection of Indicators"
 msgstr ""
 
 msgid "Summary and Save"
@@ -257,6 +278,9 @@ msgid "Details"
 msgstr ""
 
 msgid "Go to Dashboard"
+msgstr ""
+
+msgid "Reopen Datasets"
 msgstr ""
 
 msgid "Add Target Values"

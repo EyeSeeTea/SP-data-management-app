@@ -18,7 +18,7 @@ describe("Projects - Create", () => {
         cy.contains("Start Date cannot be blank");
         cy.contains("End Date cannot be blank");
         cy.contains("Award Number should be a number of 5 digits");
-        cy.contains("Subsequent Lettering must have 2 characters");
+        cy.contains("Subsequent Lettering must be a string of two letters only");
 
         cy.get("[data-field='name']").type("Cypress Project");
         cy.get("[data-field='awardNumber']").type(Math.floor(10000 + Math.random() * 90000));
@@ -64,9 +64,9 @@ describe("Projects - Create", () => {
 
         cy.contains("Next").click();
 
-        // Indicators selection
+        // Selection of Indicators
 
-        waitForStep("Indicators Selection");
+        waitForStep("Selection of Indicators");
         cy.contains("# of agriculture groups receiving support for improved")
             .parent("td")
             .prev("td")
