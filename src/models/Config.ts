@@ -32,6 +32,10 @@ const baseConfig = {
     categoryCombos: {
         targetActual: "ACTUAL_TARGET",
     },
+    categoryOptions: {
+        target: "TARGET",
+        actual: "ACTUAL",
+    },
     dataElementGroups: {
         global: "GLOBAL",
         sub: "SUB",
@@ -57,6 +61,7 @@ const metadataParams = {
         filter: { code: { in: _.values(baseConfig.categories) } },
     },
     categoryCombos: getParamsForIndexables(baseConfig.categoryCombos),
+    categoryOptions: getParamsForIndexables(baseConfig.categoryOptions),
     dataElements: {
         fields: {
             id: yes,
@@ -124,7 +129,8 @@ type IndexedObjs<Key extends keyof BaseConfig, ValueType> = Record<
 
 type Attribute = CodedObject;
 type CategoryCombo = CodedObject;
-type Category = CodedObject & { categoryOptions: CodedObject[] };
+type CategoryOption = CodedObject;
+type Category = CodedObject & { categoryOptions: CategoryOption[] };
 
 export type Config = {
     base: typeof baseConfig;
@@ -135,6 +141,7 @@ export type Config = {
     attributes: IndexedObjs<"attributes", Attribute>;
     categories: IndexedObjs<"categories", Category>;
     categoryCombos: IndexedObjs<"categoryCombos", CategoryCombo>;
+    categoryOptions: IndexedObjs<"categoryOptions", CategoryOption>;
 };
 
 class ConfigLoader {
@@ -166,6 +173,10 @@ class ConfigLoader {
                 metadata,
                 "categoryCombos"
             ),
+            categoryOptions: indexObjects<CategoryOption, "categoryOptions">(
+                metadata,
+                "categoryOptions"
+            ),
         };
 
         return config;
@@ -193,7 +204,7 @@ class ConfigLoader {
     }
 }
 
-type IndexableKeys = "attributes" | "categories" | "categoryCombos";
+type IndexableKeys = "attributes" | "categories" | "categoryCombos" | "categoryOptions";
 
 function indexObjects<ValueType, Key extends IndexableKeys, RetValue = IndexedObjs<Key, ValueType>>(
     metadata: Metadata,

@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2019-12-13T12:05:45.975Z\n"
-"PO-Revision-Date: 2019-12-13T12:05:45.975Z\n"
+"POT-Creation-Date: 2019-12-16T12:58:56.606Z\n"
+"PO-Revision-Date: 2019-12-16T12:58:56.606Z\n"
 
 msgid "<No value>"
 msgstr ""
@@ -109,6 +109,12 @@ msgstr ""
 msgid "No"
 msgstr ""
 
+msgid "Monthly Executive Report"
+msgstr ""
+
+msgid "Narrative"
+msgstr ""
+
 msgid "Data Elements"
 msgstr ""
 
@@ -177,9 +183,6 @@ msgid "This is an example of help message."
 msgstr ""
 
 msgid "Project Configuration"
-msgstr ""
-
-msgid "Monthly Executive Report"
 msgstr ""
 
 msgid "Add Actual Values"
@@ -310,4 +313,61 @@ msgid "Help message for MER"
 msgstr ""
 
 msgid "Date"
+msgstr ""
+
+msgid "Executive Summary"
+msgstr ""
+
+msgid "Ministry Summary"
+msgstr ""
+
+msgid "Projected Activities for the next month"
+msgstr ""
+
+msgid "Download"
+msgstr ""
+
+msgid "Project"
+msgstr ""
+
+msgid "Indicators"
+msgstr ""
+
+msgid "Target"
+msgstr ""
+
+msgid "Actual"
+msgstr ""
+
+msgid "Achieved to date (%)"
+msgstr ""
+
+msgid "Comment"
+msgstr ""
+
+msgid "National Staff"
+msgstr ""
+
+msgid "IFS"
+msgstr ""
+
+msgid "IFS Dependents"
+msgstr ""
+
+msgid "Regional"
+msgstr ""
+
+msgid "Regional Dependents"
+msgstr ""
+
+msgid "Interns"
+msgstr ""
+
+msgid "Full-time"
+msgstr ""
+
+msgid "Part-time"
+msgstr ""
+
+msgid "Total"
 msgstr ""

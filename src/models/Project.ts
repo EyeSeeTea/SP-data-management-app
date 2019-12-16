@@ -49,7 +49,15 @@ Project model.
 */
 
 import _ from "lodash";
-import { D2Api, SelectedPick, Id, D2OrganisationUnitSchema, Ref } from "d2-api";
+import {
+    D2Api,
+    SelectedPick,
+    Id,
+    D2OrganisationUnitSchema,
+    Ref,
+    D2OrganisationUnitGroup,
+    D2OrganisationUnit,
+} from "d2-api";
 import { Pagination } from "./../types/ObjectsList";
 import { Pager } from "d2-api/api/models";
 import i18n from "../locales";
@@ -438,7 +446,9 @@ class Project {
 
 interface Project extends ProjectData {}
 
-function getProjectFromOrgUnit(orgUnit: ProjectForList): ProjectForList {
+type OrgUnitWithDates = Pick<D2OrganisationUnit, "openingDate" | "closedDate">;
+
+export function getProjectFromOrgUnit<OU extends OrgUnitWithDates>(orgUnit: OU): OU {
     const process = (s: string, mapper: (d: Moment) => Moment) => toISOString(mapper(moment(s)));
     return {
         ...orgUnit,
@@ -448,6 +458,13 @@ function getProjectFromOrgUnit(orgUnit: ProjectForList): ProjectForList {
         ...(orgUnit.closedDate
             ? { closedDate: process(orgUnit.closedDate, d => d.subtract(1, "month")) }
             : {}),
+    };
+}
+
+export function getOrgUnitDatesFromProject(startDate: Moment, endDate: Moment): OrgUnitWithDates {
+    return {
+        openingDate: toISOString(startDate.clone().subtract(1, "month")),
+        closedDate: toISOString(endDate.clone().add(1, "month")),
     };
 }
 

@@ -8,9 +8,11 @@ import { DatePicker } from "d2-ui-components";
 import MerReport, { MerReportData } from "../../models/MerReport";
 import { useAppContext } from "../../contexts/api-context";
 import UserOrgUnits from "../../components/org-units/UserOrgUnits";
-import { Ref } from "d2-api";
-import moment from "moment";
-import ReportDataTable from "../../components/report-data-table/ReportDataTable";
+import { Paper, TextField, Button } from "@material-ui/core";
+import { getDevMerReport } from "../../models/dev-project";
+import ReportDataTable from "./ReportDataTable";
+import StaffTable from "./StaffTable";
+import MerReportSpreadsheet from "../../models/MerReportSpreadsheet";
 
 type Path = string;
 
@@ -37,13 +39,22 @@ const Report: React.FC = () => {
     const goToLandingPage = () => goTo(history, "/");
     const { api, config, isDev } = useAppContext();
     const translations = getTranslations();
-    const [merReport, merReportSet] = useState<MerReport>(
-        MerReport.create(api, config, isDev ? devReport : {})
+    const [merReport, setMerReport] = useState<MerReport>(
+        isDev ? getDevMerReport(api, config) : MerReport.create(api, config, {})
     );
+
     const { date, organisationUnit } = merReport.data;
+    React.useEffect(() => {
+        merReport.withProjectsData().then(setMerReport);
+    }, [date, organisationUnit]);
 
     function onChange<Field extends keyof MerReportData>(field: Field, val: MerReportData[Field]) {
-        merReportSet(merReport.set(field, val));
+        setMerReport(merReport.set(field, val));
+    }
+
+    async function download() {
+        const blob = await new MerReportSpreadsheet(merReport).generate();
+        downloadFile("output.xlsx", blob);
     }
 
     return (
@@ -67,14 +78,71 @@ const Report: React.FC = () => {
                     selectableLevels={[2]}
                 />
             )}
-            {date && organisationUnit && <ReportDataTable merReport={merReport} />}
+            {date && organisationUnit && (
+                <React.Fragment>
+                    <ReportDataTable merReport={merReport} onChange={setMerReport} />
+                    <Paper>
+                        <MultilineTextField
+                            title={i18n.t("Executive Summary")}
+                            value={merReport.data.executiveSummary}
+                            onChange={value => onChange("executiveSummary", value)}
+                        />
+                        <MultilineTextField
+                            title={i18n.t("Ministry Summary")}
+                            value={merReport.data.ministrySummary}
+                            onChange={value => onChange("ministrySummary", value)}
+                        />
+                        <StaffTable merReport={merReport} onChange={setMerReport} />
+                        <MultilineTextField
+                            title={i18n.t("Projected Activities for the next month")}
+                            value={merReport.data.projectedActivitiesNextMonth}
+                            onChange={value => onChange("projectedActivitiesNextMonth", value)}
+                        />
+                    </Paper>
+
+                    <Button onClick={download} variant="contained">
+                        {i18n.t("Download")}
+                    </Button>
+
+                    <Button onClick={console.log} variant="contained">
+                        {i18n.t("Save")}
+                    </Button>
+                </React.Fragment>
+            )}
         </React.Fragment>
     );
 };
 
-const devReport = {
-    date: moment(),
-    organisationUnit: { path: "/J0hschZVMBt/PJb0RtEnqlf" },
+function downloadFile(filename: string, blob: Blob): void {
+    var element = document.createElement("a");
+    element.href = window.URL.createObjectURL(blob);
+    element.setAttribute("download", filename);
+    element.style.display = "none";
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+}
+
+const MultilineTextField: React.FC<{
+    title: string;
+    value: string;
+    onChange(value: string): void;
+}> = ({ title, value, onChange }) => {
+    return (
+        <div style={{ marginTop: 10, marginBottom: 10, padding: 10 }}>
+            <div style={{ fontSize: "1.1em", color: "grey", marginTop: 10, marginBottom: 10 }}>
+                {title}
+            </div>
+
+            <TextField
+                value={value}
+                multiline={true}
+                fullWidth={true}
+                rows={2}
+                onChange={ev => onChange(ev.target.value)}
+            />
+        </div>
+    );
 };
 
 export default Report;

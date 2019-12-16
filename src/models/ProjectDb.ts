@@ -3,9 +3,10 @@ import moment from "moment";
 import { generateUid } from "d2/uid";
 import { D2DataSet, D2OrganisationUnit, D2ApiResponse, Id } from "d2-api";
 import { PartialModel, Ref, PartialMetadata, MetadataResponse } from "d2-api";
-import Project from "./Project";
+import Project, { getOrgUnitDatesFromProject } from "./Project";
 import { getMonthsRange, toISOString } from "../utils/date";
 import "../utils/lodash-mixins";
+import { getDataStore } from "../utils/dhis2";
 
 const expiryDaysInMonthActual = 10;
 
@@ -51,6 +52,7 @@ export default class ProjectDb {
             shortName: project.shortName,
             description: project.description,
             parent: { id: parentOrgUnitId },
+            ...getOrgUnitDatesFromProject(startDate, endDate),
             openingDate: toISOString(startDate.clone().subtract(1, "month")),
             closedDate: toISOString(endDate.clone().add(1, "month")),
             organisationUnitGroups: project.funders.map(funder => ({ id: funder.id })),
@@ -125,7 +127,7 @@ export default class ProjectDb {
     }
 
     saveMERData(orgUnitId: Id): D2ApiResponse<void> {
-        const dataStore = this.project.api.dataStore("project-monitoring-app");
+        const dataStore = getDataStore(this.project.api);
         const dataElementsForMER = this.project.dataElements.get({ onlyMERSelected: true });
         const value = { dataElements: dataElementsForMER.map(de => de.id) };
         return dataStore.save(`mer-${orgUnitId}`, value);

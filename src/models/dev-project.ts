@@ -1,5 +1,8 @@
 import Project from "./Project";
 import moment from "moment";
+import { D2Api } from "d2-api";
+import { Config } from "./Config";
+import MerReport from "./MerReport";
 
 function getRandomInt(min: number, max: number): number {
     min = Math.ceil(min);
@@ -37,4 +40,12 @@ export function getDevProject(initialProject: Project, enabled: boolean) {
             { id: "OKEZCrPzqph", displayName: "Atlas Copco" },
             { id: "em8NIwi0KvM", displayName: "Agridius Foundation" },
         ]);
+}
+
+export function getDevMerReport(api: D2Api, config: Config): MerReport {
+    const data = {
+        date: moment(),
+        organisationUnit: { path: "/J0hschZVMBt/PJb0RtEnqlf" },
+    };
+    return MerReport.create(api, config, data);
 }
