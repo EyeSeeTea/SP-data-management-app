@@ -7,7 +7,7 @@ import { getIdFromOrgUnit, getDataStore } from "../utils/dhis2";
 import DataStore from "d2-api/api/dataStore";
 import { runPromises } from "../utils/promises";
 import { getProjectFromOrgUnit } from "./Project";
-import { toISOString } from "../utils/date";
+import { toISOString, getMonthsRange } from "../utils/date";
 import i18n from "../locales";
 
 export const staffKeys = [
@@ -22,9 +22,9 @@ export const staffKeys = [
 export type StaffKey = GetItemType<typeof staffKeys>;
 
 interface Data {
-    date: Moment | null;
-    organisationUnit: { path: string } | null;
-    projectsData: ProjectsData | null;
+    date: Moment;
+    organisationUnit: { path: string };
+    projectsData: ProjectsData;
     executiveSummary: string;
     ministrySummary: string;
     projectedActivitiesNextMonth: string;
@@ -34,13 +34,13 @@ interface Data {
 export type StaffInfo = { fullTime: number; partTime: number };
 
 const initialData = {
-    date: null,
-    organisationUnit: null,
-    projectsData: null,
     executiveSummary: "",
     ministrySummary: "",
     projectedActivitiesNextMonth: "",
-    staffSummary: _.fromPairs(staffKeys.map(key => [key, { fullTime: 0, partTime: 0 }])),
+    staffSummary: _.fromPairs(staffKeys.map(key => [key, { fullTime: 0, partTime: 0 }])) as Record<
+        StaffKey,
+        StaffInfo
+    >,
 };
 
 interface ProjectInfo {
@@ -52,7 +52,7 @@ export interface DataElementInfo {
     name: string;
     target: number;
     actual: number;
-    achieved: number;
+    achieved: number | undefined;
     comment: string;
 }
 
@@ -71,18 +71,18 @@ class MerReport {
         this.dataStore = getDataStore(this.api);
     }
 
-    static create(api: D2Api, config: Config, partialData: Partial<Data>) {
-        const data = _.merge(initialData, partialData);
+    static async create(
+        api: D2Api,
+        config: Config,
+        selectData: Pick<Data, "date" | "organisationUnit">
+    ): Promise<MerReport> {
+        const projectsData = await MerReport.getProjectsData(api, config, selectData);
+        const data: Data = _.merge({}, initialData, selectData, { projectsData });
         return new MerReport(api, config, data);
     }
 
     public set<K extends keyof Data>(field: K, value: Data[K]): MerReport {
         return new MerReport(this.api, this.config, { ...this.data, [field]: value });
-    }
-
-    async withProjectsData(): Promise<MerReport> {
-        const projectsData = await this.getProjectsData();
-        return this.set("projectsData", projectsData);
     }
 
     setComment(project: Project, dataElement: DataElementInfo, comment: string): MerReport {
@@ -115,12 +115,15 @@ class MerReport {
         return this.set("staffSummary", staffSummaryUpdated);
     }
 
-    public async getProjectsData(): Promise<ProjectsData> {
-        const { date, organisationUnit } = this.data;
-        if (!date || !organisationUnit) return [];
-
+    static async getProjectsData(
+        api: D2Api,
+        config: Config,
+        selectData: Pick<Data, "date" | "organisationUnit">
+    ): Promise<ProjectsData> {
+        const { date, organisationUnit } = selectData;
+        const dataStore = getDataStore(api);
         const now = moment();
-        const { organisationUnits } = await this.api.metadata
+        const { organisationUnits } = await api.metadata
             .get({
                 organisationUnits: {
                     fields: { id: true, displayName: true, openingDate: true, closedDate: true },
@@ -133,11 +136,13 @@ class MerReport {
             })
             .getData();
 
+        if (_.isEmpty(organisationUnits)) return [];
+
         const projectInfoByOrgUnitId = _.fromPairs(
             _.compact(
                 await runPromises(
                     organisationUnits.map(orgUnit => () =>
-                        this.dataStore
+                        dataStore
                             .get<ProjectInfo>("mer-" + orgUnit.id)
                             .getData()
                             .then(value => [orgUnit.id, value] as [string, ProjectInfo])
@@ -148,21 +153,31 @@ class MerReport {
         );
 
         console.log({ organisationUnits, projectInfoByOrgUnitId });
-        const period = date.format("YYYYMM");
+        const oldestPeriod = _(organisationUnits)
+            .map(orgUnit => orgUnit.openingDate)
+            .compact()
+            .min();
+
+        const periods = getMonthsRange(moment(oldestPeriod), now).map(date =>
+            date.format("YYYYMM")
+        );
+        const currentPeriod = now.format("YYYYMM");
         const allDataElementIds = _(projectInfoByOrgUnitId)
             .values()
             .flatMap(info => info.dataElements)
             .uniq()
             .value();
 
-        const { categories, categoryOptions } = this.config;
+        if (_.isEmpty(allDataElementIds)) return [];
+
+        const { categories, categoryOptions } = config;
         const catOptionsActualTargetIds = [categoryOptions.actual.id, categoryOptions.target.id];
 
-        const data = await this.api.analytics
+        const data = await api.analytics
             .get({
                 dimension: [
                     "ou:" + organisationUnits.map(ou => ou.id).join(";"),
-                    "pe:" + period,
+                    "pe:" + periods.join(";"),
                     categories.targetActual.id + ":" + catOptionsActualTargetIds.join(";"),
                     "dx:" + allDataElementIds.join(";"),
                 ],
@@ -187,27 +202,39 @@ class MerReport {
 
         const valuesByKey = _(allValues)
             .keyBy(val =>
-                [val.periodId, val.orgUnitId, val.dataElementId, val.categoryOption].join("-")
+                getKey([val.periodId, val.orgUnitId, val.dataElementId, val.categoryOption])
             )
             .mapValues(({ value }) => value)
             .value();
 
-        const dataElementsById = _.keyBy(this.config.dataElements, "id");
+        const valuesByOrgUnitAndDataElement = _(allValues)
+            .groupBy(val => getKey([val.orgUnitId, val.dataElementId]))
+            .value();
+
+        const dataElementsById = _.keyBy(config.dataElements, "id");
 
         const projectsData = organisationUnits.map(orgUnit => {
             const project = getProjectFromOrgUnit(orgUnit);
-            const formatDate = (dateStr: string): string => moment(dateStr).format("MMMM YYYY");
+            const formatDate = (dateStr: string): string => moment(dateStr).format("MMM YYYY");
             const dataElementIds = _(projectInfoByOrgUnitId).getOrFail(orgUnit.id).dataElements;
-            const getDataElement = (
-                deId: Id
-            ): { id: string; name: string; actual: number; target: number } => {
+            const getDataElementInfo = (deId: Id) => {
                 const dataElement = _(dataElementsById).getOrFail(deId);
-                const val = [period, orgUnit.id, dataElement.id];
+                const keyPrefix = [currentPeriod, orgUnit.id, dataElement.id];
+                const values = valuesByOrgUnitAndDataElement[getKey([orgUnit.id, deId])] || [];
+                const [allTarget, allActual] = _.partition(
+                    values,
+                    value => value.categoryOption === "target"
+                );
+                const sumActual = _.sum(allActual.map(v => v.value));
+                const sumTarget = _.sum(allTarget.map(v => v.value));
+                const allAchieved = sumTarget > 0 ? (100.0 * sumActual) / sumTarget : undefined;
+
                 return {
                     id: dataElement.id,
                     name: dataElement.name,
-                    actual: _(valuesByKey).get([...val, "actual"].join("-"), 0.0),
-                    target: _(valuesByKey).get([...val, "target"].join("-"), 0.0),
+                    actual: _(valuesByKey).get(getKey([...keyPrefix, "actual"]), 0.0),
+                    target: _(valuesByKey).get(getKey([...keyPrefix, "target"]), 0.0),
+                    achieved: allAchieved,
                 };
             };
 
@@ -217,12 +244,8 @@ class MerReport {
                     project.closedDate
                 )})`,
 
-                dataElements: dataElementIds.map(getDataElement).map(dataElementInfo => ({
-                    id: dataElementInfo.id,
-                    name: dataElementInfo.name,
-                    target: dataElementInfo.target,
-                    actual: dataElementInfo.actual,
-                    achieved: 0,
+                dataElements: dataElementIds.map(getDataElementInfo).map(dataElementInfo => ({
+                    ...dataElementInfo,
                     comment: "",
                 })),
             };
@@ -242,6 +265,10 @@ export function getStaffTranslations(): Record<StaffKey, string> {
         regionalDependents: i18n.t("Regional Dependents"),
         interns: i18n.t("Interns"),
     };
+}
+
+function getKey(parts: string[]): string {
+    return parts.join("-");
 }
 
 export type MerReportData = Data;

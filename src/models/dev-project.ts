@@ -42,10 +42,9 @@ export function getDevProject(initialProject: Project, enabled: boolean) {
         ]);
 }
 
-export function getDevMerReport(api: D2Api, config: Config): MerReport {
-    const data = {
+export function getDevMerReport() {
+    return {
         date: moment(),
-        organisationUnit: { path: "/J0hschZVMBt/PJb0RtEnqlf" },
+        orgUnitPath: "/J0hschZVMBt/PJb0RtEnqlf",
     };
-    return MerReport.create(api, config, data);
 }

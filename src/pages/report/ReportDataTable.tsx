@@ -39,7 +39,7 @@ const ReportDataTable: React.FC<ReportDataTableProps> = props => {
             <Table>
                 <TableHead>
                     <TableRow>
-                        <TableCell>{i18n.t("Project")}</TableCell>
+                        <TableCell style={{ width: "10em" }}>{i18n.t("Project")}</TableCell>
                         <TableCell>{i18n.t("Indicators")}</TableCell>
                         <TableCell>{i18n.t("Target")}</TableCell>
                         <TableCell>{i18n.t("Actual")}</TableCell>
@@ -79,6 +79,10 @@ const ReportDataTable: React.FC<ReportDataTableProps> = props => {
     );
 };
 
+function formatNumber(n: number | undefined, suffix?: string): string {
+    return n === undefined ? "-" : n.toFixed(2) + (suffix || "");
+}
+
 interface DataElementCellsProps {
     project: Project;
     dataElement: DataElementInfo;
@@ -88,13 +92,16 @@ interface DataElementCellsProps {
 // TODO: Use a Custom TextField using onBlur event to speed up UI
 const DataElementCells: React.FC<DataElementCellsProps> = ({ project, dataElement, onChange }) => (
     <React.Fragment>
-        <TableCell>{dataElement.name}</TableCell>
-        <TableCell>{dataElement.target}</TableCell>
-        <TableCell>{dataElement.actual}</TableCell>
-        <TableCell>{dataElement.achieved}</TableCell>
+        <TableCell style={{ width: "30em" }}>{dataElement.name}</TableCell>
+        <TableCell>{formatNumber(dataElement.target)}</TableCell>
+        <TableCell>{formatNumber(dataElement.actual)}</TableCell>
+        <TableCell style={{ width: "5em" }}>{formatNumber(dataElement.achieved, "%")}</TableCell>
         <TableCell style={{ width: "40em" }}>
             <TextField
                 value={dataElement.comment}
+                fullWidth={true}
+                multiline={true}
+                rows={1}
                 onChange={ev => onChange(project, dataElement, ev.target.value)}
             />
         </TableCell>

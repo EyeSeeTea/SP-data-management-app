@@ -13,6 +13,7 @@ import { getDevMerReport } from "../../models/dev-project";
 import ReportDataTable from "./ReportDataTable";
 import StaffTable from "./StaffTable";
 import MerReportSpreadsheet from "../../models/MerReportSpreadsheet";
+import { Moment } from "moment";
 
 type Path = string;
 
@@ -26,35 +27,29 @@ function getTranslations() {
     };
 }
 
-function getLastOrgUnit(paths: Path[]): { path: Path } | null {
-    return (
-        _(paths)
-            .map(path => ({ path }))
-            .last() || null
-    );
-}
-
 const MerReportComponent: React.FC = () => {
     const history = useHistory();
     const goToLandingPage = () => goTo(history, "/");
     const { api, config, isDev } = useAppContext();
     const translations = getTranslations();
-
-    const [merReport, setMerReport] = useState<MerReport>(
-        isDev ? getDevMerReport(api, config) : MerReport.create(api, config, {})
-    );
-
-    const { date, organisationUnit } = merReport.data;
+    const initial = isDev ? getDevMerReport() : { date: null, orgUnitPath: null };
+    const [date, setDate] = useState<Moment | null>(initial.date);
+    const [orgUnitPath, setOrgUnitPath] = useState<Path | null>(initial.orgUnitPath);
+    const [merReport, setMerReport] = useState<MerReport | null>(null);
 
     React.useEffect(() => {
-        merReport.withProjectsData().then(setMerReport);
-    }, [date, organisationUnit]);
+        if (date && orgUnitPath) {
+            const selectData = { date, organisationUnit: { path: orgUnitPath } };
+            MerReport.create(api, config, selectData).then(setMerReport);
+        }
+    }, [date, orgUnitPath]);
 
     function onChange<Field extends keyof MerReportData>(field: Field, val: MerReportData[Field]) {
-        setMerReport(merReport.set(field, val));
+        if (merReport) setMerReport(merReport.set(field, val));
     }
 
     async function download() {
+        if (!merReport) return;
         const blob = await new MerReportSpreadsheet(merReport).generate();
         downloadFile("output.xlsx", blob);
     }
@@ -66,21 +61,24 @@ const MerReportComponent: React.FC = () => {
                 help={translations.help}
                 onBackClick={goToLandingPage}
             />
-            <DatePicker
-                label={i18n.t("Date")}
-                value={date ? date.toDate() : null}
-                onChange={date => onChange("date", date)}
-                format="MMMM YYYY"
-                views={["year", "month"]}
-            />
-            {date && (
-                <UserOrgUnits
-                    onChange={paths => onChange("organisationUnit", getLastOrgUnit(paths))}
-                    selected={organisationUnit ? [organisationUnit.path] : []}
-                    selectableLevels={[2]}
+            <Paper style={{ marginBottom: 20 }}>
+                <DatePicker
+                    label={i18n.t("Date")}
+                    value={date ? date.toDate() : null}
+                    onChange={setDate}
+                    format="MMMM YYYY"
+                    views={["year", "month"]}
+                    style={{ marginLeft: 20 }}
                 />
-            )}
-            {date && organisationUnit && (
+                <UserOrgUnits
+                    onChange={paths => setOrgUnitPath(_.last(paths) || null)}
+                    selected={orgUnitPath ? [orgUnitPath] : []}
+                    selectableLevels={[2]}
+                    withElevation={false}
+                />
+            </Paper>
+
+            {merReport && (
                 <React.Fragment>
                     <ReportDataTable merReport={merReport} onChange={setMerReport} />
                     <Paper>
@@ -100,15 +98,13 @@ const MerReportComponent: React.FC = () => {
                             value={merReport.data.projectedActivitiesNextMonth}
                             onChange={value => onChange("projectedActivitiesNextMonth", value)}
                         />
+
+                        <Button onClick={download}>{i18n.t("Download")}</Button>
+
+                        <Button onClick={console.log} variant="contained">
+                            {i18n.t("Save")}
+                        </Button>
                     </Paper>
-
-                    <Button onClick={download} variant="contained">
-                        {i18n.t("Download")}
-                    </Button>
-
-                    <Button onClick={console.log} variant="contained">
-                        {i18n.t("Save")}
-                    </Button>
                 </React.Fragment>
             )}
         </React.Fragment>
@@ -140,7 +136,7 @@ const MultilineTextField: React.FC<{
                 value={value}
                 multiline={true}
                 fullWidth={true}
-                rows={2}
+                rows={4}
                 onChange={ev => onChange(ev.target.value)}
             />
         </div>
