@@ -12,7 +12,7 @@ export function getDevProject(initialProject: Project, enabled: boolean) {
     const awardNumber = getRandomInt(10000, 99999).toString();
 
     return initialProject
-        .set("organisationUnit", { path: "/J0hschZVMBt/PJb0RtEnqlf" })
+        .set("parentOrgUnit", { path: "/J0hschZVMBt/PJb0RtEnqlf" })
         .set("sectors", [
             { id: "mGQ5ckOTU8A", displayName: "Agriculture" },
             { id: "m4Cg6FOPPR7", displayName: "Livelihoods" },
@@ -23,10 +23,10 @@ export function getDevProject(initialProject: Project, enabled: boolean) {
                 .updateSelection(["WS8XV4WWPE7", "ik0ICagvIjm", "We61YNYyOX0"])
                 .dataElements.updateMERSelection(["WS8XV4WWPE7", "We61YNYyOX0"])
         )
-        .set("name", "Test1-" + awardNumber)
+        .set("name", "0Test1-" + awardNumber)
         .set("awardNumber", awardNumber)
         .set("subsequentLettering", "en")
-        .set("startDate", moment().startOf("month"))
+        .set("startDate", moment().set("date", 10))
         .set(
             "endDate",
             moment()

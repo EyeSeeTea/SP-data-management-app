@@ -64,9 +64,11 @@ class GeneralInfoStep extends React.Component<StepProps> {
             }),
             getDateField("startDate", project.startDate, {
                 onUpdateField: this.onUpdateField,
+                process: (date: Moment) => date.startOf("month"),
             }),
             getDateField("endDate", project.endDate, {
                 onUpdateField: this.onUpdateField,
+                process: (date: Moment) => date.endOf("month"),
             }),
         ];
         return (
@@ -128,9 +130,11 @@ function getDateField(
     value: Moment | undefined,
     {
         onUpdateField,
+        process,
         props,
     }: {
-        onUpdateField: (name: DateField, value: Moment) => void;
+        onUpdateField: (name: DateField, value: Moment | undefined) => void;
+        process: (date: Moment) => Moment;
         props?: Partial<DatePicker["props"]>;
     }
 ) {
@@ -142,7 +146,11 @@ function getDateField(
         props: {
             label: humanName,
             value: value ? value.toDate() : null,
-            onChange: (value: Moment) => onUpdateField(name, value),
+            onChange: (date: Moment | undefined) =>
+                onUpdateField(name, date ? process(date) : undefined),
+            format: "MMMM YYYY",
+            views: ["year", "month"],
+            className: "date-picker",
             ...(props || {}),
         },
     };
