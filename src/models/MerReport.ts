@@ -21,6 +21,8 @@ export const staffKeys = [
 
 export type StaffKey = GetItemType<typeof staffKeys>;
 
+export type StaffSummary = Record<StaffKey, StaffInfo>;
+
 interface Data {
     date: Moment;
     organisationUnit: { path: string };
@@ -28,7 +30,7 @@ interface Data {
     executiveSummary: string;
     ministrySummary: string;
     projectedActivitiesNextMonth: string;
-    staffSummary: Record<StaffKey, StaffInfo>;
+    staffSummary: StaffSummary;
 }
 
 export type StaffInfo = { fullTime: number; partTime: number };
@@ -72,6 +74,7 @@ export interface DataElementInfo {
 
 export interface Project {
     id: string;
+    dateInfo: string;
     name: string;
     dataElements: Array<DataElementInfo>;
 }
@@ -123,6 +126,13 @@ class MerReport {
         return this.data.projectsData.length > 0;
     }
 
+    getStaffTotals(): { partTime: number; fullTime: number; total: number } {
+        const staffs = staffKeys.map(key => this.data.staffSummary[key]);
+        const partTime = _.sum(staffs.map(staff => staff.partTime));
+        const fullTime = _.sum(staffs.map(staff => staff.fullTime));
+        return { partTime, fullTime, total: partTime + fullTime };
+    }
+
     setComment(project: Project, dataElement: DataElementInfo, comment: string): MerReport {
         if (!this.data.projectsData) return this;
 
@@ -155,12 +165,10 @@ class MerReport {
 
     async save(): Promise<void> {
         const { dataStore, config } = this;
-        const { currentUser } = config;
         const { organisationUnit, date, staffSummary } = this.data;
         const { executiveSummary, ministrySummary, projectedActivitiesNextMonth } = this.data;
-        const dateString = date.format("YYYYMM");
-        const key = ["mer", getIdFromOrgUnit(organisationUnit), dateString].join("-");
-        const previousValue = await dataStore.get<DataStoreReport>(key).getData();
+        const storeReportKey = MerReport.getReportKey({ organisationUnit, date });
+        const previousValue = await dataStore.get<DataStoreReport>(storeReportKey).getData();
         const comments = _(this.data.projectsData)
             .flatMap(projectInfo => {
                 return projectInfo.dataElements.map(deInfo => {
@@ -170,11 +178,11 @@ class MerReport {
             .fromPairs()
             .value();
 
-        const value: DataStoreReport = {
+        const storeRerport: DataStoreReport = {
             created: previousValue ? previousValue.created : toISOString(date),
-            createdBy: previousValue ? previousValue.createdBy : currentUser.id,
+            createdBy: previousValue ? previousValue.createdBy : config.currentUser.id,
             updated: toISOString(date),
-            updatedBy: currentUser.id,
+            updatedBy: config.currentUser.id,
             executiveSummary,
             ministrySummary,
             projectedActivitiesNextMonth,
@@ -182,7 +190,7 @@ class MerReport {
             comments,
         };
 
-        await dataStore.save(key, value);
+        await dataStore.save(storeReportKey, storeRerport);
     }
 
     static async getProjectsData(
@@ -280,7 +288,7 @@ class MerReport {
 
         const dataElementsById = _.keyBy(config.dataElements, "id");
 
-        const projectsData = organisationUnits.map(orgUnit => {
+        const projectsData: ProjectsData = organisationUnits.map(orgUnit => {
             const project = getProjectFromOrgUnit(orgUnit);
             const formatDate = (dateStr: string): string => moment(dateStr).format("MMM YYYY");
             const dataElementIds = _(projectInfoByOrgUnitId).getOrFail(orgUnit.id).dataElements;
@@ -307,10 +315,8 @@ class MerReport {
 
             return {
                 id: orgUnit.id,
-                name: `${project.displayName} (${formatDate(project.openingDate)} -> ${formatDate(
-                    project.closedDate
-                )})`,
-
+                name: project.displayName,
+                dateInfo: `${formatDate(project.openingDate)} -> ${formatDate(project.closedDate)}`,
                 dataElements: dataElementIds.map(getDataElementInfo).map(dataElementInfo => ({
                     ...dataElementInfo,
                     comment: _(commentsByProjectAndDataElement).get(

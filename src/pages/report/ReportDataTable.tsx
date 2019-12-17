@@ -12,6 +12,8 @@ import {
 
 import MerReport, { DataElementInfo, Project } from "../../models/MerReport";
 import i18n from "../../locales";
+import { getMultilineRows } from "./utils";
+import TextFieldOnBlur from "./TextFieldOnBlur";
 
 interface ReportDataTableProps {
     merReport: MerReport;
@@ -39,12 +41,15 @@ const ReportDataTable: React.FC<ReportDataTableProps> = props => {
             <Table>
                 <TableHead>
                     <TableRow>
-                        <TableCell style={{ width: "10em" }}>{i18n.t("Project")}</TableCell>
-                        <TableCell>{i18n.t("Indicators")}</TableCell>
-                        <TableCell>{i18n.t("Target")}</TableCell>
-                        <TableCell>{i18n.t("Actual")}</TableCell>
-                        <TableCell>{i18n.t("Achieved to date (%)")}</TableCell>
-                        <TableCell>{i18n.t("Comment")}</TableCell>
+                        <TableCell style={{ width: "15em" }}>{i18n.t("Project")}</TableCell>
+                        <TableCell style={{ width: "35em" }}>{i18n.t("Indicators")}</TableCell>
+                        <TableCell style={{ width: "3em" }}>{i18n.t("Target")}</TableCell>
+                        <TableCell style={{ width: "3em" }}>{i18n.t("Actual")}</TableCell>
+                        <TableCell style={{ width: "5em" }}>
+                            {" "}
+                            {i18n.t("Achieved to date (%)")}
+                        </TableCell>
+                        <TableCell style={{ width: "40em" }}>{i18n.t("Comment")}</TableCell>
                     </TableRow>
                 </TableHead>
 
@@ -54,6 +59,8 @@ const ReportDataTable: React.FC<ReportDataTableProps> = props => {
                             <TableRow key={project.id}>
                                 <TableCell rowSpan={project.dataElements.length}>
                                     {project.name}
+                                    <br />
+                                    <i>{project.dateInfo}</i>
                                 </TableCell>
                                 <DataElementCells
                                     project={project}
@@ -89,20 +96,19 @@ interface DataElementCellsProps {
     onChange(project: Project, dataElement: DataElementInfo, value: string): void;
 }
 
-// TODO: Use a Custom TextField using onBlur event to speed up UI
 const DataElementCells: React.FC<DataElementCellsProps> = ({ project, dataElement, onChange }) => (
     <React.Fragment>
-        <TableCell style={{ width: "30em" }}>{dataElement.name}</TableCell>
+        <TableCell>{dataElement.name}</TableCell>
         <TableCell>{formatNumber(dataElement.target)}</TableCell>
         <TableCell>{formatNumber(dataElement.actual)}</TableCell>
-        <TableCell style={{ width: "5em" }}>{formatNumber(dataElement.achieved, "%")}</TableCell>
-        <TableCell style={{ width: "40em" }}>
-            <TextField
+        <TableCell>{formatNumber(dataElement.achieved, "%")}</TableCell>
+        <TableCell>
+            <TextFieldOnBlur
                 value={dataElement.comment}
                 fullWidth={true}
                 multiline={true}
-                rows={1}
-                onChange={ev => onChange(project, dataElement, ev.target.value)}
+                rows={getMultilineRows(dataElement.comment, 1, 4)}
+                onBlurChange={value => onChange(project, dataElement, value)}
             />
         </TableCell>
     </React.Fragment>

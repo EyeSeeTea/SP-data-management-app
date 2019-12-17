@@ -14,8 +14,10 @@ import MerReport, {
     StaffKey,
     StaffInfo,
     getStaffTranslations,
+    StaffSummary,
 } from "../../models/MerReport";
 import i18n from "../../locales";
+import TextFieldOnBlur from "./TextFieldOnBlur";
 
 interface StaffTableProps {
     merReport: MerReport;
@@ -33,6 +35,9 @@ const StaffTable: React.FC<StaffTableProps> = props => {
     }
 
     if (!merReport || !merReport.data.projectsData) return <LinearProgress />;
+    const staffTotals = React.useMemo(() => merReport.getStaffTotals(), [
+        merReport.data.staffSummary,
+    ]);
 
     return (
         <Table style={{ width: "40vw" }}>
@@ -46,42 +51,57 @@ const StaffTable: React.FC<StaffTableProps> = props => {
             </TableHead>
 
             <TableBody>
-                {staffKeys.map(key => {
-                    const staff = merReport.data.staffSummary[key];
-                    const total = (staff.fullTime || 0) + (staff.partTime || 0);
+                {staffKeys.map(staffKey => {
+                    const staff = merReport.data.staffSummary;
+                    const total = (staff[staffKey].fullTime || 0) + (staff[staffKey].partTime || 0);
                     return (
-                        <TableRow key={key}>
-                            <TableCell>{translations[key]}</TableCell>
+                        <TableRow key={staffKey}>
+                            <TableCell>{translations[staffKey]}</TableCell>
                             <TableCell>
-                                <TextField
-                                    value={staff.fullTime.toString()}
-                                    type="number"
-                                    onChange={ev =>
-                                        onTimeChange(key, {
-                                            ...staff,
-                                            fullTime: parseFloat(ev.target.value),
-                                        })
-                                    }
+                                <TimeTextField
+                                    staff={staff}
+                                    staffKey={staffKey}
+                                    timeKey="fullTime"
+                                    onChange={onTimeChange}
                                 />
                             </TableCell>
                             <TableCell>
-                                <TextField
-                                    value={staff.partTime.toString()}
-                                    type="number"
-                                    onChange={ev =>
-                                        onTimeChange(key, {
-                                            ...staff,
-                                            partTime: parseFloat(ev.target.value),
-                                        })
-                                    }
+                                <TimeTextField
+                                    staff={staff}
+                                    staffKey={staffKey}
+                                    timeKey="partTime"
+                                    onChange={onTimeChange}
                                 />
                             </TableCell>
                             <TableCell>{total}</TableCell>
                         </TableRow>
                     );
                 })}
+                <TableRow>
+                    <TableCell>
+                        <strong>{i18n.t("Total")}</strong>
+                    </TableCell>
+                    <TableCell>{staffTotals.fullTime}</TableCell>
+                    <TableCell>{staffTotals.partTime}</TableCell>
+                    <TableCell>{staffTotals.total}</TableCell>
+                </TableRow>
             </TableBody>
         </Table>
+    );
+};
+
+const TimeTextField: React.FC<{
+    staff: StaffSummary;
+    staffKey: StaffKey;
+    timeKey: keyof StaffInfo;
+    onChange: (key: StaffKey, staff: StaffInfo) => void;
+}> = ({ staff, staffKey: key, timeKey, onChange }) => {
+    return (
+        <TextFieldOnBlur
+            value={staff[key][timeKey].toString()}
+            type="number"
+            onBlurChange={value => onChange(key, { ...staff[key], [timeKey]: parseFloat(value) })}
+        />
     );
 };
 

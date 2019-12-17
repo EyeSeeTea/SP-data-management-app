@@ -1,19 +1,23 @@
 import React, { useState } from "react";
 import _ from "lodash";
-import i18n from "../../locales";
-import PageHeader from "../../components/page-header/PageHeader";
 import { useHistory } from "react-router";
 import { History } from "history";
+import { makeStyles } from "@material-ui/core/styles";
+import { Paper, TextField, Button } from "@material-ui/core";
 import { DatePicker, useSnackbar, ConfirmationDialog } from "d2-ui-components";
+import { Moment } from "moment";
+
 import MerReport, { MerReportData } from "../../models/MerReport";
 import { useAppContext } from "../../contexts/api-context";
 import UserOrgUnits from "../../components/org-units/UserOrgUnits";
-import { Paper, TextField, Button } from "@material-ui/core";
 import { getDevMerReport } from "../../models/dev-project";
 import ReportDataTable from "./ReportDataTable";
 import StaffTable from "./StaffTable";
 import MerReportSpreadsheet from "../../models/MerReportSpreadsheet";
-import { Moment } from "moment";
+import { getMultilineRows } from "./utils";
+import i18n from "../../locales";
+import PageHeader from "../../components/page-header/PageHeader";
+import TextFieldOnBlur from "./TextFieldOnBlur";
 
 type Path = string;
 
@@ -29,6 +33,7 @@ function getTranslations() {
 
 const MerReportComponent: React.FC = () => {
     const history = useHistory();
+    const classes = useStyles();
     const goToLandingPage = () => goTo(history, "/");
     const { api, config, isDev } = useAppContext();
     const translations = getTranslations();
@@ -43,7 +48,7 @@ const MerReportComponent: React.FC = () => {
     React.useEffect(() => {
         if (date && orgUnitPath) {
             const selectData = { date, organisationUnit: { path: orgUnitPath } };
-            MerReport.create(api, config, selectData).then(setMerReport);
+            MerReport.create(api, config, selectData).then(setMerReport_);
         }
     }, [date, orgUnitPath]);
 
@@ -138,17 +143,37 @@ const MerReportComponent: React.FC = () => {
                             onChange={value => onChange("projectedActivitiesNextMonth", value)}
                         />
 
-                        <Button onClick={download}>{i18n.t("Download")}</Button>
+                        <div className={classes.buttonsWrapper}>
+                            <Button onClick={download} variant="contained">
+                                {i18n.t("Download")}
+                            </Button>
 
-                        <Button onClick={save} variant="contained">
-                            {i18n.t("Save")}
-                        </Button>
+                            <Button
+                                onClick={save}
+                                variant="contained"
+                                className={classes.saveButton}
+                            >
+                                {i18n.t("Save")}
+                            </Button>
+                        </div>
                     </Paper>
                 </React.Fragment>
             )}
         </React.Fragment>
     );
 };
+
+const useStyles = makeStyles({
+    buttonsWrapper: {
+        padding: 5,
+        marginLeft: 30,
+    },
+    saveButton: {
+        margin: 10,
+        backgroundColor: "#2b98f0",
+        color: "white",
+    },
+});
 
 function downloadFile(filename: string, blob: Blob): void {
     const element = document.createElement("a");
@@ -171,12 +196,12 @@ const MultilineTextField: React.FC<{
                 {title}
             </div>
 
-            <TextField
+            <TextFieldOnBlur
                 value={value}
                 multiline={true}
                 fullWidth={true}
-                rows={4}
-                onChange={ev => onChange(ev.target.value)}
+                rows={getMultilineRows(value, 4, 10)}
+                onBlurChange={onChange}
             />
         </div>
     );
