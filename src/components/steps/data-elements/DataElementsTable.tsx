@@ -164,7 +164,10 @@ function onSelectionChange(
         showRelatedMessage(snackbar, related);
         onChange(projectUpdated);
     } else {
-        const projectUpdated = project.updateDataElementsMERSelection(dataElementIds, sectorId);
+        const projectUpdated = project.updateDataElementsMERSelectionForSector(
+            dataElementIds,
+            sectorId
+        );
         onChange(projectUpdated);
     }
 }

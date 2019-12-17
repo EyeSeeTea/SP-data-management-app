@@ -124,7 +124,7 @@ export default class ProjectDb {
 
         const response = await api.metadata.post(payload).getData();
 
-        return { orgUnit, payload, response, project: this.project };
+        return { orgUnit: orgUnitToSave, payload, response, project: this.project };
     }
 
     saveMERData(orgUnitId: Id): D2ApiResponse<void> {
