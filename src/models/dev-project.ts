@@ -1,9 +1,15 @@
 import Project from "./Project";
 import moment from "moment";
 
+function getRandomInt(min: number, max: number): number {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
 export function getDevProject(initialProject: Project, enabled: boolean) {
     if (!enabled) return initialProject;
-    const n = (Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000).toString();
+    const awardNumber = getRandomInt(10000, 99999).toString();
 
     return initialProject
         .set("parentOrgUnit", { path: "/J0hschZVMBt/PJb0RtEnqlf" })
@@ -13,21 +19,19 @@ export function getDevProject(initialProject: Project, enabled: boolean) {
         ])
         .set(
             "dataElements",
-            initialProject.dataElements.updateSelection([
-                "WS8XV4WWPE7",
-                "ik0ICagvIjm",
-                "We61YNYyOX0",
-            ]).dataElements
+            initialProject.dataElements
+                .updateSelection(["WS8XV4WWPE7", "ik0ICagvIjm", "We61YNYyOX0"])
+                .dataElements.updateMERSelection(["WS8XV4WWPE7", "We61YNYyOX0"])
         )
-        .set("name", "0Test-" + n)
-        .set("awardNumber", n)
+        .set("name", "0Test1-" + awardNumber)
+        .set("awardNumber", awardNumber)
         .set("subsequentLettering", "en")
         .set("startDate", moment().set("date", 10))
         .set(
             "endDate",
             moment()
                 .add(3, "month")
-                .set("date", 20)
+                .endOf("month")
         )
         .set("funders", [
             { id: "OKEZCrPzqph", displayName: "Atlas Copco" },

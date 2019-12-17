@@ -21,7 +21,8 @@ async function getProject(): Promise<Project> {
             subsequentLettering: "en",
             sectors: config.sectors.slice(0, 2),
         })
-        .updateDataElementsSelection(["WS8XV4WWPE7", "ik0ICagvIjm", "We61YNYyOX0"]).project;
+        .updateDataElementsSelection(["WS8XV4WWPE7", "ik0ICagvIjm", "We61YNYyOX0"])
+        .project.updateDataElementsMERSelection(["WS8XV4WWPE7", "We61YNYyOX0"]);
 }
 
 const metadata = {
@@ -47,11 +48,22 @@ describe("ProjectDb", () => {
 
             mock.onPut("/organisationUnits/WGC0DJ0YSis", expectedOrgUnitPut).replyOnce(200);
 
+            mock.onPost(
+                "/dataStore/project-monitoring-app/mer-WGC0DJ0YSis",
+                expectedDataStoreMer
+            ).replyOnce(200);
+
+            mock.onPost("/metadata", expectedMetadataPost).replyOnce(200, metadataResponse);
+
             await new ProjectDb(project).save();
             expect(true).toEqual(true);
         });
     });
 });
+
+const expectedDataStoreMer = {
+    dataElements: ["WS8XV4WWPE7", "We61YNYyOX0"],
+};
 
 const expectedOrgUnitPut = {
     id: "WGC0DJ0YSis",
@@ -74,8 +86,8 @@ const expectedMetadataPost = {
     organisationUnits: [
         {
             id: "WGC0DJ0YSis",
-            path: "/J0hschZVMBt/PJb0RtEnqlf/WGC0DJ0YSis",
             name: "MyProject",
+            path: "/J0hschZVMBt/PJb0RtEnqlf/WGC0DJ0YSis",
             code: "en12345",
             shortName: "MyProject",
             description: "",
@@ -521,6 +533,12 @@ const expectedMetadataPost = {
             digitGroupSeparator: "SPACE",
             columnDimensions: ["pe"],
             dataDimensionItems: [
+                {
+                    dataDimensionItemType: "DATA_ELEMENT",
+                    dataElement: {
+                        id: "K6mAC5SiO29",
+                    },
+                },
                 {
                     dataDimensionItemType: "DATA_ELEMENT",
                     dataElement: {

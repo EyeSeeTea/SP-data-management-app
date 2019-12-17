@@ -41,6 +41,7 @@ export interface DataElement extends DataElementWithCodePairing {
 interface DataElementsData {
     dataElements: DataElement[];
     selected: string[];
+    selectedMER: string[];
 }
 
 export interface SelectionUpdate {
@@ -54,6 +55,7 @@ type GetOptions = Partial<{
     indicatorType: IndicatorType;
     peopleOrBenefit: PeopleOrBenefit;
     onlySelected: boolean;
+    onlyMERSelected: boolean;
     includePaired: boolean;
 }>;
 
@@ -82,8 +84,8 @@ export default class DataElementsSet {
         };
     }
 
-    validate(sectors: Sector[]) {
-        const sectorsWithSelectedItems = _(this.get({ onlySelected: true }))
+    validate(sectors: Sector[], getOptions: GetOptions) {
+        const sectorsWithSelectedItems = _(this.get(getOptions))
             .countBy(de => de.sectorId)
             .keys()
             .map(sectorId => ({ id: sectorId }))
@@ -97,6 +99,14 @@ export default class DataElementsSet {
         return missingSectors.length > 0
             ? [i18n.t("The following sectors have no indicators selected:" + " " + missingInfo)]
             : [];
+    }
+
+    validateSelection(sectors: Sector[]) {
+        return this.validate(sectors, { onlySelected: true });
+    }
+
+    validateMER(sectors: Sector[]) {
+        return this.validate(sectors, { onlyMERSelected: true });
     }
 
     get selected(): string[] {
@@ -168,28 +178,47 @@ export default class DataElementsSet {
     }
 
     static async build(config: Config) {
-        return new DataElementsSet({ dataElements: config.dataElements, selected: [] });
+        return new DataElementsSet({
+            dataElements: config.dataElements,
+            selected: [],
+            selectedMER: [],
+        });
     }
 
     get(options: GetOptions = {}): DataElement[] {
         if (_.isEqual(options, {})) return this.data.dataElements;
 
-        const { sectorId, series, indicatorType, onlySelected, peopleOrBenefit } = options;
-        const { dataElements: items } = this.data;
-        const selected = new Set(onlySelected ? this.data.selected : []);
+        const {
+            sectorId,
+            series,
+            indicatorType,
+            onlySelected,
+            onlyMERSelected,
+            peopleOrBenefit,
+        } = options;
+        const { dataElements } = this.data;
+        const selected = onlySelected ? new Set(this.data.selected) : new Set();
+        const selectedMER = onlyMERSelected ? new Set(this.data.selectedMER) : new Set();
+        const includePaired = onlyMERSelected ? true : options.includePaired;
 
-        const dataElementsFiltered = items.filter(
-            de =>
-                (!sectorId || de.sectorId === sectorId) &&
-                (!series || de.series === series) &&
-                (!indicatorType || de.indicatorType === indicatorType) &&
-                (!peopleOrBenefit || de.peopleOrBenefit === peopleOrBenefit) &&
-                (!onlySelected || selected.has(de.id))
+        const mainDEs = onlySelected
+            ? dataElements.filter(dataElement => selected.has(dataElement.id))
+            : dataElements;
+
+        const dataElementsIncluded = includePaired
+            ? _.uniqBy(_.flatMap(mainDEs, de => _.compact([de, de.pairedDataElement])), "id")
+            : mainDEs;
+
+        const dataElementsFiltered = dataElementsIncluded.filter(
+            dataElement =>
+                (!sectorId || dataElement.sectorId === sectorId) &&
+                (!series || dataElement.series === series) &&
+                (!indicatorType || dataElement.indicatorType === indicatorType) &&
+                (!peopleOrBenefit || dataElement.peopleOrBenefit === peopleOrBenefit) &&
+                (!onlyMERSelected || selectedMER.has(dataElement.id))
         );
 
-        return options.includePaired
-            ? _.flatMap(dataElementsFiltered, de => _.compact([de, de.pairedDataElement]))
-            : dataElementsFiltered;
+        return dataElementsFiltered;
     }
 
     updateSelection(
@@ -207,9 +236,31 @@ export default class DataElementsSet {
             .union(related.selected.map(de => de.id))
             .difference(related.unselected.map(de => de.id))
             .value();
-        const dataElementsUpdated = new DataElementsSet({ ...this.data, selected: finalSelected });
+        const dataElementsUpdated = new DataElementsSet({
+            ...this.data,
+            selected: finalSelected,
+        });
 
         return { related, dataElements: dataElementsUpdated };
+    }
+
+    get selectedMER() {
+        return this.data.selectedMER;
+    }
+
+    updateMERSelection(dataElementIds: string[]): DataElementsSet {
+        const selectedIds = this.get({ onlySelected: true, includePaired: true }).map(de => de.id);
+        return new DataElementsSet({
+            ...this.data,
+            selectedMER: _.intersection(selectedIds, dataElementIds),
+        });
+    }
+
+    getFullSelection(dataElementIds: string[], sectorId: string, getOptions: GetOptions): string[] {
+        const selectedIdsInOtherSectors = this.get(getOptions)
+            .filter(de => de.sectorId !== sectorId)
+            .map(de => de.id);
+        return _.union(selectedIdsInOtherSectors, dataElementIds);
     }
 
     getRelated(dataElementIds: Id[]): DataElement[] {

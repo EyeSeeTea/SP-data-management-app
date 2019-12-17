@@ -159,7 +159,7 @@ function defineGetters(sourceObject: any, targetObject: any) {
 }
 
 export type ProjectField = keyof ProjectData;
-export type ValidationKey = keyof ProjectData | "code";
+export type ValidationKey = keyof ProjectData | "code" | "dataElementsMER";
 type Validation = () => ValidationError | Promise<ValidationError>;
 type ValidationError = string[];
 type Validations = { [K in ValidationKey]?: Validation };
@@ -227,7 +227,8 @@ class Project {
         locations: () => validateNonEmpty(this.locations, this.f("locations")),
         parentOrgUnit: () =>
             this.parentOrgUnit ? [] : [i18n.t("One Organisation Unit should be selected")],
-        dataElements: () => this.dataElements.validate(this.sectors),
+        dataElements: () => this.dataElements.validateSelection(this.sectors),
+        dataElementsMER: () => this.dataElements.validateMER(this.sectors),
     };
 
     static requiredFields: Set<ProjectField> = new Set([
@@ -333,7 +334,7 @@ class Project {
 
     static async getData(
         config: Config,
-        partialData: Omit<ProjectData, "dataElements">
+        partialData: Omit<ProjectData, "dataElements" | "dataElementsMER">
     ): Promise<ProjectData> {
         const dataElements = await DataElementsSet.build(config);
         return { ...partialData, dataElements };
@@ -398,16 +399,26 @@ class Project {
         dataElementIds: string[]
     ): { related: SelectionUpdate; project: Project } {
         const { related, dataElements } = this.data.dataElements.updateSelection(dataElementIds);
-        return { related, project: this.set("dataElements", dataElements) };
+        return { related, project: this.setObj({ dataElements }) };
     }
 
     updateDataElementsSelectionForSector(dataElementIds: string[], sectorId: string) {
-        const selectedIdsInOtherSectors = this.dataElements
-            .get({ onlySelected: true })
-            .filter(de => de.sectorId !== sectorId)
-            .map(de => de.id);
-        const ids = _.union(selectedIdsInOtherSectors, dataElementIds);
+        const { dataElements } = this.data;
+        const ids = dataElements.getFullSelection(dataElementIds, sectorId, { onlySelected: true });
         return this.updateDataElementsSelection(ids);
+    }
+
+    updateDataElementsMERSelection(dataElementIds: string[]): Project {
+        const { dataElements } = this.data;
+        return this.setObj({ dataElements: dataElements.updateMERSelection(dataElementIds) });
+    }
+
+    updateDataElementsMERSelectionForSector(dataElementIds: string[], sectorId: string): Project {
+        const { dataElements } = this.data;
+        const ids = dataElements.getFullSelection(dataElementIds, sectorId, {
+            onlyMERSelected: true,
+        });
+        return this.setObj({ dataElements: dataElements.updateMERSelection(ids) });
     }
 
     public get uid() {

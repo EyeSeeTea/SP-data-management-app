@@ -1,12 +1,11 @@
 import _ from "lodash";
 import moment from "moment";
-import { D2DataSet, D2OrganisationUnit, MetadataPayload, Ref } from "d2-api";
-import { PartialModel, MetadataResponse } from "d2-api";
+import { D2DataSet, D2OrganisationUnit, D2ApiResponse, MetadataPayload, Id } from "d2-api";
+import { PartialModel, Ref, PartialPersistedModel, MetadataResponse } from "d2-api";
 import Project from "./Project";
 import { getMonthsRange, toISOString } from "../utils/date";
 import "../utils/lodash-mixins";
 import ProjectDashboard from "./ProjectDashboard";
-import { PartialPersistedModel } from "d2-api/api/common";
 import { getUid } from "../utils/dhis2";
 
 const expiryDaysInMonthActual = 10;
@@ -15,6 +14,12 @@ export default class ProjectDb {
     constructor(public project: Project) {}
 
     async save() {
+        const saveReponse = await this.saveMetadata();
+        this.updateOrgUnit(saveReponse.response, saveReponse.orgUnit);
+        return saveReponse;
+    }
+
+    async saveMetadata() {
         const { project } = this;
         const { api, config } = project;
         const { startDate, endDate } = project;
@@ -115,10 +120,18 @@ export default class ProjectDb {
             dashboardsMetadata,
         ]);
 
-        const response = await api.metadata.post(payload).getData();
-        this.postSave(response, orgUnitToSave);
+        await this.saveMERData(orgUnit.id).getData();
 
-        return { payload, response, project: this.project };
+        const response = await api.metadata.post(payload).getData();
+
+        return { orgUnit: orgUnitToSave, payload, response, project: this.project };
+    }
+
+    saveMERData(orgUnitId: Id): D2ApiResponse<void> {
+        const dataStore = this.project.api.dataStore("project-monitoring-app");
+        const dataElementsForMER = this.project.dataElements.get({ onlyMERSelected: true });
+        const value = { dataElements: dataElementsForMER.map(de => de.id) };
+        return dataStore.save(`mer-${orgUnitId}`, value);
     }
 
     /*
@@ -132,9 +145,14 @@ export default class ProjectDb {
         a long date format ("Fri Nov 08 09:49:00 GMT 2019"), instead of the correct format "YYYY-MM-DD",
         which breaks the data-entry JS code.
 
-    Solution: Re-save the orgUnit using a PUT /api/organisationUnits
+    Solution: Re-save the orgUnit using a PUT /api/organisationUnits.
+
+    This is a desisable request to finish, but don't stop the saving process in case of error.
     */
-    async postSave(response: MetadataResponse, orgUnit: PartialPersistedModel<D2OrganisationUnit>) {
+    async updateOrgUnit(
+        response: MetadataResponse,
+        orgUnit: PartialPersistedModel<D2OrganisationUnit>
+    ) {
         if (response.status === "OK") {
             await this.project.api.models.organisationUnits
                 .put(orgUnit)
