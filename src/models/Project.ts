@@ -55,8 +55,8 @@ import {
     Id,
     D2OrganisationUnitSchema,
     Ref,
-    D2OrganisationUnitGroup,
     D2OrganisationUnit,
+    D2IndicatorSchema,
 } from "d2-api";
 import { Pagination } from "./../types/ObjectsList";
 import { Pager } from "d2-api/api/models";
@@ -64,7 +64,7 @@ import i18n from "../locales";
 import DataElementsSet, { SelectionUpdate } from "./dataElementsSet";
 import ProjectDb from "./ProjectDb";
 import { Maybe } from "../types/utils";
-import { toISOString } from "../utils/date";
+import { toISOString, getMonthsRange } from "../utils/date";
 
 export interface ProjectData {
     name: string;
@@ -77,7 +77,8 @@ export interface ProjectData {
     sectors: Sector[];
     funders: Funder[];
     locations: Location[];
-    organisationUnit: OrganisationUnit | undefined;
+    orgUnit: OrganisationUnit | undefined;
+    parentOrgUnit: OrganisationUnit | undefined;
     dataElements: DataElementsSet;
 }
 
@@ -127,7 +128,8 @@ const defaultProjectData = {
     sectors: [],
     funders: [],
     locations: [],
-    organisationUnit: undefined,
+    orgUnit: undefined,
+    parentOrgUnit: undefined,
 };
 
 const yes = true as const;
@@ -193,7 +195,8 @@ class Project {
         sectors: i18n.t("Sectors"),
         funders: i18n.t("Funders"),
         locations: i18n.t("Project Locations"),
-        organisationUnit: i18n.t("Organisation Unit"),
+        orgUnit: i18n.t("Organisation Unit"),
+        parentOrgUnit: i18n.t("Parent Organisation Unit"),
     };
 
     static getFieldName(field: ProjectField): string {
@@ -230,8 +233,8 @@ class Project {
         sectors: () => validateNonEmpty(this.sectors, this.f("sectors")),
         funders: () => validateNonEmpty(this.funders, this.f("funders")),
         locations: () => validateNonEmpty(this.locations, this.f("locations")),
-        organisationUnit: () =>
-            this.organisationUnit ? [] : [i18n.t("One Organisation Unit should be selected")],
+        parentOrgUnit: () =>
+            this.parentOrgUnit ? [] : [i18n.t("One Organisation Unit should be selected")],
         dataElements: () => this.dataElements.validateSelection(this.sectors),
         dataElementsMER: () => this.dataElements.validateMER(this.sectors),
     };
@@ -245,7 +248,7 @@ class Project {
         "sectors",
         "funders",
         "locations",
-        "organisationUnit",
+        "parentOrgUnit",
         "dataElements",
     ]);
 
@@ -358,9 +361,9 @@ class Project {
     }
 
     public async getOrganisationUnitName(): Promise<string | undefined> {
-        const { organisationUnit } = this.data;
-        if (!organisationUnit) return;
-        const id = _.last(organisationUnit.path.split("/")) || "";
+        const { parentOrgUnit } = this.data;
+        if (!parentOrgUnit) return;
+        const id = _.last(parentOrgUnit.path.split("/")) || "";
 
         const { objects } = await this.api.models.organisationUnits
             .get({
@@ -413,12 +416,21 @@ class Project {
         return this.updateDataElementsSelection(ids);
     }
 
-    updateDataElementsMERSelection(dataElementIds: string[], sectorId: string) {
+    updateDataElementsMERSelection(dataElementIds: string[]): Project {
+        const { dataElements } = this.data;
+        return this.setObj({ dataElements: dataElements.updateMERSelection(dataElementIds) });
+    }
+
+    updateDataElementsMERSelectionForSector(dataElementIds: string[], sectorId: string): Project {
         const { dataElements } = this.data;
         const ids = dataElements.getFullSelection(dataElementIds, sectorId, {
             onlyMERSelected: true,
         });
         return this.setObj({ dataElements: dataElements.updateMERSelection(ids) });
+    }
+
+    public get uid() {
+        return this.code;
     }
 
     async validateCodeUniqueness(): Promise<ValidationError> {
@@ -441,6 +453,33 @@ class Project {
                   }),
               ]
             : [];
+    }
+
+    getPeriods(): Array<{ id: string }> {
+        return getMonthsRange(this.startDate, this.endDate).map(date => ({
+            id: date.format("YYYYMM"),
+        }));
+    }
+
+    getActualTargetIndicators(
+        dataElements: Array<{ code: string }>
+    ): Array<SelectedPick<D2IndicatorSchema, { id: true; code: true }>> {
+        const indicatorsByCode = _.keyBy(this.config.indicators, indicator => indicator.code);
+        const { actualTargetPrefix } = this.config.base.indicators;
+
+        return _(dataElements)
+            .map(de => {
+                const indicatorCode = actualTargetPrefix + de.code;
+                const indicator = _(indicatorsByCode).get(indicatorCode, undefined);
+                if (indicator) {
+                    return indicator;
+                } else {
+                    console.error("Data element has no indicator associated: ${de.id}");
+                    return null;
+                }
+            })
+            .compact()
+            .value();
     }
 }
 

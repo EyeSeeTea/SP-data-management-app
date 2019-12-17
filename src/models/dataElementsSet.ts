@@ -15,8 +15,10 @@ import { GetItemType } from "../types/utils";
 */
 
 export const indicatorTypes = ["global" as const, "sub" as const];
+export const peopleOrBenefit = ["people" as const, "benefit" as const];
 
 export type IndicatorType = GetItemType<typeof indicatorTypes>;
+export type PeopleOrBenefit = GetItemType<typeof peopleOrBenefit>;
 
 export interface DataElementWithCodePairing {
     id: Id;
@@ -25,7 +27,7 @@ export interface DataElementWithCodePairing {
     description: string;
     sectorId: Id;
     indicatorType: IndicatorType;
-    peopleOrBenefit: "people" | "benefit";
+    peopleOrBenefit: PeopleOrBenefit;
     series: string;
     pairedDataElementCode: string;
     categoryComboId: Id;
@@ -50,7 +52,8 @@ export interface SelectionUpdate {
 type GetOptions = Partial<{
     sectorId: string;
     series: string;
-    indicatorType: string;
+    indicatorType: IndicatorType;
+    peopleOrBenefit: PeopleOrBenefit;
     onlySelected: boolean;
     onlyMERSelected: boolean;
     includePaired: boolean;
@@ -185,7 +188,14 @@ export default class DataElementsSet {
     get(options: GetOptions = {}): DataElement[] {
         if (_.isEqual(options, {})) return this.data.dataElements;
 
-        const { sectorId, series, indicatorType, onlySelected, onlyMERSelected } = options;
+        const {
+            sectorId,
+            series,
+            indicatorType,
+            onlySelected,
+            onlyMERSelected,
+            peopleOrBenefit,
+        } = options;
         const { dataElements } = this.data;
         const selected = onlySelected ? new Set(this.data.selected) : new Set();
         const selectedMER = onlyMERSelected ? new Set(this.data.selectedMER) : new Set();
@@ -204,6 +214,7 @@ export default class DataElementsSet {
                 (!sectorId || dataElement.sectorId === sectorId) &&
                 (!series || dataElement.series === series) &&
                 (!indicatorType || dataElement.indicatorType === indicatorType) &&
+                (!peopleOrBenefit || dataElement.peopleOrBenefit === peopleOrBenefit) &&
                 (!onlyMERSelected || selectedMER.has(dataElement.id))
         );
 

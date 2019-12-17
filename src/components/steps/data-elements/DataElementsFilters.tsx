@@ -1,5 +1,5 @@
 import React from "react";
-import { indicatorTypes } from "../../../models/dataElementsSet";
+import { indicatorTypes, IndicatorType } from "../../../models/dataElementsSet";
 import Dropdown from "../../dropdown/Dropdown";
 import i18n from "../../../locales";
 import { Checkbox, FormControlLabel } from "@material-ui/core";
@@ -13,7 +13,7 @@ interface DataElementsFiltersProps {
 
 export interface Filter {
     series?: string;
-    indicatorType?: string;
+    indicatorType?: IndicatorType;
     onlySelected?: boolean;
 }
 
@@ -30,7 +30,7 @@ const DataElementsFilters: React.FC<DataElementsFiltersProps> = props => {
             <Dropdown
                 items={indicatorTypes.map(name => ({ value: name, text: name }))}
                 value={filter.indicatorType}
-                onChange={value => onChange({ ...filter, indicatorType: value })}
+                onChange={value => onChange({ ...filter, indicatorType: value as IndicatorType })}
                 label={i18n.t("Indicator Type")}
             />
 

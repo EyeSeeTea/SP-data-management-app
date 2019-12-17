@@ -1,20 +1,14 @@
 import _ from "lodash";
 import moment from "moment";
-import { generateUid } from "d2/uid";
-import { D2DataSet, D2OrganisationUnit, D2ApiResponse, Id } from "d2-api";
-import { PartialModel, Ref, PartialMetadata, MetadataResponse } from "d2-api";
+import { D2DataSet, D2OrganisationUnit, D2ApiResponse, MetadataPayload, Id } from "d2-api";
+import { PartialModel, Ref, PartialPersistedModel, MetadataResponse } from "d2-api";
 import Project, { getOrgUnitDatesFromProject } from "./Project";
 import { getMonthsRange, toISOString } from "../utils/date";
 import "../utils/lodash-mixins";
-import { getDataStore } from "../utils/dhis2";
+import ProjectDashboard from "./ProjectDashboard";
+import { getUid, getDataStore } from "../utils/dhis2";
 
 const expiryDaysInMonthActual = 10;
-
-function getOrgUnitId(orgUnit: { path: string }): string {
-    const id = _.last(orgUnit.path.split("/"));
-    if (id) return id;
-    else throw new Error(`Invalid path: ${orgUnit.path}`);
-}
 
 export default class ProjectDb {
     constructor(public project: Project) {}
@@ -28,13 +22,11 @@ export default class ProjectDb {
     async saveMetadata() {
         const { project } = this;
         const { api, config } = project;
-
         const { startDate, endDate } = project;
-        const parentOrgUnit = project.organisationUnit;
 
         if (!startDate || !endDate) {
             throw new Error("Missing dates");
-        } else if (!parentOrgUnit) {
+        } else if (!project.parentOrgUnit) {
             throw new Error("No parent org unit");
         }
 
@@ -42,12 +34,12 @@ export default class ProjectDb {
             { value: "true", attribute: { id: config.attributes.createdByApp.id } },
         ];
 
-        const dashboard = { id: generateUid(), name: project.name };
-
-        const parentOrgUnitId = getOrgUnitId(parentOrgUnit);
+        const parentOrgUnitId = getOrgUnitId(project.parentOrgUnit);
+        const orgUnitId = getUid("organisationUnit", project.uid);
         const orgUnit = {
-            id: generateUid(),
+            id: orgUnitId,
             name: project.name,
+            path: project.parentOrgUnit.path + "/" + orgUnitId,
             code: project.code,
             shortName: project.shortName,
             description: project.description,
@@ -56,13 +48,22 @@ export default class ProjectDb {
             openingDate: toISOString(startDate.clone().subtract(1, "month")),
             closedDate: toISOString(endDate.clone().add(1, "month")),
             organisationUnitGroups: project.funders.map(funder => ({ id: funder.id })),
-            attributeValues: [
-                ...baseAttributeValues,
-                {
-                    value: dashboard.id,
-                    attribute: { id: config.attributes.projectDashboard.id },
-                },
-            ],
+            attributeValues: baseAttributeValues,
+        };
+
+        const projectWithOrgUnit = project.set("orgUnit", { path: orgUnit.path });
+
+        const dashboardsMetadata = new ProjectDashboard(projectWithOrgUnit).generate();
+        const dashboard = dashboardsMetadata.dashboards[0];
+        if (!dashboard) throw new Error("No dashboard defined");
+
+        const orgUnitToSave = {
+            ...orgUnit,
+            attributeValues: addAttributeValue(
+                orgUnit.attributeValues,
+                config.attributes.projectDashboard,
+                dashboard.id
+            ),
         };
 
         const { organisationUnitGroups: existingOrgUnitGroupFunders } = await api.metadata
@@ -79,13 +80,11 @@ export default class ProjectDb {
             organisationUnits: [...ouGroup.organisationUnits, { id: orgUnit.id }],
         }));
 
-        const dataSetAttributeValues = [
-            ...baseAttributeValues,
-            {
-                value: orgUnit.id,
-                attribute: { id: config.attributes.orgUnitProject.id },
-            },
-        ];
+        const dataSetAttributeValues = addAttributeValue(
+            baseAttributeValues,
+            config.attributes.orgUnitProject,
+            orgUnit.id
+        );
 
         const { targetPeriods, actualPeriods } = getDataSetPeriods(startDate, endDate);
 
@@ -107,23 +106,26 @@ export default class ProjectDb {
             attributeValues: dataSetAttributeValues,
         });
 
-        const baseMetadata = {
-            organisationUnits: [orgUnit],
+        const orgUnitsMetadata: Pick<
+            MetadataPayload,
+            "organisationUnits" | "organisationUnitGroups"
+        > = {
+            organisationUnits: [orgUnitToSave],
             organisationUnitGroups: newOrgUnitGroupFunders,
-            dashboards: [dashboard],
         };
 
         const payload = flattenPayloads([
-            baseMetadata,
+            orgUnitsMetadata,
             dataSetTargetMetadata,
             dataSetActualMetadata,
+            dashboardsMetadata,
         ]);
 
         await this.saveMERData(orgUnit.id).getData();
 
         const response = await api.metadata.post(payload).getData();
 
-        return { orgUnit, payload, response, project: this.project };
+        return { orgUnit: orgUnitToSave, payload, response, project: this.project };
     }
 
     saveMERData(orgUnitId: Id): D2ApiResponse<void> {
@@ -150,7 +152,7 @@ export default class ProjectDb {
     */
     async updateOrgUnit(
         response: MetadataResponse,
-        orgUnit: Ref & PartialModel<D2OrganisationUnit>
+        orgUnit: PartialPersistedModel<D2OrganisationUnit>
     ) {
         if (response.status === "OK") {
             await this.project.api.models.organisationUnits
@@ -161,12 +163,12 @@ export default class ProjectDb {
         }
     }
 
-    getDataSetsMetadata(
-        orgUnit: { id: string },
-        baseDataSet: PartialModel<D2DataSet>
-    ): PartialMetadata {
+    getDataSetsMetadata<T extends PartialPersistedModel<D2OrganisationUnit>>(
+        orgUnit: T,
+        baseDataSet: PartialModel<D2DataSet> & { code: string }
+    ): Pick<MetadataPayload, "dataSets" | "sections"> {
         const { project } = this;
-        const dataSetId = generateUid();
+        const dataSetId = getUid("dataSet", project.uid + baseDataSet.code);
 
         const dataElements = project.dataElements.get({ onlySelected: true, includePaired: true });
 
@@ -183,7 +185,7 @@ export default class ProjectDb {
 
         const sections = project.sectors.map((sector, index) => {
             return {
-                id: generateUid(),
+                id: getUid("section", project.uid + baseDataSet.code + sector.id),
                 dataSet: { id: dataSetId },
                 sortOrder: index,
                 name: sector.displayName,
@@ -207,7 +209,7 @@ export default class ProjectDb {
             formType: "DEFAULT" as const,
             sections: sections.map(section => ({ id: section.id })),
             ...baseDataSet,
-            code: baseDataSet.code ? `${orgUnit.id}_${baseDataSet.code}` : undefined,
+            code: `${orgUnit.id}_${baseDataSet.code}`,
         };
 
         return { dataSets: [dataSet], sections };
@@ -239,18 +241,27 @@ function getDataSetPeriods(startDate: moment.Moment, endDate: moment.Moment) {
     return { targetPeriods, actualPeriods };
 }
 
-/* Accumulate Array<{key1: [...], key2: [...]}> into {key1: [...], key2: [...]} */
-export function flattenPayloads(payloads: object[]): object {
-    return _(payloads)
-        .map(_.toPairs)
-        .flatten()
-        .groupBy(([key, _values]) => key)
-        .mapValues(pairs =>
-            _(pairs)
-                .flatMap(([_key, values]) => values)
-                .uniqBy("id")
-                .map(obj => _.omitBy(obj, (_v, k) => k === "key" || k.startsWith("$")))
-                .value()
-        )
-        .value();
+function getOrgUnitId(orgUnit: { path: string }): string {
+    const id = _.last(orgUnit.path.split("/"));
+    if (id) return id;
+    else throw new Error(`Invalid path: ${orgUnit.path}`);
+}
+
+function addAttributeValue<Attribute extends Ref>(
+    attributeValues: Array<{ attribute: Ref; value: string }>,
+    attribute: Attribute,
+    value: string
+) {
+    return attributeValues.concat([{ value, attribute: { id: attribute.id } }]);
+}
+
+export function flattenPayloads<Model extends keyof MetadataPayload>(
+    payloads: Array<Partial<Pick<MetadataPayload, Model>>>
+): Pick<MetadataPayload, Model> {
+    const concat = <T>(value1: T[] | undefined, value2: T[]): T[] => (value1 || []).concat(value2);
+    const payload = payloads.reduce(
+        (payloadAcc, payload) => _.mergeWith(payloadAcc, payload, concat),
+        {} as Pick<MetadataPayload, Model>
+    );
+    return payload as Pick<MetadataPayload, Model>;
 }

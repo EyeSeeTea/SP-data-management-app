@@ -130,6 +130,9 @@ msgstr ""
 msgid "Organisation Unit"
 msgstr ""
 
+msgid "Parent Organisation Unit"
+msgstr ""
+
 msgid "Award Number should be a number of 5 digits"
 msgstr ""
 
@@ -155,6 +158,15 @@ msgid "{{field}} must be less than or equal to {{value}}"
 msgstr ""
 
 msgid "{{field}} does not match pattern {{pattern}}"
+msgstr ""
+
+msgid "PM Target vs Actual"
+msgstr ""
+
+msgid "PM Target vs Actual achieved (%)"
+msgstr ""
+
+msgid "PM People Indicators Gender Breakdown"
 msgstr ""
 
 msgid ""
