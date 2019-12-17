@@ -1,4 +1,3 @@
-import { useLocation } from "react-router";
 import { Config } from "../models/Config";
 import React, { useContext } from "react";
 import { D2Api } from "d2-api";

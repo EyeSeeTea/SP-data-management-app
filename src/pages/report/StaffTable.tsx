@@ -5,7 +5,6 @@ import {
     TableHead,
     TableCell,
     TableBody,
-    Paper,
     LinearProgress,
     TextField,
 } from "@material-ui/core";

@@ -6,7 +6,7 @@ import { Config } from "./Config";
 import { getIdFromOrgUnit, getDataStore } from "../utils/dhis2";
 import DataStore from "d2-api/api/dataStore";
 import { runPromises } from "../utils/promises";
-import { getProjectFromOrgUnit } from "./Project";
+import { getProjectFromOrgUnit, getOrgUnitDatesFromProject } from "./Project";
 import { toISOString, getMonthsRange } from "../utils/date";
 import i18n from "../locales";
 
@@ -47,6 +47,20 @@ interface ProjectInfo {
     dataElements: string[];
 }
 
+interface DataStoreReport {
+    created: string;
+    createdBy: Id;
+    updated: string;
+    updatedBy: Id;
+    executiveSummary: string;
+    ministrySummary: string;
+    projectedActivitiesNextMonth: string;
+    staffSummary: Record<StaffKey, StaffInfo>;
+    comments: {
+        [orgUnitCountryAndDataElementId: string]: string;
+    };
+}
+
 export interface DataElementInfo {
     id: string;
     name: string;
@@ -71,18 +85,42 @@ class MerReport {
         this.dataStore = getDataStore(this.api);
     }
 
+    static getReportKey(selectData: Pick<Data, "date" | "organisationUnit">): string {
+        const { organisationUnit, date } = selectData;
+        const dateString = date.format("YYYYMM");
+        return ["mer", getIdFromOrgUnit(organisationUnit), dateString].join("-");
+    }
+
     static async create(
         api: D2Api,
         config: Config,
         selectData: Pick<Data, "date" | "organisationUnit">
     ): Promise<MerReport> {
-        const projectsData = await MerReport.getProjectsData(api, config, selectData);
-        const data: Data = _.merge({}, initialData, selectData, { projectsData });
+        const storeReport = await getDataStore(api)
+            .get<DataStoreReport>(MerReport.getReportKey(selectData))
+            .getData();
+        const comments = storeReport ? storeReport.comments : {};
+
+        const data: Data = {
+            ...selectData,
+            ...initialData,
+            ..._.pick(storeReport, [
+                "executiveSummary",
+                "ministrySummary",
+                "projectedActivitiesNextMonth",
+                "staffSummary",
+            ]),
+            projectsData: await MerReport.getProjectsData(api, config, selectData, comments),
+        };
         return new MerReport(api, config, data);
     }
 
     public set<K extends keyof Data>(field: K, value: Data[K]): MerReport {
         return new MerReport(this.api, this.config, { ...this.data, [field]: value });
+    }
+
+    hasProjects(): boolean {
+        return this.data.projectsData.length > 0;
     }
 
     setComment(project: Project, dataElement: DataElementInfo, comment: string): MerReport {
@@ -115,22 +153,56 @@ class MerReport {
         return this.set("staffSummary", staffSummaryUpdated);
     }
 
+    async save(): Promise<void> {
+        const { dataStore, config } = this;
+        const { currentUser } = config;
+        const { organisationUnit, date, staffSummary } = this.data;
+        const { executiveSummary, ministrySummary, projectedActivitiesNextMonth } = this.data;
+        const dateString = date.format("YYYYMM");
+        const key = ["mer", getIdFromOrgUnit(organisationUnit), dateString].join("-");
+        const previousValue = await dataStore.get<DataStoreReport>(key).getData();
+        const comments = _(this.data.projectsData)
+            .flatMap(projectInfo => {
+                return projectInfo.dataElements.map(deInfo => {
+                    return [getKey([projectInfo.id, deInfo.id]), deInfo.comment];
+                });
+            })
+            .fromPairs()
+            .value();
+
+        const value: DataStoreReport = {
+            created: previousValue ? previousValue.created : toISOString(date),
+            createdBy: previousValue ? previousValue.createdBy : currentUser.id,
+            updated: toISOString(date),
+            updatedBy: currentUser.id,
+            executiveSummary,
+            ministrySummary,
+            projectedActivitiesNextMonth,
+            staffSummary,
+            comments,
+        };
+
+        await dataStore.save(key, value);
+    }
+
     static async getProjectsData(
         api: D2Api,
         config: Config,
-        selectData: Pick<Data, "date" | "organisationUnit">
+        selectData: Pick<Data, "date" | "organisationUnit">,
+        commentsByProjectAndDataElement: _.Dictionary<string>
     ): Promise<ProjectsData> {
         const { date, organisationUnit } = selectData;
         const dataStore = getDataStore(api);
-        const now = moment();
+        const startOfMonth = date.clone().startOf("month");
+        const dates = getOrgUnitDatesFromProject(startOfMonth, startOfMonth);
         const { organisationUnits } = await api.metadata
             .get({
                 organisationUnits: {
                     fields: { id: true, displayName: true, openingDate: true, closedDate: true },
                     filter: {
                         "parent.id": { eq: getIdFromOrgUnit(organisationUnit) },
-                        openingDate: { le: toISOString(now.clone().startOf("month")) },
-                        closedDate: { ge: toISOString(now.clone().startOf("month")) },
+                        openingDate: { le: dates.openingDate },
+                        closedDate: { ge: dates.closedDate },
                     },
                 },
             })
@@ -152,16 +224,14 @@ class MerReport {
             )
         );
 
-        console.log({ organisationUnits, projectInfoByOrgUnitId });
         const oldestPeriod = _(organisationUnits)
             .map(orgUnit => orgUnit.openingDate)
             .compact()
             .min();
 
-        const periods = getMonthsRange(moment(oldestPeriod), now).map(date =>
-            date.format("YYYYMM")
-        );
-        const currentPeriod = now.format("YYYYMM");
+        const months = getMonthsRange(moment(oldestPeriod), date);
+        const periods = months.map(date => date.format("YYYYMM"));
+        const reportPeriod = date.format("YYYYMM");
         const allDataElementIds = _(projectInfoByOrgUnitId)
             .values()
             .flatMap(info => info.dataElements)
@@ -184,8 +254,6 @@ class MerReport {
             })
             .getData();
 
-        console.log({ data });
-
         const actualTarget: Record<string, "actual" | "target"> = {
             [categoryOptions.actual.id]: "actual",
             [categoryOptions.target.id]: "target",
@@ -198,7 +266,6 @@ class MerReport {
             categoryOption: actualTarget[coId],
             value: parseFloat(stringValue),
         }));
-        console.log({ values: allValues });
 
         const valuesByKey = _(allValues)
             .keyBy(val =>
@@ -219,7 +286,7 @@ class MerReport {
             const dataElementIds = _(projectInfoByOrgUnitId).getOrFail(orgUnit.id).dataElements;
             const getDataElementInfo = (deId: Id) => {
                 const dataElement = _(dataElementsById).getOrFail(deId);
-                const keyPrefix = [currentPeriod, orgUnit.id, dataElement.id];
+                const keyPrefix = [reportPeriod, orgUnit.id, dataElement.id];
                 const values = valuesByOrgUnitAndDataElement[getKey([orgUnit.id, deId])] || [];
                 const [allTarget, allActual] = _.partition(
                     values,
@@ -246,12 +313,14 @@ class MerReport {
 
                 dataElements: dataElementIds.map(getDataElementInfo).map(dataElementInfo => ({
                     ...dataElementInfo,
-                    comment: "",
+                    comment: _(commentsByProjectAndDataElement).get(
+                        getKey([project.id, dataElementInfo.id]),
+                        ""
+                    ),
                 })),
             };
         });
 
-        console.log(projectsData);
         return projectsData;
     }
 }

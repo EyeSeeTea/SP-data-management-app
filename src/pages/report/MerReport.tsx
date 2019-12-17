@@ -4,7 +4,7 @@ import i18n from "../../locales";
 import PageHeader from "../../components/page-header/PageHeader";
 import { useHistory } from "react-router";
 import { History } from "history";
-import { DatePicker } from "d2-ui-components";
+import { DatePicker, useSnackbar, ConfirmationDialog } from "d2-ui-components";
 import MerReport, { MerReportData } from "../../models/MerReport";
 import { useAppContext } from "../../contexts/api-context";
 import UserOrgUnits from "../../components/org-units/UserOrgUnits";
@@ -32,10 +32,13 @@ const MerReportComponent: React.FC = () => {
     const goToLandingPage = () => goTo(history, "/");
     const { api, config, isDev } = useAppContext();
     const translations = getTranslations();
+    const snackbar = useSnackbar();
     const initial = isDev ? getDevMerReport() : { date: null, orgUnitPath: null };
+    const [showExitWarning, showExitWarningSet] = useState<boolean>(false);
+    const [wasReportModified, wasReportModifiedSet] = useState<boolean>(false);
     const [date, setDate] = useState<Moment | null>(initial.date);
     const [orgUnitPath, setOrgUnitPath] = useState<Path | null>(initial.orgUnitPath);
-    const [merReport, setMerReport] = useState<MerReport | null>(null);
+    const [merReport, setMerReport_] = useState<MerReport | null>(null);
 
     React.useEffect(() => {
         if (date && orgUnitPath) {
@@ -44,8 +47,15 @@ const MerReportComponent: React.FC = () => {
         }
     }, [date, orgUnitPath]);
 
+    function setMerReport(report: MerReport) {
+        setMerReport_(report);
+        wasReportModifiedSet(true);
+    }
+
     function onChange<Field extends keyof MerReportData>(field: Field, val: MerReportData[Field]) {
-        if (merReport) setMerReport(merReport.set(field, val));
+        if (merReport) {
+            setMerReport(merReport.set(field, val));
+        }
     }
 
     async function download() {
@@ -54,12 +64,36 @@ const MerReportComponent: React.FC = () => {
         downloadFile("output.xlsx", blob);
     }
 
+    async function save() {
+        if (!merReport) return;
+        try {
+            await merReport.save();
+            snackbar.success(i18n.t("Report saved"));
+            wasReportModifiedSet(false);
+        } catch (err) {
+            snackbar.error(i18n.t("Error saving report") + ": " + err.message || err.toString());
+        }
+    }
+
     return (
         <React.Fragment>
+            <ConfirmationDialog
+                isOpen={showExitWarning}
+                onSave={goToLandingPage}
+                onCancel={() => showExitWarningSet(false)}
+                title={i18n.t("Monthly Executive Report")}
+                description={i18n.t(
+                    "You are about to exit the report, any changes will be lost. Are you sure you want to proceed?"
+                )}
+                saveText={i18n.t("Yes")}
+                cancelText={i18n.t("No")}
+            />
             <PageHeader
                 title={i18n.t("Monthly Executive Report")}
                 help={translations.help}
-                onBackClick={goToLandingPage}
+                onBackClick={() =>
+                    wasReportModified ? showExitWarningSet(true) : goToLandingPage()
+                }
             />
             <Paper style={{ marginBottom: 20 }}>
                 <DatePicker
@@ -78,9 +112,14 @@ const MerReportComponent: React.FC = () => {
                 />
             </Paper>
 
-            {merReport && (
+            {merReport && !merReport.hasProjects() && (
+                <div>{i18n.t("No open projects in the selected date and organisation unit")}</div>
+            )}
+
+            {merReport && merReport.hasProjects() && (
                 <React.Fragment>
                     <ReportDataTable merReport={merReport} onChange={setMerReport} />
+
                     <Paper>
                         <MultilineTextField
                             title={i18n.t("Executive Summary")}
@@ -101,7 +140,7 @@ const MerReportComponent: React.FC = () => {
 
                         <Button onClick={download}>{i18n.t("Download")}</Button>
 
-                        <Button onClick={console.log} variant="contained">
+                        <Button onClick={save} variant="contained">
                             {i18n.t("Save")}
                         </Button>
                     </Paper>
@@ -112,7 +151,7 @@ const MerReportComponent: React.FC = () => {
 };
 
 function downloadFile(filename: string, blob: Blob): void {
-    var element = document.createElement("a");
+    const element = document.createElement("a");
     element.href = window.URL.createObjectURL(blob);
     element.setAttribute("download", filename);
     element.style.display = "none";

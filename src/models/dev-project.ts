@@ -1,8 +1,5 @@
 import Project from "./Project";
 import moment from "moment";
-import { D2Api } from "d2-api";
-import { Config } from "./Config";
-import MerReport from "./MerReport";
 
 function getRandomInt(min: number, max: number): number {
     min = Math.ceil(min);
