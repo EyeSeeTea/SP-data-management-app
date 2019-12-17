@@ -10,23 +10,17 @@ import {
     TextField,
 } from "@material-ui/core";
 
-import MerReport, { staffKeys, StaffKey, StaffInfo } from "../../models/MerReport";
+import MerReport, {
+    staffKeys,
+    StaffKey,
+    StaffInfo,
+    getStaffTranslations,
+} from "../../models/MerReport";
 import i18n from "../../locales";
 
 interface StaffTableProps {
     merReport: MerReport;
     onChange(merReport: MerReport): void;
-}
-
-function getStaffTranslations(): Record<StaffKey, string> {
-    return {
-        nationalStaff: i18n.t("National Staff"),
-        ifs: i18n.t("IFS"),
-        ifsDependents: i18n.t("IFS Dependents"),
-        regional: i18n.t("Regional"),
-        regionalDependents: i18n.t("Regional Dependents"),
-        interns: i18n.t("Interns"),
-    };
 }
 
 const StaffTable: React.FC<StaffTableProps> = props => {

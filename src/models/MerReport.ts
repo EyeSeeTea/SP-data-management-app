@@ -8,6 +8,7 @@ import DataStore from "d2-api/api/dataStore";
 import { runPromises } from "../utils/promises";
 import { getProjectFromOrgUnit } from "./Project";
 import { toISOString } from "../utils/date";
+import i18n from "../locales";
 
 export const staffKeys = [
     "nationalStaff" as const,
@@ -230,6 +231,17 @@ class MerReport {
         console.log(projectsData);
         return projectsData;
     }
+}
+
+export function getStaffTranslations(): Record<StaffKey, string> {
+    return {
+        nationalStaff: i18n.t("National Staff"),
+        ifs: i18n.t("IFS"),
+        ifsDependents: i18n.t("IFS Dependents"),
+        regional: i18n.t("Regional"),
+        regionalDependents: i18n.t("Regional Dependents"),
+        interns: i18n.t("Interns"),
+    };
 }
 
 export type MerReportData = Data;

@@ -121,6 +121,7 @@ export type BaseConfig = typeof baseConfig;
 
 export type CurrentUser = {
     id: Id;
+    displayName: string;
     userRoles: Array<{ name: string }>;
     organisationUnits: OrganisationUnit[];
 };
@@ -175,9 +176,8 @@ class ConfigLoader {
             .getOrFail(baseConfig.organitionUnitGroupSets.funder).organisationUnitGroups;
 
         const currentUser = {
-            id: d2CurrentUser.id,
+            ...d2CurrentUser,
             userRoles: d2CurrentUser.userCredentials.userRoles,
-            organisationUnits: d2CurrentUser.organisationUnits,
         };
 
         const config = {

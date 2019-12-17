@@ -34,16 +34,18 @@ function getLastOrgUnit(paths: Path[]): { path: Path } | null {
     );
 }
 
-const Report: React.FC = () => {
+const MerReportComponent: React.FC = () => {
     const history = useHistory();
     const goToLandingPage = () => goTo(history, "/");
     const { api, config, isDev } = useAppContext();
     const translations = getTranslations();
+
     const [merReport, setMerReport] = useState<MerReport>(
         isDev ? getDevMerReport(api, config) : MerReport.create(api, config, {})
     );
 
     const { date, organisationUnit } = merReport.data;
+
     React.useEffect(() => {
         merReport.withProjectsData().then(setMerReport);
     }, [date, organisationUnit]);
@@ -145,4 +147,4 @@ const MultilineTextField: React.FC<{
     );
 };
 
-export default Report;
+export default MerReportComponent;
