@@ -94,6 +94,10 @@ class MerReport {
         return ["mer", getIdFromOrgUnit(organisationUnit), dateString].join("-");
     }
 
+    getReportKey() {
+        return MerReport.getReportKey(this.data);
+    }
+
     static async create(
         api: D2Api,
         config: Config,

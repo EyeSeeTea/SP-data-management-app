@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2019-12-16T12:58:56.606Z\n"
-"PO-Revision-Date: 2019-12-16T12:58:56.606Z\n"
+"POT-Creation-Date: 2019-12-18T08:00:45.071Z\n"
+"PO-Revision-Date: 2019-12-18T08:00:45.071Z\n"
 
 msgid "<No value>"
 msgstr ""
@@ -109,10 +109,52 @@ msgstr ""
 msgid "No"
 msgstr ""
 
+msgid "National Staff"
+msgstr ""
+
+msgid "IFS"
+msgstr ""
+
+msgid "IFS Dependents"
+msgstr ""
+
+msgid "Regional"
+msgstr ""
+
+msgid "Regional Dependents"
+msgstr ""
+
+msgid "Interns"
+msgstr ""
+
 msgid "Monthly Executive Report"
 msgstr ""
 
+msgid "Prepared by"
+msgstr ""
+
+msgid "Executive Summary"
+msgstr ""
+
+msgid "Ministry Summary"
+msgstr ""
+
+msgid "Staff Summary"
+msgstr ""
+
+msgid "Projected Activities for the Next Month"
+msgstr ""
+
 msgid "Narrative"
+msgstr ""
+
+msgid "Full-time"
+msgstr ""
+
+msgid "Part-time"
+msgstr ""
+
+msgid "Total"
 msgstr ""
 
 msgid "Data Elements"
@@ -324,13 +366,21 @@ msgstr ""
 msgid "Help message for MER"
 msgstr ""
 
+msgid "Report saved"
+msgstr ""
+
+msgid "Error saving report"
+msgstr ""
+
+msgid ""
+"You are about to exit the report, any changes will be lost. Are you sure "
+"you want to proceed?"
+msgstr ""
+
 msgid "Date"
 msgstr ""
 
-msgid "Executive Summary"
-msgstr ""
-
-msgid "Ministry Summary"
+msgid "No open projects in the selected date and organisation unit"
 msgstr ""
 
 msgid "Projected Activities for the next month"
@@ -355,31 +405,4 @@ msgid "Achieved to date (%)"
 msgstr ""
 
 msgid "Comment"
-msgstr ""
-
-msgid "National Staff"
-msgstr ""
-
-msgid "IFS"
-msgstr ""
-
-msgid "IFS Dependents"
-msgstr ""
-
-msgid "Regional"
-msgstr ""
-
-msgid "Regional Dependents"
-msgstr ""
-
-msgid "Interns"
-msgstr ""
-
-msgid "Full-time"
-msgstr ""
-
-msgid "Part-time"
-msgstr ""
-
-msgid "Total"
 msgstr ""

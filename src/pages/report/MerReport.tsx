@@ -52,10 +52,10 @@ const MerReportComponent: React.FC = () => {
         }
     }, [date, orgUnitPath]);
 
-    function setMerReport(report: MerReport) {
+    const setMerReport = React.useCallback((report: MerReport) => {
         setMerReport_(report);
         wasReportModifiedSet(true);
-    }
+    }, []);
 
     function onChange<Field extends keyof MerReportData>(field: Field, val: MerReportData[Field]) {
         if (merReport) {

@@ -7,7 +7,6 @@ import {
     TableBody,
     Paper,
     LinearProgress,
-    TextField,
 } from "@material-ui/core";
 
 import MerReport, { DataElementInfo, Project } from "../../models/MerReport";
@@ -34,7 +33,6 @@ const ReportDataTable: React.FC<ReportDataTableProps> = props => {
     }
 
     if (!merReport || !merReport.data.projectsData) return <LinearProgress />;
-    console.log({ merReport });
 
     return (
         <Paper>
@@ -114,4 +112,8 @@ const DataElementCells: React.FC<DataElementCellsProps> = ({ project, dataElemen
     </React.Fragment>
 );
 
-export default ReportDataTable;
+function shouldKeepView(prevProps: ReportDataTableProps, nextProps: ReportDataTableProps): boolean {
+    return prevProps.merReport.data.projectsData === nextProps.merReport.data.projectsData;
+}
+
+export default React.memo(ReportDataTable, shouldKeepView);

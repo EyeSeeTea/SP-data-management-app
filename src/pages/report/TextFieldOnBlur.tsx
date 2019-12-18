@@ -7,14 +7,12 @@ type TextFieldOnBlurProps = TextFieldProps & {
 };
 
 const TextFieldOnBlur: React.FC<TextFieldOnBlurProps> = props => {
-    const [value, setValue] = React.useState<string>(props.value);
-    const { onBlurChange, ...otherProps } = props;
+    const { onBlurChange, value, ...otherProps } = props;
 
     return (
         <TextField
             {...otherProps}
-            value={value}
-            onChange={ev => setValue(ev.target.value)}
+            defaultValue={value}
             onBlur={ev => onBlurChange(ev.target.value)}
         />
     );

@@ -26,7 +26,12 @@ export function getDevProject(initialProject: Project, enabled: boolean) {
         .set("name", "0Test1-" + awardNumber)
         .set("awardNumber", awardNumber)
         .set("subsequentLettering", "en")
-        .set("startDate", moment().set("date", 10))
+        .set(
+            "startDate",
+            moment()
+                .startOf("month")
+                .subtract(1, "month")
+        )
         .set(
             "endDate",
             moment()
