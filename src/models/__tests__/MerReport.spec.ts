@@ -58,7 +58,7 @@ describe("MerReport", () => {
         });
     });
 
-    describe.only("save", () => {
+    describe("save", () => {
         beforeAll(async () => {
             mockApiForMerReportWithData();
             report = await MerReport.create(api, config, selector);
