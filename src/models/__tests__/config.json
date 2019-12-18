@@ -1,11 +1,21 @@
 {
     "base": {
         "userRoles": {
-            "feedback": ["PM Feedback"],
-            "dataReviewer": ["Data Reviewer"],
-            "dataViewer": ["Data Viewer"],
-            "admin": ["PM Admin"],
-            "dataEntry": ["Data Entry"]
+            "feedback": [
+                "PM Feedback"
+            ],
+            "dataReviewer": [
+                "Data Reviewer"
+            ],
+            "dataViewer": [
+                "Data Viewer"
+            ],
+            "admin": [
+                "PM Admin"
+            ],
+            "dataEntry": [
+                "Data Entry"
+            ]
         },
         "dataElementGroupSets": {
             "sector": "SECTOR",
@@ -27,6 +37,10 @@
         "categoryCombos": {
             "targetActual": "ACTUAL_TARGET"
         },
+        "categoryOptions": {
+            "target": "TARGET",
+            "actual": "ACTUAL"
+        },
         "dataElementGroups": {
             "global": "GLOBAL",
             "sub": "SUB",
@@ -42,18 +56,29 @@
     },
     "currentUser": {
         "id": "M5zQapPyTZI",
+        "displayName": "admin admin",
+        "userCredentials": {
+            "userRoles": [
+                {
+                    "name": "Superuser"
+                },
+                {
+                    "name": "PM Admin"
+                }
+            ]
+        },
+        "organisationUnits": [
+            {
+                "id": "J0hschZVMBt",
+                "displayName": "IHQ2"
+            }
+        ],
         "userRoles": [
             {
                 "name": "Superuser"
             },
             {
                 "name": "PM Admin"
-            }
-        ],
-        "organisationUnits": [
-            {
-                "id": "J0hschZVMBt",
-                "displayName": "IHQ2"
             }
         ]
     },
@@ -1631,6 +1656,16 @@
         "targetActual": {
             "code": "ACTUAL_TARGET",
             "id": "qAgB0mD1wC6"
+        }
+    },
+    "categoryOptions": {
+        "actual": {
+            "code": "ACTUAL",
+            "id": "eWeQoOlAcxV"
+        },
+        "target": {
+            "code": "TARGET",
+            "id": "imyqCWQ229K"
         }
     }
 }

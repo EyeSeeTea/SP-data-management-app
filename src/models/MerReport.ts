@@ -45,9 +45,7 @@ const initialData = {
     >,
 };
 
-interface ProjectInfo {
-    dataElements: string[];
-}
+type ProjectInfo = { dataElements: string[] } | undefined;
 
 interface DataStoreReport {
     created: string;
@@ -246,7 +244,7 @@ class MerReport {
         const reportPeriod = date.format("YYYYMM");
         const allDataElementIds = _(projectInfoByOrgUnitId)
             .values()
-            .flatMap(info => info.dataElements)
+            .flatMap(info => (info ? info.dataElements : []))
             .uniq()
             .value();
 
@@ -295,7 +293,8 @@ class MerReport {
         const projectsData: ProjectsData = organisationUnits.map(orgUnit => {
             const project = getProjectFromOrgUnit(orgUnit);
             const formatDate = (dateStr: string): string => moment(dateStr).format("MMM YYYY");
-            const dataElementIds = _(projectInfoByOrgUnitId).getOrFail(orgUnit.id).dataElements;
+            const projectInfo = projectInfoByOrgUnitId[orgUnit.id];
+            const dataElementIds = projectInfo ? projectInfo.dataElements : [];
             const getDataElementInfo = (deId: Id) => {
                 const dataElement = _(dataElementsById).getOrFail(deId);
                 const keyPrefix = [reportPeriod, orgUnit.id, dataElement.id];
