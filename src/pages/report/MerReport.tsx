@@ -3,7 +3,7 @@ import _ from "lodash";
 import { useHistory } from "react-router";
 import { History } from "history";
 import { makeStyles } from "@material-ui/core/styles";
-import { Paper, Button } from "@material-ui/core";
+import { Paper, Button, LinearProgress } from "@material-ui/core";
 import { DatePicker, useSnackbar, ConfirmationDialog } from "d2-ui-components";
 import { Moment } from "moment";
 
@@ -42,11 +42,12 @@ const MerReportComponent: React.FC = () => {
     const [wasReportModified, wasReportModifiedSet] = useState<boolean>(false);
     const [date, setDate] = useState<Moment | null>(initial.date);
     const [orgUnitPath, setOrgUnitPath] = useState<Path | null>(initial.orgUnitPath);
-    const [merReport, setMerReport_] = useState<MerReport | null>(null);
+    const [merReport, setMerReport_] = useState<MerReport | undefined | null>(null);
 
     React.useEffect(() => {
         if (date && orgUnitPath) {
             const selectData = { date, organisationUnit: { path: orgUnitPath } };
+            setMerReport_(undefined);
             MerReport.create(api, config, selectData).then(setMerReport_);
         }
     }, [date, orgUnitPath]);
@@ -115,6 +116,8 @@ const MerReportComponent: React.FC = () => {
                     withElevation={false}
                 />
             </Paper>
+
+            {merReport === undefined && <LinearProgress />}
 
             {merReport && !merReport.hasProjects() && (
                 <div>{i18n.t("No open projects in the selected date and organisation unit")}</div>

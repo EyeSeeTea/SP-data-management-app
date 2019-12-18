@@ -105,6 +105,7 @@ class MerReport {
             .get<DataStoreReport>(MerReport.getReportKey(selectData))
             .getData();
         const comments = storeReport ? storeReport.comments : {};
+        const projectsData = await MerReport.getProjectsData(api, config, selectData, comments);
 
         const data: Data = {
             ...selectData,
@@ -115,7 +116,7 @@ class MerReport {
                 "projectedActivitiesNextMonth",
                 "staffSummary",
             ]),
-            projectsData: await MerReport.getProjectsData(api, config, selectData, comments),
+            projectsData,
         };
         return new MerReport(api, config, data);
     }
@@ -290,7 +291,7 @@ class MerReport {
 
         const dataElementsById = _.keyBy(config.dataElements, "id");
 
-        const projectsData: ProjectsData = organisationUnits.map(orgUnit => {
+        const projectsData: Array<Project | null> = organisationUnits.map(orgUnit => {
             const project = getProjectFromOrgUnit(orgUnit);
             const formatDate = (dateStr: string): string => moment(dateStr).format("MMM YYYY");
             const projectInfo = projectInfoByOrgUnitId[orgUnit.id];
@@ -315,6 +316,7 @@ class MerReport {
                     achieved: allAchieved,
                 };
             };
+            if (_.isEmpty(dataElementIds)) return null;
 
             return {
                 id: orgUnit.id,
@@ -330,7 +332,7 @@ class MerReport {
             };
         });
 
-        return projectsData;
+        return _.compact(projectsData);
     }
 }
 
