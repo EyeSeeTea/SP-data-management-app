@@ -14,10 +14,9 @@ import { getDevMerReport } from "../../models/dev-project";
 import ReportDataTable from "./ReportDataTable";
 import StaffTable from "./StaffTable";
 import MerReportSpreadsheet from "../../models/MerReportSpreadsheet";
-import { getMultilineRows } from "./utils";
 import i18n from "../../locales";
 import PageHeader from "../../components/page-header/PageHeader";
-import TextFieldOnBlur from "./TextFieldOnBlur";
+import MultilineTextField from "./MultilineTextField";
 
 type Path = string;
 
@@ -184,27 +183,5 @@ function downloadFile(filename: string, blob: Blob): void {
     element.click();
     document.body.removeChild(element);
 }
-
-const MultilineTextField: React.FC<{
-    title: string;
-    value: string;
-    onChange(value: string): void;
-}> = ({ title, value, onChange }) => {
-    return (
-        <div style={{ marginTop: 10, marginBottom: 10, padding: 10 }}>
-            <div style={{ fontSize: "1.1em", color: "grey", marginTop: 10, marginBottom: 10 }}>
-                {title}
-            </div>
-
-            <TextFieldOnBlur
-                value={value}
-                multiline={true}
-                fullWidth={true}
-                rows={getMultilineRows(value, 4, 10)}
-                onBlurChange={onChange}
-            />
-        </div>
-    );
-};
 
 export default MerReportComponent;
