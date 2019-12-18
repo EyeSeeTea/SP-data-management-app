@@ -21,7 +21,9 @@ const MultilineTextField: React.FC<MultilineTextFieldProps> = ({ title, value, o
                 fullWidth={true}
                 style={{ border: "1px solid #EEE" }}
                 rows={getMultilineRows(value, 4, 10)}
+                rowsMax={10}
                 onBlurChange={onChange}
+                InputProps={{ style: { margin: 10 } }}
             />
         </div>
     );
