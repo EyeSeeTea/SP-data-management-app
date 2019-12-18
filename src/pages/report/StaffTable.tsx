@@ -6,7 +6,6 @@ import {
     TableCell,
     TableBody,
     LinearProgress,
-    TextField,
 } from "@material-ui/core";
 
 import MerReport, {
