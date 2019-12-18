@@ -13,6 +13,7 @@ import MerReport, { DataElementInfo, Project } from "../../models/MerReport";
 import i18n from "../../locales";
 import { getMultilineRows } from "./utils";
 import TextFieldOnBlur from "./TextFieldOnBlur";
+import { makeStyles } from "@material-ui/styles";
 
 interface ReportDataTableProps {
     merReport: MerReport;
@@ -22,6 +23,7 @@ interface ReportDataTableProps {
 const ReportDataTable: React.FC<ReportDataTableProps> = props => {
     const { merReport, onChange } = props;
     const { date, organisationUnit } = merReport.data;
+    const classes = useStyles();
     if (!date || !organisationUnit) return null;
 
     function onCommentChange(
@@ -54,7 +56,7 @@ const ReportDataTable: React.FC<ReportDataTableProps> = props => {
                 <TableBody>
                     {merReport.data.projectsData.map(project => (
                         <React.Fragment key={project.id}>
-                            <TableRow key={project.id}>
+                            <TableRow className={classes.row} key={project.id}>
                                 <TableCell rowSpan={project.dataElements.length}>
                                     {project.name}
                                     <br />
@@ -68,7 +70,7 @@ const ReportDataTable: React.FC<ReportDataTableProps> = props => {
                             </TableRow>
 
                             {project.dataElements.slice(1).map(dataElement => (
-                                <TableRow key={dataElement.id}>
+                                <TableRow className={classes.row} key={dataElement.id}>
                                     <DataElementCells
                                         project={project}
                                         dataElement={dataElement}
@@ -83,6 +85,12 @@ const ReportDataTable: React.FC<ReportDataTableProps> = props => {
         </Paper>
     );
 };
+
+const useStyles = makeStyles({
+    row: {
+        borderBottom: "3px solid #E0E0E0",
+    },
+});
 
 function formatNumber(n: number | null | undefined, suffix?: string): string {
     return n === null || n === undefined ? "-" : n.toFixed(2) + (suffix || "");
