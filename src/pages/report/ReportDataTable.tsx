@@ -106,6 +106,7 @@ const DataElementCells: React.FC<DataElementCellsProps> = ({ project, dataElemen
                 fullWidth={true}
                 multiline={true}
                 rows={getMultilineRows(dataElement.comment, 1, 4)}
+                rowsMax={4}
                 onBlurChange={value => onChange(project, dataElement, value)}
             />
         </TableCell>
