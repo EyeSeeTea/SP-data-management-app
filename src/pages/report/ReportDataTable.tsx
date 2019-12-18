@@ -84,8 +84,8 @@ const ReportDataTable: React.FC<ReportDataTableProps> = props => {
     );
 };
 
-function formatNumber(n: number | undefined, suffix?: string): string {
-    return n === undefined ? "-" : n.toFixed(2) + (suffix || "");
+function formatNumber(n: number | null | undefined, suffix?: string): string {
+    return n === null || n === undefined ? "-" : n.toFixed(2) + (suffix || "");
 }
 
 interface DataElementCellsProps {
