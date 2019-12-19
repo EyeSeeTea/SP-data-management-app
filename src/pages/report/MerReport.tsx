@@ -65,8 +65,8 @@ const MerReportComponent: React.FC = () => {
 
     async function download() {
         if (!merReport) return;
-        const blob = await new MerReportSpreadsheet(merReport).generate();
-        downloadFile("output.xlsx", blob);
+        const { filename, blob } = await new MerReportSpreadsheet(merReport).generate();
+        downloadFile(filename, blob);
     }
 
     async function save() {

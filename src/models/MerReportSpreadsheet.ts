@@ -3,13 +3,14 @@ import _ from "lodash";
 import moment from "moment";
 import MerReport, { staffKeys, getStaffTranslations } from "./MerReport";
 import i18n from "../locales";
+import { getIdFromOrgUnit } from "../utils/dhis2";
 
 type Row = string[];
 
 class MerReportSpreadsheet {
     constructor(public merReport: MerReport) {}
 
-    async generate(): Promise<Blob> {
+    async generate(): Promise<{ blob: Blob; filename: string }> {
         const { merReport } = this;
         const { date, organisationUnit } = merReport.data;
         const { config } = this.merReport;
@@ -48,7 +49,10 @@ class MerReportSpreadsheet {
         book.SheetNames.push(sheetName);
         book.Sheets[sheetName] = sheet;
         const res = XLSX.write(book, { bookType: "xlsx", type: "binary" });
-        return new Blob([s2ab(res)], { type: "application/octet-stream" });
+        const blob = new Blob([s2ab(res)], { type: "application/octet-stream" });
+        const orgUnitId = getIdFromOrgUnit(organisationUnit);
+        const filename = orgUnitId + "-" + date.format("YYYY-MM") + ".xlsx";
+        return { filename, blob };
     }
 }
 
