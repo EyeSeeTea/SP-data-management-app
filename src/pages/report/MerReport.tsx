@@ -16,7 +16,8 @@ import StaffTable from "./StaffTable";
 import MerReportSpreadsheet from "../../models/MerReportSpreadsheet";
 import i18n from "../../locales";
 import PageHeader from "../../components/page-header/PageHeader";
-import MultilineTextField from "./MultilineTextField";
+import ReportTextField from "./ReportTextField";
+import TextFieldOnBlur from "./TextFieldOnBlur";
 
 type Path = string;
 
@@ -128,21 +129,31 @@ const MerReportComponent: React.FC = () => {
                     <ReportDataTable merReport={merReport} onChange={setMerReport} />
 
                     <Paper>
-                        <MultilineTextField
+                        <ReportTextField
                             title={i18n.t("Executive Summary")}
                             value={merReport.data.executiveSummary}
-                            onChange={value => onChange("executiveSummary", value)}
+                            onBlurChange={value => onChange("executiveSummary", value)}
                         />
-                        <MultilineTextField
+
+                        <ReportTextField
                             title={i18n.t("Ministry Summary")}
                             value={merReport.data.ministrySummary}
-                            onChange={value => onChange("ministrySummary", value)}
+                            onBlurChange={value => onChange("ministrySummary", value)}
                         />
+
                         <StaffTable merReport={merReport} onChange={setMerReport} />
-                        <MultilineTextField
+
+                        <ReportTextField
                             title={i18n.t("Projected Activities for the next month")}
                             value={merReport.data.projectedActivitiesNextMonth}
-                            onChange={value => onChange("projectedActivitiesNextMonth", value)}
+                            onBlurChange={value => onChange("projectedActivitiesNextMonth", value)}
+                        />
+
+                        <ReportTextField
+                            title={i18n.t("Country Director")}
+                            value={merReport.data.countryDirector}
+                            onBlurChange={value => onChange("countryDirector", value)}
+                            multiline={false}
                         />
 
                         <div className={classes.buttonsWrapper}>

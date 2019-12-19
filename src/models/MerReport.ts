@@ -27,6 +27,7 @@ interface Data {
     date: Moment;
     organisationUnit: { path: string };
     projectsData: ProjectsData;
+    countryDirector: string;
     executiveSummary: string;
     ministrySummary: string;
     projectedActivitiesNextMonth: string;
@@ -36,6 +37,7 @@ interface Data {
 export type StaffInfo = { fullTime: number; partTime: number };
 
 const initialData = {
+    countryDirector: "",
     executiveSummary: "",
     ministrySummary: "",
     projectedActivitiesNextMonth: "",
@@ -52,6 +54,7 @@ interface DataStoreReport {
     createdBy: Id;
     updated: string;
     updatedBy: Id;
+    countryDirector: string;
     executiveSummary: string;
     ministrySummary: string;
     projectedActivitiesNextMonth: string;
@@ -111,6 +114,7 @@ class MerReport {
             ...selectData,
             ...initialData,
             ..._.pick(storeReport, [
+                "countryDirector",
                 "executiveSummary",
                 "ministrySummary",
                 "projectedActivitiesNextMonth",
@@ -169,7 +173,8 @@ class MerReport {
     async save(): Promise<void> {
         const { dataStore, config } = this;
         const { organisationUnit, date, staffSummary } = this.data;
-        const { executiveSummary, ministrySummary, projectedActivitiesNextMonth } = this.data;
+        const { countryDirector, executiveSummary } = this.data;
+        const { ministrySummary, projectedActivitiesNextMonth } = this.data;
         const storeReportKey = MerReport.getReportKey({ organisationUnit, date });
         const previousValue = await dataStore.get<DataStoreReport>(storeReportKey).getData();
         const comments = _(this.data.projectsData)
@@ -186,6 +191,7 @@ class MerReport {
             createdBy: previousValue ? previousValue.createdBy : config.currentUser.id,
             updated: toISOString(date),
             updatedBy: config.currentUser.id,
+            countryDirector,
             executiveSummary,
             ministrySummary,
             projectedActivitiesNextMonth,

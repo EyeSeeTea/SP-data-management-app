@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2019-12-18T08:00:45.071Z\n"
-"PO-Revision-Date: 2019-12-18T08:00:45.071Z\n"
+"POT-Creation-Date: 2019-12-19T09:53:37.582Z\n"
+"PO-Revision-Date: 2019-12-19T09:53:37.582Z\n"
 
 msgid "<No value>"
 msgstr ""
@@ -128,6 +128,9 @@ msgid "Interns"
 msgstr ""
 
 msgid "Monthly Executive Report"
+msgstr ""
+
+msgid "Country Director"
 msgstr ""
 
 msgid "Prepared by"

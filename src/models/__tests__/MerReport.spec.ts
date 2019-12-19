@@ -31,6 +31,7 @@ describe("MerReport", () => {
         it("sets empty free text fields", () => {
             expect(report.data).toEqual(
                 expect.objectContaining({
+                    countryDirector: "",
                     executiveSummary: "",
                     ministrySummary: "",
                     projectedActivitiesNextMonth: "",
@@ -87,6 +88,7 @@ describe("MerReport", () => {
         it("sets text fields", () => {
             expect(report.data).toEqual(
                 expect.objectContaining({
+                    countryDirector: "Country Director",
                     executiveSummary: "Executive Summary",
                     ministrySummary: "Ministry Summary",
                     projectedActivitiesNextMonth: "Projected",
@@ -178,6 +180,7 @@ function mockApiForMerReportWithData() {
         createdBy: "M5zQapPyTZI",
         updated: "2019-12-18T10:17:18",
         updatedBy: "M5zQapPyTZI",
+        countryDirector: "Country Director",
         executiveSummary: "Executive Summary",
         ministrySummary: "Ministry Summary",
         projectedActivitiesNextMonth: "Projected",

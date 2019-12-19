@@ -19,6 +19,7 @@ class MerReportSpreadsheet {
         const now = moment();
         const book = XLSX.utils.book_new();
         const title = i18n.t("Monthly Executive Report");
+
         book.Props = {
             Title: title,
             Author: config.currentUser.displayName,
@@ -28,6 +29,7 @@ class MerReportSpreadsheet {
         const rows = [
             [title],
             [date.format("MMM YYYY")],
+            [i18n.t("Country Director") + ": " + merReport.data.countryDirector],
             [i18n.t("Prepared by") + ": " + config.currentUser.displayName],
             [now.format("LL")],
             [],
@@ -45,6 +47,12 @@ class MerReportSpreadsheet {
             [formatText(merReport.data.projectedActivitiesNextMonth)],
         ];
         const sheet = XLSX.utils.aoa_to_sheet(rows);
+
+        const merges = rows.map((row, rowIndex) =>
+            row.length === 1 ? { s: { r: rowIndex, c: 0 }, e: { r: rowIndex, c: 5 } } : null
+        );
+        sheet["!merges"] = _.compact(merges);
+
         const sheetName = i18n.t("Narrative");
         book.SheetNames.push(sheetName);
         book.Sheets[sheetName] = sheet;
