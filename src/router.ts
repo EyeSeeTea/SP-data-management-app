@@ -1,3 +1,5 @@
+import { useHistory } from "react-router";
+
 const routes = {
     projects: () => "/",
     "projects.new": () => `/projects/new`,
@@ -10,6 +12,7 @@ const routes = {
 };
 
 type Routes = typeof routes;
+export type GoTo = typeof generateUrl;
 
 export function generateUrl<Name extends keyof Routes>(
     name: Name,
@@ -18,4 +21,14 @@ export function generateUrl<Name extends keyof Routes>(
     const fn = routes[name];
     /* eslint-disable @typescript-eslint/no-explicit-any */
     return params ? fn(params as any) : fn(undefined as any);
+}
+
+export function useGoTo(): GoTo {
+    const history = useHistory();
+    const goTo: GoTo = (name, params) => {
+        const url = generateUrl(name, params);
+        history.push(url);
+        return url;
+    };
+    return goTo;
 }

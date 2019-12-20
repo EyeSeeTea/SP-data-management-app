@@ -3,26 +3,20 @@ import { OldObjectsTable, TableColumn } from "d2-ui-components";
 import i18n from "../../locales";
 import _ from "lodash";
 import PageHeader from "../../components/page-header/PageHeader";
-import { useHistory } from "react-router";
-import { History } from "history";
 import { useAppContext, CurrentUser } from "../../contexts/api-context";
-import { generateUrl } from "../../router";
+import { useGoTo, GoTo } from "../../router";
 import Project, { FiltersForList, ProjectForList } from "../../models/Project";
 import { Pagination } from "../../types/ObjectsList";
 import { Config } from "../../models/Config";
 import { formatDateShort, formatDateLong } from "../../utils/date";
-import { GetPropertiesByType } from "../../types/utils";
 import ActionButton from "../../components/action-button/ActionButton";
+import { GetPropertiesByType } from "../../types/utils";
 
 type UserRolesConfig = Config["base"]["userRoles"];
 
 type ActionsRoleMapping<Actions> = {
     [Key in keyof UserRolesConfig]?: Array<keyof Actions>;
 };
-
-function goTo(history: History, url: string) {
-    history.push(url);
-}
 
 const Link: React.FC<{ url: string }> = ({ url }) => {
     return (
@@ -48,7 +42,7 @@ function columnDate(
     };
 }
 
-function getConfig(history: History, currentUser: CurrentUser) {
+function getConfig(goTo: GoTo, currentUser: CurrentUser) {
     const columns: TableColumn<ProjectForList>[] = [
         { name: "displayName", text: i18n.t("Name"), sortable: true },
         { ...columnDate("lastUpdated", "datetime"), text: i18n.t("Last updated"), sortable: true },
@@ -107,8 +101,7 @@ function getConfig(history: History, currentUser: CurrentUser) {
             icon: "library_books",
             text: i18n.t("Add Actual Values"),
             multiple: false,
-            onClick: (project: ProjectForList) =>
-                goTo(history, generateUrl("actualValues", { id: project.id })),
+            onClick: (project: ProjectForList) => goTo("actualValues", { id: project.id }),
         },
 
         dashboard: {
@@ -116,8 +109,7 @@ function getConfig(history: History, currentUser: CurrentUser) {
             icon: "dashboard",
             text: i18n.t("Go to Dashboard"),
             multiple: false,
-            onClick: (project: ProjectForList) =>
-                goTo(history, generateUrl("dashboard", { id: project.id })),
+            onClick: (project: ProjectForList) => goTo("dashboard", { id: project.id }),
         },
         reopenDatasets: {
             name: "reopen-datasets",
@@ -131,8 +123,7 @@ function getConfig(history: History, currentUser: CurrentUser) {
             icon: "assignment",
             text: i18n.t("Add Target Values"),
             multiple: false,
-            onClick: (project: ProjectForList) =>
-                goTo(history, generateUrl("targetValues", { id: project.id })),
+            onClick: (project: ProjectForList) => goTo("targetValues", { id: project.id }),
         },
 
         downloadData: {
@@ -146,8 +137,7 @@ function getConfig(history: History, currentUser: CurrentUser) {
             name: "edit",
             text: i18n.t("Edit"),
             multiple: false,
-            onClick: (project: ProjectForList) =>
-                goTo(history, generateUrl("projects.edit", { id: project.id })),
+            onClick: (project: ProjectForList) => goTo("projects.edit", { id: project.id }),
         },
 
         delete: {
@@ -196,17 +186,17 @@ function getConfig(history: History, currentUser: CurrentUser) {
 }
 
 const ProjectsList: React.FC = () => {
-    const history = useHistory();
+    const goTo = useGoTo();
     const { api, config, currentUser } = useAppContext();
-    const goToLandingPage = () => goTo(history, "/");
-    const componentConfig = getConfig(history, currentUser);
+    const goToLandingPage = () => goTo("projects");
+    const componentConfig = getConfig(goTo, currentUser);
     const canAccessMer = currentUser.hasRole("admin") || currentUser.hasRole("dataReviewer");
 
     const list = (_d2: unknown, filters: FiltersForList, pagination: Pagination) =>
         Project.getList(api, config, filters, pagination);
 
     const newProjectPageHandler = currentUser.canCreateProject()
-        ? () => goTo(history, generateUrl("projects.new"))
+        ? () => goTo("projects.new")
         : null;
 
     return (
@@ -221,7 +211,7 @@ const ProjectsList: React.FC = () => {
                 {canAccessMer && (
                     <ActionButton
                         label={i18n.t("MER Reports")}
-                        onClick={() => goTo(history, generateUrl("report"))}
+                        onClick={() => goTo("report")}
                         style={{ marginRight: 20 }}
                     />
                 )}
