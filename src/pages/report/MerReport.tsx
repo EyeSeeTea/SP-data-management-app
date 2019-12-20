@@ -53,6 +53,12 @@ const MerReportComponent: React.FC = () => {
         }
     }, [date, orgUnitPath]);
 
+    /*
+    React.useEffect(() => {
+        if (merReport) download();
+    }, [merReport]); // DEBUG
+    */
+
     const setMerReport = React.useCallback((report: MerReport) => {
         setMerReport_(report);
         wasReportModifiedSet(true);
@@ -115,6 +121,7 @@ const MerReportComponent: React.FC = () => {
                     selected={orgUnitPath ? [orgUnitPath] : []}
                     selectableLevels={[2]}
                     withElevation={false}
+                    height={200}
                 />
             </Paper>
 

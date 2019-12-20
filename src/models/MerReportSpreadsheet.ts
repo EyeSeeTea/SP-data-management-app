@@ -1,11 +1,28 @@
-import XLSX from "xlsx";
+import ExcelJS, { CellValue, Font, Alignment, Worksheet, Workbook, Column } from "exceljs";
 import _ from "lodash";
 import moment from "moment";
 import MerReport, { staffKeys, getStaffTranslations } from "./MerReport";
 import i18n from "../locales";
 import { getIdFromOrgUnit } from "../utils/dhis2";
 
-type Row = string[];
+type Value = Text | Number;
+
+type Row = Value[];
+
+interface Number {
+    type: "number";
+    value: number;
+    alignment?: Partial<Alignment>;
+    height?: number;
+}
+
+interface Text {
+    type: "text";
+    value: string;
+    font?: Partial<Font>;
+    alignment?: Partial<Alignment>;
+    height?: number;
+}
 
 class MerReportSpreadsheet {
     constructor(public merReport: MerReport) {}
@@ -17,55 +34,147 @@ class MerReportSpreadsheet {
         if (!date || !organisationUnit) throw new Error("No data");
 
         const now = moment();
-        const book = XLSX.utils.book_new();
-        const title = i18n.t("Monthly Executive Report");
+        const workbook = new ExcelJS.Workbook();
 
-        book.Props = {
-            Title: title,
-            Author: config.currentUser.displayName,
-            CreatedDate: now.toDate(),
-        };
+        workbook.creator = config.currentUser.displayName;
+        workbook.lastModifiedBy = config.currentUser.displayName;
+        workbook.created = now.toDate();
+        workbook.modified = now.toDate();
 
-        const rows = [
-            [title],
-            [date.format("MMM YYYY")],
-            [i18n.t("Country Director") + ": " + merReport.data.countryDirector],
-            [i18n.t("Prepared by") + ": " + config.currentUser.displayName],
-            [now.format("LL")],
-            [],
-            [i18n.t("Executive Summary")],
-            [formatText(merReport.data.executiveSummary)],
-            [],
-            [i18n.t("Ministry Summary")],
-            [formatText(merReport.data.ministrySummary)],
-            [],
-            [i18n.t("Staff Summary")],
-            [],
-            ...insertColumns(getStaffSummary(merReport), 1),
-            [],
-            [i18n.t("Projected Activities for the Next Month")],
-            [formatText(merReport.data.projectedActivitiesNextMonth)],
-        ];
-        const sheet = XLSX.utils.aoa_to_sheet(rows);
+        this.addNarrativeSheet(workbook);
+        this.addActivitesSheet(workbook);
 
-        const merges = rows.map((row, rowIndex) =>
-            row.length === 1 ? { s: { r: rowIndex, c: 0 }, e: { r: rowIndex, c: 5 } } : null
-        );
-        sheet["!merges"] = _.compact(merges);
-
-        const sheetName = i18n.t("Narrative");
-        book.SheetNames.push(sheetName);
-        book.Sheets[sheetName] = sheet;
-        const res = XLSX.write(book, { bookType: "xlsx", type: "binary" });
-        const blob = new Blob([s2ab(res)], { type: "application/octet-stream" });
+        const res = await workbook.xlsx.writeBuffer();
+        const blob = new Blob([res], { type: "application/octet-stream" });
         const orgUnitId = getIdFromOrgUnit(organisationUnit);
         const filename = orgUnitId + "-" + date.format("YYYY-MM") + ".xlsx";
         return { filename, blob };
     }
+
+    addNarrativeSheet(workbook: Workbook) {
+        const { merReport } = this;
+        const { config } = this.merReport;
+        const title = i18n.t("Monthly Executive Report");
+        const now = moment();
+
+        const rows = [
+            [text(title, { font: { bold: true, size: 12 }, alignment: { horizontal: "center" } })],
+            [text(merReport.data.date.format("MMMM YYYY"))],
+            [text(i18n.t("Country Director") + ": " + merReport.data.countryDirector)],
+            [text(i18n.t("Prepared by") + ": " + config.currentUser.displayName)],
+            [text(now.format("LL"))],
+            [],
+            [bold(i18n.t("Executive Summary"))],
+            [text(merReport.data.executiveSummary, { height: 50 })],
+            [],
+            [bold(i18n.t("Ministry Summary"))],
+            [text(merReport.data.ministrySummary, { height: 50 })],
+            [],
+            [bold(i18n.t("Staff Summary"))],
+            [],
+            ...insertColumns(getStaffSummary(merReport), 1),
+            [],
+            [bold(i18n.t("Projected Activities for the Next Month"))],
+            [text(merReport.data.projectedActivitiesNextMonth, { height: 50 })],
+        ];
+
+        const sheet = addWorkSheet(workbook, i18n.t("Narrative"), rows);
+
+        _.range(1, sheet.columnCount + 1).forEach(
+            columnIndex => (sheet.getColumn(columnIndex).width = 15)
+        );
+    }
+
+    addActivitesSheet(workbook: Workbook) {
+        const { merReport } = this;
+
+        const dataRows: Row[] = _.flatMap(merReport.data.projectsData, project => {
+            return project.dataElements.map(de => {
+                return [
+                    text(`${project.name} (${project.dateInfo})`),
+                    text(de.name),
+                    float(de.target),
+                    float(de.actual),
+                    float(de.achieved),
+                    text(de.comment),
+                ];
+            });
+        });
+        const columns = [
+            header(i18n.t("Project"), { width: 40 }),
+            header(i18n.t("Indicators"), { width: 60 }),
+            header(i18n.t("Target"), { width: 10, isNumber: true }),
+            header(i18n.t("Actual"), { width: 10, isNumber: true }),
+            header(i18n.t("Achieved to date (%)"), { width: 10, isNumber: true }),
+            header(i18n.t("Comment"), { width: 50, center: false }),
+        ];
+
+        const sheet = addWorkSheet(workbook, i18n.t("Activities"), dataRows, { columns });
+        //sheet.getRow(1).eachCell(cell => (cell.font = { bold: true }));
+        sheet.getRow(1).font = { bold: true };
+        return sheet;
+    }
+}
+
+function header(
+    name: string,
+    {
+        width,
+        isNumber = false,
+        center = true,
+    }: { width: number; isNumber?: boolean; center?: boolean }
+): Partial<Column> {
+    return {
+        header: name,
+        width,
+        style: {
+            numFmt: isNumber ? "0.00" : undefined,
+            ...(center ? { alignment: { horizontal: "center" } } : {}),
+        },
+    };
+}
+
+function addWorkSheet(
+    workbook: Workbook,
+    name: string,
+    rows: Row[],
+    options: { columns?: Partial<Column>[] } = {}
+): Worksheet {
+    const sheet = workbook.addWorksheet(name);
+    if (options.columns) sheet.columns = options.columns;
+
+    const sheetRows: CellValue[][] = rows.map(row =>
+        row.map(cell =>
+            cell.type === "text" && cell.font
+                ? { richText: [{ text: cell.value, font: cell.font }] }
+                : cell.value
+        )
+    );
+    sheet.addRows(sheetRows);
+    applyStyles(sheet, rows);
+    return sheet;
+}
+
+function applyStyles(sheet: Worksheet, rows: Row[]): void {
+    rows.forEach((row, rowIndex) => {
+        if (row.length === 1) {
+            sheet.mergeCells({ top: rowIndex + 1, left: 1, bottom: rowIndex + 1, right: 6 });
+        }
+        row.forEach((cell, columnIndex) => {
+            if (cell.alignment) {
+                sheet.getCell(rowIndex + 1, columnIndex + 1).alignment = cell.alignment;
+            }
+        });
+        const maxHeight = _(row)
+            .map(cell => cell.height)
+            .compact()
+            .max();
+        if (maxHeight) sheet.getRow(rowIndex + 1).height = maxHeight;
+    });
 }
 
 function getStaffSummary(report: MerReport): Row[] {
-    const f = formatFloat;
+    const f = float;
     const translations = getStaffTranslations();
     const valuesList = staffKeys.map(staffKey => {
         const staff = report.data.staffSummary[staffKey];
@@ -80,32 +189,43 @@ function getStaffSummary(report: MerReport): Row[] {
         .sum();
 
     return [
-        ["", i18n.t("Full-time"), i18n.t("Part-time"), i18n.t("Total")],
+        [text(""), bold(i18n.t("Full-time")), bold(i18n.t("Part-time")), bold(i18n.t("Total"))],
         ...valuesList.map(({ key, values }) => {
-            return [translations[key], f(values.fullTime), f(values.partTime), f(values.total)];
+            return [
+                italic(translations[key]),
+                f(values.fullTime),
+                f(values.partTime),
+                f(values.total),
+            ];
         }),
-        [i18n.t("Total"), f(totalFullTime), f(totalPartTime), f(totalFullTime + totalPartTime)],
+        [
+            bold(i18n.t("Total")),
+            f(totalFullTime),
+            f(totalPartTime),
+            f(totalFullTime + totalPartTime),
+        ],
     ];
 }
 
-function formatFloat(n: number): string {
-    return n.toFixed(2);
-}
-
-function formatText(s: string): string {
-    return s.trim() || "-";
+function float(n: number | undefined): Value {
+    return { type: "number", value: n || 0.0 };
 }
 
 function insertColumns(rows: Row[], count: number): Row[] {
-    const newColumns = _.times(count).map(_i => "");
+    const newColumns = _.times(count).map(_i => text(""));
     return rows.map(row => [...newColumns, ...row]);
 }
 
-function s2ab(s: string): ArrayBuffer {
-    const buf = new ArrayBuffer(s.length);
-    const view = new Uint8Array(buf);
-    for (let i = 0; i != s.length; ++i) view[i] = s.charCodeAt(i) & 0xff;
-    return buf;
+function text(s: string, options: Omit<Text, "type" | "value"> = {}): Value {
+    return { type: "text", value: s, ...options };
+}
+
+function bold(s: string): Value {
+    return text(s, { font: { bold: true, size: 10 } });
+}
+
+function italic(s: string): Value {
+    return text(s, { font: { italic: true, size: 10 } });
 }
 
 export default MerReportSpreadsheet;
