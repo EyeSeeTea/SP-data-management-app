@@ -17,6 +17,7 @@ import Share from "../share/Share";
 import { ApiContext } from "../../contexts/api-context";
 import { getConfig } from "../../models/Config";
 import User from "../../models/user";
+import { LinearProgress } from "@material-ui/core";
 
 const isLangRTL = code => {
     const langs = ["ar", "fa", "ur"];
@@ -80,7 +81,7 @@ const App = () => {
 
     if (error) {
         return (
-            <h3>
+            <h3 style={{ margin: 20 }}>
                 <a rel="noopener noreferrer" target="_blank" href={baseUrl}>
                     Login
                 </a>
@@ -88,7 +89,12 @@ const App = () => {
             </h3>
         );
     } else if (loading || !appContext) {
-        return <h3>Connecting to {baseUrl}...</h3>;
+        return (
+            <div style={{ margin: 20 }}>
+                <h3>Connecting to {baseUrl}...</h3>
+                <LinearProgress />
+            </div>
+        );
     } else {
         return (
             <MuiThemeProvider theme={muiTheme}>
