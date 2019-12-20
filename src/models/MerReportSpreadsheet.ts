@@ -9,19 +9,20 @@ type Value = Text | Number;
 
 type Row = Value[];
 
-interface Number {
-    type: "number";
-    value: number;
+interface ValueBase {
+    font?: Partial<Font>;
     alignment?: Partial<Alignment>;
     height?: number;
 }
 
-interface Text {
+interface Number extends ValueBase {
+    type: "number";
+    value: number;
+}
+
+interface Text extends ValueBase {
     type: "text";
     value: string;
-    font?: Partial<Font>;
-    alignment?: Partial<Alignment>;
-    height?: number;
 }
 
 class MerReportSpreadsheet {
@@ -110,7 +111,6 @@ class MerReportSpreadsheet {
         ];
 
         const sheet = addWorkSheet(workbook, i18n.t("Activities"), dataRows, { columns });
-        //sheet.getRow(1).eachCell(cell => (cell.font = { bold: true }));
         sheet.getRow(1).font = { bold: true };
         return sheet;
     }
@@ -143,13 +143,7 @@ function addWorkSheet(
     const sheet = workbook.addWorksheet(name);
     if (options.columns) sheet.columns = options.columns;
 
-    const sheetRows: CellValue[][] = rows.map(row =>
-        row.map(cell =>
-            cell.type === "text" && cell.font
-                ? { richText: [{ text: cell.value, font: cell.font }] }
-                : cell.value
-        )
-    );
+    const sheetRows: CellValue[][] = rows.map(row => row.map(cell => cell.value));
     sheet.addRows(sheetRows);
     applyStyles(sheet, rows);
     return sheet;
@@ -160,11 +154,16 @@ function applyStyles(sheet: Worksheet, rows: Row[]): void {
         if (row.length === 1) {
             sheet.mergeCells({ top: rowIndex + 1, left: 1, bottom: rowIndex + 1, right: 6 });
         }
+
         row.forEach((cell, columnIndex) => {
             if (cell.alignment) {
                 sheet.getCell(rowIndex + 1, columnIndex + 1).alignment = cell.alignment;
             }
+            if (cell.font) {
+                sheet.getCell(rowIndex + 1, columnIndex + 1).font = cell.font;
+            }
         });
+
         const maxHeight = _(row)
             .map(cell => cell.height)
             .compact()
