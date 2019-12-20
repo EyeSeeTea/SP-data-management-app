@@ -99,7 +99,7 @@ export default class DataElementsSet {
 
     validateMER(_sectors: Sector[]) {
         const selectedMER = this.get({ onlyMERSelected: true });
-        return _.isEmpty(selectedMER) ? [i18n.t("At least one indicator must be selected")] : [];
+        return _.isEmpty(selectedMER) ? [i18n.t("Select at least one indicator")] : [];
     }
 
     get selected(): string[] {
