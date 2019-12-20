@@ -74,7 +74,7 @@ const UserOrgUnits: React.FC<UserOrgUnitsProps> = props => {
                 <OrgUnitsSelector
                     d2={d2}
                     onChange={onChangeOu}
-                    selected={selected ? [selected.path] : undefined}
+                    selected={selected ? [selected.path] : []}
                     selectableLevels={selectableLevels}
                     controls={controls}
                     rootIds={rootIds}
