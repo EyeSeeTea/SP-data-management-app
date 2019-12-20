@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from "react";
+//@ts-ignore
 import { HeaderBar } from "@dhis2/ui-widgets";
 import { MuiThemeProvider } from "@material-ui/core/styles";
+//@ts-ignore
 import OldMuiThemeProvider from "material-ui/styles/MuiThemeProvider";
+//@ts-ignore
 import { useDataQuery, useConfig } from "@dhis2/app-runtime";
 import _ from "lodash";
+//@ts-ignore
 import i18n from "@dhis2/d2-i18n";
+//@ts-ignore
 import { init } from "d2";
 import { SnackbarProvider } from "d2-ui-components";
 import { D2ApiDefault } from "d2-api";
@@ -14,18 +19,52 @@ import { muiTheme } from "./themes/dhis2.theme";
 import muiThemeLegacy from "./themes/dhis2-legacy.theme";
 import Root from "../../pages/root/Root";
 import Share from "../share/Share";
-import { ApiContext } from "../../contexts/api-context";
+import { ApiContext, AppContext } from "../../contexts/api-context";
 import { getConfig } from "../../models/Config";
 import User from "../../models/user";
 import { LinearProgress } from "@material-ui/core";
 
-const isLangRTL = code => {
+interface AppConfig {
+    appKey: string;
+    appearance: {
+        showShareButton: boolean;
+    };
+    feedback: {
+        token: string[];
+        createIssue: boolean;
+        sendToDhis2UserGroups: string[];
+        issues: {
+            repository: string;
+            title: string;
+            body: string;
+        };
+        snapshots: {
+            repository: string;
+            branch: string;
+        };
+        feedbackOptions: {};
+    };
+}
+
+type D2 = object;
+
+type AppWindow = Window & {
+    $: {
+        feedbackDhis2: (
+            d2: D2,
+            appKey: string,
+            appConfig: AppConfig["feedback"]["feedbackOptions"]
+        ) => void;
+    };
+};
+
+function isLangRTL(code: string): boolean {
     const langs = ["ar", "fa", "ur"];
     const prefixed = langs.map(c => `${c}-`);
     return _(langs).includes(code) || prefixed.filter(c => code && code.startsWith(c)).length > 0;
-};
+}
 
-function initFeedbackTool(d2, appConfig) {
+function initFeedbackTool(d2: D2, appConfig: AppConfig): void {
     const appKey = _(appConfig).get("appKey");
 
     if (appConfig && appConfig.feedback) {
@@ -33,18 +72,19 @@ function initFeedbackTool(d2, appConfig) {
             ...appConfig.feedback,
             i18nPath: "feedback-tool/i18n",
         };
-        window.$.feedbackDhis2(d2, appKey, feedbackOptions);
+        ((window as unknown) as AppWindow).$.feedbackDhis2(d2, appKey, feedbackOptions);
     }
 }
 
-const configI18n = ({ keyUiLocale: uiLocale }) => {
+function configI18n(userSettings: { keyUiLocale: string }) {
+    const uiLocale = userSettings.keyUiLocale;
     i18n.changeLanguage(uiLocale);
     document.documentElement.setAttribute("dir", isLangRTL(uiLocale) ? "rtl" : "ltr");
-};
+}
 
 const App = () => {
     const { baseUrl } = useConfig();
-    const [appContext, setAppContext] = useState(null);
+    const [appContext, setAppContext] = useState<AppContext | null>(null);
 
     const [showShareButton, setShowShareButton] = useState(false);
     const { loading, error, data } = useDataQuery({
@@ -61,7 +101,7 @@ const App = () => {
 
             configI18n(data.userSettings);
             const currentUser = new User(config);
-            const appContext = { d2, api, config, currentUser };
+            const appContext: AppContext = { d2, api, config, currentUser };
             setAppContext(appContext);
             Object.assign(window, { pm: appContext });
 
