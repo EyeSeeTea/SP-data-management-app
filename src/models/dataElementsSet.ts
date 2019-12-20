@@ -84,29 +84,22 @@ export default class DataElementsSet {
         };
     }
 
-    validate(sectors: Sector[], getOptions: GetOptions) {
-        const sectorsWithSelectedItems = _(this.get(getOptions))
-            .countBy(de => de.sectorId)
-            .keys()
-            .map(sectorId => ({ id: sectorId }))
-            .value();
-        const missingSectors = _(sectors)
-            .differenceBy(sectorsWithSelectedItems, sector => sector.id)
-            .map(s => s.displayName)
-            .value();
-        const missingInfo = missingSectors.join(", ");
-
-        return missingSectors.length > 0
-            ? [i18n.t("The following sectors have no indicators selected:" + " " + missingInfo)]
-            : [];
-    }
-
     validateSelection(sectors: Sector[]) {
-        return this.validate(sectors, { onlySelected: true });
+        const sectorsWithSel = this.get({ onlySelected: true }).map(de => ({ id: de.sectorId }));
+        const missingSectors = _(sectors)
+            .differenceBy(sectorsWithSel, sector => sector.id)
+            .map(sector => sector.displayName)
+            .value();
+        const msg = i18n.t(
+            "The following sectors have no indicators selected:" + " " + missingSectors.join(", ")
+        );
+
+        return _.isEmpty(missingSectors) ? [] : [msg];
     }
 
-    validateMER(sectors: Sector[]) {
-        return this.validate(sectors, { onlyMERSelected: true });
+    validateMER(_sectors: Sector[]) {
+        const selectedMER = this.get({ onlyMERSelected: true });
+        return _.isEmpty(selectedMER) ? [i18n.t("At least one indicator must be selected")] : [];
     }
 
     get selected(): string[] {
