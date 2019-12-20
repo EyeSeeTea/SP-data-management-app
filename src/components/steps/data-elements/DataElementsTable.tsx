@@ -19,13 +19,15 @@ export interface DataElementsTableProps {
 
 const DataElementsTable: React.FC<DataElementsTableProps> = props => {
     const { project, dataElementsSet, sectorId, onChange, field } = props;
+    // const { isDev } = useAppContext(); Uncomment when merged
+    const isDev = false;
     const snackbar = useSnackbar();
     const [filter, setFilter] = useState<Filter>({});
     if (!sectorId) return null;
 
     useEffect(() => setFilter({}), [sectorId]);
 
-    const columns: TableColumn<DataElement>[] = [
+    const columns: TableColumn<DataElement>[] = _.compact([
         {
             name: "name" as const,
             text: i18n.t("Name"),
@@ -36,8 +38,8 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
         { name: "indicatorType" as const, text: i18n.t("Indicator Type"), sortable: true },
         { name: "peopleOrBenefit" as const, text: i18n.t("People / Benefit"), sortable: true },
         { name: "series" as const, text: i18n.t("Series"), sortable: true },
-        // { name: "pairedDataElementCode" as const, text: i18n.t("Paired DE"), sortable: true },
-    ];
+        isDev ? { name: "pairedDataElementCode" as const, text: i18n.t("Paired DE") } : null,
+    ]);
 
     const baseFilter =
         field === "selection"
