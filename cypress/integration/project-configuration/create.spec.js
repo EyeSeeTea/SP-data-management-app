@@ -4,9 +4,9 @@ describe("Projects - Create", () => {
     before(() => {
         cy.login("admin");
         cy.loadPage();
-        cy.contains("Project Configuration").click();
-        cy.get("[data-test=list-action-bar]").click();
+        cy.contains("Create Project").click();
     });
+
     it("gets data from the user and creates a project", () => {
         cy.contains("New project");
 

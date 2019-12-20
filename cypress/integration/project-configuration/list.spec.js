@@ -4,7 +4,6 @@ describe("Project Configuration - List page", () => {
     beforeEach(() => {
         cy.login("admin");
         cy.loadPage();
-        cy.contains("Project Configuration").click();
     });
 
     it("shows list of user projects", () => {
@@ -36,7 +35,6 @@ describe("Project Configuration - List page", () => {
         cy.contains("Reopen Datasets");
         cy.contains("Add Target Values");
         cy.contains("Download Data");
-        cy.contains("Generate / Configure MER");
         cy.contains("Edit");
         cy.contains("Delete");
     });

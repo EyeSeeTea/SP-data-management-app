@@ -22,7 +22,7 @@ const Report: React.FC = () => {
     return (
         <React.Fragment>
             <PageHeader
-                title={i18n.t("Monthly Executive Report")}
+                title={i18n.t("Monthly Executive Reports")}
                 help={config.help}
                 onBackClick={goToLandingPage}
             />

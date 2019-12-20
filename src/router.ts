@@ -1,6 +1,5 @@
 const routes = {
-    home: () => "/",
-    projects: () => "/projects",
+    projects: () => "/",
     "projects.new": () => `/projects/new`,
     "projects.edit": ({ id }: { id: string }) => `/projects/${id}`,
     report: () => "/report",

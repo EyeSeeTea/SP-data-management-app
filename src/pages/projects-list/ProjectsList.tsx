@@ -9,10 +9,10 @@ import { useAppContext, CurrentUser } from "../../contexts/api-context";
 import { generateUrl } from "../../router";
 import Project, { FiltersForList, ProjectForList } from "../../models/Project";
 import { Pagination } from "../../types/ObjectsList";
-import "./ProjectsList.css";
 import { Config } from "../../models/Config";
 import { formatDateShort, formatDateLong } from "../../utils/date";
 import { GetPropertiesByType } from "../../types/utils";
+import ActionButton from "../../components/action-button/ActionButton";
 
 type UserRolesConfig = Config["base"]["userRoles"];
 
@@ -142,13 +142,6 @@ function getConfig(history: History, currentUser: CurrentUser) {
             multiple: false,
         },
 
-        configMER: {
-            name: "mer",
-            icon: "description",
-            text: i18n.t("Generate / Configure MER"),
-            multiple: false,
-        },
-
         edit: {
             name: "edit",
             text: i18n.t("Edit"),
@@ -168,14 +161,7 @@ function getConfig(history: History, currentUser: CurrentUser) {
     };
 
     const actionsForUserRoles: ActionsRoleMapping<typeof allActions> = {
-        dataReviewer: [
-            "actualValues",
-            "targetValues",
-            "dashboard",
-            "downloadData",
-            "configMER",
-            "edit",
-        ],
+        dataReviewer: ["actualValues", "targetValues", "dashboard", "downloadData", "edit"],
         dataViewer: ["dashboard", "downloadData"],
         admin: [
             "actualValues",
@@ -183,7 +169,6 @@ function getConfig(history: History, currentUser: CurrentUser) {
             "dashboard",
             "downloadData",
             "reopenDatasets",
-            "configMER",
             "edit",
             "delete",
         ],
@@ -214,8 +199,8 @@ const ProjectsList: React.FC = () => {
     const history = useHistory();
     const { api, config, currentUser } = useAppContext();
     const goToLandingPage = () => goTo(history, "/");
-
     const componentConfig = getConfig(history, currentUser);
+    const canAccessMer = currentUser.hasRole("admin") || currentUser.hasRole("dataReviewer");
 
     const list = (_d2: unknown, filters: FiltersForList, pagination: Pagination) =>
         Project.getList(api, config, filters, pagination);
@@ -232,6 +217,23 @@ const ProjectsList: React.FC = () => {
                 onBackClick={goToLandingPage}
             />
 
+            <div style={{ position: "absolute", top: 80, right: 250 }}>
+                {canAccessMer && (
+                    <ActionButton
+                        label={i18n.t("MER Reports")}
+                        onClick={() => goTo(history, generateUrl("report"))}
+                        style={{ marginRight: 20 }}
+                    />
+                )}
+
+                {newProjectPageHandler && (
+                    <ActionButton
+                        label={i18n.t("Create Project")}
+                        onClick={newProjectPageHandler}
+                    />
+                )}
+            </div>
+
             <OldObjectsTable
                 model={{ modelValidations: {} }}
                 columns={componentConfig.columns}
@@ -242,8 +244,6 @@ const ProjectsList: React.FC = () => {
                 actions={componentConfig.actions}
                 list={list}
                 disableMultiplePageSelection={true}
-                buttonLabel={i18n.t("Create Project")}
-                onButtonClick={newProjectPageHandler}
             />
         </React.Fragment>
     );
