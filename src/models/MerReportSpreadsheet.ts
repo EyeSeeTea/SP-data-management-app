@@ -106,7 +106,7 @@ class MerReportSpreadsheet {
             header(i18n.t("Target"), { width: 10, isNumber: true }),
             header(i18n.t("Actual"), { width: 10, isNumber: true }),
             header(i18n.t("Achieved to date (%)"), { width: 10, isNumber: true }),
-            header(i18n.t("Comment"), { width: 50, center: false }),
+            header(i18n.t("Comment"), { width: 50 }),
         ];
 
         const sheet = addWorkSheet(workbook, i18n.t("Activities"), dataRows, { columns });
@@ -120,7 +120,7 @@ function header(
     {
         width,
         isNumber = false,
-        center = true,
+        center = false,
     }: { width: number; isNumber?: boolean; center?: boolean }
 ): Partial<Column> {
     return {
