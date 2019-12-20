@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2019-12-19T09:53:37.582Z\n"
-"PO-Revision-Date: 2019-12-19T09:53:37.582Z\n"
+"POT-Creation-Date: 2019-12-20T10:04:28.263Z\n"
+"PO-Revision-Date: 2019-12-20T10:04:28.263Z\n"
 
 msgid "<No value>"
 msgstr ""
@@ -149,6 +149,27 @@ msgid "Projected Activities for the Next Month"
 msgstr ""
 
 msgid "Narrative"
+msgstr ""
+
+msgid "Project"
+msgstr ""
+
+msgid "Indicators"
+msgstr ""
+
+msgid "Target"
+msgstr ""
+
+msgid "Actual"
+msgstr ""
+
+msgid "Achieved to date (%)"
+msgstr ""
+
+msgid "Comment"
+msgstr ""
+
+msgid "Activities"
 msgstr ""
 
 msgid "Full-time"
@@ -390,22 +411,4 @@ msgid "Projected Activities for the next month"
 msgstr ""
 
 msgid "Download"
-msgstr ""
-
-msgid "Project"
-msgstr ""
-
-msgid "Indicators"
-msgstr ""
-
-msgid "Target"
-msgstr ""
-
-msgid "Actual"
-msgstr ""
-
-msgid "Achieved to date (%)"
-msgstr ""
-
-msgid "Comment"
 msgstr ""

@@ -110,9 +110,10 @@ export interface DataSetWithPeriods {
     dataInputPeriods: DataInputPeriod[];
 }
 
-// TODO: Add also displayName
 interface OrganisationUnit {
+    id: string;
     path: string;
+    displayName: string;
 }
 
 const monthFormat = "YYYYMM";
@@ -358,21 +359,6 @@ class Project {
 
     save() {
         return new ProjectDb(this).save();
-    }
-
-    public async getOrganisationUnitName(): Promise<string | undefined> {
-        const { parentOrgUnit } = this.data;
-        if (!parentOrgUnit) return;
-        const id = _.last(parentOrgUnit.path.split("/")) || "";
-
-        const { objects } = await this.api.models.organisationUnits
-            .get({
-                fields: { id: true, displayName: true },
-                filter: { id: { eq: id } },
-            })
-            .getData();
-
-        return objects.length > 0 ? objects[0].displayName : undefined;
     }
 
     static async getList(

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ReactNode } from "react";
+import React, { useState, ReactNode } from "react";
 import _ from "lodash";
 import { Button, LinearProgress } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
@@ -24,16 +24,10 @@ const useStyles = makeStyles({
 
 const SaveStep: React.FC<StepProps> = ({ project, onCancel }) => {
     const [isSaving] = useState(false);
-    const [orgUnit, setOrgUnitName] = useState("...");
     const [dialogOpen, setDialogOpen] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const snackbar = useSnackbar();
     const history = useHistory();
-
-    useEffect(() => {
-        project.getOrganisationUnitName().then(name => setOrgUnitName(name || "unknown"));
-    }, [project]);
-
     const classes = useStyles();
 
     async function save() {
@@ -72,7 +66,10 @@ const SaveStep: React.FC<StepProps> = ({ project, onCancel }) => {
 
                     <LiEntry label={i18n.t("Funders")} value={getNames(project.funders)} />
 
-                    <LiEntry label={i18n.t("Selected country")} value={orgUnit} />
+                    <LiEntry
+                        label={i18n.t("Selected country")}
+                        value={project.parentOrgUnit ? project.parentOrgUnit.displayName : "-"}
+                    />
 
                     <LiEntry label={i18n.t("Sectors")} value={getSectorsInfo(project)} />
                 </ul>

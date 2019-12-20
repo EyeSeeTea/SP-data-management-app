@@ -7,7 +7,11 @@ const { api, mock } = getMockApi();
 
 const selector = {
     date: moment(new Date(2019, 12 - 1, 1)),
-    organisationUnit: { path: "/J0hschZVMBt/PJb0RtEnqlf" },
+    organisationUnit: {
+        path: "/J0hschZVMBt/PJb0RtEnqlf",
+        id: "PJb0RtEnqlf",
+        displayName: "Sierra Leona",
+    },
 };
 
 let report: MerReport;

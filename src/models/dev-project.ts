@@ -12,7 +12,11 @@ export function getDevProject(initialProject: Project, enabled: boolean) {
     const awardNumber = getRandomInt(10000, 99999).toString();
 
     return initialProject
-        .set("parentOrgUnit", { path: "/J0hschZVMBt/PJb0RtEnqlf" })
+        .set("parentOrgUnit", {
+            path: "/J0hschZVMBt/PJb0RtEnqlf",
+            id: "PJb0RtEnqlf",
+            displayName: "Sierra Leona",
+        })
         .set("sectors", [
             { id: "mGQ5ckOTU8A", displayName: "Agriculture" },
             { id: "m4Cg6FOPPR7", displayName: "Livelihoods" },
@@ -47,6 +51,10 @@ export function getDevProject(initialProject: Project, enabled: boolean) {
 export function getDevMerReport() {
     return {
         date: moment(),
-        orgUnitPath: "/J0hschZVMBt/PJb0RtEnqlf",
+        orgUnit: {
+            path: "/J0hschZVMBt/PJb0RtEnqlf",
+            id: "PJb0RtEnqlf",
+            displayName: "Sierra Leona",
+        },
     };
 }

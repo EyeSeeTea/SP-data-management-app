@@ -3,7 +3,7 @@ import moment, { Moment } from "moment";
 import _ from "lodash";
 import { D2Api, Id } from "d2-api";
 import { Config } from "./Config";
-import { getIdFromOrgUnit, getDataStore } from "../utils/dhis2";
+import { getDataStore } from "../utils/dhis2";
 import DataStore from "d2-api/api/dataStore";
 import { runPromises } from "../utils/promises";
 import { getProjectFromOrgUnit, getOrgUnitDatesFromProject } from "./Project";
@@ -23,9 +23,15 @@ export type StaffKey = GetItemType<typeof staffKeys>;
 
 export type StaffSummary = Record<StaffKey, StaffInfo>;
 
+interface OrganisationUnit {
+    id: string;
+    path: string;
+    displayName: string;
+}
+
 interface Data {
     date: Moment;
-    organisationUnit: { path: string };
+    organisationUnit: OrganisationUnit;
     projectsData: ProjectsData;
     countryDirector: string;
     executiveSummary: string;
@@ -92,7 +98,7 @@ class MerReport {
     static getReportKey(selectData: Pick<Data, "date" | "organisationUnit">): string {
         const { organisationUnit, date } = selectData;
         const dateString = date.format("YYYYMM");
-        return ["mer", getIdFromOrgUnit(organisationUnit), dateString].join("-");
+        return ["mer", organisationUnit.id, dateString].join("-");
     }
 
     getReportKey() {
@@ -217,7 +223,7 @@ class MerReport {
                 organisationUnits: {
                     fields: { id: true, displayName: true, openingDate: true, closedDate: true },
                     filter: {
-                        "parent.id": { eq: getIdFromOrgUnit(organisationUnit) },
+                        "parent.id": { eq: organisationUnit.id },
                         openingDate: { le: dates.openingDate },
                         closedDate: { ge: dates.closedDate },
                     },

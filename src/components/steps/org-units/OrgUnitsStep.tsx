@@ -1,22 +1,24 @@
 import React from "react";
-import _ from "lodash";
 
 import { StepProps } from "../../../pages/project-wizard/ProjectWizard";
 import UserOrgUnits from "../../org-units/UserOrgUnits";
 
+interface OrganisationUnit {
+    id: string;
+    path: string;
+    displayName: string;
+}
+
 const OrgUnitsStep: React.FC<StepProps> = ({ project, onChange }) => {
-    const setOrgUnits = (orgUnitsPaths: string[]) => {
-        const orgUnits = orgUnitsPaths.map(path => ({ path }));
-        const newProject = project.set("parentOrgUnit", _.last(orgUnits));
+    const setOrgUnit = async (orgUnit: OrganisationUnit) => {
+        const newProject = project.set("parentOrgUnit", orgUnit);
         onChange(newProject);
     };
 
-    const selectedPaths = project.parentOrgUnit ? [project.parentOrgUnit.path] : [];
-
     return (
         <UserOrgUnits
-            onChange={setOrgUnits}
-            selected={selectedPaths}
+            onChange={setOrgUnit}
+            selected={project.parentOrgUnit}
             selectableLevels={[2]}
             height={300}
         />

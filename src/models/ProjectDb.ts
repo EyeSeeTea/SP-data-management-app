@@ -39,6 +39,7 @@ export default class ProjectDb {
         const orgUnit = {
             id: orgUnitId,
             name: project.name,
+            displayName: project.name,
             path: project.parentOrgUnit.path + "/" + orgUnitId,
             code: project.code,
             shortName: project.shortName,
@@ -51,7 +52,8 @@ export default class ProjectDb {
             attributeValues: baseAttributeValues,
         };
 
-        const projectWithOrgUnit = project.set("orgUnit", { path: orgUnit.path });
+        const projectOrgUnit = _.pick(orgUnit, ["id", "path", "displayName"]);
+        const projectWithOrgUnit = project.set("orgUnit", projectOrgUnit);
 
         const dashboardsMetadata = new ProjectDashboard(projectWithOrgUnit).generate();
         const dashboard = dashboardsMetadata.dashboards[0];

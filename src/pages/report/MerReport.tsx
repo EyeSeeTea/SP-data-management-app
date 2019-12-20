@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import _ from "lodash";
 import { useHistory } from "react-router";
 import { History } from "history";
 import { makeStyles } from "@material-ui/core/styles";
@@ -17,7 +16,6 @@ import MerReportSpreadsheet from "../../models/MerReportSpreadsheet";
 import i18n from "../../locales";
 import PageHeader from "../../components/page-header/PageHeader";
 import ReportTextField from "./ReportTextField";
-import TextFieldOnBlur from "./TextFieldOnBlur";
 
 type Path = string;
 
@@ -38,26 +36,22 @@ const MerReportComponent: React.FC = () => {
     const { api, config, isDev } = useAppContext();
     const translations = getTranslations();
     const snackbar = useSnackbar();
-    const initial = isDev ? getDevMerReport() : { date: null, orgUnitPath: null };
+    const initial = isDev ? getDevMerReport() : { date: null, orgUnit: null };
     const [showExitWarning, showExitWarningSet] = useState<boolean>(false);
     const [wasReportModified, wasReportModifiedSet] = useState<boolean>(false);
     const [date, setDate] = useState<Moment | null>(initial.date);
-    const [orgUnitPath, setOrgUnitPath] = useState<Path | null>(initial.orgUnitPath);
+    const [orgUnit, setOrgUnit] = useState<MerReportData["organisationUnit"] | null>(
+        initial.orgUnit
+    );
     const [merReport, setMerReport_] = useState<MerReport | undefined | null>(null);
 
     React.useEffect(() => {
-        if (date && orgUnitPath) {
-            const selectData = { date, organisationUnit: { path: orgUnitPath } };
+        if (date && orgUnit) {
+            const selectData = { date, organisationUnit: orgUnit };
             setMerReport_(undefined);
             MerReport.create(api, config, selectData).then(setMerReport_);
         }
-    }, [date, orgUnitPath]);
-
-    /*
-    React.useEffect(() => {
-        if (merReport) download();
-    }, [merReport]); // DEBUG
-    */
+    }, [date, orgUnit]);
 
     const setMerReport = React.useCallback((report: MerReport) => {
         setMerReport_(report);
@@ -117,8 +111,8 @@ const MerReportComponent: React.FC = () => {
                     style={{ marginLeft: 20 }}
                 />
                 <UserOrgUnits
-                    onChange={paths => setOrgUnitPath(_.last(paths) || null)}
-                    selected={orgUnitPath ? [orgUnitPath] : []}
+                    onChange={orgUnit => setOrgUnit(orgUnit)}
+                    selected={orgUnit}
                     selectableLevels={[2]}
                     withElevation={false}
                     height={200}

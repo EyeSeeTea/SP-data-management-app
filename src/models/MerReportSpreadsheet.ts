@@ -3,9 +3,8 @@ import _ from "lodash";
 import moment from "moment";
 import MerReport, { staffKeys, getStaffTranslations } from "./MerReport";
 import i18n from "../locales";
-import { getIdFromOrgUnit } from "../utils/dhis2";
 
-type Value = Text | Number;
+type Value = TextValue | NumberValue;
 
 type Row = Value[];
 
@@ -15,12 +14,12 @@ interface ValueBase {
     height?: number;
 }
 
-interface Number extends ValueBase {
+interface NumberValue extends ValueBase {
     type: "number";
     value: number;
 }
 
-interface Text extends ValueBase {
+interface TextValue extends ValueBase {
     type: "text";
     value: string;
 }
@@ -47,8 +46,8 @@ class MerReportSpreadsheet {
 
         const res = await workbook.xlsx.writeBuffer();
         const blob = new Blob([res], { type: "application/octet-stream" });
-        const orgUnitId = getIdFromOrgUnit(organisationUnit);
-        const filename = orgUnitId + "-" + date.format("YYYY-MM") + ".xlsx";
+        const orgUnitName = organisationUnit.displayName;
+        const filename = ["MER", orgUnitName, date.format("YYYY_MM")].join("-") + ".xlsx";
         return { filename, blob };
     }
 
@@ -215,7 +214,7 @@ function insertColumns(rows: Row[], count: number): Row[] {
     return rows.map(row => [...newColumns, ...row]);
 }
 
-function text(s: string, options: Omit<Text, "type" | "value"> = {}): Value {
+function text(s: string, options: Omit<TextValue, "type" | "value"> = {}): Value {
     return { type: "text", value: s, ...options };
 }
 
