@@ -13,6 +13,7 @@ interface UserOrgUnitsProps {
     selected: Path[];
     selectableLevels?: number[];
     withElevation?: boolean;
+    height?: number;
 }
 
 const controls = {
@@ -26,7 +27,7 @@ const UserOrgUnits: React.FC<UserOrgUnitsProps> = props => {
     const snackbar = useSnackbar();
     const { d2, config } = useAppContext();
     const user = new User(config);
-    const { onChange, selected, selectableLevels, withElevation = true } = props;
+    const { onChange, selected, selectableLevels, withElevation = true, height } = props;
 
     useEffect(() => {
         const rootIds = user.getOrgUnits().map(ou => ou.id);
@@ -51,6 +52,7 @@ const UserOrgUnits: React.FC<UserOrgUnitsProps> = props => {
                     rootIds={rootIds}
                     withElevation={withElevation}
                     typeInput="radio"
+                    height={height}
                 />
             ) : (
                 <LinearProgress />

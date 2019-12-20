@@ -13,7 +13,14 @@ const OrgUnitsStep: React.FC<StepProps> = ({ project, onChange }) => {
 
     const selectedPaths = project.parentOrgUnit ? [project.parentOrgUnit.path] : [];
 
-    return <UserOrgUnits onChange={setOrgUnits} selected={selectedPaths} selectableLevels={[2]} />;
+    return (
+        <UserOrgUnits
+            onChange={setOrgUnits}
+            selected={selectedPaths}
+            selectableLevels={[2]}
+            height={300}
+        />
+    );
 };
 
 export default OrgUnitsStep;
