@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2019-12-20T10:04:28.263Z\n"
-"PO-Revision-Date: 2019-12-20T10:04:28.263Z\n"
+"POT-Creation-Date: 2019-12-20T11:48:40.389Z\n"
+"PO-Revision-Date: 2019-12-20T11:48:40.389Z\n"
 
 msgid "<No value>"
 msgstr ""
@@ -233,6 +233,9 @@ msgid "PM Target vs Actual achieved (%)"
 msgstr ""
 
 msgid "PM People Indicators Gender Breakdown"
+msgstr ""
+
+msgid "Select at least one indicator"
 msgstr ""
 
 msgid ""
