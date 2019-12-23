@@ -6,16 +6,18 @@ import { Category, CategoryOption } from "./Config";
 import i18n from "../locales";
 import { getUid } from "../utils/dhis2";
 
+type Maybe<T> = T | null;
+
 export default class ProjectDashboard {
     constructor(public project: Project) {}
 
     generate() {
         const { project } = this;
-        const reportTables: Array<PartialPersistedModel<D2ReportTable>> = [
+        const reportTables: Array<PartialPersistedModel<D2ReportTable>> = _.compact([
             peopleTable(project),
             targetVsActualTable(project),
             targetVsActualIndicatorsTable(project),
-        ];
+        ]);
         const dashboard: PartialPersistedModel<D2Dashboard> = {
             id: getUid("dashboard", project.uid),
             name: project.name,
@@ -39,9 +41,10 @@ function getOrgUnitId(project: Project): string {
     }
 }
 
-function targetVsActualTable(project: Project): PartialPersistedModel<D2ReportTable> {
+function targetVsActualTable(project: Project): Maybe<PartialPersistedModel<D2ReportTable>> {
     const orgUnitId = getOrgUnitId(project);
     const dataElements = project.dataElements.get({ onlySelected: true, includePaired: true });
+    if (_.isEmpty(dataElements)) return null;
     const categories = [project.config.categories.targetActual];
 
     return {
@@ -77,9 +80,12 @@ function targetVsActualTable(project: Project): PartialPersistedModel<D2ReportTa
     };
 }
 
-function targetVsActualIndicatorsTable(project: Project): PartialPersistedModel<D2ReportTable> {
+function targetVsActualIndicatorsTable(
+    project: Project
+): Maybe<PartialPersistedModel<D2ReportTable>> {
     const orgUnitId = getOrgUnitId(project);
     const dataElements = project.dataElements.get({ onlySelected: true, includePaired: true });
+    if (_.isEmpty(dataElements)) return null;
     const indicators = project.getActualTargetIndicators(dataElements);
 
     return {
@@ -112,13 +118,14 @@ function targetVsActualIndicatorsTable(project: Project): PartialPersistedModel<
     };
 }
 
-function peopleTable(project: Project): PartialPersistedModel<D2ReportTable> {
+function peopleTable(project: Project): Maybe<PartialPersistedModel<D2ReportTable>> {
     const orgUnitId = getOrgUnitId(project);
     const dataElementsPeople = project.dataElements.get({
         onlySelected: true,
         peopleOrBenefit: "people",
         includePaired: true,
     });
+    if (_.isEmpty(dataElementsPeople)) return null;
     const categories = project.config.categories;
     const categoriesForRows = [categories.gender, categories.newRecurring];
     const dimensionsData: Array<{ category: Category; categoryOptions?: CategoryOption[] }> = [

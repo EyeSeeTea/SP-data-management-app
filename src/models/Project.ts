@@ -49,7 +49,15 @@ Project model.
 */
 
 import _ from "lodash";
-import { D2Api, SelectedPick, Id, D2OrganisationUnitSchema, Ref, D2IndicatorSchema } from "d2-api";
+import {
+    D2Api,
+    SelectedPick,
+    Id,
+    D2OrganisationUnitSchema,
+    Ref,
+    D2OrganisationUnit,
+    D2IndicatorSchema,
+} from "d2-api";
 import { Pagination } from "./../types/ObjectsList";
 import { Pager } from "d2-api/api/models";
 import i18n from "../locales";
@@ -102,9 +110,10 @@ export interface DataSetWithPeriods {
     dataInputPeriods: DataInputPeriod[];
 }
 
-// TODO: Add also displayName
 interface OrganisationUnit {
+    id: string;
     path: string;
+    displayName: string;
 }
 
 const monthFormat = "YYYYMM";
@@ -352,21 +361,6 @@ class Project {
         return new ProjectDb(this).save();
     }
 
-    public async getOrganisationUnitName(): Promise<string | undefined> {
-        const { parentOrgUnit } = this.data;
-        if (!parentOrgUnit) return;
-        const id = _.last(parentOrgUnit.path.split("/")) || "";
-
-        const { objects } = await this.api.models.organisationUnits
-            .get({
-                fields: { id: true, displayName: true },
-                filter: { id: { eq: id } },
-            })
-            .getData();
-
-        return objects.length > 0 ? objects[0].displayName : undefined;
-    }
-
     static async getList(
         api: D2Api,
         config: Config,
@@ -477,7 +471,9 @@ class Project {
 
 interface Project extends ProjectData {}
 
-function getProjectFromOrgUnit(orgUnit: ProjectForList): ProjectForList {
+type OrgUnitWithDates = Pick<D2OrganisationUnit, "openingDate" | "closedDate">;
+
+export function getProjectFromOrgUnit<OU extends OrgUnitWithDates>(orgUnit: OU): OU {
     const process = (s: string, mapper: (d: Moment) => Moment) => toISOString(mapper(moment(s)));
     return {
         ...orgUnit,
@@ -487,6 +483,13 @@ function getProjectFromOrgUnit(orgUnit: ProjectForList): ProjectForList {
         ...(orgUnit.closedDate
             ? { closedDate: process(orgUnit.closedDate, d => d.subtract(1, "month")) }
             : {}),
+    };
+}
+
+export function getOrgUnitDatesFromProject(startDate: Moment, endDate: Moment): OrgUnitWithDates {
+    return {
+        openingDate: toISOString(startDate.clone().subtract(1, "month")),
+        closedDate: toISOString(endDate.clone().add(1, "month")),
     };
 }
 

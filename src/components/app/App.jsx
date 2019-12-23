@@ -49,6 +49,9 @@ const App = () => {
     const { loading, error, data } = useDataQuery({
         userSettings: { resource: "/userSettings" },
     });
+
+    const isDev = _.last(window.location.hash.split("#")) === "dev";
+
     useEffect(() => {
         const run = async () => {
             const appConfig = await fetch("app-config.json", {
@@ -60,7 +63,7 @@ const App = () => {
 
             configI18n(data.userSettings);
             const currentUser = new User(config);
-            const appContext = { d2, api, config, currentUser };
+            const appContext = { d2, api, config, currentUser, isDev };
             setAppContext(appContext);
             Object.assign(window, { pm: appContext });
 

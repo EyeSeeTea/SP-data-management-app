@@ -2,11 +2,11 @@ import _ from "lodash";
 import moment from "moment";
 import { D2DataSet, D2OrganisationUnit, D2ApiResponse, MetadataPayload, Id } from "d2-api";
 import { PartialModel, Ref, PartialPersistedModel, MetadataResponse } from "d2-api";
-import Project from "./Project";
+import Project, { getOrgUnitDatesFromProject } from "./Project";
 import { getMonthsRange, toISOString } from "../utils/date";
 import "../utils/lodash-mixins";
 import ProjectDashboard from "./ProjectDashboard";
-import { getUid } from "../utils/dhis2";
+import { getUid, getDataStore } from "../utils/dhis2";
 
 const expiryDaysInMonthActual = 10;
 
@@ -39,18 +39,21 @@ export default class ProjectDb {
         const orgUnit = {
             id: orgUnitId,
             name: project.name,
+            displayName: project.name,
             path: project.parentOrgUnit.path + "/" + orgUnitId,
             code: project.code,
             shortName: project.shortName,
             description: project.description,
             parent: { id: parentOrgUnitId },
+            ...getOrgUnitDatesFromProject(startDate, endDate),
             openingDate: toISOString(startDate.clone().subtract(1, "month")),
             closedDate: toISOString(endDate.clone().add(1, "month")),
             organisationUnitGroups: project.funders.map(funder => ({ id: funder.id })),
             attributeValues: baseAttributeValues,
         };
 
-        const projectWithOrgUnit = project.set("orgUnit", { path: orgUnit.path });
+        const projectOrgUnit = _.pick(orgUnit, ["id", "path", "displayName"]);
+        const projectWithOrgUnit = project.set("orgUnit", projectOrgUnit);
 
         const dashboardsMetadata = new ProjectDashboard(projectWithOrgUnit).generate();
         const dashboard = dashboardsMetadata.dashboards[0];
@@ -128,7 +131,7 @@ export default class ProjectDb {
     }
 
     saveMERData(orgUnitId: Id): D2ApiResponse<void> {
-        const dataStore = this.project.api.dataStore("project-monitoring-app");
+        const dataStore = getDataStore(this.project.api);
         const dataElementsForMER = this.project.dataElements.get({ onlyMERSelected: true });
         const value = { dataElements: dataElementsForMER.map(de => de.id) };
         return dataStore.save(`mer-${orgUnitId}`, value);

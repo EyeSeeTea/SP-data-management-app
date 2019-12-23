@@ -12,7 +12,11 @@ export function getDevProject(initialProject: Project, enabled: boolean) {
     const awardNumber = getRandomInt(10000, 99999).toString();
 
     return initialProject
-        .set("parentOrgUnit", { path: "/J0hschZVMBt/PJb0RtEnqlf" })
+        .set("parentOrgUnit", {
+            path: "/J0hschZVMBt/PJb0RtEnqlf",
+            id: "PJb0RtEnqlf",
+            displayName: "Sierra Leona",
+        })
         .set("sectors", [
             { id: "mGQ5ckOTU8A", displayName: "Agriculture" },
             { id: "m4Cg6FOPPR7", displayName: "Livelihoods" },
@@ -26,7 +30,12 @@ export function getDevProject(initialProject: Project, enabled: boolean) {
         .set("name", "0Test1-" + awardNumber)
         .set("awardNumber", awardNumber)
         .set("subsequentLettering", "en")
-        .set("startDate", moment().set("date", 10))
+        .set(
+            "startDate",
+            moment()
+                .startOf("month")
+                .subtract(1, "month")
+        )
         .set(
             "endDate",
             moment()
@@ -37,4 +46,15 @@ export function getDevProject(initialProject: Project, enabled: boolean) {
             { id: "OKEZCrPzqph", displayName: "Atlas Copco" },
             { id: "em8NIwi0KvM", displayName: "Agridius Foundation" },
         ]);
+}
+
+export function getDevMerReport() {
+    return {
+        date: moment(),
+        orgUnit: {
+            path: "/J0hschZVMBt/PJb0RtEnqlf",
+            id: "PJb0RtEnqlf",
+            displayName: "Sierra Leona",
+        },
+    };
 }

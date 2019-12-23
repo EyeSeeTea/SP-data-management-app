@@ -53,6 +53,7 @@ describe("Config", () => {
                 "base",
                 "categories",
                 "categoryCombos",
+                "categoryOptions",
                 "currentUser",
                 "dataElements",
                 "funders",

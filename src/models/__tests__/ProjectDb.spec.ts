@@ -15,7 +15,11 @@ async function getProject(): Promise<Project> {
             name: "MyProject",
             startDate: moment("2019-10-01"),
             endDate: moment("2020-03-01"),
-            parentOrgUnit: { path: "/J0hschZVMBt/PJb0RtEnqlf" },
+            parentOrgUnit: {
+                path: "/J0hschZVMBt/PJb0RtEnqlf",
+                id: "PJb0RtEnqlf",
+                displayName: "Sierra Leona",
+            },
             funders: config.funders.slice(0, 2),
             awardNumber: "12345",
             subsequentLettering: "en",
@@ -68,6 +72,7 @@ const expectedDataStoreMer = {
 const expectedOrgUnitPut = {
     id: "WGC0DJ0YSis",
     name: "MyProject",
+    displayName: "MyProject",
     path: "/J0hschZVMBt/PJb0RtEnqlf/WGC0DJ0YSis",
     code: "en12345",
     shortName: "MyProject",
@@ -87,6 +92,7 @@ const expectedMetadataPost = {
         {
             id: "WGC0DJ0YSis",
             name: "MyProject",
+            displayName: "MyProject",
             path: "/J0hschZVMBt/PJb0RtEnqlf/WGC0DJ0YSis",
             code: "en12345",
             shortName: "MyProject",

@@ -34,6 +34,7 @@ interface Props {
     location: Location;
     snackbar: any;
     match: null | { params: { id?: string } };
+    isDev: boolean;
 }
 
 interface State {
@@ -60,14 +61,13 @@ class ProjectWizardImpl extends React.Component<Props, State> {
     };
 
     async componentDidMount() {
-        const { api, config, match, location } = this.props;
-        const isDevMode = location.hash.split("#")[2] == "dev";
+        const { api, config, match, isDev } = this.props;
 
         try {
             const project =
                 match && match.params.id
                     ? await Project.get(api, config, match.params.id)
-                    : getDevProject(await Project.create(api, config), isDevMode);
+                    : getDevProject(await Project.create(api, config), isDev);
             this.setState({ project });
         } catch (err) {
             console.error(err);
@@ -244,7 +244,7 @@ const ProjectWizard: React.FC<{}> = () => {
     const snackbar = useSnackbar();
     const history = useHistory();
     const location = useLocation();
-    const { api, config } = useAppContext();
+    const { api, config, isDev } = useAppContext();
     const match = useRouteMatch();
 
     return (
@@ -255,6 +255,7 @@ const ProjectWizard: React.FC<{}> = () => {
             history={history}
             location={location}
             match={match}
+            isDev={isDev}
         />
     );
 };

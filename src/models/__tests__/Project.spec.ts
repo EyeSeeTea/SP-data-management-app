@@ -64,15 +64,6 @@ describe("Project", () => {
                 },
             }).replyOnce(200, paginatedOrgUnits);
         });
-
-        it("gets organisation unit with display name", async () => {
-            const project1 = await getProject();
-            const orgUnit = { path: "/3/2/1" };
-            const project2 = project1.set("parentOrgUnit", orgUnit);
-            const orgUnitName = await project2.getOrganisationUnitName();
-
-            expect(orgUnitName).toEqual("Asia");
-        });
     });
 
     describe("validate", () => {

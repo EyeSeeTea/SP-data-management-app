@@ -22,14 +22,16 @@
         "@material-ui/icons": "^4.5.1",
         "@material-ui/styles": "^4.6.0",
         "@types/classnames": "^2.2.9",
+        "async-promise-pool": "^1.0.2",
         "axios": "^0.19.0",
         "d2": "^31.1.1",
-        "d2-api": "0.0.2-beta.12",
+        "d2-api": "0.0.2-beta.13",
         "d2-manifest": "^1.0.0",
-        "d2-ui-components": "1.1.0-beta.1",
+        "d2-ui-components": "1.0.0-beta.7",
         "enzyme": "^3.7.0",
         "enzyme-adapter-react-16": "^1.6.0",
         "enzyme-to-json": "^3.3.4",
+        "exceljs": "^3.5.0",
         "font-awesome": "^4.7.0",
         "husky": "^1.1.2",
         "jest": "^23.6.0",
@@ -60,7 +62,8 @@
         "manifest": "d2-manifest package.json build/manifest.webapp",
         "cy:verify": "cypress verify",
         "cy:e2e:open": "CYPRESS_E2E=true cypress open",
-        "cy:e2e:run": "CYPRESS_E2E=true cypress run --browser chrome"
+        "cy:e2e:run": "CYPRESS_E2E=true cypress run --browser chrome",
+        "test-fixtures": "TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' ts-node src/models/Config.ts"
     },
     "husky": {
         "hooks": {

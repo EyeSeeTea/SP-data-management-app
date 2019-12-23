@@ -5,13 +5,16 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2019-12-12T12:37:45.537Z\n"
-"PO-Revision-Date: 2019-12-12T12:37:45.537Z\n"
+"POT-Creation-Date: 2019-12-20T10:04:28.263Z\n"
+"PO-Revision-Date: 2019-12-20T10:04:28.263Z\n"
 
 msgid "<No value>"
 msgstr ""
 
 msgid "Help"
+msgstr ""
+
+msgid "This user has no Data output and analytic organisation units assigned"
 msgstr ""
 
 msgid "Back"
@@ -59,9 +62,6 @@ msgstr ""
 msgid "Field length is invalid"
 msgstr ""
 
-msgid "This user has no Data output and analytic organisation units assigned"
-msgstr ""
-
 msgid "Description"
 msgstr ""
 
@@ -107,6 +107,78 @@ msgid "Yes"
 msgstr ""
 
 msgid "No"
+msgstr ""
+
+msgid "National Staff"
+msgstr ""
+
+msgid "IFS"
+msgstr ""
+
+msgid "IFS Dependents"
+msgstr ""
+
+msgid "Regional"
+msgstr ""
+
+msgid "Regional Dependents"
+msgstr ""
+
+msgid "Interns"
+msgstr ""
+
+msgid "Monthly Executive Report"
+msgstr ""
+
+msgid "Country Director"
+msgstr ""
+
+msgid "Prepared by"
+msgstr ""
+
+msgid "Executive Summary"
+msgstr ""
+
+msgid "Ministry Summary"
+msgstr ""
+
+msgid "Staff Summary"
+msgstr ""
+
+msgid "Projected Activities for the Next Month"
+msgstr ""
+
+msgid "Narrative"
+msgstr ""
+
+msgid "Project"
+msgstr ""
+
+msgid "Indicators"
+msgstr ""
+
+msgid "Target"
+msgstr ""
+
+msgid "Actual"
+msgstr ""
+
+msgid "Achieved to date (%)"
+msgstr ""
+
+msgid "Comment"
+msgstr ""
+
+msgid "Activities"
+msgstr ""
+
+msgid "Full-time"
+msgstr ""
+
+msgid "Part-time"
+msgstr ""
+
+msgid "Total"
 msgstr ""
 
 msgid "Data Elements"
@@ -189,9 +261,6 @@ msgid "This is an example of help message."
 msgstr ""
 
 msgid "Project Configuration"
-msgstr ""
-
-msgid "Monthly Executive Report"
 msgstr ""
 
 msgid "Add Actual Values"
@@ -319,4 +388,27 @@ msgid "Create Project"
 msgstr ""
 
 msgid "Help message for MER"
+msgstr ""
+
+msgid "Report saved"
+msgstr ""
+
+msgid "Error saving report"
+msgstr ""
+
+msgid ""
+"You are about to exit the report, any changes will be lost. Are you sure "
+"you want to proceed?"
+msgstr ""
+
+msgid "Date"
+msgstr ""
+
+msgid "No open projects in the selected date and organisation unit"
+msgstr ""
+
+msgid "Projected Activities for the next month"
+msgstr ""
+
+msgid "Download"
 msgstr ""
