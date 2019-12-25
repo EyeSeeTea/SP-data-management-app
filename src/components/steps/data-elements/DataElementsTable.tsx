@@ -6,6 +6,7 @@ import DataElementsFilters, { Filter } from "./DataElementsFilters";
 import i18n from "../../../locales";
 import DataElementsSet, { SelectionUpdate, DataElement } from "../../../models/dataElementsSet";
 import Project from "../../../models/Project";
+import { useAppContext } from "../../../contexts/api-context";
 
 type Field = "selection" | "MER";
 
@@ -19,8 +20,7 @@ export interface DataElementsTableProps {
 
 const DataElementsTable: React.FC<DataElementsTableProps> = props => {
     const { project, dataElementsSet, sectorId, onChange, field } = props;
-    // const { isDev } = useAppContext(); Uncomment when merged
-    const isDev = false;
+    const { isDev } = useAppContext();
     const snackbar = useSnackbar();
     const [filter, setFilter] = useState<Filter>({});
     if (!sectorId) return null;

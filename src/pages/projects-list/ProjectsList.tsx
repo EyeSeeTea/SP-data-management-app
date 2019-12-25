@@ -2,7 +2,6 @@ import React from "react";
 import { OldObjectsTable, TableColumn } from "d2-ui-components";
 import i18n from "../../locales";
 import _ from "lodash";
-import PageHeader from "../../components/page-header/PageHeader";
 import { useAppContext, CurrentUser } from "../../contexts/api-context";
 import { useGoTo, GoTo } from "../../router";
 import Project, { FiltersForList, ProjectForList } from "../../models/Project";
@@ -188,7 +187,6 @@ function getConfig(goTo: GoTo, currentUser: CurrentUser) {
 const ProjectsList: React.FC = () => {
     const goTo = useGoTo();
     const { api, config, currentUser } = useAppContext();
-    const goToLandingPage = () => goTo("projects");
     const componentConfig = getConfig(goTo, currentUser);
     const canAccessMer = currentUser.hasRole("admin") || currentUser.hasRole("dataReviewer");
 
@@ -201,13 +199,7 @@ const ProjectsList: React.FC = () => {
 
     return (
         <React.Fragment>
-            <PageHeader
-                title={i18n.t("Projects")}
-                help={componentConfig.help}
-                onBackClick={goToLandingPage}
-            />
-
-            <div style={{ position: "absolute", top: 80, right: 250 }}>
+            <div style={{ position: "absolute", top: 60, right: 250 }}>
                 {canAccessMer && (
                     <ActionButton
                         label={i18n.t("MER Reports")}
@@ -224,17 +216,19 @@ const ProjectsList: React.FC = () => {
                 )}
             </div>
 
-            <OldObjectsTable
-                model={{ modelValidations: {} }}
-                columns={componentConfig.columns}
-                d2={{}}
-                detailsFields={componentConfig.detailsFields}
-                initialSorting={componentConfig.initialSorting}
-                pageSize={20}
-                actions={componentConfig.actions}
-                list={list}
-                disableMultiplePageSelection={true}
-            />
+            <div style={{ marginTop: 25 }}>
+                <OldObjectsTable
+                    model={{ modelValidations: {} }}
+                    columns={componentConfig.columns}
+                    d2={{}}
+                    detailsFields={componentConfig.detailsFields}
+                    initialSorting={componentConfig.initialSorting}
+                    pageSize={20}
+                    actions={componentConfig.actions}
+                    list={list}
+                    disableMultiplePageSelection={true}
+                />
+            </div>
         </React.Fragment>
     );
 };
