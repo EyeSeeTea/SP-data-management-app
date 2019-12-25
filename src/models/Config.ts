@@ -36,6 +36,10 @@ const baseConfig = {
     categoryCombos: {
         targetActual: "ACTUAL_TARGET",
     },
+    categoryOptions: {
+        target: "TARGET",
+        actual: "ACTUAL",
+    },
     dataElementGroups: {
         global: "GLOBAL",
         sub: "SUB",
@@ -64,6 +68,7 @@ const metadataParams = {
         filter: { code: { in: _.values(baseConfig.categories) } },
     },
     categoryCombos: getParamsForIndexables(baseConfig.categoryCombos),
+    categoryOptions: getParamsForIndexables(baseConfig.categoryOptions),
     dataElements: {
         fields: {
             id: yes,
@@ -116,6 +121,7 @@ export type BaseConfig = typeof baseConfig;
 
 export type CurrentUser = {
     id: Id;
+    displayName: string;
     userRoles: Array<{ name: string }>;
     organisationUnits: OrganisationUnit[];
 };
@@ -153,6 +159,7 @@ export type Config = {
     attributes: IndexedObjs<"attributes", Attribute>;
     categories: IndexedObjs<"categories", Category>;
     categoryCombos: IndexedObjs<"categoryCombos", CategoryCombo>;
+    categoryOptions: IndexedObjs<"categoryOptions", CategoryOption>;
     indicators: Indicator[];
 };
 
@@ -169,9 +176,8 @@ class ConfigLoader {
             .getOrFail(baseConfig.organitionUnitGroupSets.funder).organisationUnitGroups;
 
         const currentUser = {
-            id: d2CurrentUser.id,
+            ...d2CurrentUser,
             userRoles: d2CurrentUser.userCredentials.userRoles,
-            organisationUnits: d2CurrentUser.organisationUnits,
         };
 
         const config = {
@@ -185,6 +191,10 @@ class ConfigLoader {
             categoryCombos: indexObjects<CategoryCombo, "categoryCombos">(
                 metadata,
                 "categoryCombos"
+            ),
+            categoryOptions: indexObjects<CategoryOption, "categoryOptions">(
+                metadata,
+                "categoryOptions"
             ),
         };
 
@@ -213,7 +223,7 @@ class ConfigLoader {
     }
 }
 
-type IndexableKeys = "attributes" | "categories" | "categoryCombos";
+type IndexableKeys = "attributes" | "categories" | "categoryCombos" | "categoryOptions";
 
 function indexObjects<ValueType, Key extends IndexableKeys, RetValue = IndexedObjs<Key, ValueType>>(
     metadata: Metadata,

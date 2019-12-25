@@ -8,6 +8,7 @@ export interface AppContext {
     d2: object;
     config: Config;
     currentUser: User;
+    isDev: boolean;
 }
 
 export type CurrentUser = AppContext["currentUser"];
