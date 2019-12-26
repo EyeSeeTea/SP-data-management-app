@@ -156,7 +156,7 @@ class ProjectWizardImpl extends React.Component<Props, State> {
     };
 
     goToConfiguration = () => {
-        this.props.history.push("/projects");
+        this.props.history.push(generateUrl("projects"));
     };
 
     handleDialogCancel = () => {

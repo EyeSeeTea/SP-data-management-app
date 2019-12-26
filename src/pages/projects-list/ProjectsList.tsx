@@ -2,16 +2,13 @@ import React from "react";
 import { OldObjectsTable, TableColumn } from "d2-ui-components";
 import i18n from "../../locales";
 import _ from "lodash";
-import PageHeader from "../../components/page-header/PageHeader";
-import { useHistory } from "react-router";
-import { History } from "history";
 import { useAppContext, CurrentUser } from "../../contexts/api-context";
-import { generateUrl } from "../../router";
+import { useGoTo, GoTo } from "../../router";
 import Project, { FiltersForList, ProjectForList } from "../../models/Project";
 import { Pagination } from "../../types/ObjectsList";
-import "./ProjectsList.css";
 import { Config } from "../../models/Config";
 import { formatDateShort, formatDateLong } from "../../utils/date";
+import ActionButton from "../../components/action-button/ActionButton";
 import { GetPropertiesByType } from "../../types/utils";
 
 type UserRolesConfig = Config["base"]["userRoles"];
@@ -19,10 +16,6 @@ type UserRolesConfig = Config["base"]["userRoles"];
 type ActionsRoleMapping<Actions> = {
     [Key in keyof UserRolesConfig]?: Array<keyof Actions>;
 };
-
-function goTo(history: History, url: string) {
-    history.push(url);
-}
 
 const Link: React.FC<{ url: string }> = ({ url }) => {
     return (
@@ -48,7 +41,7 @@ function columnDate(
     };
 }
 
-function getConfig(history: History, currentUser: CurrentUser) {
+function getConfig(goTo: GoTo, currentUser: CurrentUser) {
     const columns: TableColumn<ProjectForList>[] = [
         { name: "displayName", text: i18n.t("Name"), sortable: true },
         { ...columnDate("lastUpdated", "datetime"), text: i18n.t("Last updated"), sortable: true },
@@ -107,8 +100,7 @@ function getConfig(history: History, currentUser: CurrentUser) {
             icon: "library_books",
             text: i18n.t("Add Actual Values"),
             multiple: false,
-            onClick: (project: ProjectForList) =>
-                goTo(history, generateUrl("actualValues", { id: project.id })),
+            onClick: (project: ProjectForList) => goTo("actualValues", { id: project.id }),
         },
 
         dashboard: {
@@ -116,8 +108,7 @@ function getConfig(history: History, currentUser: CurrentUser) {
             icon: "dashboard",
             text: i18n.t("Go to Dashboard"),
             multiple: false,
-            onClick: (project: ProjectForList) =>
-                goTo(history, generateUrl("dashboard", { id: project.id })),
+            onClick: (project: ProjectForList) => goTo("dashboard", { id: project.id }),
         },
         reopenDatasets: {
             name: "reopen-datasets",
@@ -131,8 +122,7 @@ function getConfig(history: History, currentUser: CurrentUser) {
             icon: "assignment",
             text: i18n.t("Add Target Values"),
             multiple: false,
-            onClick: (project: ProjectForList) =>
-                goTo(history, generateUrl("targetValues", { id: project.id })),
+            onClick: (project: ProjectForList) => goTo("targetValues", { id: project.id }),
         },
 
         downloadData: {
@@ -142,19 +132,11 @@ function getConfig(history: History, currentUser: CurrentUser) {
             multiple: false,
         },
 
-        configMER: {
-            name: "mer",
-            icon: "description",
-            text: i18n.t("Generate / Configure MER"),
-            multiple: false,
-        },
-
         edit: {
             name: "edit",
             text: i18n.t("Edit"),
             multiple: false,
-            onClick: (project: ProjectForList) =>
-                goTo(history, generateUrl("projects.edit", { id: project.id })),
+            onClick: (project: ProjectForList) => goTo("projects.edit", { id: project.id }),
         },
 
         delete: {
@@ -168,14 +150,7 @@ function getConfig(history: History, currentUser: CurrentUser) {
     };
 
     const actionsForUserRoles: ActionsRoleMapping<typeof allActions> = {
-        dataReviewer: [
-            "actualValues",
-            "targetValues",
-            "dashboard",
-            "downloadData",
-            "configMER",
-            "edit",
-        ],
+        dataReviewer: ["actualValues", "targetValues", "dashboard", "downloadData", "edit"],
         dataViewer: ["dashboard", "downloadData"],
         admin: [
             "actualValues",
@@ -183,7 +158,6 @@ function getConfig(history: History, currentUser: CurrentUser) {
             "dashboard",
             "downloadData",
             "reopenDatasets",
-            "configMER",
             "edit",
             "delete",
         ],
@@ -211,40 +185,50 @@ function getConfig(history: History, currentUser: CurrentUser) {
 }
 
 const ProjectsList: React.FC = () => {
-    const history = useHistory();
+    const goTo = useGoTo();
     const { api, config, currentUser } = useAppContext();
-    const goToLandingPage = () => goTo(history, "/");
-
-    const componentConfig = getConfig(history, currentUser);
+    const componentConfig = getConfig(goTo, currentUser);
+    const canAccessMer = currentUser.hasRole("admin") || currentUser.hasRole("dataReviewer");
 
     const list = (_d2: unknown, filters: FiltersForList, pagination: Pagination) =>
         Project.getList(api, config, filters, pagination);
 
     const newProjectPageHandler = currentUser.canCreateProject()
-        ? () => goTo(history, generateUrl("projects.new"))
+        ? () => goTo("projects.new")
         : null;
 
     return (
         <React.Fragment>
-            <PageHeader
-                title={i18n.t("Projects")}
-                help={componentConfig.help}
-                onBackClick={goToLandingPage}
-            />
+            <div style={{ position: "absolute", top: 60, right: 250 }}>
+                {canAccessMer && (
+                    <ActionButton
+                        label={i18n.t("MER Reports")}
+                        onClick={() => goTo("report")}
+                        style={{ marginRight: 20 }}
+                    />
+                )}
 
-            <OldObjectsTable
-                model={{ modelValidations: {} }}
-                columns={componentConfig.columns}
-                d2={{}}
-                detailsFields={componentConfig.detailsFields}
-                initialSorting={componentConfig.initialSorting}
-                pageSize={20}
-                actions={componentConfig.actions}
-                list={list}
-                disableMultiplePageSelection={true}
-                buttonLabel={i18n.t("Create Project")}
-                onButtonClick={newProjectPageHandler}
-            />
+                {newProjectPageHandler && (
+                    <ActionButton
+                        label={i18n.t("Create Project")}
+                        onClick={newProjectPageHandler}
+                    />
+                )}
+            </div>
+
+            <div style={{ marginTop: 25 }}>
+                <OldObjectsTable
+                    model={{ modelValidations: {} }}
+                    columns={componentConfig.columns}
+                    d2={{}}
+                    detailsFields={componentConfig.detailsFields}
+                    initialSorting={componentConfig.initialSorting}
+                    pageSize={20}
+                    actions={componentConfig.actions}
+                    list={list}
+                    disableMultiplePageSelection={true}
+                />
+            </div>
         </React.Fragment>
     );
 };

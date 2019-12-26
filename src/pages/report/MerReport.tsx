@@ -44,6 +44,7 @@ const MerReportComponent: React.FC = () => {
         initial.orgUnit
     );
     const [merReport, setMerReport_] = useState<MerReport | undefined | null>(null);
+    const title = i18n.t("Monthly Executive Reports");
 
     React.useEffect(() => {
         if (date && orgUnit) {
@@ -87,7 +88,7 @@ const MerReportComponent: React.FC = () => {
                 isOpen={showExitWarning}
                 onSave={goToLandingPage}
                 onCancel={() => showExitWarningSet(false)}
-                title={i18n.t("Monthly Executive Report")}
+                title={title}
                 description={i18n.t(
                     "You are about to exit the report, any changes will be lost. Are you sure you want to proceed?"
                 )}
@@ -95,7 +96,7 @@ const MerReportComponent: React.FC = () => {
                 cancelText={i18n.t("No")}
             />
             <PageHeader
-                title={i18n.t("Monthly Executive Report")}
+                title={title}
                 help={translations.help}
                 onBackClick={() =>
                     wasReportModified ? showExitWarningSet(true) : goToLandingPage()

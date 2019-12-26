@@ -1,6 +1,6 @@
 import React from "react";
 import { Route, Switch, HashRouter } from "react-router-dom";
-import LandingPage from "../landing-page/LandingPage";
+
 import ProjectsList from "../projects-list/ProjectsList";
 import MerReport from "../report/MerReport";
 import Dashboard from "../dashboard/Dashboard";
@@ -14,7 +14,6 @@ const Root = () => {
         <HashRouter>
             <Switch>
                 <Route path={generateUrl("projects.new")} render={() => <ProjectWizard />} />
-                <Route path={generateUrl("projects")} render={() => <ProjectsList />} />
                 <Route path={generateUrl("report")} render={() => <MerReport />} />
                 <Route
                     path={generateUrl("actualValues", idParam)}
@@ -26,7 +25,7 @@ const Root = () => {
                 />
                 <Route path={generateUrl("dashboard", idParam)} render={() => <Dashboard />} />
                 <Route path={generateUrl("dashboards")} render={() => <Dashboard />} />
-                <Route render={() => <LandingPage />} />
+                <Route render={() => <ProjectsList />} />
             </Switch>
         </HashRouter>
     );

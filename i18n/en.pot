@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2019-12-20T11:48:40.389Z\n"
-"PO-Revision-Date: 2019-12-20T11:48:40.389Z\n"
+"POT-Creation-Date: 2019-12-25T09:16:35.288Z\n"
+"PO-Revision-Date: 2019-12-25T09:16:35.288Z\n"
 
 msgid "<No value>"
 msgstr ""
@@ -263,15 +263,6 @@ msgstr ""
 msgid "This is an example of help message."
 msgstr ""
 
-msgid "Project Configuration"
-msgstr ""
-
-msgid "Add Actual Values"
-msgstr ""
-
-msgid "Dashboard"
-msgstr ""
-
 msgid "Cannot load project"
 msgstr ""
 
@@ -355,6 +346,9 @@ msgstr ""
 msgid "Details"
 msgstr ""
 
+msgid "Add Actual Values"
+msgstr ""
+
 msgid "Go to Dashboard"
 msgstr ""
 
@@ -365,9 +359,6 @@ msgid "Add Target Values"
 msgstr ""
 
 msgid "Download Data"
-msgstr ""
-
-msgid "Generate / Configure MER"
 msgstr ""
 
 msgid "Edit"
@@ -384,13 +375,16 @@ msgid ""
 "wish to perform an action over a project."
 msgstr ""
 
-msgid "Projects"
+msgid "MER Reports"
 msgstr ""
 
 msgid "Create Project"
 msgstr ""
 
 msgid "Help message for MER"
+msgstr ""
+
+msgid "Monthly Executive Reports"
 msgstr ""
 
 msgid "Report saved"

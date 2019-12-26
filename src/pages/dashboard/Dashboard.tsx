@@ -50,10 +50,6 @@ function waitforElementToLoad(iframeDocument: any, selector: string) {
     });
 }
 
-function goToBack(history: History, projectId: string | undefined | null) {
-    goTo(history, projectId ? generateUrl("projects") : generateUrl("home"));
-}
-
 type RouterParams = { id?: string };
 
 type GetState<Data> = { loading: boolean; data?: Data; error?: string };
@@ -110,9 +106,11 @@ const Dashboard: React.FC = () => {
             <PageHeader
                 title={translations.title}
                 help={translations.help}
-                onBackClick={() => goToBack(history, projectId)}
+                onBackClick={() => goTo(history, generateUrl("projects"))}
             />
+
             <div style={stylesSubtitle}>{translations.subtitle}</div>
+
             {loading && <LinearProgress />}
             {error && <p>{error}</p>}
             {data && (
