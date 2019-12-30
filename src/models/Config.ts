@@ -39,12 +39,17 @@ const baseConfig = {
     categoryOptions: {
         target: "TARGET",
         actual: "ACTUAL",
+        new: "NEW",
+        recurring: "RECURRING",
     },
     dataElementGroups: {
         global: "GLOBAL",
         sub: "SUB",
         people: "PEOPLE",
         benefit: "BENEFIT",
+    },
+    legendSets: {
+        achieved: "ACTUAL_TARGET_ACHIEVED",
     },
     organitionUnitGroupSets: {
         funder: "FUNDER",
@@ -69,6 +74,7 @@ const metadataParams = {
     },
     categoryCombos: getParamsForIndexables(baseConfig.categoryCombos),
     categoryOptions: getParamsForIndexables(baseConfig.categoryOptions),
+    legendSets: getParamsForIndexables(baseConfig.legendSets),
     dataElements: {
         fields: {
             id: yes,
@@ -148,6 +154,7 @@ type Attribute = CodedObject;
 export type CategoryCombo = CodedObject;
 export type CategoryOption = CodedObject;
 export type Category = CodedObject & { categoryOptions: CategoryOption[] };
+export type LegendSet = CodedObject;
 export type Indicator = CodedObject;
 
 export type Config = {
@@ -160,6 +167,7 @@ export type Config = {
     categories: IndexedObjs<"categories", Category>;
     categoryCombos: IndexedObjs<"categoryCombos", CategoryCombo>;
     categoryOptions: IndexedObjs<"categoryOptions", CategoryOption>;
+    legendSets: IndexedObjs<"legendSets", LegendSet>;
     indicators: Indicator[];
 };
 
@@ -196,6 +204,7 @@ class ConfigLoader {
                 metadata,
                 "categoryOptions"
             ),
+            legendSets: indexObjects<LegendSet, "legendSets">(metadata, "legendSets"),
         };
 
         return config;
@@ -223,7 +232,12 @@ class ConfigLoader {
     }
 }
 
-type IndexableKeys = "attributes" | "categories" | "categoryCombos" | "categoryOptions";
+type IndexableKeys =
+    | "attributes"
+    | "categories"
+    | "categoryCombos"
+    | "categoryOptions"
+    | "legendSets";
 
 function indexObjects<ValueType, Key extends IndexableKeys, RetValue = IndexedObjs<Key, ValueType>>(
     metadata: Metadata,
