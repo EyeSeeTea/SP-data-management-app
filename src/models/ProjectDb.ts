@@ -128,7 +128,7 @@ export default class ProjectDb {
         const response = await api.metadata
             .post(payload)
             .getData()
-            .catch(err => null);
+            .catch(_err => null);
 
         return { orgUnit: orgUnitToSave, payload, response, project: this.project };
     }
@@ -141,8 +141,8 @@ export default class ProjectDb {
     }
 
     /*
-    Creating the orgUnit in the metadata endpoint has two problems regarding the
-    getOrganisationUnitTree.action endpoint:
+    When we create the organisation unit using the metadata endpoint, we have two problems regarding
+    the getOrganisationUnitTree.action endpoint:
 
     1. The version field is reset only when using the specific model endpoint, when using
         a metadata POST, the orgUnit tree in data entry is not updated.
@@ -151,9 +151,9 @@ export default class ProjectDb {
         a long date format ("Fri Nov 08 09:49:00 GMT 2019"), instead of the correct format "YYYY-MM-DD",
         which breaks the data-entry JS code.
 
-    Solution: Re-save the orgUnit using a PUT /api/organisationUnits.
+    Workaround: Re-save the orgUnit using a PUT /api/organisationUnits.
 
-    This is a desisable request to finish, but don't stop the saving process in case of error.
+    This is an extra, so don't stop the saving process in case of an error.
     */
     async updateOrgUnit(
         response: MetadataResponse | null,
