@@ -125,7 +125,10 @@ export default class ProjectDb {
 
         await this.saveMERData(orgUnit.id).getData();
 
-        const response = await api.metadata.post(payload).getData();
+        const response = await api.metadata
+            .post(payload)
+            .getData()
+            .catch(err => null);
 
         return { orgUnit: orgUnitToSave, payload, response, project: this.project };
     }
@@ -153,10 +156,10 @@ export default class ProjectDb {
     This is a desisable request to finish, but don't stop the saving process in case of error.
     */
     async updateOrgUnit(
-        response: MetadataResponse,
+        response: MetadataResponse | null,
         orgUnit: PartialPersistedModel<D2OrganisationUnit>
     ) {
-        if (response.status === "OK") {
+        if (response && response.status === "OK") {
             await this.project.api.models.organisationUnits
                 .put(orgUnit)
                 .getData()
