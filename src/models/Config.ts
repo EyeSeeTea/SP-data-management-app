@@ -194,17 +194,11 @@ class ConfigLoader {
             ...dataElementsMetadata,
             funders: _.sortBy(funders, funder => funder.displayName),
             indicators: metadata.indicators,
-            attributes: indexObjects<Attribute, "attributes">(metadata, "attributes"),
-            categories: indexObjects<Category, "categories">(metadata, "categories"),
-            categoryCombos: indexObjects<CategoryCombo, "categoryCombos">(
-                metadata,
-                "categoryCombos"
-            ),
-            categoryOptions: indexObjects<CategoryOption, "categoryOptions">(
-                metadata,
-                "categoryOptions"
-            ),
-            legendSets: indexObjects<LegendSet, "legendSets">(metadata, "legendSets"),
+            attributes: indexObjects(metadata, "attributes"),
+            categories: indexObjects(metadata, "categories"),
+            categoryCombos: indexObjects(metadata, "categoryCombos"),
+            categoryOptions: indexObjects(metadata, "categoryOptions"),
+            legendSets: indexObjects(metadata, "legendSets"),
         };
 
         return config;
@@ -232,14 +226,17 @@ class ConfigLoader {
     }
 }
 
-type IndexableKeys =
-    | "attributes"
-    | "categories"
-    | "categoryCombos"
-    | "categoryOptions"
-    | "legendSets";
+interface IndexableTypes {
+    attributes: Attribute;
+    categories: Category;
+    categoryCombos: CategoryCombo;
+    categoryOptions: CategoryOption;
+    legendSets: LegendSet;
+}
 
-function indexObjects<ValueType, Key extends IndexableKeys, RetValue = IndexedObjs<Key, ValueType>>(
+type IndexableKeys = keyof IndexableTypes;
+
+function indexObjects<Key extends IndexableKeys, RetValue = IndexedObjs<Key, IndexableTypes[Key]>>(
     metadata: Metadata,
     key: Key
 ): RetValue {
