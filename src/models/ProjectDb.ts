@@ -130,7 +130,15 @@ export default class ProjectDb {
             .getData()
             .catch(_err => null);
 
-        return { orgUnit: orgUnitToSave, payload, response, project: this.project };
+        const savedProject =
+            response && response.status === "OK"
+                ? this.project.setObj({
+                      id: orgUnit.id,
+                      orgUnit: _.pick(orgUnit, ["id", "path", "displayName"]),
+                  })
+                : this.project;
+
+        return { orgUnit: orgUnitToSave, payload, response, project: savedProject };
     }
 
     saveMERData(orgUnitId: Id): D2ApiResponse<void> {
