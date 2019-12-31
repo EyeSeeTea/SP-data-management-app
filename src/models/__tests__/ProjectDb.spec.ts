@@ -181,7 +181,7 @@ const expectedMetadataPost = {
                         id: "S0mQyu0r7fd",
                     },
                     dataElement: {
-                        id: "yMqK9DKbA3X",
+                        id: "We61YNYyOX0",
                     },
                     categoryCombo: {
                         id: "bjDvmb4bfuf",
@@ -192,7 +192,7 @@ const expectedMetadataPost = {
                         id: "S0mQyu0r7fd",
                     },
                     dataElement: {
-                        id: "We61YNYyOX0",
+                        id: "yMqK9DKbA3X",
                     },
                     categoryCombo: {
                         id: "bjDvmb4bfuf",
@@ -325,7 +325,7 @@ const expectedMetadataPost = {
                         id: "aAC2YJRBepp",
                     },
                     dataElement: {
-                        id: "yMqK9DKbA3X",
+                        id: "We61YNYyOX0",
                     },
                     categoryCombo: {
                         id: "bjDvmb4bfuf",
@@ -336,7 +336,7 @@ const expectedMetadataPost = {
                         id: "aAC2YJRBepp",
                     },
                     dataElement: {
-                        id: "We61YNYyOX0",
+                        id: "yMqK9DKbA3X",
                     },
                     categoryCombo: {
                         id: "bjDvmb4bfuf",
@@ -447,10 +447,10 @@ const expectedMetadataPost = {
             name: "Livelihoods",
             dataElements: [
                 {
-                    id: "yMqK9DKbA3X",
+                    id: "We61YNYyOX0",
                 },
                 {
-                    id: "We61YNYyOX0",
+                    id: "yMqK9DKbA3X",
                 },
             ],
             greyedFields: [],
@@ -484,10 +484,10 @@ const expectedMetadataPost = {
             name: "Livelihoods",
             dataElements: [
                 {
-                    id: "yMqK9DKbA3X",
+                    id: "We61YNYyOX0",
                 },
                 {
-                    id: "We61YNYyOX0",
+                    id: "yMqK9DKbA3X",
                 },
             ],
             greyedFields: [],
@@ -499,24 +499,66 @@ const expectedMetadataPost = {
             name: "MyProject",
             dashboardItems: [
                 {
-                    id: "SOGigOHr1pL",
-                    type: "REPORT_TABLE",
-                    reportTable: {
-                        id: "auqMvs2BvGM",
+                    id: "WMOgqLEpBlC",
+                    type: "CHART",
+                    chart: {
+                        id: "OgOU20E6G4f",
                     },
                 },
                 {
-                    id: "uWScEWgNkVT",
-                    type: "REPORT_TABLE",
-                    reportTable: {
-                        id: "uqkTSD5ZADF",
+                    id: "GQavMfHlswl",
+                    type: "CHART",
+                    chart: {
+                        id: "yK4T67qbssr",
                     },
                 },
                 {
-                    id: "Oi2jZzg8tRo",
+                    id: "WOEVSzntJcf",
+                    type: "CHART",
+                    chart: {
+                        id: "aeegubasf72",
+                    },
+                },
+                {
+                    id: "SeYNbVfObL4",
+                    type: "CHART",
+                    chart: {
+                        id: "WWqcPhi5Nh3",
+                    },
+                },
+                {
+                    id: "OCWuuDUus7n",
                     type: "REPORT_TABLE",
                     reportTable: {
-                        id: "qOAZdSf1dqI",
+                        id: "iyI3WXcUciK",
+                    },
+                },
+                {
+                    id: "WQIjOe2gZXZ",
+                    type: "REPORT_TABLE",
+                    reportTable: {
+                        id: "Kg4wY2c9x4I",
+                    },
+                },
+                {
+                    id: "Ge8ReLf7SCd",
+                    type: "REPORT_TABLE",
+                    reportTable: {
+                        id: "mMSoIpXaHBS",
+                    },
+                },
+                {
+                    id: "WgumfImz3GP",
+                    type: "REPORT_TABLE",
+                    reportTable: {
+                        id: "y02zthmCbtX",
+                    },
+                },
+                {
+                    id: "OYCw0oLhwxc",
+                    type: "REPORT_TABLE",
+                    reportTable: {
+                        id: "KmGEpPf3Ugh",
                     },
                 },
             ],
@@ -524,37 +566,40 @@ const expectedMetadataPost = {
     ],
     reportTables: [
         {
-            id: "auqMvs2BvGM",
-            name: "MyProject - PM People Indicators Gender Breakdown",
-            publicAccess: "rw------",
+            id: "iyI3WXcUciK",
+            name: "MyProject - PM Target vs Actual - Benefits",
             numberType: "VALUE",
+            publicAccess: "rw------",
             legendDisplayStyle: "FILL",
+            rowSubTotals: true,
             showDimensionLabels: true,
-            sortOrder: 0,
-            topLimit: 0,
             aggregationType: "DEFAULT",
             legendDisplayStrategy: "FIXED",
-            colSubTotals: true,
             rowTotals: true,
             digitGroupSeparator: "SPACE",
-            columnDimensions: ["pe"],
             dataDimensionItems: [
                 {
                     dataDimensionItemType: "DATA_ELEMENT",
                     dataElement: {
-                        id: "K6mAC5SiO29",
+                        id: "WS8XV4WWPE7",
                     },
                 },
                 {
                     dataDimensionItemType: "DATA_ELEMENT",
                     dataElement: {
-                        id: "ik0ICagvIjm",
+                        id: "We61YNYyOX0",
+                    },
+                },
+                {
+                    dataDimensionItemType: "DATA_ELEMENT",
+                    dataElement: {
+                        id: "yMqK9DKbA3X",
                     },
                 },
             ],
-            columns: [
+            organisationUnits: [
                 {
-                    id: "pe",
+                    id: "WGC0DJ0YSis",
                 },
             ],
             periods: [
@@ -577,20 +622,165 @@ const expectedMetadataPost = {
                     id: "202003",
                 },
             ],
+            columns: [
+                {
+                    id: "pe",
+                },
+            ],
+            columnDimensions: ["pe"],
+            filters: [
+                {
+                    id: "ou",
+                },
+            ],
+            filterDimensions: ["ou"],
+            rows: [
+                {
+                    id: "dx",
+                },
+                {
+                    code: "ACTUAL_TARGET",
+                    id: "GIIHAr9BzzO",
+                    categoryOptions: [
+                        {
+                            code: "TARGET",
+                            id: "imyqCWQ229K",
+                        },
+                        {
+                            code: "ACTUAL",
+                            id: "eWeQoOlAcxV",
+                        },
+                    ],
+                },
+            ],
+            rowDimensions: ["dx", "GIIHAr9BzzO"],
+            categoryDimensions: [
+                {
+                    category: {
+                        id: "GIIHAr9BzzO",
+                    },
+                    categoryOptions: [
+                        {
+                            id: "imyqCWQ229K",
+                        },
+                        {
+                            id: "eWeQoOlAcxV",
+                        },
+                    ],
+                },
+            ],
+        },
+        {
+            id: "Kg4wY2c9x4I",
+            name: "MyProject - PM Target vs Actual - People",
+            numberType: "VALUE",
+            publicAccess: "rw------",
+            legendDisplayStyle: "FILL",
+            rowSubTotals: true,
+            showDimensionLabels: true,
+            aggregationType: "DEFAULT",
+            legendDisplayStrategy: "FIXED",
+            rowTotals: true,
+            digitGroupSeparator: "SPACE",
+            dataDimensionItems: [
+                {
+                    dataDimensionItemType: "DATA_ELEMENT",
+                    dataElement: {
+                        id: "K6mAC5SiO29",
+                    },
+                },
+                {
+                    dataDimensionItemType: "DATA_ELEMENT",
+                    dataElement: {
+                        id: "ik0ICagvIjm",
+                    },
+                },
+            ],
             organisationUnits: [
                 {
                     id: "WGC0DJ0YSis",
                 },
             ],
-            filterDimensions: ["ou", "GIIHAr9BzzO"],
+            periods: [
+                {
+                    id: "201910",
+                },
+                {
+                    id: "201911",
+                },
+                {
+                    id: "201912",
+                },
+                {
+                    id: "202001",
+                },
+                {
+                    id: "202002",
+                },
+                {
+                    id: "202003",
+                },
+            ],
+            columns: [
+                {
+                    id: "pe",
+                },
+                {
+                    code: "GENDER",
+                    id: "Kyg1O6YEGa9",
+                    categoryOptions: [
+                        {
+                            code: "MALE",
+                            id: "qk2FihwV6IL",
+                        },
+                        {
+                            code: "FEMALE",
+                            id: "yW2hYVS3S4u",
+                        },
+                    ],
+                },
+            ],
+            columnDimensions: ["pe", "Kyg1O6YEGa9"],
             filters: [
                 {
                     id: "ou",
                 },
+            ],
+            filterDimensions: ["ou"],
+            rows: [
                 {
+                    id: "dx",
+                },
+                {
+                    code: "ACTUAL_TARGET",
                     id: "GIIHAr9BzzO",
+                    categoryOptions: [
+                        {
+                            code: "TARGET",
+                            id: "imyqCWQ229K",
+                        },
+                        {
+                            code: "ACTUAL",
+                            id: "eWeQoOlAcxV",
+                        },
+                    ],
+                },
+                {
+                    code: "NEW_RECURRING",
+                    id: "a0Cy1qwUuZv",
+                    categoryOptions: [
+                        {
+                            code: "NEW",
+                            id: "S2y8dcmR2kD",
+                        },
+                        {
+                            code: "RECURRING",
+                            id: "CyILz2yY8ey",
+                        },
+                    ],
                 },
             ],
+            rowDimensions: ["dx", "GIIHAr9BzzO", "a0Cy1qwUuZv"],
             categoryDimensions: [
                 {
                     category: {
@@ -607,6 +797,19 @@ const expectedMetadataPost = {
                 },
                 {
                     category: {
+                        id: "GIIHAr9BzzO",
+                    },
+                    categoryOptions: [
+                        {
+                            id: "imyqCWQ229K",
+                        },
+                        {
+                            id: "eWeQoOlAcxV",
+                        },
+                    ],
+                },
+                {
+                    category: {
                         id: "a0Cy1qwUuZv",
                     },
                     categoryOptions: [
@@ -618,53 +821,21 @@ const expectedMetadataPost = {
                         },
                     ],
                 },
-                {
-                    category: {
-                        id: "GIIHAr9BzzO",
-                    },
-                    categoryOptions: [
-                        {
-                            id: "eWeQoOlAcxV",
-                        },
-                    ],
-                },
             ],
-            rows: [
-                {
-                    id: "dx",
-                },
-                {
-                    id: "Kyg1O6YEGa9",
-                },
-                {
-                    id: "a0Cy1qwUuZv",
-                },
-            ],
-            rowDimensions: ["dx", "Kyg1O6YEGa9", "a0Cy1qwUuZv"],
         },
         {
-            id: "uqkTSD5ZADF",
-            name: "MyProject - PM Target vs Actual",
+            id: "mMSoIpXaHBS",
+            name: "MyProject - PM Target vs Actual - Unique People",
             numberType: "VALUE",
             publicAccess: "rw------",
             legendDisplayStyle: "FILL",
             rowSubTotals: true,
             showDimensionLabels: true,
-            sortOrder: 0,
-            topLimit: 0,
             aggregationType: "DEFAULT",
             legendDisplayStrategy: "FIXED",
             rowTotals: true,
             digitGroupSeparator: "SPACE",
-            filterDimensions: ["ou"],
-            columnDimensions: ["pe"],
             dataDimensionItems: [
-                {
-                    dataDimensionItemType: "DATA_ELEMENT",
-                    dataElement: {
-                        id: "WS8XV4WWPE7",
-                    },
-                },
                 {
                     dataDimensionItemType: "DATA_ELEMENT",
                     dataElement: {
@@ -677,22 +848,10 @@ const expectedMetadataPost = {
                         id: "ik0ICagvIjm",
                     },
                 },
-                {
-                    dataDimensionItemType: "DATA_ELEMENT",
-                    dataElement: {
-                        id: "yMqK9DKbA3X",
-                    },
-                },
-                {
-                    dataDimensionItemType: "DATA_ELEMENT",
-                    dataElement: {
-                        id: "We61YNYyOX0",
-                    },
-                },
             ],
-            columns: [
+            organisationUnits: [
                 {
-                    id: "pe",
+                    id: "WGC0DJ0YSis",
                 },
             ],
             periods: [
@@ -715,57 +874,271 @@ const expectedMetadataPost = {
                     id: "202003",
                 },
             ],
-            organisationUnits: [
+            columns: [
                 {
-                    id: "WGC0DJ0YSis",
+                    id: "pe",
+                },
+                {
+                    code: "GENDER",
+                    id: "Kyg1O6YEGa9",
+                    categoryOptions: [
+                        {
+                            code: "MALE",
+                            id: "qk2FihwV6IL",
+                        },
+                        {
+                            code: "FEMALE",
+                            id: "yW2hYVS3S4u",
+                        },
+                    ],
                 },
             ],
+            columnDimensions: ["pe", "Kyg1O6YEGa9"],
             filters: [
                 {
                     id: "ou",
                 },
+                {
+                    id: "a0Cy1qwUuZv",
+                    categoryOptions: [
+                        {
+                            code: "NEW",
+                            id: "S2y8dcmR2kD",
+                        },
+                    ],
+                },
             ],
+            filterDimensions: ["ou", "a0Cy1qwUuZv"],
+            rows: [
+                {
+                    id: "dx",
+                },
+                {
+                    code: "ACTUAL_TARGET",
+                    id: "GIIHAr9BzzO",
+                    categoryOptions: [
+                        {
+                            code: "TARGET",
+                            id: "imyqCWQ229K",
+                        },
+                        {
+                            code: "ACTUAL",
+                            id: "eWeQoOlAcxV",
+                        },
+                    ],
+                },
+            ],
+            rowDimensions: ["dx", "GIIHAr9BzzO"],
             categoryDimensions: [
+                {
+                    category: {
+                        id: "Kyg1O6YEGa9",
+                    },
+                    categoryOptions: [
+                        {
+                            id: "qk2FihwV6IL",
+                        },
+                        {
+                            id: "yW2hYVS3S4u",
+                        },
+                    ],
+                },
                 {
                     category: {
                         id: "GIIHAr9BzzO",
                     },
                     categoryOptions: [
                         {
-                            id: "eWeQoOlAcxV",
+                            id: "imyqCWQ229K",
                         },
                         {
-                            id: "imyqCWQ229K",
+                            id: "eWeQoOlAcxV",
+                        },
+                    ],
+                },
+                {
+                    category: {
+                        id: "a0Cy1qwUuZv",
+                    },
+                    categoryOptions: [
+                        {
+                            id: "S2y8dcmR2kD",
                         },
                     ],
                 },
             ],
-            rows: [
-                {
-                    id: "dx",
-                },
-                {
-                    id: "GIIHAr9BzzO",
-                },
-            ],
-            rowDimensions: ["dx", "GIIHAr9BzzO"],
         },
         {
-            id: "qOAZdSf1dqI",
-            name: "MyProject - PM Target vs Actual achieved (%)",
+            id: "y02zthmCbtX",
+            name: "MyProject - PM achieved (%) - Benefits",
             numberType: "VALUE",
             publicAccess: "rw------",
             legendDisplayStyle: "FILL",
             rowSubTotals: true,
             showDimensionLabels: true,
-            sortOrder: 0,
-            topLimit: 0,
             aggregationType: "DEFAULT",
             legendDisplayStrategy: "FIXED",
             rowTotals: true,
             digitGroupSeparator: "SPACE",
-            filterDimensions: ["ou"],
+            dataDimensionItems: [
+                {
+                    dataDimensionItemType: "INDICATOR",
+                    indicator: {
+                        id: "eCufXa6RkTm",
+                    },
+                },
+                {
+                    dataDimensionItemType: "INDICATOR",
+                    indicator: {
+                        id: "CaWKoWg00oo",
+                    },
+                },
+                {
+                    dataDimensionItemType: "INDICATOR",
+                    indicator: {
+                        id: "i01veyO4Cuw",
+                    },
+                },
+            ],
+            organisationUnits: [
+                {
+                    id: "WGC0DJ0YSis",
+                },
+            ],
+            periods: [
+                {
+                    id: "201910",
+                },
+                {
+                    id: "201911",
+                },
+                {
+                    id: "201912",
+                },
+                {
+                    id: "202001",
+                },
+                {
+                    id: "202002",
+                },
+                {
+                    id: "202003",
+                },
+            ],
+            columns: [
+                {
+                    id: "pe",
+                },
+            ],
             columnDimensions: ["pe"],
+            filters: [
+                {
+                    id: "ou",
+                },
+            ],
+            filterDimensions: ["ou"],
+            rows: [
+                {
+                    id: "dx",
+                },
+            ],
+            rowDimensions: ["dx"],
+            categoryDimensions: [],
+            legendSet: {
+                code: "ACTUAL_TARGET_ACHIEVED",
+                id: "yoAt108kUFm",
+            },
+        },
+        {
+            id: "KmGEpPf3Ugh",
+            name: "MyProject - PM achieved (%) - People",
+            numberType: "VALUE",
+            publicAccess: "rw------",
+            legendDisplayStyle: "FILL",
+            rowSubTotals: true,
+            showDimensionLabels: true,
+            aggregationType: "DEFAULT",
+            legendDisplayStrategy: "FIXED",
+            rowTotals: true,
+            digitGroupSeparator: "SPACE",
+            dataDimensionItems: [
+                {
+                    dataDimensionItemType: "INDICATOR",
+                    indicator: {
+                        id: "eYmeRzhBFV4",
+                    },
+                },
+                {
+                    dataDimensionItemType: "INDICATOR",
+                    indicator: {
+                        id: "u404ICrBKj3",
+                    },
+                },
+            ],
+            organisationUnits: [
+                {
+                    id: "WGC0DJ0YSis",
+                },
+            ],
+            periods: [
+                {
+                    id: "201910",
+                },
+                {
+                    id: "201911",
+                },
+                {
+                    id: "201912",
+                },
+                {
+                    id: "202001",
+                },
+                {
+                    id: "202002",
+                },
+                {
+                    id: "202003",
+                },
+            ],
+            columns: [
+                {
+                    id: "pe",
+                },
+            ],
+            columnDimensions: ["pe"],
+            filters: [
+                {
+                    id: "ou",
+                },
+            ],
+            filterDimensions: ["ou"],
+            rows: [
+                {
+                    id: "dx",
+                },
+            ],
+            rowDimensions: ["dx"],
+            categoryDimensions: [],
+            legendSet: {
+                code: "ACTUAL_TARGET_ACHIEVED",
+                id: "yoAt108kUFm",
+            },
+        },
+    ],
+    charts: [
+        {
+            id: "OgOU20E6G4f",
+            name: "MyProject - PM achieved monthly (%)",
+            publicAccess: "rw------",
+            type: "COLUMN",
+            aggregationType: "DEFAULT",
+            showData: true,
+            category: "dx",
+            organisationUnits: [
+                {
+                    id: "WGC0DJ0YSis",
+                },
+            ],
             dataDimensionItems: [
                 {
                     dataDimensionItemType: "INDICATOR",
@@ -788,19 +1161,14 @@ const expectedMetadataPost = {
                 {
                     dataDimensionItemType: "INDICATOR",
                     indicator: {
-                        id: "i01veyO4Cuw",
+                        id: "CaWKoWg00oo",
                     },
                 },
                 {
                     dataDimensionItemType: "INDICATOR",
                     indicator: {
-                        id: "CaWKoWg00oo",
+                        id: "i01veyO4Cuw",
                     },
-                },
-            ],
-            columns: [
-                {
-                    id: "pe",
                 },
             ],
             periods: [
@@ -823,9 +1191,15 @@ const expectedMetadataPost = {
                     id: "202003",
                 },
             ],
-            organisationUnits: [
+            series: "pe",
+            columns: [
                 {
-                    id: "WGC0DJ0YSis",
+                    id: "pe",
+                },
+            ],
+            rows: [
+                {
+                    id: "dx",
                 },
             ],
             filters: [
@@ -833,13 +1207,246 @@ const expectedMetadataPost = {
                     id: "ou",
                 },
             ],
+            filterDimensions: ["ou"],
             categoryDimensions: [],
+        },
+        {
+            id: "yK4T67qbssr",
+            name: "MyProject - PM achieved (%)",
+            publicAccess: "rw------",
+            type: "COLUMN",
+            aggregationType: "DEFAULT",
+            showData: true,
+            category: "dx",
+            organisationUnits: [
+                {
+                    id: "WGC0DJ0YSis",
+                },
+            ],
+            dataDimensionItems: [
+                {
+                    dataDimensionItemType: "INDICATOR",
+                    indicator: {
+                        id: "eCufXa6RkTm",
+                    },
+                },
+                {
+                    dataDimensionItemType: "INDICATOR",
+                    indicator: {
+                        id: "eYmeRzhBFV4",
+                    },
+                },
+                {
+                    dataDimensionItemType: "INDICATOR",
+                    indicator: {
+                        id: "u404ICrBKj3",
+                    },
+                },
+                {
+                    dataDimensionItemType: "INDICATOR",
+                    indicator: {
+                        id: "CaWKoWg00oo",
+                    },
+                },
+                {
+                    dataDimensionItemType: "INDICATOR",
+                    indicator: {
+                        id: "i01veyO4Cuw",
+                    },
+                },
+            ],
+            periods: [
+                {
+                    id: "201910",
+                },
+                {
+                    id: "201911",
+                },
+                {
+                    id: "201912",
+                },
+                {
+                    id: "202001",
+                },
+                {
+                    id: "202002",
+                },
+                {
+                    id: "202003",
+                },
+            ],
+            series: "ou",
+            columns: [
+                {
+                    id: "ou",
+                },
+            ],
             rows: [
                 {
                     id: "dx",
                 },
             ],
-            rowDimensions: ["dx"],
+            filters: [
+                {
+                    id: "pe",
+                },
+            ],
+            filterDimensions: ["pe"],
+            categoryDimensions: [],
+        },
+        {
+            id: "aeegubasf72",
+            name: "MyProject - PM achieved by gender (%)",
+            publicAccess: "rw------",
+            type: "COLUMN",
+            aggregationType: "DEFAULT",
+            showData: true,
+            category: "dx",
+            organisationUnits: [
+                {
+                    id: "WGC0DJ0YSis",
+                },
+            ],
+            dataDimensionItems: [
+                {
+                    dataDimensionItemType: "INDICATOR",
+                    indicator: {
+                        id: "eYmeRzhBFV4",
+                    },
+                },
+                {
+                    dataDimensionItemType: "INDICATOR",
+                    indicator: {
+                        id: "u404ICrBKj3",
+                    },
+                },
+            ],
+            periods: [
+                {
+                    id: "201910",
+                },
+                {
+                    id: "201911",
+                },
+                {
+                    id: "201912",
+                },
+                {
+                    id: "202001",
+                },
+                {
+                    id: "202002",
+                },
+                {
+                    id: "202003",
+                },
+            ],
+            series: "Kyg1O6YEGa9",
+            columns: [
+                {
+                    code: "GENDER",
+                    id: "Kyg1O6YEGa9",
+                    categoryOptions: [
+                        {
+                            code: "MALE",
+                            id: "qk2FihwV6IL",
+                        },
+                        {
+                            code: "FEMALE",
+                            id: "yW2hYVS3S4u",
+                        },
+                    ],
+                },
+            ],
+            rows: [
+                {
+                    id: "dx",
+                },
+            ],
+            filters: [
+                {
+                    id: "ou",
+                },
+                {
+                    id: "pe",
+                },
+            ],
+            filterDimensions: ["ou", "pe"],
+            categoryDimensions: [
+                {
+                    category: {
+                        id: "Kyg1O6YEGa9",
+                    },
+                    categoryOptions: [
+                        {
+                            id: "qk2FihwV6IL",
+                        },
+                        {
+                            id: "yW2hYVS3S4u",
+                        },
+                    ],
+                },
+            ],
+        },
+        {
+            id: "WWqcPhi5Nh3",
+            name: "MyProject - PM Benefits Per Person (%)",
+            publicAccess: "rw------",
+            type: "COLUMN",
+            aggregationType: "DEFAULT",
+            showData: true,
+            category: "dx",
+            organisationUnits: [
+                {
+                    id: "WGC0DJ0YSis",
+                },
+            ],
+            dataDimensionItems: [
+                {
+                    dataDimensionItemType: "INDICATOR",
+                    indicator: {
+                        id: "eoyInzqL7YZ",
+                    },
+                },
+            ],
+            periods: [
+                {
+                    id: "201910",
+                },
+                {
+                    id: "201911",
+                },
+                {
+                    id: "201912",
+                },
+                {
+                    id: "202001",
+                },
+                {
+                    id: "202002",
+                },
+                {
+                    id: "202003",
+                },
+            ],
+            series: "ou",
+            columns: [
+                {
+                    id: "ou",
+                },
+            ],
+            rows: [
+                {
+                    id: "dx",
+                },
+            ],
+            filters: [
+                {
+                    id: "pe",
+                },
+            ],
+            filterDimensions: ["pe"],
+            categoryDimensions: [],
         },
     ],
 };

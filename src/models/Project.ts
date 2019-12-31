@@ -67,6 +67,7 @@ import { Maybe } from "../types/utils";
 import { toISOString, getMonthsRange } from "../utils/date";
 
 export interface ProjectData {
+    id: Id | undefined;
     name: string;
     description: string;
     awardNumber: string;
@@ -119,6 +120,7 @@ interface OrganisationUnit {
 const monthFormat = "YYYYMM";
 
 const defaultProjectData = {
+    id: undefined,
     name: "",
     description: "",
     awardNumber: "",
@@ -185,6 +187,7 @@ class Project {
     };
 
     static fieldNames: Record<ProjectField, string> = {
+        id: i18n.t("Id"),
         name: i18n.t("Name"),
         dataElements: i18n.t("Data Elements"),
         description: i18n.t("Description"),
@@ -294,6 +297,10 @@ class Project {
         const [keys, promises] = _.unzip(_.toPairs(obj));
         const values = await Promise.all(promises);
         return _.fromPairs(_.zip(keys, values)) as Validations;
+    }
+
+    async getRelations(): Promise<Relations | undefined> {
+        return this.id ? Project.getRelations(this.api, this.config, this.id) : undefined;
     }
 
     static async getRelations(
@@ -447,25 +454,39 @@ class Project {
         }));
     }
 
-    getActualTargetIndicators(
-        dataElements: Array<{ code: string }>
+    private getIndicators(
+        dataElements: Array<{ code: string }>,
+        codePrefix: string
     ): Array<SelectedPick<D2IndicatorSchema, { id: true; code: true }>> {
         const indicatorsByCode = _.keyBy(this.config.indicators, indicator => indicator.code);
-        const { actualTargetPrefix } = this.config.base.indicators;
 
         return _(dataElements)
             .map(de => {
-                const indicatorCode = actualTargetPrefix + de.code;
+                const indicatorCode = codePrefix + de.code;
                 const indicator = _(indicatorsByCode).get(indicatorCode, undefined);
                 if (indicator) {
                     return indicator;
                 } else {
-                    console.error("Data element has no indicator associated: ${de.id}");
+                    console.error(
+                        `Data element (${de.code}) has no associated indicator with code=${indicatorCode}`
+                    );
                     return null;
                 }
             })
             .compact()
             .value();
+    }
+
+    getActualTargetIndicators(
+        dataElements: Array<{ code: string }>
+    ): Array<SelectedPick<D2IndicatorSchema, { id: true; code: true }>> {
+        return this.getIndicators(dataElements, this.config.base.indicators.actualTargetPrefix);
+    }
+
+    getCostBenefitIndicators(
+        dataElements: Array<{ code: string }>
+    ): Array<SelectedPick<D2IndicatorSchema, { id: true; code: true }>> {
+        return this.getIndicators(dataElements, this.config.base.indicators.costBenefitPrefix);
     }
 }
 

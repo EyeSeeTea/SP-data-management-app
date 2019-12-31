@@ -25,6 +25,7 @@ export default class ProjectDashboard {
             achievedMonthlyChart(project),
             achievedChart(project),
             genderChart(project),
+            costBenefit(project),
         ]);
         const items: Array<PartialModel<D2DashboardItem>> = [
             ...charts.map(chart => ({
@@ -314,6 +315,7 @@ function genderChart(project: Project): MaybeD2Chart {
     const dataElements = project.dataElements.get({
         onlySelected: true,
         includePaired: true,
+        peopleOrBenefit: "people",
     });
 
     return getChart(project, {
@@ -322,6 +324,25 @@ function genderChart(project: Project): MaybeD2Chart {
         items: project.getActualTargetIndicators(dataElements),
         reportFilter: [{ id: "ou" }, { id: "pe" }],
         seriesDimension: project.config.categories.gender,
+        categoryDimension: { id: "dx" },
+    });
+}
+
+function costBenefit(project: Project): MaybeD2Chart {
+    const dataElements = project.dataElements
+        .get({
+            onlySelected: true,
+            includePaired: true,
+            peopleOrBenefit: "benefit",
+        })
+        .filter(de => de.pairedDataElement);
+
+    return getChart(project, {
+        key: "cost-benefit",
+        name: i18n.t("PM Benefits Per Person (%)"),
+        items: project.getCostBenefitIndicators(dataElements),
+        reportFilter: [{ id: "pe" }],
+        seriesDimension: { id: "ou" },
         categoryDimension: { id: "dx" },
     });
 }

@@ -58,6 +58,7 @@ describe("Config", () => {
                 "dataElements",
                 "funders",
                 "indicators",
+                "legendSets",
                 "sectors",
             ]);
         });

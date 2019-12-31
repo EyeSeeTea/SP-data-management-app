@@ -56,6 +56,7 @@ const baseConfig = {
     },
     indicators: {
         actualTargetPrefix: "ACTUAL_TARGET_",
+        costBenefitPrefix: "COST_BENEFIT_",
     },
 };
 
@@ -103,9 +104,6 @@ const metadataParams = {
         fields: {
             id: yes,
             code: yes,
-        },
-        filter: {
-            code: { $like: baseConfig.indicators.actualTargetPrefix },
         },
     },
     organisationUnitGroupSets: {
