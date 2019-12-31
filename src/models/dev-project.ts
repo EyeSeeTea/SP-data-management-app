@@ -1,5 +1,9 @@
+import md5 from "md5";
+import { D2Api } from "d2-api";
+import _ from "lodash";
 import Project from "./Project";
 import moment from "moment";
+import { runPromises } from "../utils/promises";
 
 function getRandomInt(min: number, max: number): number {
     min = Math.ceil(min);
@@ -52,4 +56,59 @@ export function getDevMerReport() {
             displayName: "Sierra Leona",
         },
     };
+}
+
+export async function saveDataValues(api: D2Api, project: Project) {
+    const { dataSets } = project;
+    if (!dataSets) return;
+
+    const dataElements = project.dataElements.get({ onlySelected: true, includePaired: true });
+    const categoryCombosById = _(project.config.categoryCombos.default)
+        .concat(project.config.categoryCombos.genderNewRecurring)
+        .keyBy(cc => cc.id);
+    const targetActualByName = _(project.config.categoryCombos.targetActual.categoryOptionCombos)
+        .map(coc => [coc.displayName, coc.id])
+        .fromPairs();
+    const dataSetsInfo = [
+        { dataSet: dataSets.target, attrCoc: targetActualByName.getOrFail("Target") },
+        { dataSet: dataSets.actual, attrCoc: targetActualByName.getOrFail("Actual") },
+    ];
+
+    const postValues$ = _.flatMap(dataSetsInfo, info => {
+        const ds = info.dataSet;
+        const orgUnit = project.orgUnit;
+        if (!ds || !orgUnit) return [];
+
+        return project.getPeriods().map(period => {
+            return () =>
+                api.dataValues
+                    .postSet({
+                        dataSet: ds.id,
+                        orgUnit: orgUnit.id,
+                        period: period.id,
+                        attributeOptionCombo: info.attrCoc,
+                        dataValues: _.flatMap(dataElements, de => {
+                            const cocs = categoryCombosById.getOrFail(de.categoryComboId)
+                                .categoryOptionCombos;
+
+                            return cocs.map(coc => {
+                                const key = [de.id, coc.id, info.attrCoc, period.id].join("-");
+                                const md5hash = md5(key);
+                                const value = parseInt(md5hash.slice(0, 8), 16) % 10;
+
+                                return {
+                                    dataElement: de.id,
+                                    categoryOptionCombo: coc.id,
+                                    value: value.toString(),
+                                };
+                            });
+                        }),
+                    })
+                    .getData();
+        });
+    });
+
+    await runPromises(postValues$, { concurrency: 3 });
+
+    api.analytics.run();
 }

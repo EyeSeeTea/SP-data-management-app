@@ -81,6 +81,8 @@ export interface ProjectData {
     orgUnit: OrganisationUnit | undefined;
     parentOrgUnit: OrganisationUnit | undefined;
     dataElements: DataElementsSet;
+    dataSets: { actual: DataSetWithPeriods; target: DataSetWithPeriods } | undefined;
+    dashboard: Ref | undefined;
 }
 
 interface NamedObject {
@@ -133,6 +135,8 @@ const defaultProjectData = {
     locations: [],
     orgUnit: undefined,
     parentOrgUnit: undefined,
+    dataSets: undefined,
+    dashboard: undefined,
 };
 
 const yes = true as const;
@@ -201,6 +205,8 @@ class Project {
         locations: i18n.t("Project Locations"),
         orgUnit: i18n.t("Organisation Unit"),
         parentOrgUnit: i18n.t("Parent Organisation Unit"),
+        dataSets: i18n.t("Data Sets"),
+        dashboard: i18n.t("Dashboard"),
     };
 
     static getFieldName(field: ProjectField): string {

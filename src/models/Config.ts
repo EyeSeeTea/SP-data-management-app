@@ -35,6 +35,8 @@ const baseConfig = {
     },
     categoryCombos: {
         targetActual: "ACTUAL_TARGET",
+        genderNewRecurring: "GENDER_NEW_RECURRING",
+        default: "default",
     },
     categoryOptions: {
         target: "TARGET",
@@ -68,12 +70,15 @@ function getParamsForIndexables(indexedCodes: _.Dictionary<string>) {
 }
 
 const metadataParams = {
-    attributes: getParamsForIndexables(baseConfig.attributes),
     categories: {
         fields: { id: yes, code: yes, categoryOptions: { id: yes, code: yes } },
         filter: { code: { in: _.values(baseConfig.categories) } },
     },
-    categoryCombos: getParamsForIndexables(baseConfig.categoryCombos),
+    attributes: getParamsForIndexables(baseConfig.attributes),
+    categoryCombos: {
+        fields: { id: yes, code: yes, categoryOptionCombos: { id: yes, displayName: yes } },
+        filter: { code: { in: _.values(baseConfig.categoryCombos) } },
+    },
     categoryOptions: getParamsForIndexables(baseConfig.categoryOptions),
     legendSets: getParamsForIndexables(baseConfig.legendSets),
     dataElements: {
@@ -149,7 +154,7 @@ type IndexedObjs<Key extends keyof BaseConfig, ValueType> = Record<
 >;
 
 type Attribute = CodedObject;
-export type CategoryCombo = CodedObject;
+export type CategoryCombo = CodedObject & { categoryOptionCombos: NamedObject[] };
 export type CategoryOption = CodedObject;
 export type Category = CodedObject & { categoryOptions: CategoryOption[] };
 export type LegendSet = CodedObject;

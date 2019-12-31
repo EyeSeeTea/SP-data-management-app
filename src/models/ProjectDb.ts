@@ -98,6 +98,7 @@ export default class ProjectDb {
             expiryDays: 0,
             attributeValues: dataSetAttributeValues,
         });
+        const dataSetTarget = _(dataSetTargetMetadata.dataSets).getOrFail(0);
 
         const dataSetActualMetadata = this.getDataSetsMetadata(orgUnit, {
             name: `${project.name} Actual`,
@@ -107,6 +108,7 @@ export default class ProjectDb {
             expiryDays: expiryDaysInMonthActual + 1,
             attributeValues: dataSetAttributeValues,
         });
+        const dataSetActual = _(dataSetActualMetadata.dataSets).getOrFail(0);
 
         const orgUnitsMetadata: Pick<
             MetadataPayload,
@@ -135,6 +137,11 @@ export default class ProjectDb {
                 ? this.project.setObj({
                       id: orgUnit.id,
                       orgUnit: _.pick(orgUnit, ["id", "path", "displayName"]),
+                      dashboard: { id: dashboard.id },
+                      dataSets: {
+                          actual: dataSetActual,
+                          target: dataSetTarget,
+                      },
                   })
                 : this.project;
 
@@ -178,8 +185,8 @@ export default class ProjectDb {
 
     getDataSetsMetadata<T extends PartialPersistedModel<D2OrganisationUnit>>(
         orgUnit: T,
-        baseDataSet: PartialModel<D2DataSet> & { code: string }
-    ): Pick<MetadataPayload, "dataSets" | "sections"> {
+        baseDataSet: PartialModel<D2DataSet> & Pick<D2DataSet, "code" | "dataInputPeriods">
+    ) {
         const { project } = this;
         const dataSetId = getUid("dataSet", project.uid + baseDataSet.code);
 
