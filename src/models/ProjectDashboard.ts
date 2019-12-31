@@ -49,6 +49,12 @@ export default class ProjectDashboard {
     }
 }
 
+const dimensions = {
+    period: { id: "pe" },
+    orgUnit: { id: "ou" },
+    data: { id: "dx" },
+};
+
 function getOrgUnitId(project: Project): string {
     const ou = project.orgUnit;
     if (!ou) {
@@ -191,9 +197,9 @@ function targetVsActualBenefits(project: Project): MaybeD2Table {
         key: "reportTable-target-actual-benefits",
         name: i18n.t("PM Target vs Actual - Benefits"),
         items: dataElements,
-        reportFilter: [{ id: "ou" }],
-        columnDimensions: [{ id: "pe" }],
-        rowDimensions: [{ id: "dx" }, config.categories.targetActual],
+        reportFilter: [dimensions.orgUnit],
+        columnDimensions: [dimensions.period],
+        rowDimensions: [dimensions.data, config.categories.targetActual],
     });
 }
 
@@ -209,10 +215,10 @@ function targetVsActualPeople(project: Project): MaybeD2Table {
         key: "reportTable-target-actual-people",
         name: i18n.t("PM Target vs Actual - People"),
         items: dataElements,
-        reportFilter: [{ id: "ou" }],
-        columnDimensions: [{ id: "pe" }, config.categories.gender],
+        reportFilter: [dimensions.orgUnit],
+        columnDimensions: [dimensions.period, config.categories.gender],
         rowDimensions: [
-            { id: "dx" },
+            dimensions.data,
             config.categories.targetActual,
             config.categories.newRecurring,
         ],
@@ -236,9 +242,9 @@ function targetVsActualUniquePeople(project: Project): MaybeD2Table {
         key: "reportTable-target-actual-unique-people",
         name: i18n.t("PM Target vs Actual - Unique People"),
         items: dataElements,
-        reportFilter: [{ id: "ou" }, categoryNew],
-        columnDimensions: [{ id: "pe" }, config.categories.gender],
-        rowDimensions: [{ id: "dx" }, config.categories.targetActual],
+        reportFilter: [dimensions.orgUnit, categoryNew],
+        columnDimensions: [dimensions.period, config.categories.gender],
+        rowDimensions: [dimensions.data, config.categories.targetActual],
     });
 }
 
@@ -254,9 +260,9 @@ function achievedBenefitsTable(project: Project): MaybeD2Table {
         key: "reportTable-indicators-benefits",
         name: i18n.t("PM achieved (%) - Benefits"),
         items: indicators,
-        reportFilter: [{ id: "ou" }],
-        columnDimensions: [{ id: "pe" }],
-        rowDimensions: [{ id: "dx" }],
+        reportFilter: [dimensions.orgUnit],
+        columnDimensions: [dimensions.period],
+        rowDimensions: [dimensions.data],
         extra: { legendSet: project.config.legendSets.achieved },
     });
 }
@@ -272,9 +278,9 @@ function achievedPeopleTable(project: Project): MaybeD2Table {
         key: "reportTable-indicators-people",
         name: i18n.t("PM achieved (%) - People"),
         items: project.getActualTargetIndicators(dataElements),
-        reportFilter: [{ id: "ou" }],
-        columnDimensions: [{ id: "pe" }],
-        rowDimensions: [{ id: "dx" }],
+        reportFilter: [dimensions.orgUnit],
+        columnDimensions: [dimensions.period],
+        rowDimensions: [dimensions.data],
         extra: { legendSet: project.config.legendSets.achieved },
     });
 }
@@ -289,9 +295,9 @@ function achievedMonthlyChart(project: Project): MaybeD2Chart {
         key: "chart-achieved-monthly",
         name: i18n.t("PM achieved monthly (%)"),
         items: project.getActualTargetIndicators(dataElements),
-        reportFilter: [{ id: "ou" }],
-        seriesDimension: { id: "pe" },
-        categoryDimension: { id: "dx" },
+        reportFilter: [dimensions.orgUnit],
+        seriesDimension: dimensions.period,
+        categoryDimension: dimensions.data,
     });
 }
 
@@ -305,9 +311,9 @@ function achievedChart(project: Project): MaybeD2Chart {
         key: "chart-achieved",
         name: i18n.t("PM achieved (%)"),
         items: project.getActualTargetIndicators(dataElements),
-        reportFilter: [{ id: "pe" }],
-        seriesDimension: { id: "ou" },
-        categoryDimension: { id: "dx" },
+        reportFilter: [dimensions.period],
+        seriesDimension: dimensions.orgUnit,
+        categoryDimension: dimensions.data,
     });
 }
 
@@ -327,9 +333,9 @@ function genderChart(project: Project): MaybeD2Chart {
         key: "chart-achieved-gender",
         name: i18n.t("PM achieved by gender (%)"),
         items: project.getActualTargetIndicators(dataElements),
-        reportFilter: [{ id: "ou" }, { id: "pe" }, categoryNew],
+        reportFilter: [dimensions.orgUnit, dimensions.period, categoryNew],
         seriesDimension: project.config.categories.gender,
-        categoryDimension: { id: "dx" },
+        categoryDimension: dimensions.data,
     });
 }
 
@@ -346,8 +352,8 @@ function costBenefit(project: Project): MaybeD2Chart {
         key: "cost-benefit",
         name: i18n.t("PM Benefits Per Person (%)"),
         items: project.getCostBenefitIndicators(dataElements),
-        reportFilter: [{ id: "pe" }],
-        seriesDimension: { id: "ou" },
-        categoryDimension: { id: "dx" },
+        reportFilter: [dimensions.period],
+        seriesDimension: dimensions.orgUnit,
+        categoryDimension: dimensions.data,
     });
 }

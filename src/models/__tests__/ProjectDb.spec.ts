@@ -57,10 +57,9 @@ describe("ProjectDb", () => {
                 expectedDataStoreMer
             ).replyOnce(200);
 
-            mock.onPost("/metadata", expectedMetadataPost).replyOnce(200, metadataResponse);
-
-            await new ProjectDb(project).save();
-            expect(true).toEqual(true);
+            const { response, project: savedProject } = await new ProjectDb(project).save();
+            expect(response).toBeTruthy();
+            expect(savedProject.id).toEqual("WGC0DJ0YSis");
         });
     });
 });
@@ -1370,9 +1369,28 @@ const expectedMetadataPost = {
                 {
                     id: "pe",
                 },
+                {
+                    id: "a0Cy1qwUuZv",
+                    categoryOptions: [
+                        {
+                            code: "NEW",
+                            id: "S2y8dcmR2kD",
+                        },
+                    ],
+                },
             ],
-            filterDimensions: ["ou", "pe"],
+            filterDimensions: ["ou", "pe", "a0Cy1qwUuZv"],
             categoryDimensions: [
+                {
+                    category: {
+                        id: "a0Cy1qwUuZv",
+                    },
+                    categoryOptions: [
+                        {
+                            id: "S2y8dcmR2kD",
+                        },
+                    ],
+                },
                 {
                     category: {
                         id: "Kyg1O6YEGa9",
