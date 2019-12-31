@@ -312,17 +312,22 @@ function achievedChart(project: Project): MaybeD2Chart {
 }
 
 function genderChart(project: Project): MaybeD2Chart {
+    const { config } = project;
     const dataElements = project.dataElements.get({
         onlySelected: true,
         includePaired: true,
         peopleOrBenefit: "people",
     });
+    const categoryNew = {
+        id: config.categories.newRecurring.id,
+        categoryOptions: [config.categoryOptions.new],
+    };
 
     return getChart(project, {
         key: "chart-achieved-gender",
         name: i18n.t("PM achieved by gender (%)"),
         items: project.getActualTargetIndicators(dataElements),
-        reportFilter: [{ id: "ou" }, { id: "pe" }],
+        reportFilter: [{ id: "ou" }, { id: "pe" }, categoryNew],
         seriesDimension: project.config.categories.gender,
         categoryDimension: { id: "dx" },
     });
