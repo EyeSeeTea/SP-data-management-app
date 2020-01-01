@@ -92,9 +92,7 @@ type MaybeD2Chart = Maybe<PartialPersistedModel<D2Chart>>;
 
 function getDataDimensionItems(project: Project, items: Ref[]) {
     const { config } = project;
-    const dataElementIds = new Set(
-        project.dataElements.get({ includePaired: true }).map(de => de.id)
-    );
+    const dataElementIds = new Set(project.getSelectedDataElements().map(de => de.id));
     const indicatorIds = new Set(config.indicators.map(ind => ind.id));
 
     return _(items)
@@ -187,11 +185,7 @@ function getChart(project: Project, chart: Chart): MaybeD2Chart {
 
 function targetVsActualBenefits(project: Project): MaybeD2Table {
     const { config } = project;
-    const dataElements = project.dataElements.get({
-        onlySelected: true,
-        includePaired: true,
-        peopleOrBenefit: "benefit",
-    });
+    const dataElements = project.getSelectedDataElements({ peopleOrBenefit: "benefit" });
 
     return getReportTable(project, {
         key: "reportTable-target-actual-benefits",
@@ -205,11 +199,7 @@ function targetVsActualBenefits(project: Project): MaybeD2Table {
 
 function targetVsActualPeople(project: Project): MaybeD2Table {
     const { config } = project;
-    const dataElements = project.dataElements.get({
-        onlySelected: true,
-        includePaired: true,
-        peopleOrBenefit: "people",
-    });
+    const dataElements = project.getSelectedDataElements({ peopleOrBenefit: "people" });
 
     return getReportTable(project, {
         key: "reportTable-target-actual-people",
@@ -227,11 +217,7 @@ function targetVsActualPeople(project: Project): MaybeD2Table {
 
 function targetVsActualUniquePeople(project: Project): MaybeD2Table {
     const { config } = project;
-    const dataElements = project.dataElements.get({
-        onlySelected: true,
-        includePaired: true,
-        peopleOrBenefit: "people",
-    });
+    const dataElements = project.getSelectedDataElements({ peopleOrBenefit: "people" });
 
     const categoryNew = {
         id: config.categories.newRecurring.id,
@@ -249,11 +235,7 @@ function targetVsActualUniquePeople(project: Project): MaybeD2Table {
 }
 
 function achievedBenefitsTable(project: Project): MaybeD2Table {
-    const dataElements = project.dataElements.get({
-        onlySelected: true,
-        includePaired: true,
-        peopleOrBenefit: "benefit",
-    });
+    const dataElements = project.getSelectedDataElements({ peopleOrBenefit: "benefit" });
     const indicators = project.getActualTargetIndicators(dataElements);
 
     return getReportTable(project, {
@@ -268,11 +250,7 @@ function achievedBenefitsTable(project: Project): MaybeD2Table {
 }
 
 function achievedPeopleTable(project: Project): MaybeD2Table {
-    const dataElements = project.dataElements.get({
-        onlySelected: true,
-        includePaired: true,
-        peopleOrBenefit: "people",
-    });
+    const dataElements = project.getSelectedDataElements({ peopleOrBenefit: "people" });
 
     return getReportTable(project, {
         key: "reportTable-indicators-people",
@@ -286,10 +264,7 @@ function achievedPeopleTable(project: Project): MaybeD2Table {
 }
 
 function achievedMonthlyChart(project: Project): MaybeD2Chart {
-    const dataElements = project.dataElements.get({
-        onlySelected: true,
-        includePaired: true,
-    });
+    const dataElements = project.getSelectedDataElements();
 
     return getChart(project, {
         key: "chart-achieved-monthly",
@@ -302,10 +277,7 @@ function achievedMonthlyChart(project: Project): MaybeD2Chart {
 }
 
 function achievedChart(project: Project): MaybeD2Chart {
-    const dataElements = project.dataElements.get({
-        onlySelected: true,
-        includePaired: true,
-    });
+    const dataElements = project.getSelectedDataElements();
 
     return getChart(project, {
         key: "chart-achieved",
@@ -319,11 +291,7 @@ function achievedChart(project: Project): MaybeD2Chart {
 
 function genderChart(project: Project): MaybeD2Chart {
     const { config } = project;
-    const dataElements = project.dataElements.get({
-        onlySelected: true,
-        includePaired: true,
-        peopleOrBenefit: "people",
-    });
+    const dataElements = project.getSelectedDataElements({ peopleOrBenefit: "people" });
     const categoryNew = {
         id: config.categories.newRecurring.id,
         categoryOptions: [config.categoryOptions.new],
@@ -340,12 +308,8 @@ function genderChart(project: Project): MaybeD2Chart {
 }
 
 function costBenefit(project: Project): MaybeD2Chart {
-    const dataElements = project.dataElements
-        .get({
-            onlySelected: true,
-            includePaired: true,
-            peopleOrBenefit: "benefit",
-        })
+    const dataElements = project
+        .getSelectedDataElements({ peopleOrBenefit: "benefit" })
         .filter(de => de.pairedDataElement);
 
     return getChart(project, {

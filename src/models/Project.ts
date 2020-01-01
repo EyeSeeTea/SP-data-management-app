@@ -61,7 +61,7 @@ import {
 import { Pagination } from "./../types/ObjectsList";
 import { Pager } from "d2-api/api/models";
 import i18n from "../locales";
-import DataElementsSet, { SelectionUpdate } from "./dataElementsSet";
+import DataElementsSet, { SelectionUpdate, DataElement, PeopleOrBenefit } from "./dataElementsSet";
 import ProjectDb from "./ProjectDb";
 import { Maybe } from "../types/utils";
 import { toISOString, getMonthsRange } from "../utils/date";
@@ -290,6 +290,26 @@ class Project {
         ])
             .compact()
             .join("");
+    }
+
+    public getSelectedDataElements(
+        filter: { peopleOrBenefit?: PeopleOrBenefit } = {}
+    ): DataElement[] {
+        const { dataElements, sectors } = this.data;
+        const sectorIds = new Set(sectors.map(sector => sector.id));
+        const selectedDataElements = dataElements
+            .get({ onlySelected: true, includePaired: true, ...filter })
+            .filter(de => sectorIds.has(de.sectorId));
+        const orderBySectorId: _.Dictionary<string> = _(sectors)
+            .map((sector, idx) => [sector.id, idx])
+            .fromPairs()
+            .value();
+        const selectedDataElementsSorted = _.orderBy(
+            selectedDataElements,
+            [de => orderBySectorId[de.sectorId], de => de.name],
+            ["asc", "asc"]
+        );
+        return selectedDataElementsSorted;
     }
 
     public async validate(

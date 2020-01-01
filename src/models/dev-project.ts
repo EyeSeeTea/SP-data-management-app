@@ -94,7 +94,7 @@ export async function saveDataValues(api: D2Api, project: Project) {
                             return cocs.map(coc => {
                                 const key = [de.id, coc.id, info.attrCoc, period.id].join("-");
                                 const md5hash = md5(key);
-                                const value = parseInt(md5hash.slice(0, 8), 16) % 10;
+                                const value = (parseInt(md5hash.slice(0, 8), 16) % 10) + 1;
 
                                 return {
                                     dataElement: de.id,

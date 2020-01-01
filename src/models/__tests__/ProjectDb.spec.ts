@@ -689,13 +689,13 @@ const expectedMetadataPost = {
                 {
                     dataDimensionItemType: "DATA_ELEMENT",
                     dataElement: {
-                        id: "K6mAC5SiO29",
+                        id: "ik0ICagvIjm",
                     },
                 },
                 {
                     dataDimensionItemType: "DATA_ELEMENT",
                     dataElement: {
-                        id: "ik0ICagvIjm",
+                        id: "K6mAC5SiO29",
                     },
                 },
             ],
@@ -842,13 +842,13 @@ const expectedMetadataPost = {
                 {
                     dataDimensionItemType: "DATA_ELEMENT",
                     dataElement: {
-                        id: "K6mAC5SiO29",
+                        id: "ik0ICagvIjm",
                     },
                 },
                 {
                     dataDimensionItemType: "DATA_ELEMENT",
                     dataElement: {
-                        id: "ik0ICagvIjm",
+                        id: "K6mAC5SiO29",
                     },
                 },
             ],
@@ -1068,13 +1068,13 @@ const expectedMetadataPost = {
                 {
                     dataDimensionItemType: "INDICATOR",
                     indicator: {
-                        id: "eYmeRzhBFV4",
+                        id: "u404ICrBKj3",
                     },
                 },
                 {
                     dataDimensionItemType: "INDICATOR",
                     indicator: {
-                        id: "u404ICrBKj3",
+                        id: "eYmeRzhBFV4",
                     },
                 },
             ],
@@ -1152,13 +1152,13 @@ const expectedMetadataPost = {
                 {
                     dataDimensionItemType: "INDICATOR",
                     indicator: {
-                        id: "eYmeRzhBFV4",
+                        id: "u404ICrBKj3",
                     },
                 },
                 {
                     dataDimensionItemType: "INDICATOR",
                     indicator: {
-                        id: "u404ICrBKj3",
+                        id: "eYmeRzhBFV4",
                     },
                 },
                 {
@@ -1236,13 +1236,13 @@ const expectedMetadataPost = {
                 {
                     dataDimensionItemType: "INDICATOR",
                     indicator: {
-                        id: "eYmeRzhBFV4",
+                        id: "u404ICrBKj3",
                     },
                 },
                 {
                     dataDimensionItemType: "INDICATOR",
                     indicator: {
-                        id: "u404ICrBKj3",
+                        id: "eYmeRzhBFV4",
                     },
                 },
                 {
@@ -1314,13 +1314,13 @@ const expectedMetadataPost = {
                 {
                     dataDimensionItemType: "INDICATOR",
                     indicator: {
-                        id: "eYmeRzhBFV4",
+                        id: "u404ICrBKj3",
                     },
                 },
                 {
                     dataDimensionItemType: "INDICATOR",
                     indicator: {
-                        id: "u404ICrBKj3",
+                        id: "eYmeRzhBFV4",
                     },
                 },
             ],
