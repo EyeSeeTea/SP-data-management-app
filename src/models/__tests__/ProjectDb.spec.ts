@@ -8,23 +8,25 @@ import ProjectDb from "../ProjectDb";
 const { api, mock } = getMockApi();
 const config = (configJson as unknown) as Config;
 
+const projectData = {
+    name: "MyProject",
+    startDate: moment("2019-10-01"),
+    endDate: moment("2020-03-01"),
+    parentOrgUnit: {
+        path: "/J0hschZVMBt/PJb0RtEnqlf",
+        id: "PJb0RtEnqlf",
+        displayName: "Sierra Leona",
+    },
+    funders: config.funders.slice(0, 2),
+    awardNumber: "12345",
+    subsequentLettering: "en",
+    sectors: config.sectors.slice(0, 2),
+};
+
 async function getProject(): Promise<Project> {
     const initialProject = await Project.create(api, config);
     return initialProject
-        .setObj({
-            name: "MyProject",
-            startDate: moment("2019-10-01"),
-            endDate: moment("2020-03-01"),
-            parentOrgUnit: {
-                path: "/J0hschZVMBt/PJb0RtEnqlf",
-                id: "PJb0RtEnqlf",
-                displayName: "Sierra Leona",
-            },
-            funders: config.funders.slice(0, 2),
-            awardNumber: "12345",
-            subsequentLettering: "en",
-            sectors: config.sectors.slice(0, 2),
-        })
+        .setObj(projectData)
         .updateDataElementsSelection(["WS8XV4WWPE7", "ik0ICagvIjm", "We61YNYyOX0"])
         .project.updateDataElementsMERSelection(["WS8XV4WWPE7", "We61YNYyOX0"]);
 }
@@ -85,6 +87,8 @@ const expectedOrgUnitPut = {
         { value: "ySkG9zkINIY", attribute: { id: "aywduilEjPQ" } },
     ],
 };
+
+const now = moment();
 
 const expectedMetadataPost = {
     organisationUnits: [
@@ -210,7 +214,7 @@ const expectedMetadataPost = {
             ],
             name: "MyProject Target",
             code: "WGC0DJ0YSis_TARGET",
-            openFuturePeriods: 3,
+            openFuturePeriods: projectData.endDate.diff(now, "month") + 1,
             dataInputPeriods: [
                 {
                     period: {
