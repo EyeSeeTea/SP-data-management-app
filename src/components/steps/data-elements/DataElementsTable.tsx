@@ -68,7 +68,12 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
         [dataElementsSet, sectorId]
     );
 
-    const pagination: TablePagination = { pageSize: 25, page: 1, total: dataElements.length };
+    const pagination: TablePagination = {
+        pageSize: 25,
+        page: 1,
+        total: dataElements.length,
+        pageSizeOptions: [10, 25],
+    };
 
     const componentKey = _(fullFilter)
         .map((value, key) => `${key}=${value || ""}`)
