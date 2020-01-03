@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, ReactNode } from "react";
 import { ObjectsTable, TablePagination, TableColumn } from "d2-ui-components";
 import { useSnackbar } from "d2-ui-components";
 import _ from "lodash";
@@ -27,19 +27,20 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
 
     useEffect(() => setFilter({}), [sectorId]);
 
-    const columns: TableColumn<DataElement>[] = _.compact([
+    const columns: TableColumn<DataElement>[] = [
         {
             name: "name" as const,
             text: i18n.t("Name"),
             sortable: true,
-            getValue: (dataElement: DataElement) => getName(field, dataElement),
+            getValue: (dataElement: DataElement, _defaultValue: ReactNode) =>
+                getName(field, dataElement),
         },
         { name: "code" as const, text: i18n.t("Code"), sortable: true },
         { name: "indicatorType" as const, text: i18n.t("Indicator Type"), sortable: true },
         { name: "peopleOrBenefit" as const, text: i18n.t("People / Benefit"), sortable: true },
         { name: "series" as const, text: i18n.t("Series"), sortable: true },
-        isDev ? { name: "pairedDataElementCode" as const, text: i18n.t("Paired DE") } : null,
-    ]);
+        ...(isDev ? [{ name: "pairedDataElementCode" as const, text: i18n.t("Paired DE") }] : []),
+    ];
 
     const baseFilter =
         field === "selection"
@@ -53,6 +54,7 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
     const fullFilter = { ...baseFilter, sectorId };
 
     const dataElements = useMemo(() => dataElementsSet.get(fullFilter), [
+        {}, // PENDING: Remove when fixed problem with d2-ui-components updating rows in-place
         dataElementsSet,
         sectorId,
         field,
