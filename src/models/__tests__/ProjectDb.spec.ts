@@ -1,4 +1,5 @@
 import moment from "moment";
+import _ from "lodash";
 import { getMockApi } from "d2-api";
 import Project from "../Project";
 import { Config } from "../Config";
@@ -8,30 +9,31 @@ import ProjectDb from "../ProjectDb";
 const { api, mock } = getMockApi();
 const config = (configJson as unknown) as Config;
 
+const projectData = {
+    name: "MyProject",
+    startDate: moment("2018-10-01"),
+    endDate: moment("2019-03-01"),
+    parentOrgUnit: {
+        path: "/J0hschZVMBt/eu2XF73JOzl",
+        id: "eu2XF73JOzl",
+        displayName: "Bahamas",
+    },
+    funders: config.funders.slice(0, 2),
+    locations: config.locations.filter(location =>
+        _.isEqual(location.countries[0], { id: "eu2XF73JOzl" })
+    ),
+    awardNumber: "12345",
+    subsequentLettering: "en",
+    sectors: config.sectors.slice(0, 2),
+};
+
 async function getProject(): Promise<Project> {
     const initialProject = await Project.create(api, config);
     return initialProject
-        .setObj({
-            name: "MyProject",
-            startDate: moment("2019-10-01"),
-            endDate: moment("2020-03-01"),
-            parentOrgUnit: {
-                path: "/J0hschZVMBt/PJb0RtEnqlf",
-                id: "PJb0RtEnqlf",
-                displayName: "Sierra Leona",
-            },
-            funders: config.funders.slice(0, 2),
-            awardNumber: "12345",
-            subsequentLettering: "en",
-            sectors: config.sectors.slice(0, 2),
-        })
+        .setObj(projectData)
         .updateDataElementsSelection(["WS8XV4WWPE7", "ik0ICagvIjm", "We61YNYyOX0"])
         .project.updateDataElementsMERSelection(["WS8XV4WWPE7", "We61YNYyOX0"]);
 }
-
-const metadata = {
-    organisationUnitGroups: [],
-};
 
 const metadataResponse = {
     status: "OK",
@@ -44,9 +46,13 @@ describe("ProjectDb", () => {
             const project = await getProject();
 
             mock.onGet("/metadata", {
-                "organisationUnitGroups:fields": ":owner",
-                "organisationUnitGroups:filter": ["id:in:[]"],
-            }).replyOnce(200, metadata);
+                params: {
+                    "organisationUnitGroups:fields": ":owner",
+                    "organisationUnitGroups:filter": [
+                        "id:in:[OE0KdZRX2FC,WKUXmz4LIUG,GG0k0oNhgS7,GsGG8967YDU,eCi0GarbBwv]",
+                    ],
+                },
+            }).replyOnce(200, orgUnitsMetadata);
 
             mock.onPost("/metadata", expectedMetadataPost).replyOnce(200, metadataResponse);
 
@@ -59,11 +65,63 @@ describe("ProjectDb", () => {
 
             mock.onPost("/metadata", expectedMetadataPost).replyOnce(200, metadataResponse);
 
+            jest.spyOn(Date, "now").mockReturnValueOnce(new Date("2019/12/15").getTime());
+
             await new ProjectDb(project).save();
             expect(true).toEqual(true);
         });
     });
 });
+
+const orgUnitsMetadata = {
+    organisationUnitGroups: [
+        {
+            created: "2020-01-02T12:32:30.449",
+            lastUpdated: "2020-01-02T14:28:43.045",
+            name: "Abaco",
+            id: "GG0k0oNhgS7",
+            publicAccess: "rw------",
+            lastUpdatedBy: { id: "M5zQapPyTZI" },
+            user: { id: "M5zQapPyTZI" },
+            userGroupAccesses: [],
+            attributeValues: [],
+            translations: [],
+            userAccesses: [],
+            organisationUnits: [{ id: "eu2XF73JOzl" }],
+        },
+        {
+            code: "FUNDER_AGRIDIUS",
+            created: "2020-01-02T11:55:10.244",
+            lastUpdated: "2020-01-02T14:28:43.050",
+            name: "Agridius Foundation",
+            id: "em8NIwi0KvM",
+            publicAccess: "rw------",
+            lastUpdatedBy: { id: "M5zQapPyTZI" },
+            user: { id: "M5zQapPyTZI" },
+            userGroupAccesses: [],
+            attributeValues: [],
+            translations: [],
+            userAccesses: [],
+            organisationUnits: [],
+        },
+        {
+            code: "FUNDER_AC",
+            created: "2019-11-18T14:05:05.262",
+            lastUpdated: "2020-01-02T14:28:43.050",
+            name: "Atlas Copco",
+            id: "OKEZCrPzqph",
+            shortName: "AC",
+            publicAccess: "rw------",
+            lastUpdatedBy: { id: "M5zQapPyTZI" },
+            user: { id: "M5zQapPyTZI" },
+            userGroupAccesses: [],
+            attributeValues: [],
+            translations: [],
+            userAccesses: [],
+            organisationUnits: [],
+        },
+    ],
+};
 
 const expectedDataStoreMer = {
     dataElements: ["WS8XV4WWPE7", "We61YNYyOX0"],
@@ -73,13 +131,13 @@ const expectedOrgUnitPut = {
     id: "WGC0DJ0YSis",
     name: "MyProject",
     displayName: "MyProject",
-    path: "/J0hschZVMBt/PJb0RtEnqlf/WGC0DJ0YSis",
+    path: "/J0hschZVMBt/eu2XF73JOzl/WGC0DJ0YSis",
     code: "en12345",
     shortName: "MyProject",
     description: "",
-    parent: { id: "PJb0RtEnqlf" },
-    openingDate: "2019-09-01T00:00:00",
-    closedDate: "2020-04-01T00:00:00",
+    parent: { id: "eu2XF73JOzl" },
+    openingDate: "2018-09-01T00:00:00",
+    closedDate: "2019-04-01T00:00:00",
     organisationUnitGroups: [{ id: "OE0KdZRX2FC" }, { id: "WKUXmz4LIUG" }],
     attributeValues: [
         { value: "true", attribute: { id: "mgCKcJuP5n0" } },
@@ -93,15 +151,15 @@ const expectedMetadataPost = {
             id: "WGC0DJ0YSis",
             name: "MyProject",
             displayName: "MyProject",
-            path: "/J0hschZVMBt/PJb0RtEnqlf/WGC0DJ0YSis",
+            path: "/J0hschZVMBt/eu2XF73JOzl/WGC0DJ0YSis",
             code: "en12345",
             shortName: "MyProject",
             description: "",
             parent: {
-                id: "PJb0RtEnqlf",
+                id: "eu2XF73JOzl",
             },
-            openingDate: "2019-09-01T00:00:00",
-            closedDate: "2020-04-01T00:00:00",
+            openingDate: "2018-09-01T00:00:00",
+            closedDate: "2019-04-01T00:00:00",
             organisationUnitGroups: [
                 {
                     id: "OE0KdZRX2FC",
@@ -126,7 +184,80 @@ const expectedMetadataPost = {
             ],
         },
     ],
-    organisationUnitGroups: [],
+    organisationUnitGroups: [
+        {
+            created: "2020-01-02T12:32:30.449",
+            lastUpdated: "2020-01-02T14:28:43.045",
+            name: "Abaco",
+            id: "GG0k0oNhgS7",
+            publicAccess: "rw------",
+            lastUpdatedBy: {
+                id: "M5zQapPyTZI",
+            },
+            user: {
+                id: "M5zQapPyTZI",
+            },
+            userGroupAccesses: [],
+            attributeValues: [],
+            translations: [],
+            userAccesses: [],
+            organisationUnits: [
+                {
+                    id: "eu2XF73JOzl",
+                },
+                {
+                    id: "WGC0DJ0YSis",
+                },
+            ],
+        },
+        {
+            code: "FUNDER_AGRIDIUS",
+            created: "2020-01-02T11:55:10.244",
+            lastUpdated: "2020-01-02T14:28:43.050",
+            name: "Agridius Foundation",
+            id: "em8NIwi0KvM",
+            publicAccess: "rw------",
+            lastUpdatedBy: {
+                id: "M5zQapPyTZI",
+            },
+            user: {
+                id: "M5zQapPyTZI",
+            },
+            userGroupAccesses: [],
+            attributeValues: [],
+            translations: [],
+            userAccesses: [],
+            organisationUnits: [
+                {
+                    id: "WGC0DJ0YSis",
+                },
+            ],
+        },
+        {
+            code: "FUNDER_AC",
+            created: "2019-11-18T14:05:05.262",
+            lastUpdated: "2020-01-02T14:28:43.050",
+            name: "Atlas Copco",
+            id: "OKEZCrPzqph",
+            shortName: "AC",
+            publicAccess: "rw------",
+            lastUpdatedBy: {
+                id: "M5zQapPyTZI",
+            },
+            user: {
+                id: "M5zQapPyTZI",
+            },
+            userGroupAccesses: [],
+            attributeValues: [],
+            translations: [],
+            userAccesses: [],
+            organisationUnits: [
+                {
+                    id: "WGC0DJ0YSis",
+                },
+            ],
+        },
+    ],
     dataSets: [
         {
             id: "S0mQyu0r7fd",
@@ -181,7 +312,7 @@ const expectedMetadataPost = {
                         id: "S0mQyu0r7fd",
                     },
                     dataElement: {
-                        id: "yMqK9DKbA3X",
+                        id: "We61YNYyOX0",
                     },
                     categoryCombo: {
                         id: "bjDvmb4bfuf",
@@ -192,7 +323,7 @@ const expectedMetadataPost = {
                         id: "S0mQyu0r7fd",
                     },
                     dataElement: {
-                        id: "We61YNYyOX0",
+                        id: "yMqK9DKbA3X",
                     },
                     categoryCombo: {
                         id: "bjDvmb4bfuf",
@@ -211,49 +342,49 @@ const expectedMetadataPost = {
             ],
             name: "MyProject Target",
             code: "WGC0DJ0YSis_TARGET",
-            openFuturePeriods: 3,
+            openFuturePeriods: 0,
             dataInputPeriods: [
                 {
                     period: {
-                        id: "201910",
+                        id: "201810",
                     },
-                    openingDate: "2019-10-01T00:00:00",
-                    closingDate: "2019-11-01T00:00:00",
+                    openingDate: "2018-10-01T00:00:00",
+                    closingDate: "2018-11-01T00:00:00",
                 },
                 {
                     period: {
-                        id: "201911",
+                        id: "201811",
                     },
-                    openingDate: "2019-10-01T00:00:00",
-                    closingDate: "2019-11-01T00:00:00",
+                    openingDate: "2018-10-01T00:00:00",
+                    closingDate: "2018-11-01T00:00:00",
                 },
                 {
                     period: {
-                        id: "201912",
+                        id: "201812",
                     },
-                    openingDate: "2019-10-01T00:00:00",
-                    closingDate: "2019-11-01T00:00:00",
+                    openingDate: "2018-10-01T00:00:00",
+                    closingDate: "2018-11-01T00:00:00",
                 },
                 {
                     period: {
-                        id: "202001",
+                        id: "201901",
                     },
-                    openingDate: "2019-10-01T00:00:00",
-                    closingDate: "2019-11-01T00:00:00",
+                    openingDate: "2018-10-01T00:00:00",
+                    closingDate: "2018-11-01T00:00:00",
                 },
                 {
                     period: {
-                        id: "202002",
+                        id: "201902",
                     },
-                    openingDate: "2019-10-01T00:00:00",
-                    closingDate: "2019-11-01T00:00:00",
+                    openingDate: "2018-10-01T00:00:00",
+                    closingDate: "2018-11-01T00:00:00",
                 },
                 {
                     period: {
-                        id: "202003",
+                        id: "201903",
                     },
-                    openingDate: "2019-10-01T00:00:00",
-                    closingDate: "2019-11-01T00:00:00",
+                    openingDate: "2018-10-01T00:00:00",
+                    closingDate: "2018-11-01T00:00:00",
                 },
             ],
             expiryDays: 0,
@@ -325,7 +456,7 @@ const expectedMetadataPost = {
                         id: "aAC2YJRBepp",
                     },
                     dataElement: {
-                        id: "yMqK9DKbA3X",
+                        id: "We61YNYyOX0",
                     },
                     categoryCombo: {
                         id: "bjDvmb4bfuf",
@@ -336,7 +467,7 @@ const expectedMetadataPost = {
                         id: "aAC2YJRBepp",
                     },
                     dataElement: {
-                        id: "We61YNYyOX0",
+                        id: "yMqK9DKbA3X",
                     },
                     categoryCombo: {
                         id: "bjDvmb4bfuf",
@@ -359,45 +490,45 @@ const expectedMetadataPost = {
             dataInputPeriods: [
                 {
                     period: {
-                        id: "201910",
+                        id: "201810",
                     },
-                    openingDate: "2019-10-01T00:00:00",
-                    closingDate: "2019-11-10T00:00:00",
+                    openingDate: "2018-10-01T00:00:00",
+                    closingDate: "2018-11-10T00:00:00",
                 },
                 {
                     period: {
-                        id: "201911",
+                        id: "201811",
                     },
-                    openingDate: "2019-11-01T00:00:00",
-                    closingDate: "2019-12-10T00:00:00",
+                    openingDate: "2018-11-01T00:00:00",
+                    closingDate: "2018-12-10T00:00:00",
                 },
                 {
                     period: {
-                        id: "201912",
+                        id: "201812",
                     },
-                    openingDate: "2019-12-01T00:00:00",
-                    closingDate: "2020-01-10T00:00:00",
+                    openingDate: "2018-12-01T00:00:00",
+                    closingDate: "2019-01-10T00:00:00",
                 },
                 {
                     period: {
-                        id: "202001",
+                        id: "201901",
                     },
-                    openingDate: "2020-01-01T00:00:00",
-                    closingDate: "2020-02-10T00:00:00",
+                    openingDate: "2019-01-01T00:00:00",
+                    closingDate: "2019-02-10T00:00:00",
                 },
                 {
                     period: {
-                        id: "202002",
+                        id: "201902",
                     },
-                    openingDate: "2020-02-01T00:00:00",
-                    closingDate: "2020-03-10T00:00:00",
+                    openingDate: "2019-02-01T00:00:00",
+                    closingDate: "2019-03-10T00:00:00",
                 },
                 {
                     period: {
-                        id: "202003",
+                        id: "201903",
                     },
-                    openingDate: "2020-03-01T00:00:00",
-                    closingDate: "2020-04-10T00:00:00",
+                    openingDate: "2019-03-01T00:00:00",
+                    closingDate: "2019-04-10T00:00:00",
                 },
             ],
             expiryDays: 11,
@@ -447,10 +578,10 @@ const expectedMetadataPost = {
             name: "Livelihoods",
             dataElements: [
                 {
-                    id: "yMqK9DKbA3X",
+                    id: "We61YNYyOX0",
                 },
                 {
-                    id: "We61YNYyOX0",
+                    id: "yMqK9DKbA3X",
                 },
             ],
             greyedFields: [],
@@ -484,10 +615,10 @@ const expectedMetadataPost = {
             name: "Livelihoods",
             dataElements: [
                 {
-                    id: "yMqK9DKbA3X",
+                    id: "We61YNYyOX0",
                 },
                 {
-                    id: "We61YNYyOX0",
+                    id: "yMqK9DKbA3X",
                 },
             ],
             greyedFields: [],
@@ -559,22 +690,22 @@ const expectedMetadataPost = {
             ],
             periods: [
                 {
-                    id: "201910",
+                    id: "201810",
                 },
                 {
-                    id: "201911",
+                    id: "201811",
                 },
                 {
-                    id: "201912",
+                    id: "201812",
                 },
                 {
-                    id: "202001",
+                    id: "201901",
                 },
                 {
-                    id: "202002",
+                    id: "201902",
                 },
                 {
-                    id: "202003",
+                    id: "201903",
                 },
             ],
             organisationUnits: [
@@ -680,13 +811,13 @@ const expectedMetadataPost = {
                 {
                     dataDimensionItemType: "DATA_ELEMENT",
                     dataElement: {
-                        id: "yMqK9DKbA3X",
+                        id: "We61YNYyOX0",
                     },
                 },
                 {
                     dataDimensionItemType: "DATA_ELEMENT",
                     dataElement: {
-                        id: "We61YNYyOX0",
+                        id: "yMqK9DKbA3X",
                     },
                 },
             ],
@@ -697,22 +828,22 @@ const expectedMetadataPost = {
             ],
             periods: [
                 {
-                    id: "201910",
+                    id: "201810",
                 },
                 {
-                    id: "201911",
+                    id: "201811",
                 },
                 {
-                    id: "201912",
+                    id: "201812",
                 },
                 {
-                    id: "202001",
+                    id: "201901",
                 },
                 {
-                    id: "202002",
+                    id: "201902",
                 },
                 {
-                    id: "202003",
+                    id: "201903",
                 },
             ],
             organisationUnits: [
@@ -732,10 +863,10 @@ const expectedMetadataPost = {
                     },
                     categoryOptions: [
                         {
-                            id: "eWeQoOlAcxV",
+                            id: "imyqCWQ229K",
                         },
                         {
-                            id: "imyqCWQ229K",
+                            id: "eWeQoOlAcxV",
                         },
                     ],
                 },
@@ -788,13 +919,13 @@ const expectedMetadataPost = {
                 {
                     dataDimensionItemType: "INDICATOR",
                     indicator: {
-                        id: "i01veyO4Cuw",
+                        id: "CaWKoWg00oo",
                     },
                 },
                 {
                     dataDimensionItemType: "INDICATOR",
                     indicator: {
-                        id: "CaWKoWg00oo",
+                        id: "i01veyO4Cuw",
                     },
                 },
             ],
@@ -805,22 +936,22 @@ const expectedMetadataPost = {
             ],
             periods: [
                 {
-                    id: "201910",
+                    id: "201810",
                 },
                 {
-                    id: "201911",
+                    id: "201811",
                 },
                 {
-                    id: "201912",
+                    id: "201812",
                 },
                 {
-                    id: "202001",
+                    id: "201901",
                 },
                 {
-                    id: "202002",
+                    id: "201902",
                 },
                 {
-                    id: "202003",
+                    id: "201903",
                 },
             ],
             organisationUnits: [

@@ -21,7 +21,7 @@ export function getMockConfig(api: D2Api, mock: MockAdapter): Promise<Config> {
         "dataElementGroupSets:fields":
             "code,dataElementGroups[code,dataElements[attributeValues[attribute[id],value]," +
             "categoryCombo[id],code,displayName,id],displayName,id]",
-        "dataElementGroupSets:filter": ["code:eq:SECTOR"],
+        "dataElementGroupSets:filter": ["code:in:[SECTOR,FUNDER2]"],
         "dataElementGroups:fields": "code,dataElements[id]",
         "dataElementGroups:filter": [],
     }).replyOnce(200, metadata);
@@ -58,6 +58,7 @@ describe("Config", () => {
                 "dataElements",
                 "funders",
                 "indicators",
+                "locations",
                 "sectors",
             ]);
         });

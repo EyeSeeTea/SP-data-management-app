@@ -1128,5 +1128,9 @@ export const metadata = {
                 },
             ],
         },
+        {
+            code: "LOCATION",
+            organisationUnitGroups: [],
+        },
     ],
 };
