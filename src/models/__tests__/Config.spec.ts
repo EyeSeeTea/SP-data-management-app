@@ -35,7 +35,7 @@ export function getMockConfig(api: D2Api, mock: MockAdapter): Promise<Config> {
             "indicators:fields": "code,id",
             "indicators:filter": ["code:$like:ACTUAL_TARGET_"],
             "organisationUnitGroupSets:fields":
-                "code,organisationUnitGroups[displayName,id,organisationUnits[id]]",
+                "code,organisationUnitGroups[displayName,id,organisationUnits[id,level]]",
             "organisationUnitGroupSets:filter": ["code:in:[FUNDER,LOCATION]"],
         },
     }).replyOnce(200, metadata);

@@ -109,7 +109,7 @@ const metadataParams = {
             organisationUnitGroups: {
                 id: yes,
                 displayName: yes,
-                organisationUnits: { id: yes },
+                organisationUnits: { id: yes, level: yes },
             },
         },
         filter: {
@@ -189,7 +189,9 @@ class ConfigLoader {
             .organisationUnitGroups.map(oug => ({
                 id: oug.id,
                 displayName: oug.displayName,
-                countries: oug.organisationUnits.map(ou => ({ id: ou.id })),
+                countries: oug.organisationUnits
+                    .filter(ou => ou.level === 2)
+                    .map(ou => ({ id: ou.id })),
             }));
 
         const currentUser = {
