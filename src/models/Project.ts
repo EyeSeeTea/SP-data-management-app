@@ -180,6 +180,8 @@ type ValidationError = string[];
 type Validations = { [K in ValidationKey]?: Validation };
 
 class Project {
+    data: ProjectData;
+
     static lengths = {
         awardNumber: 5,
         subsequentLettering: 2,
@@ -262,8 +264,20 @@ class Project {
         "dataElements",
     ]);
 
-    constructor(public api: D2Api, public config: Config, private data: ProjectData) {
-        defineGetters(data, this);
+    constructor(public api: D2Api, public config: Config, rawData: ProjectData) {
+        this.data = Project.processInitialData(config, rawData);
+        defineGetters(this.data, this);
+    }
+
+    static processInitialData(config: Config, data: ProjectData) {
+        return {
+            ...data,
+            locations: _.intersectionBy(
+                data.locations,
+                Project.getSelectableLocations(config, data.parentOrgUnit),
+                "id"
+            ),
+        };
     }
 
     static isFieldRequired(field: ProjectField) {
@@ -327,6 +341,16 @@ class Project {
 
     async getRelations(): Promise<Relations | undefined> {
         return this.id ? Project.getRelations(this.api, this.config, this.id) : undefined;
+    }
+
+    static getSelectableLocations(config: Config, country: Ref | undefined) {
+        return config.locations.filter(
+            location => country && _.some(location.countries, country_ => country_.id == country.id)
+        );
+    }
+
+    getSelectableLocations(country: Ref | undefined) {
+        return Project.getSelectableLocations(this.config, country);
     }
 
     static async getRelations(

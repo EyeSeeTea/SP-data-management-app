@@ -1,12 +1,12 @@
 import _ from "lodash";
 import moment from "moment";
-import { D2DataSet, D2OrganisationUnit, D2ApiResponse, MetadataPayload, Id } from "d2-api";
+import { D2DataSet, D2OrganisationUnit, D2ApiResponse, MetadataPayload, Id, D2Api } from "d2-api";
 import { PartialModel, Ref, PartialPersistedModel, MetadataResponse } from "d2-api";
 import Project, { getOrgUnitDatesFromProject } from "./Project";
 import { getMonthsRange, toISOString } from "../utils/date";
 import "../utils/lodash-mixins";
 import ProjectDashboard from "./ProjectDashboard";
-import { getUid, getDataStore } from "../utils/dhis2";
+import { getUid, getDataStore, getIds } from "../utils/dhis2";
 
 const expiryDaysInMonthActual = 10;
 
@@ -21,8 +21,7 @@ export default class ProjectDb {
 
     async saveMetadata() {
         const { project } = this;
-        const { api, config } = project;
-        const { startDate, endDate } = project;
+        const { api, config, startDate, endDate } = project;
 
         if (!startDate || !endDate) {
             throw new Error("Missing dates");
@@ -68,19 +67,7 @@ export default class ProjectDb {
             ),
         };
 
-        const { organisationUnitGroups: existingOrgUnitGroupFunders } = await api.metadata
-            .get({
-                organisationUnitGroups: {
-                    fields: { $owner: true },
-                    filter: { id: { in: project.funders.map(funder => funder.id) } },
-                },
-            })
-            .getData();
-
-        const newOrgUnitGroupFunders = existingOrgUnitGroupFunders.map(ouGroup => ({
-            ...ouGroup,
-            organisationUnits: [...ouGroup.organisationUnits, { id: orgUnit.id }],
-        }));
+        const orgUnitGroupsToSave = await getOrgUnitGroups(api, project, orgUnit);
 
         const dataSetAttributeValues = addAttributeValue(
             baseAttributeValues,
@@ -93,7 +80,7 @@ export default class ProjectDb {
         const dataSetTargetMetadata = this.getDataSetsMetadata(orgUnit, {
             name: `${project.name} Target`,
             code: "TARGET",
-            openFuturePeriods: endDate.diff(moment(), "month") + 1,
+            openFuturePeriods: Math.max(endDate.diff(moment(), "month") + 1, 0),
             dataInputPeriods: targetPeriods,
             expiryDays: 0,
             attributeValues: dataSetAttributeValues,
@@ -110,12 +97,9 @@ export default class ProjectDb {
         });
         const dataSetActual = _(dataSetActualMetadata.dataSets).getOrFail(0);
 
-        const orgUnitsMetadata: Pick<
-            MetadataPayload,
-            "organisationUnits" | "organisationUnitGroups"
-        > = {
+        const orgUnitsMetadata: OrgUnitsMeta = {
             organisationUnits: [orgUnitToSave],
-            organisationUnitGroups: newOrgUnitGroupFunders,
+            organisationUnitGroups: orgUnitGroupsToSave,
         };
 
         const payload = flattenPayloads([
@@ -234,6 +218,28 @@ export default class ProjectDb {
 
         return { dataSets: [dataSet], sections };
     }
+}
+
+type OrgUnitsMeta = Pick<MetadataPayload, "organisationUnits" | "organisationUnitGroups">;
+
+async function getOrgUnitGroups(
+    api: D2Api,
+    project: Project,
+    orgUnit: PartialPersistedModel<D2OrganisationUnit>
+) {
+    const { organisationUnitGroups } = await api.metadata
+        .get({
+            organisationUnitGroups: {
+                fields: { $owner: true },
+                filter: { id: { in: getIds([...project.funders, ...project.locations]) } },
+            },
+        })
+        .getData();
+
+    return organisationUnitGroups.map(orgUnitGroup => ({
+        ...orgUnitGroup,
+        organisationUnits: _.uniqBy([...orgUnitGroup.organisationUnits, { id: orgUnit.id }], "id"),
+    }));
 }
 
 function getDataSetPeriods(startDate: moment.Moment, endDate: moment.Moment) {

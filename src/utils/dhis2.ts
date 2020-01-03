@@ -1,6 +1,14 @@
 import _ from "lodash";
 import md5 from "md5";
-import { D2Api } from "d2-api";
+import { D2Api, Ref, Id } from "d2-api";
+
+export function getIds<T extends Ref>(objs: T[]): Id[] {
+    return objs.map(obj => obj.id);
+}
+
+export function getIOrgUnitLevel<OrgUnit extends { path: string }>(orgUnit: OrgUnit): number {
+    return (orgUnit.path.match(/\//g) || []).length;
+}
 
 export function getIdFromOrgUnit<OrgUnit extends { path: string }>(orgUnit: OrgUnit) {
     const id = _.last(orgUnit.path.split("/"));
