@@ -16,18 +16,35 @@ const user = {
 export function getMockConfig(api: D2Api, mock: MockAdapter): Promise<Config> {
     mock.reset();
     mock.onGet("/metadata", {
-        "attributes:fields": "code,id",
-        "attributes:filter": ["code:eq:PM_PAIRED_DE"],
-        "dataElementGroupSets:fields":
-            "code,dataElementGroups[code,dataElements[attributeValues[attribute[id],value]," +
-            "categoryCombo[id],code,displayName,id],displayName,id]",
-        "dataElementGroupSets:filter": ["code:in:[SECTOR,FUNDER2]"],
-        "dataElementGroups:fields": "code,dataElements[id]",
-        "dataElementGroups:filter": [],
+        params: {
+            "attributes:fields": "code,id",
+            "attributes:filter": [
+                "code:in:[PM_PAIRED_DE,PM_CREATED_BY_PROJECT_MONITORING,PM_ORGUNIT_PROJECT_ID,PM_PROJECT_DASHBOARD_ID]",
+            ],
+            "categories:fields": "categoryOptions[code,id],code,id",
+            "categories:filter": ["code:in:[ACTUAL_TARGET,GENDER,NEW_RECURRING]"],
+            "categoryCombos:fields": "code,id",
+            "categoryCombos:filter": ["code:in:[ACTUAL_TARGET]"],
+            "categoryOptions:fields": "code,id",
+            "categoryOptions:filter": ["code:in:[TARGET,ACTUAL]"],
+            "dataElements:fields":
+                "attributeValues[attribute[id],value],categoryCombo[id],code,description,displayName,id",
+            "dataElementGroupSets:fields":
+                "code,dataElementGroups[code,dataElements[id],displayName,id]",
+            "dataElementGroupSets:filter": ["code:in:[SECTOR,SERIES,TYPE_1,TYPE_2]"],
+            "indicators:fields": "code,id",
+            "indicators:filter": ["code:$like:ACTUAL_TARGET_"],
+            "organisationUnitGroupSets:fields":
+                "code,organisationUnitGroups[displayName,id,organisationUnits[id]]",
+            "organisationUnitGroupSets:filter": ["code:in:[FUNDER,LOCATION]"],
+        },
     }).replyOnce(200, metadata);
 
     mock.onGet("/me", {
-        fields: "displayName,id,organisationUnits[displayName,id],userCredentials[userRoles[name]]",
+        params: {
+            fields:
+                "displayName,id,organisationUnits[displayName,id],userCredentials[userRoles[name]]",
+        },
     }).replyOnce(200, user);
 
     return getConfig(api);

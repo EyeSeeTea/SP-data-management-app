@@ -3,12 +3,14 @@ import MockAdapter from "axios-mock-adapter/types";
 export function mockApiForMerReportEmpty(mock: MockAdapter) {
     mock.reset();
     mock.onGet("/metadata", {
-        "organisationUnits:fields": "closedDate,displayName,id,openingDate",
-        "organisationUnits:filter": [
-            "closedDate:ge:2019-07-01T00:00:00",
-            "openingDate:le:2019-05-01T00:00:00",
-            "parent.id:eq:b",
-        ],
+        params: {
+            "organisationUnits:fields": "closedDate,displayName,id,openingDate",
+            "organisationUnits:filter": [
+                "closedDate:ge:2020-01-01T00:00:00",
+                "openingDate:le:2019-11-01T00:00:00",
+                "parent.id:eq:PJb0RtEnqlf",
+            ],
+        },
     }).replyOnce(200, {});
 }
 
@@ -45,12 +47,14 @@ export function mockApiForMerReportWithData(mock: MockAdapter) {
         dataElements: ["yUGuwPFkBrj"],
     });
     mock.onGet("/metadata", {
-        "organisationUnits:fields": "closedDate,displayName,id,openingDate",
-        "organisationUnits:filter": [
-            "closedDate:ge:2019-07-01T00:00:00",
-            "openingDate:le:2019-05-01T00:00:00",
-            "parent.id:eq:b",
-        ],
+        params: {
+            "organisationUnits:fields": "closedDate,displayName,id,openingDate",
+            "organisationUnits:filter": [
+                "closedDate:ge:2020-01-01T00:00:00",
+                "openingDate:le:2019-11-01T00:00:00",
+                "parent.id:eq:PJb0RtEnqlf",
+            ],
+        },
     }).replyOnce(200, {
         organisationUnits: [
             {
@@ -69,12 +73,14 @@ export function mockApiForMerReportWithData(mock: MockAdapter) {
     });
 
     mock.onGet("/analytics", {
-        dimension: [
-            "ou:uWuM0QT2pVl;SKuiiu7Vbwv",
-            "pe:",
-            "GIIHAr9BzzO:eWeQoOlAcxV;imyqCWQ229K",
-            "dx:WS8XV4WWPE7;We61YNYyOX0;yUGuwPFkBrj",
-        ],
+        params: {
+            dimension: [
+                "ou:uWuM0QT2pVl;SKuiiu7Vbwv",
+                "pe:201910;201911;201912",
+                "GIIHAr9BzzO:eWeQoOlAcxV;imyqCWQ229K",
+                "dx:WS8XV4WWPE7;We61YNYyOX0;yUGuwPFkBrj",
+            ],
+        },
     }).replyOnce(200, {
         headers: [
             {
