@@ -6,6 +6,7 @@ import { StepProps } from "../../../pages/project-wizard/ProjectWizard";
 import { useAppContext } from "../../../contexts/api-context";
 import { CSSProperties } from "@material-ui/core/styles/withStyles";
 import { getProjectFieldName } from "../../../utils/form";
+import { Sector, Location } from "../../../models/Config";
 
 type Option = { value: string; text: string };
 type ModelCollectionField = "sectors" | "locations";
@@ -20,17 +21,12 @@ const Title: React.FC<{ style?: CSSProperties }> = ({ style, children }) => {
 const SectorsStep: React.FC<StepProps> = ({ project, onChange }) => {
     const { d2, config } = useAppContext();
 
-    const onUpdateField = <K extends ModelCollectionField>(
-        fieldName: K,
-        options: Option[],
-        selected: string[]
-    ) => {
-        const newValue = _(options)
-            .keyBy(option => option.value)
+    const onUpdateField = (fieldName: ModelCollectionField, selected: string[]) => {
+        const newValue = _(config[fieldName])
+            .keyBy((obj: Sector | Location) => obj.id)
             .at(selected)
             .compact()
-            .map(({ value, text }) => ({ id: value, displayName: text }))
-            .value();
+            .value() as Sector[] | Location[];
         const newProject = project.set(fieldName, newValue);
         onChange(newProject);
     };
@@ -54,9 +50,7 @@ const SectorsStep: React.FC<StepProps> = ({ project, onChange }) => {
                         d2={d2}
                         ordered={true}
                         height={300}
-                        onChange={(selected: string[]) =>
-                            onUpdateField("sectors", sectorOptions, selected)
-                        }
+                        onChange={(selected: string[]) => onUpdateField("sectors", selected)}
                         options={sectorOptions}
                         selected={project.sectors.map(sector => sector.id)}
                     />
@@ -68,9 +62,7 @@ const SectorsStep: React.FC<StepProps> = ({ project, onChange }) => {
                         d2={d2}
                         ordered={true}
                         height={300}
-                        onChange={(selected: string[]) =>
-                            onUpdateField("locations", locationOptions, selected)
-                        }
+                        onChange={(selected: string[]) => onUpdateField("locations", selected)}
                         options={locationOptions}
                         selected={project.locations.map(location => location.id)}
                     />
