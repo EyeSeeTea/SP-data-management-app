@@ -5,7 +5,7 @@ type Options = { concurrency: number };
 
 export function runPromises<T>(
     promiseGetters: Array<() => Promise<T>>,
-    options: Options
+    options: Options = { concurrency: 1 }
 ): Promise<T[]> {
     const pool = new PromisePool(options);
     promiseGetters.forEach(promiseGetter => pool.add(promiseGetter));

@@ -1,5 +1,5 @@
 import React from "react";
-import { useHistory, useLocation, useRouteMatch } from "react-router";
+import { useHistory, useLocation } from "react-router";
 import _ from "lodash";
 import { Wizard, useSnackbar } from "d2-ui-components";
 import { LinearProgress } from "@material-ui/core";

@@ -7,11 +7,19 @@ import { getMonthsRange, toISOString } from "../utils/date";
 import "../utils/lodash-mixins";
 import ProjectDashboard from "./ProjectDashboard";
 import { getUid, getDataStore, getIds } from "../utils/dhis2";
+import { Config } from "./Config";
+import { runPromises } from "../utils/promises";
 
 const expiryDaysInMonthActual = 10;
 
 export default class ProjectDb {
-    constructor(public project: Project) {}
+    api: D2Api;
+    config: Config;
+
+    constructor(public project: Project) {
+        this.api = project.api;
+        this.config = project.config;
+    }
 
     async save() {
         const saveReponse = await this.saveMetadata();
@@ -20,8 +28,8 @@ export default class ProjectDb {
     }
 
     async saveMetadata() {
-        const { project } = this;
-        const { api, config, startDate, endDate } = project;
+        const { project, api, config } = this;
+        const { startDate, endDate } = project;
 
         if (!startDate || !endDate) {
             throw new Error("Missing dates");
@@ -34,12 +42,11 @@ export default class ProjectDb {
         ];
 
         const parentOrgUnitId = getOrgUnitId(project.parentOrgUnit);
-        const orgUnitId = getUid("organisationUnit", project.uid);
         const orgUnit = {
-            id: orgUnitId,
+            id: project.id,
             name: project.name,
             displayName: project.name,
-            path: project.parentOrgUnit.path + "/" + orgUnitId,
+            path: project.parentOrgUnit.path + "/" + project.id,
             code: project.code,
             shortName: project.shortName,
             description: project.description,
@@ -47,7 +54,6 @@ export default class ProjectDb {
             ...getOrgUnitDatesFromProject(startDate, endDate),
             openingDate: toISOString(startDate.clone().subtract(1, "month")),
             closedDate: toISOString(endDate.clone().add(1, "month")),
-            organisationUnitGroups: project.funders.map(funder => ({ id: funder.id })),
             attributeValues: baseAttributeValues,
         };
 
@@ -111,10 +117,7 @@ export default class ProjectDb {
 
         await this.saveMERData(orgUnit.id).getData();
 
-        const response = await api.metadata
-            .post(payload)
-            .getData()
-            .catch(_err => null);
+        const response = await this.savePayload(payload);
 
         const savedProject =
             response && response.status === "OK"
@@ -130,6 +133,47 @@ export default class ProjectDb {
                 : this.project;
 
         return { orgUnit: orgUnitToSave, payload, response, project: savedProject };
+    }
+
+    async savePayload(payload: Partial<MetadataPayload> & Pick<MetadataPayload, "sections">) {
+        // 2.31 still has problems when updating dataSet/sections in the same payload, split in two
+        const { api, project } = this;
+        const sectionsPayload = _.pick(payload, ["sections"]);
+        const nonSectionsPayload = _.omit(payload, ["sections"]);
+        const dataSets = project.dataSets
+            ? [project.dataSets.actual, project.dataSets.target]
+            : null;
+
+        const oldSections = dataSets
+            ? (await api.metadata
+                  .get({
+                      sections: {
+                          fields: { id: true },
+                          filter: { "dataSet.id": { in: dataSets.map(ds => ds.id) } },
+                      },
+                  })
+                  .getData()).sections
+            : [];
+
+        // Delete old sections which are not in current sectors
+        const sectionsToDelete = _(oldSections)
+            .differenceBy(payload.sections, section => section.id)
+            .value();
+        runPromises(
+            sectionsToDelete.map(section => () => api.models.sections.delete(section).getData())
+        );
+
+        const response = await api.metadata
+            .post(nonSectionsPayload)
+            .getData()
+            .catch(_err => null);
+
+        if (!response || response.status !== "OK" || _.isEmpty(sectionsPayload)) return response;
+
+        return api.metadata
+            .post(sectionsPayload)
+            .getData()
+            .catch(_err => null);
     }
 
     saveMERData(orgUnitId: Id): D2ApiResponse<void> {
@@ -228,19 +272,40 @@ async function getOrgUnitGroups(
     project: Project,
     orgUnit: PartialPersistedModel<D2OrganisationUnit>
 ) {
-    const { organisationUnitGroups } = await api.metadata
+    /* The project may have changed funders and locations, so get also the previously related
+       groups to clear them if necessary */
+    const { organisationUnitGroups: prevOrgUnitGroups } = await api.metadata
         .get({
             organisationUnitGroups: {
                 fields: { $owner: true },
-                filter: { id: { in: getIds([...project.funders, ...project.locations]) } },
+                filter: { "organisationUnits.id": { eq: project.id } },
             },
         })
         .getData();
 
-    return organisationUnitGroups.map(orgUnitGroup => ({
-        ...orgUnitGroup,
-        organisationUnits: _.uniqBy([...orgUnitGroup.organisationUnits, { id: orgUnit.id }], "id"),
-    }));
+    const orgUnitGroupIds = new Set(getIds([...project.funders, ...project.locations]));
+
+    const { organisationUnitGroups: newOrgUnitGroups } = await api.metadata
+        .get({
+            organisationUnitGroups: {
+                fields: { $owner: true },
+                filter: { id: { in: Array.from(orgUnitGroupIds) } },
+            },
+        })
+        .getData();
+
+    const orgUnitsToSave = _(prevOrgUnitGroups)
+        .concat(newOrgUnitGroups)
+        .uniqBy(oug => oug.id)
+        .value();
+
+    return orgUnitsToSave.map(orgUnitGroup => {
+        const organisationUnits = _(orgUnitGroup.organisationUnits)
+            .filter(ou => ou.id !== project.id)
+            .concat(orgUnitGroupIds.has(orgUnitGroup.id) ? [{ id: orgUnit.id }] : [])
+            .value();
+        return { ...orgUnitGroup, organisationUnits };
+    });
 }
 
 function getDataSetPeriods(startDate: moment.Moment, endDate: moment.Moment) {

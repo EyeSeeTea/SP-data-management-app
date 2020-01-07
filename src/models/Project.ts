@@ -66,9 +66,10 @@ import ProjectDb from "./ProjectDb";
 import { Maybe } from "../types/utils";
 import { toISOString, getMonthsRange } from "../utils/date";
 import { getDataStore } from "../utils/dhis2";
+import { generateUid } from "d2/uid";
 
 export interface ProjectData {
-    id: Id | undefined;
+    id: Id;
     name: string;
     description: string;
     awardNumber: string;
@@ -84,6 +85,7 @@ export interface ProjectData {
     dataElements: DataElementsSet;
     dataSets: { actual: DataSet; target: DataSet } | undefined;
     dashboard: Ref | undefined;
+    initialData: Omit<ProjectData, "initialData">;
 }
 
 interface NamedObject {
@@ -218,6 +220,7 @@ class Project {
         parentOrgUnit: i18n.t("Parent Organisation Unit"),
         dataSets: i18n.t("Data Sets"),
         dashboard: i18n.t("Dashboard"),
+        initialData: i18n.t("Initial Data"),
     };
 
     static getFieldName(field: ProjectField): string {
@@ -349,7 +352,7 @@ class Project {
     }
 
     async getRelations(): Promise<Relations | undefined> {
-        return this.id ? Project.getRelations(this.api, this.config, this.id) : undefined;
+        return Project.getRelations(this.api, this.config, this.id);
     }
 
     static getSelectableLocations(config: Config, country: Ref | undefined) {
@@ -470,7 +473,6 @@ class Project {
         const dataElementsSetWithSelections = dataElementsSet
             .updateSelection(dataSets.actual.dataElements.map(de => de.id))
             .dataElements.updateMERSelection(dataElementIdsForMer);
-        console.log({ des: dataSets.actual.dataElements, set: dataElementsSetWithSelections });
 
         const projectData = {
             id: orgUnit.id,
@@ -491,12 +493,17 @@ class Project {
             dataElements: dataElementsSetWithSelections,
         };
 
-        return new Project(api, config, projectData);
+        return new Project(api, config, { ...projectData, initialData: projectData });
     }
 
     static async create(api: D2Api, config: Config) {
         const dataElements = DataElementsSet.build(config);
-        return new Project(api, config, { ...defaultProjectData, dataElements });
+        const projectData = {
+            ...defaultProjectData,
+            id: generateUid(),
+            dataElements,
+        };
+        return new Project(api, config, { ...projectData, initialData: projectData });
     }
 
     save() {
@@ -558,7 +565,7 @@ class Project {
     }
 
     public get uid() {
-        return this.code;
+        return this.id;
     }
 
     async validateCodeUniqueness(): Promise<ValidationError> {
