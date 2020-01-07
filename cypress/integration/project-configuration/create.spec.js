@@ -11,7 +11,7 @@ describe("Projects - Create", () => {
         cy.contains("New project");
 
         // General Info step
-        waitForStep("General info");
+        cy.waitForStep("General info");
 
         cy.contains("Next").click();
         cy.contains("Name cannot be blank");
@@ -40,7 +40,7 @@ describe("Projects - Create", () => {
 
         // Organisation Unit Step
 
-        waitForStep("Organisation Unit");
+        cy.waitForStep("Organisation Unit");
         cy.contains("Next").click();
         cy.contains("One Organisation Unit should be selected");
 
@@ -49,7 +49,7 @@ describe("Projects - Create", () => {
 
         // Sectors and Location
 
-        waitForStep("Sectors & Project Locations");
+        cy.waitForStep("Sectors & Project Locations");
 
         cy.contains("Next").click();
         cy.contains("Select at least one item for Sectors");
@@ -66,7 +66,7 @@ describe("Projects - Create", () => {
 
         // Selection of Indicators
 
-        waitForStep("Selection of Indicators");
+        cy.waitForStep("Selection of Indicators");
 
         cy.contains("# of agriculture groups receiving support for improved")
             .parent("td")
@@ -83,7 +83,7 @@ describe("Projects - Create", () => {
 
         // Selection of MER Indicators
 
-        waitForStep("Selection of MER Indicators");
+        cy.waitForStep("Selection of MER Indicators");
 
         cy.contains("# of people trained on improved agriculture technologies/practices")
             .parent("td")
@@ -100,7 +100,7 @@ describe("Projects - Create", () => {
 
         // Save step
 
-        waitForStep("Summary and Save");
+        cy.waitForStep("Summary and Save");
         cy.get("[data-test-current=true]").contains("Save");
 
         cy.contains("Name");
@@ -151,8 +151,4 @@ function selectInMultiSelector(selectorName, label) {
     cy.contains("Selected")
         .next("button")
         .click();
-}
-
-function waitForStep(stepName) {
-    cy.contains(stepName).should("have.class", "current-step");
 }

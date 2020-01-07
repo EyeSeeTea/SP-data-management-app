@@ -62,3 +62,7 @@ Cypress.on("uncaught:exception", (err, runnable) => {
     console.log("uncaught:exception", { err, runnable });
     return false;
 });
+
+Cypress.Commands.add("waitForStep", stepName => {
+    cy.contains(stepName).should("have.class", "current-step");
+});
