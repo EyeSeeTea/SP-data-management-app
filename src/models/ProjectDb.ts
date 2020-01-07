@@ -193,6 +193,7 @@ export default class ProjectDb {
                 dataSet: { id: dataSetId },
                 sortOrder: index,
                 name: sector.displayName,
+                code: sector.code + "_" + dataSetId,
                 dataElements: dataElements
                     .filter(de => de.sectorId === sector.id)
                     .map(de => ({ id: de.id })),

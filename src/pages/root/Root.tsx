@@ -13,7 +13,16 @@ const Root = () => {
     return (
         <HashRouter>
             <Switch>
-                <Route path={generateUrl("projects.new")} render={() => <ProjectWizard />} />
+                <Route
+                    path={generateUrl("projects.new")}
+                    render={() => <ProjectWizard action={{ type: "create" }} />}
+                />
+                <Route
+                    path={generateUrl("projects.edit", idParam)}
+                    render={props => (
+                        <ProjectWizard action={{ type: "edit", id: props.match.params.id }} />
+                    )}
+                />
                 <Route path={generateUrl("report")} render={() => <MerReport />} />
                 <Route
                     path={generateUrl("actualValues", idParam)}

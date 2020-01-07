@@ -22,8 +22,8 @@ export function getDevProject(initialProject: Project, enabled: boolean) {
             displayName: "Bahamas",
         })
         .set("sectors", [
-            { id: "mGQ5ckOTU8A", displayName: "Agriculture" },
-            { id: "m4Cg6FOPPR7", displayName: "Livelihoods" },
+            { id: "mGQ5ckOTU8A", displayName: "Agriculture", code: "SECTOR_AGRICULTURE" },
+            { id: "m4Cg6FOPPR7", displayName: "Livelihoods", code: "SECTOR_LIVELIHOODS" },
         ])
         .set(
             "dataElements",
@@ -32,8 +32,10 @@ export function getDevProject(initialProject: Project, enabled: boolean) {
                 .dataElements.updateMERSelection(["WS8XV4WWPE7", "We61YNYyOX0"])
         )
         .set("name", "0Test1-" + awardNumber)
+        .set("description", "Some description")
         .set("awardNumber", awardNumber)
         .set("subsequentLettering", "en")
+        .set("speedKey", "key1")
         .set("startDate", moment().startOf("month"))
         .set(
             "endDate",

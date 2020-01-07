@@ -65,6 +65,7 @@ import DataElementsSet, { SelectionUpdate, DataElement, PeopleOrBenefit } from "
 import ProjectDb from "./ProjectDb";
 import { Maybe } from "../types/utils";
 import { toISOString, getMonthsRange } from "../utils/date";
+import { getDataStore } from "../utils/dhis2";
 
 export interface ProjectData {
     id: Id | undefined;
@@ -73,15 +74,15 @@ export interface ProjectData {
     awardNumber: string;
     subsequentLettering: string;
     speedKey: string;
-    startDate?: Moment;
-    endDate?: Moment;
+    startDate: Moment | undefined;
+    endDate: Moment | undefined;
     sectors: Sector[];
     funders: Funder[];
     locations: Location[];
     orgUnit: OrganisationUnit | undefined;
     parentOrgUnit: OrganisationUnit | undefined;
     dataElements: DataElementsSet;
-    dataSets: { actual: DataSetWithPeriods; target: DataSetWithPeriods } | undefined;
+    dataSets: { actual: DataSet; target: DataSet } | undefined;
     dashboard: Ref | undefined;
 }
 
@@ -90,7 +91,9 @@ interface NamedObject {
     displayName: string;
 }
 
-export type Sector = NamedObject;
+type DataStoreProjectInfo = { dataElements: string[] };
+
+export type Sector = NamedObject & { code: string };
 export type Funder = NamedObject;
 export type Location = NamedObject;
 
@@ -98,7 +101,7 @@ export interface Relations {
     name: string;
     organisationUnit: NamedObject;
     dashboard: Maybe<Ref>;
-    dataSets: { actual: Maybe<DataSetWithPeriods>; target: Maybe<DataSetWithPeriods> };
+    dataSets: { actual: DataSetWithPeriods; target: DataSetWithPeriods } | undefined;
 }
 
 interface DataInputPeriod {
@@ -107,10 +110,16 @@ interface DataInputPeriod {
     closingDate: string;
 }
 
+export interface DataSet {
+    id: string;
+}
+
 export interface DataSetWithPeriods {
     id: string;
     code: string;
+    dataElements: Ref[];
     dataInputPeriods: DataInputPeriod[];
+    sections: Array<{ code: string }>;
 }
 
 interface OrganisationUnit {
@@ -372,7 +381,9 @@ class Project {
                     fields: {
                         id: true,
                         code: true,
+                        dataSetElements: { dataElement: { id: true } },
                         dataInputPeriods: { period: true, openingDate: true, closingDate: true },
+                        sections: { code: true },
                     },
                     filter: { code: { $like: projectId } },
                 },
@@ -388,30 +399,104 @@ class Project {
             .first();
 
         const getDataSet = (type: "actual" | "target") =>
-            dataSets.find(ds => ds.code.endsWith(type.toUpperCase()));
+            _(dataSets)
+                .map(dataSet => (dataSet.code.endsWith(type.toUpperCase()) ? dataSet : null))
+                .compact()
+                .map(dataSet => ({
+                    ...dataSet,
+                    dataElements: dataSet.dataSetElements.map(dse => dse.dataElement),
+                }))
+                .first();
+
+        const actualDataSet = getDataSet("actual");
+        const targetDataSet = getDataSet("target");
 
         return {
             name: orgUnit.displayName,
             organisationUnit: orgUnit,
             dashboard: dashboardId ? { id: dashboardId } : undefined,
-            dataSets: { actual: getDataSet("actual"), target: getDataSet("target") },
+            dataSets:
+                actualDataSet && targetDataSet
+                    ? { actual: actualDataSet, target: targetDataSet }
+                    : undefined,
         };
     }
 
-    static async getData(
-        config: Config,
-        partialData: Omit<ProjectData, "dataElements" | "dataElementsMER">
-    ): Promise<ProjectData> {
-        const dataElements = await DataElementsSet.build(config);
-        return { ...partialData, dataElements };
-    }
+    static async get(api: D2Api, config: Config, id: string) {
+        const relations = await Project.getRelations(api, config, id);
+        if (!relations || !relations.dataSets) throw new Error("Cannot get project info");
+        const { dataSets } = relations;
 
-    static async get(api: D2Api, config: Config, _id: string) {
-        return new Project(api, config, await Project.getData(config, defaultProjectData));
+        const { organisationUnits } = await api.metadata
+            .get({
+                organisationUnits: {
+                    fields: {
+                        id: true,
+                        path: true,
+                        displayName: true,
+                        name: true,
+                        description: true,
+                        code: true,
+                        openingDate: true,
+                        closedDate: true,
+                        parent: { id: true, displayName: true, path: true },
+                        organisationUnitGroups: { id: true },
+                    },
+                    filter: { id: { eq: id } },
+                },
+                // dataSets. from getRelations
+            })
+            .getData();
+
+        const orgUnit = organisationUnits[0];
+        if (!orgUnit) throw new Error("Org unit not found");
+
+        const dataStore = getDataStore(api);
+        const value = await dataStore.get<DataStoreProjectInfo>(`mer-${id}`).getData();
+        if (!value) console.error("Cannot get MER selections");
+        const dataElementIdsForMer = value ? value.dataElements : [];
+
+        const code = orgUnit.code || "";
+        const { startDate, endDate } = getDatesFromOrgUnit(orgUnit);
+        const sectorCodes = dataSets.actual.sections.map(section =>
+            _.initial((section.code || "").split("_")).join("_")
+        );
+        const sectors = _(config.sectors)
+            .keyBy(sector => sector.code)
+            .at(sectorCodes)
+            .compact()
+            .value();
+        const dataElementsSet = DataElementsSet.build(config);
+        const dataElementsSetWithSelections = dataElementsSet
+            .updateSelection(dataSets.actual.dataElements.map(de => de.id))
+            .dataElements.updateMERSelection(dataElementIdsForMer);
+        console.log({ des: dataSets.actual.dataElements, set: dataElementsSetWithSelections });
+
+        const projectData = {
+            id: orgUnit.id,
+            name: orgUnit.name,
+            description: orgUnit.description,
+            awardNumber: code.slice(2, 2 + 5),
+            subsequentLettering: code.slice(0, 2),
+            speedKey: code.slice(8),
+            startDate: startDate,
+            endDate: endDate,
+            sectors: sectors,
+            funders: _.intersectionBy(config.funders, orgUnit.organisationUnitGroups, "id"),
+            locations: _.intersectionBy(config.locations, orgUnit.organisationUnitGroups, "id"),
+            orgUnit: orgUnit,
+            parentOrgUnit: orgUnit.parent,
+            dataSets: relations.dataSets,
+            dashboard: relations.dashboard,
+            dataElements: dataElementsSetWithSelections,
+        };
+
+        return new Project(api, config, projectData);
     }
 
     static async create(api: D2Api, config: Config) {
-        return new Project(api, config, await Project.getData(config, defaultProjectData));
+        const dataElements = DataElementsSet.build(config);
+        return new Project(api, config, { ...defaultProjectData, dataElements });
     }
 
     save() {
@@ -483,7 +568,7 @@ class Project {
             .get({
                 organisationUnits: {
                     fields: { displayName: true },
-                    filter: { code: { eq: code } },
+                    filter: { code: { eq: code }, id: { ne: this.id } },
                 },
             })
             .getData();
@@ -544,16 +629,24 @@ interface Project extends ProjectData {}
 
 type OrgUnitWithDates = Pick<D2OrganisationUnit, "openingDate" | "closedDate">;
 
+function getDatesFromOrgUnit<OU extends OrgUnitWithDates>(
+    orgUnit: OU
+): { startDate: Moment | undefined; endDate: Moment | undefined } {
+    const process = (s: string | undefined, mapper: (d: Moment) => Moment) =>
+        s ? mapper(moment(s)) : undefined;
+    return {
+        startDate: process(orgUnit.openingDate, d => d.add(1, "month")),
+        endDate: process(orgUnit.closedDate, d => d.subtract(1, "month")),
+    };
+}
+
 export function getProjectFromOrgUnit<OU extends OrgUnitWithDates>(orgUnit: OU): OU {
-    const process = (s: string, mapper: (d: Moment) => Moment) => toISOString(mapper(moment(s)));
+    const { startDate, endDate } = getDatesFromOrgUnit(orgUnit);
+
     return {
         ...orgUnit,
-        ...(orgUnit.openingDate
-            ? { openingDate: process(orgUnit.openingDate, d => d.add(1, "month")) }
-            : {}),
-        ...(orgUnit.closedDate
-            ? { closedDate: process(orgUnit.closedDate, d => d.subtract(1, "month")) }
-            : {}),
+        ...(startDate ? { openingDate: toISOString(startDate) } : {}),
+        ...(endDate ? { closedDate: toISOString(endDate) } : {}),
     };
 }
 

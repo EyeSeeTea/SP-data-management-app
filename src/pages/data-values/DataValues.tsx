@@ -79,7 +79,7 @@ function loadData(
     Project.getRelations(api, config, projectId)
         .then(relations => {
             const orgUnit = relations ? relations.organisationUnit : null;
-            const dataSet = relations ? relations.dataSets[type] : null;
+            const dataSet = relations && relations.dataSets ? relations.dataSets[type] : null;
             if (relations && orgUnit && dataSet) {
                 setState({
                     data: { name: relations.name, orgUnit, dataSet },
