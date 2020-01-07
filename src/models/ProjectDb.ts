@@ -180,7 +180,7 @@ export default class ProjectDb {
         const dataStore = getDataStore(this.project.api);
         const dataElementsForMER = this.project.dataElements.get({ onlyMERSelected: true });
         const value = { dataElements: dataElementsForMER.map(de => de.id) };
-        return dataStore.save(`mer-${orgUnitId}`, value);
+        return dataStore.save(ProjectDb.getMerDataStoreInfoKey(orgUnitId), value);
     }
 
     /*
@@ -264,6 +264,10 @@ export default class ProjectDb {
         return { dataSets: [dataSet], sections };
     }
 
+    static getMerDataStoreInfoKey(id: Id): string {
+        return `mer-${id}`;
+    }
+
     static async get(api: D2Api, config: Config, id: string): Promise<Project> {
         const { organisationUnits, dataSets } = await api.metadata
             .get({
@@ -314,7 +318,9 @@ export default class ProjectDb {
         const projectDataSets = { actual: getDataSet("actual"), target: getDataSet("target") };
 
         const dataStore = getDataStore(api);
-        const value = await dataStore.get<DataStoreProjectInfo>(`mer-${id}`).getData();
+        const value = await dataStore
+            .get<DataStoreProjectInfo>(ProjectDb.getMerDataStoreInfoKey(id))
+            .getData();
         if (!value) console.error("Cannot get MER selections");
         const dataElementIdsForMer = value ? value.dataElements : [];
 
