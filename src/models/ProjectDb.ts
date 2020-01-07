@@ -1,16 +1,20 @@
+import { Either } from "./../types/utils";
 import _ from "lodash";
 import moment from "moment";
 import { D2DataSet, D2OrganisationUnit, D2ApiResponse, MetadataPayload, Id, D2Api } from "d2-api";
 import { PartialModel, Ref, PartialPersistedModel, MetadataResponse } from "d2-api";
-import Project, { getOrgUnitDatesFromProject } from "./Project";
+import Project, { getOrgUnitDatesFromProject, getDatesFromOrgUnit } from "./Project";
 import { getMonthsRange, toISOString } from "../utils/date";
 import "../utils/lodash-mixins";
 import ProjectDashboard from "./ProjectDashboard";
 import { getUid, getDataStore, getIds } from "../utils/dhis2";
 import { Config } from "./Config";
 import { runPromises } from "../utils/promises";
+import DataElementsSet from "./dataElementsSet";
 
 const expiryDaysInMonthActual = 10;
+
+type DataStoreProjectInfo = { dataElements: string[] };
 
 export default class ProjectDb {
     api: D2Api;
@@ -31,17 +35,17 @@ export default class ProjectDb {
         const { project, api, config } = this;
         const { startDate, endDate } = project;
 
-        if (!startDate || !endDate) {
-            throw new Error("Missing dates");
-        } else if (!project.parentOrgUnit) {
-            throw new Error("No parent org unit");
+        const validationErrors = _.flatten(_.values(await project.validate()));
+        if (!_.isEmpty(validationErrors)) {
+            throw new Error("Validation errors:\n" + validationErrors.join("\n"));
+        } else if (!startDate || !endDate || !project.parentOrgUnit) {
+            throw new Error("Invalid project state");
         }
 
         const baseAttributeValues = [
             { value: "true", attribute: { id: config.attributes.createdByApp.id } },
         ];
 
-        const parentOrgUnitId = getOrgUnitId(project.parentOrgUnit);
         const orgUnit = {
             id: project.id,
             name: project.name,
@@ -50,7 +54,7 @@ export default class ProjectDb {
             code: project.code,
             shortName: project.shortName,
             description: project.description,
-            parent: { id: parentOrgUnitId },
+            parent: { id: getOrgUnitId(project.parentOrgUnit) },
             ...getOrgUnitDatesFromProject(startDate, endDate),
             openingDate: toISOString(startDate.clone().subtract(1, "month")),
             closedDate: toISOString(endDate.clone().add(1, "month")),
@@ -262,6 +266,78 @@ export default class ProjectDb {
         };
 
         return { dataSets: [dataSet], sections };
+    }
+
+    static async get(api: D2Api, config: Config, id: string): Promise<Project> {
+        const relations = await Project.getRelations(api, config, id);
+        if (!relations || !relations.dataSets) throw new Error("Cannot get project info");
+        const { dataSets } = relations;
+
+        const { organisationUnits } = await api.metadata
+            .get({
+                organisationUnits: {
+                    fields: {
+                        id: true,
+                        path: true,
+                        displayName: true,
+                        name: true,
+                        description: true,
+                        code: true,
+                        openingDate: true,
+                        closedDate: true,
+                        parent: { id: true, displayName: true, path: true },
+                        organisationUnitGroups: { id: true },
+                    },
+                    filter: { id: { eq: id } },
+                },
+                // dataSets. from getRelations
+            })
+            .getData();
+
+        const orgUnit = organisationUnits[0];
+        if (!orgUnit) throw new Error("Org unit not found");
+
+        const dataStore = getDataStore(api);
+        const value = await dataStore.get<DataStoreProjectInfo>(`mer-${id}`).getData();
+        if (!value) console.error("Cannot get MER selections");
+        const dataElementIdsForMer = value ? value.dataElements : [];
+
+        const code = orgUnit.code || "";
+        const { startDate, endDate } = getDatesFromOrgUnit(orgUnit);
+        const sectorCodes = dataSets.actual.sections.map(section =>
+            _.initial((section.code || "").split("_")).join("_")
+        );
+        const sectors = _(config.sectors)
+            .keyBy(sector => sector.code)
+            .at(sectorCodes)
+            .compact()
+            .value();
+        const dataElementsSet = DataElementsSet.build(config);
+        const dataElementsSetWithSelections = dataElementsSet
+            .updateSelection(dataSets.actual.dataElements.map(de => de.id))
+            .dataElements.updateMERSelection(dataElementIdsForMer);
+
+        const projectData = {
+            id: orgUnit.id,
+            name: orgUnit.name,
+            description: orgUnit.description,
+            awardNumber: code.slice(2, 2 + 5),
+            subsequentLettering: code.slice(0, 2),
+            speedKey: code.slice(8),
+            startDate: startDate,
+            endDate: endDate,
+            sectors: sectors,
+            funders: _.intersectionBy(config.funders, orgUnit.organisationUnitGroups, "id"),
+            locations: _.intersectionBy(config.locations, orgUnit.organisationUnitGroups, "id"),
+            orgUnit: orgUnit,
+            parentOrgUnit: orgUnit.parent,
+            dataSets: relations.dataSets,
+            dashboard: relations.dashboard,
+            dataElements: dataElementsSetWithSelections,
+        };
+
+        const project = new Project(api, config, { ...projectData, initialData: projectData });
+        return project;
     }
 }
 

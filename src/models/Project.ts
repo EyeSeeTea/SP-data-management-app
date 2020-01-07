@@ -93,8 +93,6 @@ interface NamedObject {
     displayName: string;
 }
 
-type DataStoreProjectInfo = { dataElements: string[] };
-
 export type Sector = NamedObject & { code: string };
 export type Funder = NamedObject;
 export type Location = NamedObject;
@@ -425,75 +423,8 @@ class Project {
         };
     }
 
-    static async get(api: D2Api, config: Config, id: string) {
-        const relations = await Project.getRelations(api, config, id);
-        if (!relations || !relations.dataSets) throw new Error("Cannot get project info");
-        const { dataSets } = relations;
-
-        const { organisationUnits } = await api.metadata
-            .get({
-                organisationUnits: {
-                    fields: {
-                        id: true,
-                        path: true,
-                        displayName: true,
-                        name: true,
-                        description: true,
-                        code: true,
-                        openingDate: true,
-                        closedDate: true,
-                        parent: { id: true, displayName: true, path: true },
-                        organisationUnitGroups: { id: true },
-                    },
-                    filter: { id: { eq: id } },
-                },
-                // dataSets. from getRelations
-            })
-            .getData();
-
-        const orgUnit = organisationUnits[0];
-        if (!orgUnit) throw new Error("Org unit not found");
-
-        const dataStore = getDataStore(api);
-        const value = await dataStore.get<DataStoreProjectInfo>(`mer-${id}`).getData();
-        if (!value) console.error("Cannot get MER selections");
-        const dataElementIdsForMer = value ? value.dataElements : [];
-
-        const code = orgUnit.code || "";
-        const { startDate, endDate } = getDatesFromOrgUnit(orgUnit);
-        const sectorCodes = dataSets.actual.sections.map(section =>
-            _.initial((section.code || "").split("_")).join("_")
-        );
-        const sectors = _(config.sectors)
-            .keyBy(sector => sector.code)
-            .at(sectorCodes)
-            .compact()
-            .value();
-        const dataElementsSet = DataElementsSet.build(config);
-        const dataElementsSetWithSelections = dataElementsSet
-            .updateSelection(dataSets.actual.dataElements.map(de => de.id))
-            .dataElements.updateMERSelection(dataElementIdsForMer);
-
-        const projectData = {
-            id: orgUnit.id,
-            name: orgUnit.name,
-            description: orgUnit.description,
-            awardNumber: code.slice(2, 2 + 5),
-            subsequentLettering: code.slice(0, 2),
-            speedKey: code.slice(8),
-            startDate: startDate,
-            endDate: endDate,
-            sectors: sectors,
-            funders: _.intersectionBy(config.funders, orgUnit.organisationUnitGroups, "id"),
-            locations: _.intersectionBy(config.locations, orgUnit.organisationUnitGroups, "id"),
-            orgUnit: orgUnit,
-            parentOrgUnit: orgUnit.parent,
-            dataSets: relations.dataSets,
-            dashboard: relations.dashboard,
-            dataElements: dataElementsSetWithSelections,
-        };
-
-        return new Project(api, config, { ...projectData, initialData: projectData });
+    static async get(api: D2Api, config: Config, id: string): Promise<Project> {
+        return ProjectDb.get(api, config, id);
     }
 
     static create(api: D2Api, config: Config) {
@@ -636,7 +567,7 @@ interface Project extends ProjectData {}
 
 type OrgUnitWithDates = Pick<D2OrganisationUnit, "openingDate" | "closedDate">;
 
-function getDatesFromOrgUnit<OU extends OrgUnitWithDates>(
+export function getDatesFromOrgUnit<OU extends OrgUnitWithDates>(
     orgUnit: OU
 ): { startDate: Moment | undefined; endDate: Moment | undefined } {
     const process = (s: string | undefined, mapper: (d: Moment) => Moment) =>

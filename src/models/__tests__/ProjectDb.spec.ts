@@ -45,6 +45,14 @@ describe("ProjectDb", () => {
         it("posts metadata", async () => {
             const project = await getProject();
 
+            // Validation
+            mock.onGet("/metadata", {
+                expected: {
+                    "organisationUnits:fields": "displayName",
+                    "organisationUnits:filter": ["code:eq:en12345", "id:ne:WGC0DJ0YSis"],
+                },
+            }).replyOnce(200, []);
+
             mock.onGet("/metadata", {
                 params: {
                     "organisationUnitGroups:fields": ":owner",

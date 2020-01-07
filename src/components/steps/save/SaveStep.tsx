@@ -34,13 +34,17 @@ const SaveStep: React.FC<StepProps> = ({ project, onCancel }) => {
     const classes = useStyles();
 
     async function save() {
-        const { payload, response, project: projectSaved } = await project.save();
-        if (response && response.status === "OK") {
-            history.push(generateUrl("projects"));
-            if (isDev) saveDataValues(api, projectSaved);
-            snackbar.success(i18n.t("Project created:" + " " + projectSaved.name));
-        } else {
-            setErrorMessage(JSON.stringify({ response, payload }, null, 2));
+        try {
+            const { payload, response, project: projectSaved } = await project.save();
+            if (response && response.status === "OK") {
+                history.push(generateUrl("projects"));
+                if (isDev) saveDataValues(api, projectSaved);
+                snackbar.success(i18n.t("Project created:" + " " + projectSaved.name));
+            } else {
+                setErrorMessage(JSON.stringify({ response, payload }, null, 2));
+            }
+        } catch (err) {
+            snackbar.error(err.message || err.toString());
         }
     }
 
