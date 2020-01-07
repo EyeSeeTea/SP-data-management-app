@@ -72,7 +72,7 @@ class ProjectWizardImpl extends React.Component<Props, State> {
         try {
             const project =
                 action.type === "create"
-                    ? getDevProject(await Project.create(api, config), isDev)
+                    ? getDevProject(Project.create(api, config), isDev)
                     : await Project.get(api, config, action.id);
             this.setState({ project });
         } catch (err) {

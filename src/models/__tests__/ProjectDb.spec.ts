@@ -10,6 +10,7 @@ const { api, mock } = getMockApi();
 const config = (configJson as unknown) as Config;
 
 const projectData = {
+    id: "WGC0DJ0YSis",
     name: "MyProject",
     startDate: moment("2018-10-01"),
     endDate: moment("2019-03-01"),
@@ -28,8 +29,7 @@ const projectData = {
 };
 
 async function getProject(): Promise<Project> {
-    const initialProject = await Project.create(api, config);
-    return initialProject
+    return Project.create(api, config)
         .setObj(projectData)
         .updateDataElementsSelection(["WS8XV4WWPE7", "ik0ICagvIjm", "We61YNYyOX0"])
         .project.updateDataElementsMERSelection(["WS8XV4WWPE7", "We61YNYyOX0"]);
@@ -37,13 +37,20 @@ async function getProject(): Promise<Project> {
 
 const metadataResponse = {
     status: "OK",
-    stats: { created: 11, updated: 2, deleted: 0, ignored: 0, total: 13 },
+    stats: { created: 0, updated: 0, deleted: 0, ignored: 0, total: 0 },
 };
 
 describe("ProjectDb", () => {
     describe("save", () => {
         it("posts metadata", async () => {
             const project = await getProject();
+
+            mock.onGet("/metadata", {
+                params: {
+                    "organisationUnitGroups:fields": ":owner",
+                    "organisationUnitGroups:filter": ["organisationUnits.id:eq:WGC0DJ0YSis"],
+                },
+            }).replyOnce(200, []);
 
             mock.onGet("/metadata", {
                 params: {
@@ -55,6 +62,7 @@ describe("ProjectDb", () => {
             }).replyOnce(200, orgUnitsMetadata);
 
             mock.onPost("/metadata", expectedMetadataPost).replyOnce(200, metadataResponse);
+            mock.onPost("/metadata", expectedSectionsMetadataPost).replyOnce(200, metadataResponse);
 
             mock.onPut("/organisationUnits/WGC0DJ0YSis", expectedOrgUnitPut).replyOnce(200);
 
@@ -137,13 +145,107 @@ const expectedOrgUnitPut = {
     code: "en12345",
     shortName: "MyProject",
     description: "",
-    parent: { id: "eu2XF73JOzl" },
+    parent: {
+        id: "eu2XF73JOzl",
+    },
     openingDate: "2018-09-01T00:00:00",
     closedDate: "2019-04-01T00:00:00",
-    organisationUnitGroups: [{ id: "OE0KdZRX2FC" }, { id: "WKUXmz4LIUG" }],
     attributeValues: [
-        { value: "true", attribute: { id: "mgCKcJuP5n0" } },
-        { value: "ySkG9zkINIY", attribute: { id: "aywduilEjPQ" } },
+        {
+            value: "true",
+            attribute: {
+                id: "mgCKcJuP5n0",
+            },
+        },
+        {
+            value: "WgOMVlwSV2i",
+            attribute: {
+                id: "aywduilEjPQ",
+            },
+        },
+    ],
+};
+
+const expectedSectionsMetadataPost = {
+    sections: [
+        {
+            id: "qQopuH2XmFM",
+            dataSet: {
+                id: "SCS4Dusnfdd",
+            },
+            sortOrder: 0,
+            name: "Agriculture",
+            code: "SECTOR_AGRICULTURE_SCS4Dusnfdd",
+            dataElements: [
+                {
+                    id: "WS8XV4WWPE7",
+                },
+                {
+                    id: "K6mAC5SiO29",
+                },
+                {
+                    id: "ik0ICagvIjm",
+                },
+            ],
+            greyedFields: [],
+        },
+        {
+            id: "yoimQ4ZPy9e",
+            dataSet: {
+                id: "SCS4Dusnfdd",
+            },
+            sortOrder: 1,
+            name: "Livelihoods",
+            code: "SECTOR_LIVELIHOODS_SCS4Dusnfdd",
+            dataElements: [
+                {
+                    id: "yMqK9DKbA3X",
+                },
+                {
+                    id: "We61YNYyOX0",
+                },
+            ],
+            greyedFields: [],
+        },
+        {
+            id: "Kg4EmzighjA",
+            dataSet: {
+                id: "CwUxT9UIX3z",
+            },
+            sortOrder: 0,
+            name: "Agriculture",
+            code: "SECTOR_AGRICULTURE_CwUxT9UIX3z",
+            dataElements: [
+                {
+                    id: "WS8XV4WWPE7",
+                },
+                {
+                    id: "K6mAC5SiO29",
+                },
+                {
+                    id: "ik0ICagvIjm",
+                },
+            ],
+            greyedFields: [],
+        },
+        {
+            id: "SUyCGPaTZwf",
+            dataSet: {
+                id: "CwUxT9UIX3z",
+            },
+            sortOrder: 1,
+            name: "Livelihoods",
+            code: "SECTOR_LIVELIHOODS_CwUxT9UIX3z",
+            dataElements: [
+                {
+                    id: "yMqK9DKbA3X",
+                },
+                {
+                    id: "We61YNYyOX0",
+                },
+            ],
+            greyedFields: [],
+        },
     ],
 };
 
@@ -162,14 +264,6 @@ const expectedMetadataPost = {
             },
             openingDate: "2018-09-01T00:00:00",
             closedDate: "2019-04-01T00:00:00",
-            organisationUnitGroups: [
-                {
-                    id: "OE0KdZRX2FC",
-                },
-                {
-                    id: "WKUXmz4LIUG",
-                },
-            ],
             attributeValues: [
                 {
                     value: "true",
@@ -178,7 +272,7 @@ const expectedMetadataPost = {
                     },
                 },
                 {
-                    value: "ySkG9zkINIY",
+                    value: "WgOMVlwSV2i",
                     attribute: {
                         id: "aywduilEjPQ",
                     },
@@ -229,11 +323,7 @@ const expectedMetadataPost = {
             attributeValues: [],
             translations: [],
             userAccesses: [],
-            organisationUnits: [
-                {
-                    id: "WGC0DJ0YSis",
-                },
-            ],
+            organisationUnits: [],
         },
         {
             code: "FUNDER_AC",
@@ -253,16 +343,12 @@ const expectedMetadataPost = {
             attributeValues: [],
             translations: [],
             userAccesses: [],
-            organisationUnits: [
-                {
-                    id: "WGC0DJ0YSis",
-                },
-            ],
+            organisationUnits: [],
         },
     ],
     dataSets: [
         {
-            id: "S0mQyu0r7fd",
+            id: "SCS4Dusnfdd",
             description: "",
             periodType: "Monthly",
             dataElementDecoration: true,
@@ -278,7 +364,7 @@ const expectedMetadataPost = {
             dataSetElements: [
                 {
                     dataSet: {
-                        id: "S0mQyu0r7fd",
+                        id: "SCS4Dusnfdd",
                     },
                     dataElement: {
                         id: "WS8XV4WWPE7",
@@ -289,7 +375,7 @@ const expectedMetadataPost = {
                 },
                 {
                     dataSet: {
-                        id: "S0mQyu0r7fd",
+                        id: "SCS4Dusnfdd",
                     },
                     dataElement: {
                         id: "K6mAC5SiO29",
@@ -300,7 +386,7 @@ const expectedMetadataPost = {
                 },
                 {
                     dataSet: {
-                        id: "S0mQyu0r7fd",
+                        id: "SCS4Dusnfdd",
                     },
                     dataElement: {
                         id: "ik0ICagvIjm",
@@ -311,7 +397,7 @@ const expectedMetadataPost = {
                 },
                 {
                     dataSet: {
-                        id: "S0mQyu0r7fd",
+                        id: "SCS4Dusnfdd",
                     },
                     dataElement: {
                         id: "yMqK9DKbA3X",
@@ -322,7 +408,7 @@ const expectedMetadataPost = {
                 },
                 {
                     dataSet: {
-                        id: "S0mQyu0r7fd",
+                        id: "SCS4Dusnfdd",
                     },
                     dataElement: {
                         id: "We61YNYyOX0",
@@ -336,10 +422,10 @@ const expectedMetadataPost = {
             formType: "DEFAULT",
             sections: [
                 {
-                    id: "uIqSSBQ8EGr",
+                    id: "qQopuH2XmFM",
                 },
                 {
-                    id: "qIOamX0NQ5e",
+                    id: "yoimQ4ZPy9e",
                 },
             ],
             name: "MyProject Target",
@@ -406,7 +492,7 @@ const expectedMetadataPost = {
             ],
         },
         {
-            id: "aAC2YJRBepp",
+            id: "CwUxT9UIX3z",
             description: "",
             periodType: "Monthly",
             dataElementDecoration: true,
@@ -422,7 +508,7 @@ const expectedMetadataPost = {
             dataSetElements: [
                 {
                     dataSet: {
-                        id: "aAC2YJRBepp",
+                        id: "CwUxT9UIX3z",
                     },
                     dataElement: {
                         id: "WS8XV4WWPE7",
@@ -433,7 +519,7 @@ const expectedMetadataPost = {
                 },
                 {
                     dataSet: {
-                        id: "aAC2YJRBepp",
+                        id: "CwUxT9UIX3z",
                     },
                     dataElement: {
                         id: "K6mAC5SiO29",
@@ -444,7 +530,7 @@ const expectedMetadataPost = {
                 },
                 {
                     dataSet: {
-                        id: "aAC2YJRBepp",
+                        id: "CwUxT9UIX3z",
                     },
                     dataElement: {
                         id: "ik0ICagvIjm",
@@ -455,7 +541,7 @@ const expectedMetadataPost = {
                 },
                 {
                     dataSet: {
-                        id: "aAC2YJRBepp",
+                        id: "CwUxT9UIX3z",
                     },
                     dataElement: {
                         id: "yMqK9DKbA3X",
@@ -466,7 +552,7 @@ const expectedMetadataPost = {
                 },
                 {
                     dataSet: {
-                        id: "aAC2YJRBepp",
+                        id: "CwUxT9UIX3z",
                     },
                     dataElement: {
                         id: "We61YNYyOX0",
@@ -480,10 +566,10 @@ const expectedMetadataPost = {
             formType: "DEFAULT",
             sections: [
                 {
-                    id: "qiA7dmxAn82",
+                    id: "Kg4EmzighjA",
                 },
                 {
-                    id: "iCYfUcmklv4",
+                    id: "SUyCGPaTZwf",
                 },
             ],
             name: "MyProject Actual",
@@ -550,148 +636,72 @@ const expectedMetadataPost = {
             ],
         },
     ],
-    sections: [
-        {
-            id: "uIqSSBQ8EGr",
-            dataSet: {
-                id: "S0mQyu0r7fd",
-            },
-            sortOrder: 0,
-            name: "Agriculture",
-            dataElements: [
-                {
-                    id: "WS8XV4WWPE7",
-                },
-                {
-                    id: "K6mAC5SiO29",
-                },
-                {
-                    id: "ik0ICagvIjm",
-                },
-            ],
-            greyedFields: [],
-        },
-        {
-            id: "qIOamX0NQ5e",
-            dataSet: {
-                id: "S0mQyu0r7fd",
-            },
-            sortOrder: 1,
-            name: "Livelihoods",
-            dataElements: [
-                {
-                    id: "yMqK9DKbA3X",
-                },
-                {
-                    id: "We61YNYyOX0",
-                },
-            ],
-            greyedFields: [],
-        },
-        {
-            id: "qiA7dmxAn82",
-            dataSet: {
-                id: "aAC2YJRBepp",
-            },
-            sortOrder: 0,
-            name: "Agriculture",
-            dataElements: [
-                {
-                    id: "WS8XV4WWPE7",
-                },
-                {
-                    id: "K6mAC5SiO29",
-                },
-                {
-                    id: "ik0ICagvIjm",
-                },
-            ],
-            greyedFields: [],
-        },
-        {
-            id: "iCYfUcmklv4",
-            dataSet: {
-                id: "aAC2YJRBepp",
-            },
-            sortOrder: 1,
-            name: "Livelihoods",
-            dataElements: [
-                {
-                    id: "yMqK9DKbA3X",
-                },
-                {
-                    id: "We61YNYyOX0",
-                },
-            ],
-            greyedFields: [],
-        },
-    ],
     dashboards: [
         {
-            id: "ySkG9zkINIY",
+            id: "WgOMVlwSV2i",
             name: "MyProject",
             dashboardItems: [
                 {
-                    id: "WMOgqLEpBlC",
+                    id: "ys0CVedHirZ",
                     type: "CHART",
                     chart: {
-                        id: "OgOU20E6G4f",
+                        id: "uG9C9z46CNK",
                     },
                 },
                 {
-                    id: "GQavMfHlswl",
+                    id: "KI0C90Ol10x",
                     type: "CHART",
                     chart: {
-                        id: "yK4T67qbssr",
+                        id: "qmsj4FqnVPX",
                     },
                 },
                 {
-                    id: "WOEVSzntJcf",
+                    id: "qUqsDmtiBLF",
                     type: "CHART",
                     chart: {
-                        id: "aeegubasf72",
+                        id: "u6Sin4Fy1Wt",
                     },
                 },
                 {
-                    id: "SeYNbVfObL4",
+                    id: "mwMpIdPdu8H",
                     type: "CHART",
                     chart: {
-                        id: "WWqcPhi5Nh3",
+                        id: "ukewRkZsyCI",
                     },
                 },
                 {
-                    id: "OCWuuDUus7n",
+                    id: "Ka4yijY2Vhl",
                     type: "REPORT_TABLE",
                     reportTable: {
-                        id: "iyI3WXcUciK",
+                        id: "i07AWJAND8a",
                     },
                 },
                 {
-                    id: "WQIjOe2gZXZ",
+                    id: "yWGKgz9vaOh",
                     type: "REPORT_TABLE",
                     reportTable: {
-                        id: "Kg4wY2c9x4I",
+                        id: "iqqgnCj9DQj",
                     },
                 },
                 {
-                    id: "Ge8ReLf7SCd",
+                    id: "y2G8oh7xQBm",
                     type: "REPORT_TABLE",
                     reportTable: {
-                        id: "mMSoIpXaHBS",
+                        id: "GycLEG8dPPO",
                     },
                 },
                 {
-                    id: "WgumfImz3GP",
+                    id: "qMSWdZHPjyN",
                     type: "REPORT_TABLE",
                     reportTable: {
-                        id: "y02zthmCbtX",
+                        id: "aeGIpbJkZAX",
                     },
                 },
                 {
-                    id: "OYCw0oLhwxc",
+                    id: "uyoJujQVRjE",
                     type: "REPORT_TABLE",
                     reportTable: {
-                        id: "KmGEpPf3Ugh",
+                        id: "GM6SxObVwI3",
                     },
                 },
             ],
@@ -699,7 +709,7 @@ const expectedMetadataPost = {
     ],
     reportTables: [
         {
-            id: "iyI3WXcUciK",
+            id: "i07AWJAND8a",
             name: "MyProject - PM Target vs Actual - Benefits",
             numberType: "VALUE",
             publicAccess: "rw------",
@@ -804,7 +814,7 @@ const expectedMetadataPost = {
             ],
         },
         {
-            id: "Kg4wY2c9x4I",
+            id: "iqqgnCj9DQj",
             name: "MyProject - PM Target vs Actual - People",
             numberType: "VALUE",
             publicAccess: "rw------",
@@ -957,7 +967,7 @@ const expectedMetadataPost = {
             ],
         },
         {
-            id: "mMSoIpXaHBS",
+            id: "GycLEG8dPPO",
             name: "MyProject - PM Target vs Actual - Unique People",
             numberType: "VALUE",
             publicAccess: "rw------",
@@ -1102,7 +1112,7 @@ const expectedMetadataPost = {
             ],
         },
         {
-            id: "y02zthmCbtX",
+            id: "aeGIpbJkZAX",
             name: "MyProject - PM achieved (%) - Benefits",
             numberType: "VALUE",
             publicAccess: "rw------",
@@ -1183,7 +1193,7 @@ const expectedMetadataPost = {
             },
         },
         {
-            id: "KmGEpPf3Ugh",
+            id: "GM6SxObVwI3",
             name: "MyProject - PM achieved (%) - People",
             numberType: "VALUE",
             publicAccess: "rw------",
@@ -1260,7 +1270,7 @@ const expectedMetadataPost = {
     ],
     charts: [
         {
-            id: "OgOU20E6G4f",
+            id: "uG9C9z46CNK",
             name: "MyProject - PM achieved monthly (%)",
             publicAccess: "rw------",
             type: "COLUMN",
@@ -1344,7 +1354,7 @@ const expectedMetadataPost = {
             categoryDimensions: [],
         },
         {
-            id: "yK4T67qbssr",
+            id: "qmsj4FqnVPX",
             name: "MyProject - PM achieved (%)",
             publicAccess: "rw------",
             type: "COLUMN",
@@ -1428,7 +1438,7 @@ const expectedMetadataPost = {
             categoryDimensions: [],
         },
         {
-            id: "aeegubasf72",
+            id: "u6Sin4Fy1Wt",
             name: "MyProject - PM achieved by gender (%)",
             publicAccess: "rw------",
             type: "COLUMN",
@@ -1541,7 +1551,7 @@ const expectedMetadataPost = {
             ],
         },
         {
-            id: "WWqcPhi5Nh3",
+            id: "ukewRkZsyCI",
             name: "MyProject - PM Benefits Per Person (%)",
             publicAccess: "rw------",
             type: "COLUMN",

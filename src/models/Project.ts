@@ -496,7 +496,7 @@ class Project {
         return new Project(api, config, { ...projectData, initialData: projectData });
     }
 
-    static async create(api: D2Api, config: Config) {
+    static create(api: D2Api, config: Config) {
         const dataElements = DataElementsSet.build(config);
         const projectData = {
             ...defaultProjectData,

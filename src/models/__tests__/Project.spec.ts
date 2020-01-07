@@ -9,7 +9,7 @@ const { api, mock } = getMockApi();
 const config = (configJson as unknown) as Config;
 
 function getProject() {
-    return Project.create(api, config);
+    return Project.create(api, config).set("id", "BvNo8zQaol8");
 }
 
 async function expectFieldPresence(field: keyof ProjectData) {
@@ -148,7 +148,7 @@ describe("Project", () => {
             mock.onGet("/metadata", {
                 params: {
                     "organisationUnits:fields": "displayName",
-                    "organisationUnits:filter": ["code:eq:au19234-key"],
+                    "organisationUnits:filter": ["code:eq:au19234-key", "id:ne:BvNo8zQaol8"],
                 },
             }).replyOnce(200, { organisationUnits: [{ displayName: "Asia" }] });
 
