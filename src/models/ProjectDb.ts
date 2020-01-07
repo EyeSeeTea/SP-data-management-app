@@ -1,4 +1,3 @@
-import { Either } from "./../types/utils";
 import _ from "lodash";
 import moment from "moment";
 import { D2DataSet, D2OrganisationUnit, D2ApiResponse, MetadataPayload, Id, D2Api } from "d2-api";
@@ -121,7 +120,7 @@ export default class ProjectDb {
 
         await this.saveMERData(orgUnit.id).getData();
 
-        const response = await this.savePayload(payload);
+        const response = await this.postPayload(payload);
 
         const savedProject =
             response && response.status === "OK"
@@ -129,17 +128,14 @@ export default class ProjectDb {
                       id: orgUnit.id,
                       orgUnit: _.pick(orgUnit, ["id", "path", "displayName"]),
                       dashboard: { id: dashboard.id },
-                      dataSets: {
-                          actual: dataSetActual,
-                          target: dataSetTarget,
-                      },
+                      dataSets: { actual: dataSetActual, target: dataSetTarget },
                   })
                 : this.project;
 
         return { orgUnit: orgUnitToSave, payload, response, project: savedProject };
     }
 
-    async savePayload(payload: Partial<MetadataPayload> & Pick<MetadataPayload, "sections">) {
+    async postPayload(payload: Partial<MetadataPayload> & Pick<MetadataPayload, "sections">) {
         // 2.31 still has problems when updating dataSet/sections in the same payload, split in two
         const { api, project } = this;
         const sectionsPayload = _.pick(payload, ["sections"]);
@@ -257,11 +253,11 @@ export default class ProjectDb {
             renderAsTabs: true,
             categoryCombo: { id: project.config.categoryCombos.targetActual.id },
             organisationUnits: [{ id: orgUnit.id }],
-            dataSetElements,
             timelyDays: 0,
             formType: "DEFAULT" as const,
-            sections: sections.map(section => ({ id: section.id })),
             ...baseDataSet,
+            sections: sections.map(section => ({ id: section.id, code: section.code })),
+            dataSetElements,
             code: `${orgUnit.id}_${baseDataSet.code}`,
         };
 
@@ -269,11 +265,7 @@ export default class ProjectDb {
     }
 
     static async get(api: D2Api, config: Config, id: string): Promise<Project> {
-        const relations = await Project.getRelations(api, config, id);
-        if (!relations || !relations.dataSets) throw new Error("Cannot get project info");
-        const { dataSets } = relations;
-
-        const { organisationUnits } = await api.metadata
+        const { organisationUnits, dataSets } = await api.metadata
             .get({
                 organisationUnits: {
                     fields: {
@@ -287,15 +279,39 @@ export default class ProjectDb {
                         closedDate: true,
                         parent: { id: true, displayName: true, path: true },
                         organisationUnitGroups: { id: true },
+                        attributeValues: { attribute: { id: true }, value: true },
                     },
                     filter: { id: { eq: id } },
                 },
-                // dataSets. from getRelations
+                dataSets: {
+                    fields: {
+                        id: true,
+                        code: true,
+                        dataSetElements: { dataElement: { id: true }, categoryCombo: { id: true } },
+                        dataInputPeriods: { period: true, openingDate: true, closingDate: true },
+                        sections: { code: true },
+                    },
+                    filter: { code: { $like: id } },
+                },
             })
             .getData();
 
         const orgUnit = organisationUnits[0];
         if (!orgUnit) throw new Error("Org unit not found");
+
+        const { projectDashboard } = config.attributes;
+        const dashboardId = _(orgUnit.attributeValues)
+            .map(av => (av.attribute.id === projectDashboard.id ? av.value : null))
+            .compact()
+            .first();
+
+        const getDataSet = (type: "actual" | "target") => {
+            const dataSet = _(dataSets).find(dataSet => dataSet.code.endsWith(type.toUpperCase()));
+            if (!dataSet) throw new Error(`Cannot find dataset: ${type}`);
+            return dataSet;
+        };
+
+        const projectDataSets = { actual: getDataSet("actual"), target: getDataSet("target") };
 
         const dataStore = getDataStore(api);
         const value = await dataStore.get<DataStoreProjectInfo>(`mer-${id}`).getData();
@@ -304,7 +320,7 @@ export default class ProjectDb {
 
         const code = orgUnit.code || "";
         const { startDate, endDate } = getDatesFromOrgUnit(orgUnit);
-        const sectorCodes = dataSets.actual.sections.map(section =>
+        const sectorCodes = projectDataSets.actual.sections.map(section =>
             _.initial((section.code || "").split("_")).join("_")
         );
         const sectors = _(config.sectors)
@@ -314,7 +330,7 @@ export default class ProjectDb {
             .value();
         const dataElementsSet = DataElementsSet.build(config);
         const dataElementsSetWithSelections = dataElementsSet
-            .updateSelection(dataSets.actual.dataElements.map(de => de.id))
+            .updateSelection(projectDataSets.actual.dataSetElements.map(dse => dse.dataElement.id))
             .dataElements.updateMERSelection(dataElementIdsForMer);
 
         const projectData = {
@@ -331,8 +347,8 @@ export default class ProjectDb {
             locations: _.intersectionBy(config.locations, orgUnit.organisationUnitGroups, "id"),
             orgUnit: orgUnit,
             parentOrgUnit: orgUnit.parent,
-            dataSets: relations.dataSets,
-            dashboard: relations.dashboard,
+            dataSets: projectDataSets,
+            dashboard: dashboardId ? { id: dashboardId } : undefined,
             dataElements: dataElementsSetWithSelections,
         };
 

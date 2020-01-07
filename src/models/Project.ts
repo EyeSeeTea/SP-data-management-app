@@ -63,9 +63,7 @@ import { Pager } from "d2-api/api/models";
 import i18n from "../locales";
 import DataElementsSet, { SelectionUpdate, DataElement, PeopleOrBenefit } from "./dataElementsSet";
 import ProjectDb from "./ProjectDb";
-import { Maybe } from "../types/utils";
 import { toISOString, getMonthsRange } from "../utils/date";
-import { getDataStore } from "../utils/dhis2";
 import { generateUid } from "d2/uid";
 
 export interface ProjectData {
@@ -97,13 +95,6 @@ export type Sector = NamedObject & { code: string };
 export type Funder = NamedObject;
 export type Location = NamedObject;
 
-export interface Relations {
-    name: string;
-    organisationUnit: NamedObject;
-    dashboard: Maybe<Ref>;
-    dataSets: { actual: DataSetWithPeriods; target: DataSetWithPeriods } | undefined;
-}
-
 interface DataInputPeriod {
     period: { id: string };
     openingDate: string;
@@ -112,12 +103,8 @@ interface DataInputPeriod {
 
 export interface DataSet {
     id: string;
-}
-
-export interface DataSetWithPeriods {
-    id: string;
     code: string;
-    dataElements: Ref[];
+    dataSetElements: Array<{ dataElement: Ref; categoryCombo: Ref }>;
     dataInputPeriods: DataInputPeriod[];
     sections: Array<{ code: string }>;
 }
@@ -349,10 +336,6 @@ class Project {
         return _.fromPairs(_.zip(keys, values)) as Validations;
     }
 
-    async getRelations(): Promise<Relations | undefined> {
-        return Project.getRelations(this.api, this.config, this.id);
-    }
-
     static getSelectableLocations(config: Config, country: Ref | undefined) {
         return config.locations.filter(
             location => country && _.some(location.countries, country_ => country_.id == country.id)
@@ -361,66 +344,6 @@ class Project {
 
     getSelectableLocations(country: Ref | undefined) {
         return Project.getSelectableLocations(this.config, country);
-    }
-
-    static async getRelations(
-        api: D2Api,
-        config: Config,
-        projectId: string
-    ): Promise<Relations | undefined> {
-        const { organisationUnits, dataSets } = await api.metadata
-            .get({
-                organisationUnits: {
-                    fields: {
-                        id: true,
-                        displayName: true,
-                        attributeValues: { attribute: { id: true }, value: true },
-                    },
-                    filter: { id: { eq: projectId } },
-                },
-                dataSets: {
-                    fields: {
-                        id: true,
-                        code: true,
-                        dataSetElements: { dataElement: { id: true } },
-                        dataInputPeriods: { period: true, openingDate: true, closingDate: true },
-                        sections: { code: true },
-                    },
-                    filter: { code: { $like: projectId } },
-                },
-            })
-            .getData();
-        const orgUnit = organisationUnits[0];
-        if (!orgUnit) return;
-
-        const { projectDashboard } = config.attributes;
-        const dashboardId = _(orgUnit.attributeValues)
-            .map(av => (av.attribute.id === projectDashboard.id ? av.value : null))
-            .compact()
-            .first();
-
-        const getDataSet = (type: "actual" | "target") =>
-            _(dataSets)
-                .map(dataSet => (dataSet.code.endsWith(type.toUpperCase()) ? dataSet : null))
-                .compact()
-                .map(dataSet => ({
-                    ...dataSet,
-                    dataElements: dataSet.dataSetElements.map(dse => dse.dataElement),
-                }))
-                .first();
-
-        const actualDataSet = getDataSet("actual");
-        const targetDataSet = getDataSet("target");
-
-        return {
-            name: orgUnit.displayName,
-            organisationUnit: orgUnit,
-            dashboard: dashboardId ? { id: dashboardId } : undefined,
-            dataSets:
-                actualDataSet && targetDataSet
-                    ? { actual: actualDataSet, target: targetDataSet }
-                    : undefined,
-        };
     }
 
     static async get(api: D2Api, config: Config, id: string): Promise<Project> {
@@ -642,7 +565,7 @@ function validateRegexp(
           ];
 }
 
-function getPeriodIds(dataSet: DataSetWithPeriods): string[] {
+function getPeriodIds(dataSet: DataSet): string[] {
     const now = moment();
     const isPeriodInPastOrOpen = (dip: DataInputPeriod) => {
         const periodStart = moment(dip.period.id, monthFormat).startOf("month");
@@ -656,7 +579,7 @@ function getPeriodIds(dataSet: DataSetWithPeriods): string[] {
         .value();
 }
 
-export function getPeriodsData(dataSet: DataSetWithPeriods) {
+export function getPeriodsData(dataSet: DataSet) {
     const periodIds = getPeriodIds(dataSet);
     const isTarget = dataSet.code.endsWith("TARGET");
     let currentPeriodId;

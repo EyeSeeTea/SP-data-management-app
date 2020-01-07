@@ -5,7 +5,7 @@ import Spinner from "../spinner/Spinner";
 //@ts-ignore
 import { useConfig } from "@dhis2/app-runtime";
 import Dropdown from "../../components/dropdown/Dropdown";
-import { DataSetWithPeriods, getPeriodsData } from "../../models/Project";
+import { DataSet, getPeriodsData } from "../../models/Project";
 
 const monthFormat = "YYYYMM";
 
@@ -13,7 +13,7 @@ type Attributes = Record<string, string>;
 
 interface DataEntryProps {
     orgUnitId: string;
-    dataSet: DataSetWithPeriods;
+    dataSet: DataSet;
     attributes: Attributes;
 }
 
@@ -65,7 +65,7 @@ function waitForOption(el: HTMLSelectElement, predicate: (option: HTMLOptionElem
 
 const setDatasetPeriodAndCategory = async (
     iframe: HTMLIFrameElement,
-    dataSet: DataSetWithPeriods,
+    dataSet: DataSet,
     attributes: Attributes,
     onDone: () => void
 ) => {
@@ -102,7 +102,7 @@ const setDatasetPeriodAndCategory = async (
 
 const getDataEntryForm = async (
     iframe: HTMLIFrameElement,
-    dataSet: DataSetWithPeriods,
+    dataSet: DataSet,
     orgUnitId: string,
     attributes: Attributes,
     onDone: () => void

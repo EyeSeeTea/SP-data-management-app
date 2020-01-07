@@ -431,9 +431,11 @@ const expectedMetadataPost = {
             sections: [
                 {
                     id: "qQopuH2XmFM",
+                    code: "SECTOR_AGRICULTURE_SCS4Dusnfdd",
                 },
                 {
                     id: "yoimQ4ZPy9e",
+                    code: "SECTOR_LIVELIHOODS_SCS4Dusnfdd",
                 },
             ],
             name: "MyProject Target",
@@ -575,9 +577,11 @@ const expectedMetadataPost = {
             sections: [
                 {
                     id: "Kg4EmzighjA",
+                    code: "SECTOR_AGRICULTURE_CwUxT9UIX3z",
                 },
                 {
                     id: "SUyCGPaTZwf",
+                    code: "SECTOR_LIVELIHOODS_CwUxT9UIX3z",
                 },
             ],
             name: "MyProject Actual",

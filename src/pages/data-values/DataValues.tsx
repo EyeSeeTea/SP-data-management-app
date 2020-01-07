@@ -7,7 +7,7 @@ import { useHistory, useRouteMatch } from "react-router";
 import DataEntry from "../../components/data-entry/DataEntry";
 import { generateUrl } from "../../router";
 import { LinearProgress } from "@material-ui/core";
-import Project, { DataSetWithPeriods } from "../../models/Project";
+import Project, { DataSet } from "../../models/Project";
 import { useAppContext } from "../../contexts/api-context";
 import { D2Api } from "d2-api";
 import { Config } from "../../models/Config";
@@ -25,7 +25,7 @@ type GetState<Data> = { loading: boolean; data?: Data; error?: string };
 type State = GetState<{
     name: string;
     orgUnit: { id: string; displayName: string };
-    dataSet: DataSetWithPeriods;
+    dataSet: DataSet;
 }>;
 
 const DataValues: React.FC<DataValuesProps> = ({ type }) => {
@@ -76,13 +76,14 @@ function loadData(
 ) {
     if (!projectId) return;
 
-    Project.getRelations(api, config, projectId)
-        .then(relations => {
-            const orgUnit = relations ? relations.organisationUnit : null;
-            const dataSet = relations && relations.dataSets ? relations.dataSets[type] : null;
-            if (relations && orgUnit && dataSet) {
+    Project.get(api, config, projectId)
+        .catch(_err => null)
+        .then(project => {
+            const orgUnit = project ? project.orgUnit : null;
+            const dataSet = project && project.dataSets ? project.dataSets[type] : null;
+            if (project && orgUnit && dataSet) {
                 setState({
-                    data: { name: relations.name, orgUnit, dataSet },
+                    data: { name: project.name, orgUnit, dataSet },
                     loading: false,
                 });
             } else {
