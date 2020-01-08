@@ -83,7 +83,7 @@ export interface ProjectData {
     dataElements: DataElementsSet;
     dataSets: { actual: DataSet; target: DataSet } | undefined;
     dashboard: Ref | undefined;
-    initialData: Omit<ProjectData, "initialData">;
+    initialData: Omit<ProjectData, "initialData"> | undefined;
 }
 
 interface NamedObject {
@@ -356,8 +356,9 @@ class Project {
             ...defaultProjectData,
             id: generateUid(),
             dataElements,
+            initialData: undefined,
         };
-        return new Project(api, config, { ...projectData, initialData: projectData });
+        return new Project(api, config, projectData);
     }
 
     save() {
