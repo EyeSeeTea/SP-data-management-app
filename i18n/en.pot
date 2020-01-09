@@ -211,6 +211,9 @@ msgstr ""
 msgid "Dashboard"
 msgstr ""
 
+msgid "Initial Data"
+msgstr ""
+
 msgid "Award Number should be a number of 5 digits"
 msgstr ""
 

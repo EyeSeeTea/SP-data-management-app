@@ -4,12 +4,13 @@ import { ProjectData } from "./../Project";
 import Project from "../Project";
 import { Config } from "../Config";
 import configJson from "./config.json";
+import moment from "moment";
 
 const { api, mock } = getMockApi();
 const config = (configJson as unknown) as Config;
 
 function getProject() {
-    return Project.create(api, config);
+    return Project.create(api, config).set("id", "BvNo8zQaol8");
 }
 
 async function expectFieldPresence(field: keyof ProjectData) {
@@ -28,9 +29,109 @@ describe("Project", () => {
         });
     });
 
-    describe("create", () => {});
+    describe("create", () => {
+        let project: Project;
 
-    describe("get", () => {});
+        beforeEach(() => {
+            project = Project.create(api, config);
+        });
+
+        it("has a valid UID", () => {
+            expect(project.id).toHaveLength(11);
+            expect(project.id).toMatch(/^[a-zA-Z][a-zA-Z0-9]{10}$/);
+        });
+
+        it("has empty values", () => {
+            expect(project.name).toEqual("");
+            expect(project.description).toEqual("");
+            expect(project.awardNumber).toEqual("");
+            expect(project.subsequentLettering).toEqual("");
+            expect(project.speedKey).toEqual("");
+            expect(project.startDate).toEqual(undefined);
+            expect(project.endDate).toEqual(undefined);
+            expect(project.sectors).toEqual([]);
+            expect(project.funders).toEqual([]);
+            expect(project.locations).toEqual([]);
+            expect(project.orgUnit).toEqual(undefined);
+            expect(project.parentOrgUnit).toEqual(undefined);
+            expect(project.dataSets).toEqual(undefined);
+            expect(project.dashboard).toEqual(undefined);
+            expect(project.initialData).toEqual(undefined);
+        });
+
+        it("has data element sets", () => {
+            expect(project.dataElements.get().length).toBeGreaterThan(0);
+        });
+    });
+
+    describe("get", () => {
+        let project: Project;
+
+        beforeAll(async () => {
+            mock.onGet("/metadata", {
+                params: {
+                    "organisationUnits:fields":
+                        "attributeValues[attribute[id],value],closedDate,code,description,displayName,id,name,openingDate,organisationUnitGroups[id],parent[displayName,id,path],path",
+                    "organisationUnits:filter": ["id:eq:R3rGhxWbAI9"],
+                    "dataSets:fields":
+                        "code,dataInputPeriods[closingDate,openingDate,period],dataSetElements[categoryCombo[id],dataElement[id]],id,sections[code]",
+                    "dataSets:filter": ["code:$like:R3rGhxWbAI9"],
+                },
+            }).replyOnce(200, metadataForGet);
+
+            mock.onGet("/dataStore/project-monitoring-app/mer-R3rGhxWbAI9").replyOnce(200, {
+                dataElements: ["u24zk6wAgFE"],
+            });
+
+            project = await Project.get(api, config, "R3rGhxWbAI9");
+        });
+
+        it("has filled values", () => {
+            expect(project.id).toEqual("R3rGhxWbAI9");
+            expect(project.name).toEqual("0Test1-13726c");
+            expect(project.description).toEqual("Some description2");
+            expect(project.awardNumber).toEqual("34549");
+            expect(project.subsequentLettering).toEqual("fr");
+            expect(project.speedKey).toEqual("");
+            expect(project.startDate && project.startDate.format("L")).toEqual(
+                moment("2020-01-01").format("L")
+            );
+            expect(project.endDate && project.endDate.format("L")).toEqual(
+                moment("2020-03-31").format("L")
+            );
+            expect(project.sectors.map(sector => sector.code)).toEqual(["SECTOR_LIVELIHOODS"]);
+            expect(project.funders.map(funder => funder.displayName)).toEqual([
+                "Atlas Copco",
+                "CARE",
+            ]);
+            expect(project.locations.map(location => location.displayName)).toEqual([
+                "Grand Bahama",
+            ]);
+            expect(project.orgUnit && project.orgUnit.id).toEqual("R3rGhxWbAI9");
+            expect(project.parentOrgUnit && project.parentOrgUnit.id).toEqual("eu2XF73JOzl");
+            expect(project.dataSets && project.dataSets.actual.code).toEqual("R3rGhxWbAI9_ACTUAL");
+            expect(project.dashboard).toEqual({ id: "yk6HaCRtmEL" });
+        });
+
+        it("has initial data set", () => {
+            expect(project.initialData && project.initialData.id).toEqual("R3rGhxWbAI9");
+        });
+
+        it("has data element sets", () => {
+            expect(project.dataElements.get({ onlySelected: true }).map(de => de.id)).toEqual([
+                "yMqK9DKbA3X",
+                "u24zk6wAgFE",
+            ]);
+            expect(project.dataElements.get({ onlyMERSelected: true }).map(de => de.id)).toEqual([
+                "u24zk6wAgFE",
+            ]);
+        });
+
+        it("raises exception on not found", async () => {
+            mock.onGet("/metadata").replyOnce(200, {});
+            await expect(Project.get(api, config, "a1234567890")).rejects.toThrow();
+        });
+    });
 
     describe("code", () => {
         it("joins {subsequentLettering}{this.awardNumber}-{this.speedKey}", async () => {
@@ -148,7 +249,7 @@ describe("Project", () => {
             mock.onGet("/metadata", {
                 params: {
                     "organisationUnits:fields": "displayName",
-                    "organisationUnits:filter": ["code:eq:au19234-key"],
+                    "organisationUnits:filter": ["code:eq:au19234-key", "id:ne:BvNo8zQaol8"],
                 },
             }).replyOnce(200, { organisationUnits: [{ displayName: "Asia" }] });
 
@@ -161,8 +262,8 @@ describe("Project", () => {
         it("requires at least one data element by sector", async () => {
             const project = (await getProject()).setObj({
                 sectors: [
-                    { id: "mGQ5ckOTU8A", displayName: "Agriculture" },
-                    { id: "m4Cg6FOPPR7", displayName: "Livelihoods" },
+                    { id: "mGQ5ckOTU8A", displayName: "Agriculture", code: "SECTOR_AGRICULTURE" },
+                    { id: "m4Cg6FOPPR7", displayName: "Livelihoods", code: "SECTOR_LIVELIHOODS" },
                 ],
             });
             const errors = await project.validate(["dataElements"]);
@@ -261,3 +362,150 @@ describe("Project", () => {
         });
     });
 });
+
+const metadataForGet = {
+    organisationUnits: [
+        {
+            code: "fr34549",
+            name: "0Test1-13726c",
+            id: "R3rGhxWbAI9",
+            path: "/J0hschZVMBt/eu2XF73JOzl/R3rGhxWbAI9",
+            closedDate: "2020-04-30T00:00:00.000",
+            displayName: "0Test1-13726c",
+            description: "Some description2",
+            openingDate: "2019-12-01T00:00:00.000",
+            parent: {
+                id: "eu2XF73JOzl",
+                path: "/J0hschZVMBt/eu2XF73JOzl",
+                displayName: "Bahamas",
+            },
+            attributeValues: [
+                {
+                    value: "true",
+                    attribute: {
+                        id: "mgCKcJuP5n0",
+                    },
+                },
+                {
+                    value: "yk6HaCRtmEL",
+                    attribute: {
+                        id: "aywduilEjPQ",
+                    },
+                },
+            ],
+            organisationUnitGroups: [
+                {
+                    id: "OKEZCrPzqph",
+                },
+                {
+                    id: "GsGG8967YDU",
+                },
+                {
+                    id: "muk9Io6cQZY",
+                },
+            ],
+        },
+    ],
+    dataSets: [
+        {
+            code: "R3rGhxWbAI9_ACTUAL",
+            id: "imYbEtdoQZx",
+            dataSetElements: [
+                {
+                    categoryCombo: {
+                        id: "bjDvmb4bfuf",
+                    },
+                    dataElement: {
+                        id: "u24zk6wAgFE",
+                    },
+                },
+                {
+                    categoryCombo: {
+                        id: "bjDvmb4bfuf",
+                    },
+                    dataElement: {
+                        id: "yMqK9DKbA3X",
+                    },
+                },
+            ],
+            dataInputPeriods: [
+                {
+                    closingDate: "2020-03-10T00:00:00.000",
+                    openingDate: "2020-02-01T00:00:00.000",
+                    period: {
+                        id: "202002",
+                    },
+                },
+                {
+                    closingDate: "2020-04-10T00:00:00.000",
+                    openingDate: "2020-03-01T00:00:00.000",
+                    period: {
+                        id: "202003",
+                    },
+                },
+                {
+                    closingDate: "2020-02-10T00:00:00.000",
+                    openingDate: "2020-01-01T00:00:00.000",
+                    period: {
+                        id: "202001",
+                    },
+                },
+            ],
+            sections: [
+                {
+                    code: "SECTOR_LIVELIHOODS_imYbEtdoQZx",
+                },
+            ],
+        },
+        {
+            code: "R3rGhxWbAI9_TARGET",
+            id: "KC6gi00Jm6H",
+            dataSetElements: [
+                {
+                    categoryCombo: {
+                        id: "bjDvmb4bfuf",
+                    },
+                    dataElement: {
+                        id: "yMqK9DKbA3X",
+                    },
+                },
+                {
+                    categoryCombo: {
+                        id: "bjDvmb4bfuf",
+                    },
+                    dataElement: {
+                        id: "u24zk6wAgFE",
+                    },
+                },
+            ],
+            dataInputPeriods: [
+                {
+                    closingDate: "2020-02-01T00:00:00.000",
+                    openingDate: "2020-01-01T00:00:00.000",
+                    period: {
+                        id: "202001",
+                    },
+                },
+                {
+                    closingDate: "2020-02-01T00:00:00.000",
+                    openingDate: "2020-01-01T00:00:00.000",
+                    period: {
+                        id: "202003",
+                    },
+                },
+                {
+                    closingDate: "2020-02-01T00:00:00.000",
+                    openingDate: "2020-01-01T00:00:00.000",
+                    period: {
+                        id: "202002",
+                    },
+                },
+            ],
+            sections: [
+                {
+                    code: "SECTOR_LIVELIHOODS_KC6gi00Jm6H",
+                },
+            ],
+        },
+    ],
+};

@@ -170,7 +170,7 @@ export default class DataElementsSet {
         });
     }
 
-    static async build(config: Config) {
+    static build(config: Config) {
         return new DataElementsSet({
             dataElements: config.dataElements,
             selected: [],

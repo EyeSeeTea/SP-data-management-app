@@ -3,7 +3,7 @@ import { useHistory } from "react-router";
 const routes = {
     projects: () => "/",
     "projects.new": () => `/projects/new`,
-    "projects.edit": ({ id }: { id: string }) => `/projects/${id}`,
+    "projects.edit": ({ id }: { id: string }) => `/projects/edit/${id}`,
     report: () => "/report",
     actualValues: ({ id }: { id: string }) => `/actual-values/${id}`,
     targetValues: ({ id }: { id: string }) => `/target-values/${id}`,

@@ -1,5 +1,5 @@
 import React from "react";
-import { useHistory, useLocation, useRouteMatch } from "react-router";
+import { useHistory, useLocation } from "react-router";
 import _ from "lodash";
 import { Wizard, useSnackbar } from "d2-ui-components";
 import { LinearProgress } from "@material-ui/core";
@@ -20,6 +20,12 @@ import DataElementsStep from "../../components/steps/data-elements/DataElementsS
 import { getDevProject } from "../../models/dev-project";
 import { Config } from "../../models/Config";
 
+type Action = { type: "create" } | { type: "edit"; id: string };
+
+interface ProjectWizardProps {
+    action: Action;
+}
+
 export interface StepProps {
     api: D2Api;
     project: Project;
@@ -33,7 +39,7 @@ interface Props {
     history: History;
     location: Location;
     snackbar: any;
-    match: null | { params: { id?: string } };
+    action: Action;
     isDev: boolean;
 }
 
@@ -61,13 +67,13 @@ class ProjectWizardImpl extends React.Component<Props, State> {
     };
 
     async componentDidMount() {
-        const { api, config, match, isDev } = this.props;
+        const { api, config, action, isDev } = this.props;
 
         try {
             const project =
-                match && match.params.id
-                    ? await Project.get(api, config, match.params.id)
-                    : getDevProject(await Project.create(api, config), isDev);
+                action.type === "create"
+                    ? getDevProject(Project.create(api, config), isDev)
+                    : await Project.get(api, config, action.id);
             this.setState({ project });
         } catch (err) {
             console.error(err);
@@ -77,7 +83,7 @@ class ProjectWizardImpl extends React.Component<Props, State> {
     }
 
     isEdit() {
-        return this.props.match && !!this.props.match.params.id;
+        return this.props.action.type === "edit";
     }
 
     getStepsBaseInfo(): Step[] {
@@ -240,12 +246,12 @@ async function getValidationMessages(
         .value();
 }
 
-const ProjectWizard: React.FC<{}> = () => {
+const ProjectWizard: React.FC<ProjectWizardProps> = props => {
     const snackbar = useSnackbar();
     const history = useHistory();
     const location = useLocation();
     const { api, config, isDev } = useAppContext();
-    const match = useRouteMatch();
+    const { action } = props;
 
     return (
         <ProjectWizardImpl
@@ -254,7 +260,7 @@ const ProjectWizard: React.FC<{}> = () => {
             config={config}
             history={history}
             location={location}
-            match={match}
+            action={action}
             isDev={isDev}
         />
     );

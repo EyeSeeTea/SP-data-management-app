@@ -63,26 +63,27 @@ import { Pager } from "d2-api/api/models";
 import i18n from "../locales";
 import DataElementsSet, { SelectionUpdate, DataElement, PeopleOrBenefit } from "./dataElementsSet";
 import ProjectDb from "./ProjectDb";
-import { Maybe } from "../types/utils";
 import { toISOString, getMonthsRange } from "../utils/date";
+import { generateUid } from "d2/uid";
 
 export interface ProjectData {
-    id: Id | undefined;
+    id: Id;
     name: string;
     description: string;
     awardNumber: string;
     subsequentLettering: string;
     speedKey: string;
-    startDate?: Moment;
-    endDate?: Moment;
+    startDate: Moment | undefined;
+    endDate: Moment | undefined;
     sectors: Sector[];
     funders: Funder[];
     locations: Location[];
     orgUnit: OrganisationUnit | undefined;
     parentOrgUnit: OrganisationUnit | undefined;
     dataElements: DataElementsSet;
-    dataSets: { actual: DataSetWithPeriods; target: DataSetWithPeriods } | undefined;
+    dataSets: { actual: DataSet; target: DataSet } | undefined;
     dashboard: Ref | undefined;
+    initialData: Omit<ProjectData, "initialData"> | undefined;
 }
 
 interface NamedObject {
@@ -90,16 +91,9 @@ interface NamedObject {
     displayName: string;
 }
 
-export type Sector = NamedObject;
+export type Sector = NamedObject & { code: string };
 export type Funder = NamedObject;
 export type Location = NamedObject;
-
-export interface Relations {
-    name: string;
-    organisationUnit: NamedObject;
-    dashboard: Maybe<Ref>;
-    dataSets: { actual: Maybe<DataSetWithPeriods>; target: Maybe<DataSetWithPeriods> };
-}
 
 interface DataInputPeriod {
     period: { id: string };
@@ -107,10 +101,12 @@ interface DataInputPeriod {
     closingDate: string;
 }
 
-export interface DataSetWithPeriods {
+export interface DataSet {
     id: string;
     code: string;
+    dataSetElements: Array<{ dataElement: Ref; categoryCombo: Ref }>;
     dataInputPeriods: DataInputPeriod[];
+    sections: Array<{ code: string }>;
 }
 
 interface OrganisationUnit {
@@ -209,6 +205,7 @@ class Project {
         parentOrgUnit: i18n.t("Parent Organisation Unit"),
         dataSets: i18n.t("Data Sets"),
         dashboard: i18n.t("Dashboard"),
+        initialData: i18n.t("Initial Data"),
     };
 
     static getFieldName(field: ProjectField): string {
@@ -349,69 +346,19 @@ class Project {
         return Project.getSelectableLocations(this.config, country);
     }
 
-    async getRelations(): Promise<Relations | undefined> {
-        return this.id ? Project.getRelations(this.api, this.config, this.id) : undefined;
+    static async get(api: D2Api, config: Config, id: string): Promise<Project> {
+        return ProjectDb.get(api, config, id);
     }
 
-    static async getRelations(
-        api: D2Api,
-        config: Config,
-        projectId: string
-    ): Promise<Relations | undefined> {
-        const { organisationUnits, dataSets } = await api.metadata
-            .get({
-                organisationUnits: {
-                    fields: {
-                        id: true,
-                        displayName: true,
-                        attributeValues: { attribute: { id: true }, value: true },
-                    },
-                    filter: { id: { eq: projectId } },
-                },
-                dataSets: {
-                    fields: {
-                        id: true,
-                        code: true,
-                        dataInputPeriods: { period: true, openingDate: true, closingDate: true },
-                    },
-                    filter: { code: { $like: projectId } },
-                },
-            })
-            .getData();
-        const orgUnit = organisationUnits[0];
-        if (!orgUnit) return;
-
-        const { projectDashboard } = config.attributes;
-        const dashboardId = _(orgUnit.attributeValues)
-            .map(av => (av.attribute.id === projectDashboard.id ? av.value : null))
-            .compact()
-            .first();
-
-        const getDataSet = (type: "actual" | "target") =>
-            dataSets.find(ds => ds.code.endsWith(type.toUpperCase()));
-
-        return {
-            name: orgUnit.displayName,
-            organisationUnit: orgUnit,
-            dashboard: dashboardId ? { id: dashboardId } : undefined,
-            dataSets: { actual: getDataSet("actual"), target: getDataSet("target") },
+    static create(api: D2Api, config: Config) {
+        const dataElements = DataElementsSet.build(config);
+        const projectData = {
+            ...defaultProjectData,
+            id: generateUid(),
+            dataElements,
+            initialData: undefined,
         };
-    }
-
-    static async getData(
-        config: Config,
-        partialData: Omit<ProjectData, "dataElements" | "dataElementsMER">
-    ): Promise<ProjectData> {
-        const dataElements = await DataElementsSet.build(config);
-        return { ...partialData, dataElements };
-    }
-
-    static async get(api: D2Api, config: Config, _id: string) {
-        return new Project(api, config, await Project.getData(config, defaultProjectData));
-    }
-
-    static async create(api: D2Api, config: Config) {
-        return new Project(api, config, await Project.getData(config, defaultProjectData));
+        return new Project(api, config, projectData);
     }
 
     save() {
@@ -473,7 +420,7 @@ class Project {
     }
 
     public get uid() {
-        return this.code;
+        return this.id;
     }
 
     async validateCodeUniqueness(): Promise<ValidationError> {
@@ -483,7 +430,7 @@ class Project {
             .get({
                 organisationUnits: {
                     fields: { displayName: true },
-                    filter: { code: { eq: code } },
+                    filter: { code: { eq: code }, id: { ne: this.id } },
                 },
             })
             .getData();
@@ -544,23 +491,36 @@ interface Project extends ProjectData {}
 
 type OrgUnitWithDates = Pick<D2OrganisationUnit, "openingDate" | "closedDate">;
 
+export function getDatesFromOrgUnit<OU extends OrgUnitWithDates>(
+    orgUnit: OU
+): { startDate: Moment | undefined; endDate: Moment | undefined } {
+    const process = (s: string | undefined, mapper: (d: Moment) => Moment) =>
+        s ? mapper(moment(s)) : undefined;
+    return {
+        startDate: process(orgUnit.openingDate, d => d.add(1, "month")),
+        endDate: process(orgUnit.closedDate, d => d.subtract(1, "month").endOf("month")),
+    };
+}
+
 export function getProjectFromOrgUnit<OU extends OrgUnitWithDates>(orgUnit: OU): OU {
-    const process = (s: string, mapper: (d: Moment) => Moment) => toISOString(mapper(moment(s)));
+    const { startDate, endDate } = getDatesFromOrgUnit(orgUnit);
+
     return {
         ...orgUnit,
-        ...(orgUnit.openingDate
-            ? { openingDate: process(orgUnit.openingDate, d => d.add(1, "month")) }
-            : {}),
-        ...(orgUnit.closedDate
-            ? { closedDate: process(orgUnit.closedDate, d => d.subtract(1, "month")) }
-            : {}),
+        ...(startDate ? { openingDate: toISOString(startDate) } : {}),
+        ...(endDate ? { closedDate: toISOString(endDate) } : {}),
     };
 }
 
 export function getOrgUnitDatesFromProject(startDate: Moment, endDate: Moment): OrgUnitWithDates {
     return {
         openingDate: toISOString(startDate.clone().subtract(1, "month")),
-        closedDate: toISOString(endDate.clone().add(1, "month")),
+        closedDate: toISOString(
+            endDate
+                .clone()
+                .add(1, "month")
+                .endOf("month")
+        ),
     };
 }
 
@@ -611,7 +571,7 @@ function validateRegexp(
           ];
 }
 
-function getPeriodIds(dataSet: DataSetWithPeriods): string[] {
+function getPeriodIds(dataSet: DataSet): string[] {
     const now = moment();
     const isPeriodInPastOrOpen = (dip: DataInputPeriod) => {
         const periodStart = moment(dip.period.id, monthFormat).startOf("month");
@@ -625,7 +585,7 @@ function getPeriodIds(dataSet: DataSetWithPeriods): string[] {
         .value();
 }
 
-export function getPeriodsData(dataSet: DataSetWithPeriods) {
+export function getPeriodsData(dataSet: DataSet) {
     const periodIds = getPeriodIds(dataSet);
     const isTarget = dataSet.code.endsWith("TARGET");
     let currentPeriodId;

@@ -142,11 +142,12 @@ function loadData(
         setState({ data: { name, url }, loading: false });
     const dashboardUrlBase = `${baseUrl}/dhis-web-dashboard`;
     if (projectId) {
-        Project.getRelations(api, config, projectId)
-            .then(relations => {
-                const dashboard = relations ? relations.dashboard : null;
-                if (relations && dashboard) {
-                    setIFrameSrc(dashboardUrlBase + `/#/${dashboard.id}`, relations.name);
+        Project.get(api, config, projectId)
+            .catch(_err => null)
+            .then(project => {
+                const dashboard = project ? project.dashboard : null;
+                if (project && dashboard) {
+                    setIFrameSrc(dashboardUrlBase + `/#/${dashboard.id}`, project.name);
                 } else {
                     setState({
                         error: i18n.t("Cannot load project relations"),

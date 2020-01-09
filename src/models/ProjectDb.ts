@@ -2,16 +2,27 @@ import _ from "lodash";
 import moment from "moment";
 import { D2DataSet, D2OrganisationUnit, D2ApiResponse, MetadataPayload, Id, D2Api } from "d2-api";
 import { PartialModel, Ref, PartialPersistedModel, MetadataResponse } from "d2-api";
-import Project, { getOrgUnitDatesFromProject } from "./Project";
+import Project, { getOrgUnitDatesFromProject, getDatesFromOrgUnit } from "./Project";
 import { getMonthsRange, toISOString } from "../utils/date";
 import "../utils/lodash-mixins";
 import ProjectDashboard from "./ProjectDashboard";
 import { getUid, getDataStore, getIds } from "../utils/dhis2";
+import { Config } from "./Config";
+import { runPromises } from "../utils/promises";
+import DataElementsSet from "./dataElementsSet";
 
 const expiryDaysInMonthActual = 10;
 
+type DataStoreProjectInfo = { dataElements: string[] };
+
 export default class ProjectDb {
-    constructor(public project: Project) {}
+    api: D2Api;
+    config: Config;
+
+    constructor(public project: Project) {
+        this.api = project.api;
+        this.config = project.config;
+    }
 
     async save() {
         const saveReponse = await this.saveMetadata();
@@ -20,34 +31,37 @@ export default class ProjectDb {
     }
 
     async saveMetadata() {
-        const { project } = this;
-        const { api, config, startDate, endDate } = project;
+        const { project, api, config } = this;
+        const { startDate, endDate } = project;
 
-        if (!startDate || !endDate) {
-            throw new Error("Missing dates");
-        } else if (!project.parentOrgUnit) {
-            throw new Error("No parent org unit");
+        const validationErrors = _.flatten(_.values(await project.validate()));
+        if (!_.isEmpty(validationErrors)) {
+            throw new Error("Validation errors:\n" + validationErrors.join("\n"));
+        } else if (!startDate || !endDate || !project.parentOrgUnit) {
+            throw new Error("Invalid project state");
         }
 
         const baseAttributeValues = [
             { value: "true", attribute: { id: config.attributes.createdByApp.id } },
         ];
 
-        const parentOrgUnitId = getOrgUnitId(project.parentOrgUnit);
-        const orgUnitId = getUid("organisationUnit", project.uid);
         const orgUnit = {
-            id: orgUnitId,
+            id: project.id,
             name: project.name,
             displayName: project.name,
-            path: project.parentOrgUnit.path + "/" + orgUnitId,
+            path: project.parentOrgUnit.path + "/" + project.id,
             code: project.code,
             shortName: project.shortName,
             description: project.description,
-            parent: { id: parentOrgUnitId },
+            parent: { id: getOrgUnitId(project.parentOrgUnit) },
             ...getOrgUnitDatesFromProject(startDate, endDate),
             openingDate: toISOString(startDate.clone().subtract(1, "month")),
-            closedDate: toISOString(endDate.clone().add(1, "month")),
-            organisationUnitGroups: project.funders.map(funder => ({ id: funder.id })),
+            closedDate: toISOString(
+                endDate
+                    .clone()
+                    .add(1, "month")
+                    .endOf("month")
+            ),
             attributeValues: baseAttributeValues,
         };
 
@@ -111,10 +125,7 @@ export default class ProjectDb {
 
         await this.saveMERData(orgUnit.id).getData();
 
-        const response = await api.metadata
-            .post(payload)
-            .getData()
-            .catch(_err => null);
+        const response = await this.postPayload(payload);
 
         const savedProject =
             response && response.status === "OK"
@@ -122,21 +133,59 @@ export default class ProjectDb {
                       id: orgUnit.id,
                       orgUnit: _.pick(orgUnit, ["id", "path", "displayName"]),
                       dashboard: { id: dashboard.id },
-                      dataSets: {
-                          actual: dataSetActual,
-                          target: dataSetTarget,
-                      },
+                      dataSets: { actual: dataSetActual, target: dataSetTarget },
                   })
                 : this.project;
 
         return { orgUnit: orgUnitToSave, payload, response, project: savedProject };
     }
 
+    async postPayload(payload: Partial<MetadataPayload> & Pick<MetadataPayload, "sections">) {
+        // 2.31 still has problems when updating dataSet/sections in the same payload, split in two
+        const { api, project } = this;
+        const sectionsPayload = _.pick(payload, ["sections"]);
+        const nonSectionsPayload = _.omit(payload, ["sections"]);
+        const dataSets = project.dataSets
+            ? [project.dataSets.actual, project.dataSets.target]
+            : null;
+
+        const oldSections = dataSets
+            ? (await api.metadata
+                  .get({
+                      sections: {
+                          fields: { id: true },
+                          filter: { "dataSet.id": { in: dataSets.map(ds => ds.id) } },
+                      },
+                  })
+                  .getData()).sections
+            : [];
+
+        // Delete old sections which are not in current sectors
+        const sectionsToDelete = _(oldSections)
+            .differenceBy(payload.sections, section => section.id)
+            .value();
+        runPromises(
+            sectionsToDelete.map(section => () => api.models.sections.delete(section).getData())
+        );
+
+        const response = await api.metadata
+            .post(nonSectionsPayload)
+            .getData()
+            .catch(_err => null);
+
+        if (!response || response.status !== "OK" || _.isEmpty(sectionsPayload)) return response;
+
+        return api.metadata
+            .post(sectionsPayload)
+            .getData()
+            .catch(_err => null);
+    }
+
     saveMERData(orgUnitId: Id): D2ApiResponse<void> {
         const dataStore = getDataStore(this.project.api);
         const dataElementsForMER = this.project.dataElements.get({ onlyMERSelected: true });
         const value = { dataElements: dataElementsForMER.map(de => de.id) };
-        return dataStore.save(`mer-${orgUnitId}`, value);
+        return dataStore.save(ProjectDb.getMerDataStoreInfoKey(orgUnitId), value);
     }
 
     /*
@@ -193,6 +242,7 @@ export default class ProjectDb {
                 dataSet: { id: dataSetId },
                 sortOrder: index,
                 name: sector.displayName,
+                code: sector.code + "_" + dataSetId,
                 dataElements: dataElements
                     .filter(de => de.sectorId === sector.id)
                     .map(de => ({ id: de.id })),
@@ -208,15 +258,113 @@ export default class ProjectDb {
             renderAsTabs: true,
             categoryCombo: { id: project.config.categoryCombos.targetActual.id },
             organisationUnits: [{ id: orgUnit.id }],
-            dataSetElements,
             timelyDays: 0,
             formType: "DEFAULT" as const,
-            sections: sections.map(section => ({ id: section.id })),
             ...baseDataSet,
+            sections: sections.map(section => ({ id: section.id, code: section.code })),
+            dataSetElements,
             code: `${orgUnit.id}_${baseDataSet.code}`,
         };
 
         return { dataSets: [dataSet], sections };
+    }
+
+    static getMerDataStoreInfoKey(id: Id): string {
+        return `mer-${id}`;
+    }
+
+    static async get(api: D2Api, config: Config, id: string): Promise<Project> {
+        const { organisationUnits, dataSets } = await api.metadata
+            .get({
+                organisationUnits: {
+                    fields: {
+                        id: true,
+                        path: true,
+                        displayName: true,
+                        name: true,
+                        description: true,
+                        code: true,
+                        openingDate: true,
+                        closedDate: true,
+                        parent: { id: true, displayName: true, path: true },
+                        organisationUnitGroups: { id: true },
+                        attributeValues: { attribute: { id: true }, value: true },
+                    },
+                    filter: { id: { eq: id } },
+                },
+                dataSets: {
+                    fields: {
+                        id: true,
+                        code: true,
+                        dataSetElements: { dataElement: { id: true }, categoryCombo: { id: true } },
+                        dataInputPeriods: { period: true, openingDate: true, closingDate: true },
+                        sections: { code: true },
+                    },
+                    filter: { code: { $like: id } },
+                },
+            })
+            .getData();
+
+        const orgUnit = organisationUnits[0];
+        if (!orgUnit) throw new Error("Org unit not found");
+
+        const { projectDashboard } = config.attributes;
+        const dashboardId = _(orgUnit.attributeValues)
+            .map(av => (av.attribute.id === projectDashboard.id ? av.value : null))
+            .compact()
+            .first();
+
+        const getDataSet = (type: "actual" | "target") => {
+            const dataSet = _(dataSets).find(dataSet => dataSet.code.endsWith(type.toUpperCase()));
+            if (!dataSet) throw new Error(`Cannot find dataset: ${type}`);
+            return dataSet;
+        };
+
+        const projectDataSets = { actual: getDataSet("actual"), target: getDataSet("target") };
+
+        const dataStore = getDataStore(api);
+        const value = await dataStore
+            .get<DataStoreProjectInfo>(ProjectDb.getMerDataStoreInfoKey(id))
+            .getData();
+        if (!value) console.error("Cannot get MER selections");
+        const dataElementIdsForMer = value ? value.dataElements : [];
+
+        const code = orgUnit.code || "";
+        const { startDate, endDate } = getDatesFromOrgUnit(orgUnit);
+        const sectorCodes = projectDataSets.actual.sections.map(section =>
+            _.initial((section.code || "").split("_")).join("_")
+        );
+        const sectors = _(config.sectors)
+            .keyBy(sector => sector.code)
+            .at(sectorCodes)
+            .compact()
+            .value();
+        const dataElementsSet = DataElementsSet.build(config);
+        const dataElementsSetWithSelections = dataElementsSet
+            .updateSelection(projectDataSets.actual.dataSetElements.map(dse => dse.dataElement.id))
+            .dataElements.updateMERSelection(dataElementIdsForMer);
+
+        const projectData = {
+            id: orgUnit.id,
+            name: orgUnit.name,
+            description: orgUnit.description,
+            awardNumber: code.slice(2, 2 + 5),
+            subsequentLettering: code.slice(0, 2),
+            speedKey: code.slice(8),
+            startDate: startDate,
+            endDate: endDate,
+            sectors: sectors,
+            funders: _.intersectionBy(config.funders, orgUnit.organisationUnitGroups, "id"),
+            locations: _.intersectionBy(config.locations, orgUnit.organisationUnitGroups, "id"),
+            orgUnit: orgUnit,
+            parentOrgUnit: orgUnit.parent,
+            dataSets: projectDataSets,
+            dashboard: dashboardId ? { id: dashboardId } : undefined,
+            dataElements: dataElementsSetWithSelections,
+        };
+
+        const project = new Project(api, config, { ...projectData, initialData: projectData });
+        return project;
     }
 }
 
@@ -227,24 +375,48 @@ async function getOrgUnitGroups(
     project: Project,
     orgUnit: PartialPersistedModel<D2OrganisationUnit>
 ) {
-    const { organisationUnitGroups } = await api.metadata
+    /* The project may have changed funders and locations, so get also the previously related
+       groups to clear them if necessary */
+    const { organisationUnitGroups: prevOrgUnitGroups } = await api.metadata
         .get({
             organisationUnitGroups: {
                 fields: { $owner: true },
-                filter: { id: { in: getIds([...project.funders, ...project.locations]) } },
+                filter: { "organisationUnits.id": { eq: project.id } },
             },
         })
         .getData();
 
-    return organisationUnitGroups.map(orgUnitGroup => ({
-        ...orgUnitGroup,
-        organisationUnits: _.uniqBy([...orgUnitGroup.organisationUnits, { id: orgUnit.id }], "id"),
-    }));
+    const orgUnitGroupIds = new Set(getIds([...project.funders, ...project.locations]));
+
+    const { organisationUnitGroups: newOrgUnitGroups } = await api.metadata
+        .get({
+            organisationUnitGroups: {
+                fields: { $owner: true },
+                filter: { id: { in: Array.from(orgUnitGroupIds) } },
+            },
+        })
+        .getData();
+
+    const orgUnitsToSave = _(prevOrgUnitGroups)
+        .concat(newOrgUnitGroups)
+        .uniqBy(oug => oug.id)
+        .value();
+
+    return orgUnitsToSave.map(orgUnitGroup => {
+        const organisationUnits = _(orgUnitGroup.organisationUnits)
+            .filter(ou => ou.id !== project.id)
+            .concat(orgUnitGroupIds.has(orgUnitGroup.id) ? [{ id: orgUnit.id }] : [])
+            .value();
+        return { ...orgUnitGroup, organisationUnits };
+    });
 }
 
 function getDataSetPeriods(startDate: moment.Moment, endDate: moment.Moment) {
     const projectOpeningDate = startDate;
-    const projectClosingDate = startDate.clone().add(1, "month");
+    const projectClosingDate = startDate
+        .clone()
+        .add(1, "month")
+        .endOf("month");
 
     const targetPeriods = getMonthsRange(startDate, endDate).map(date => ({
         period: { id: date.format("YYYYMM") },
