@@ -156,7 +156,7 @@ const expectedOrgUnitPut = {
         id: "eu2XF73JOzl",
     },
     openingDate: "2018-09-01T00:00:00",
-    closedDate: "2019-04-01T00:00:00",
+    closedDate: "2019-04-30T23:59:59",
     attributeValues: [
         {
             value: "true",
@@ -270,7 +270,7 @@ const expectedMetadataPost = {
                 id: "eu2XF73JOzl",
             },
             openingDate: "2018-09-01T00:00:00",
-            closedDate: "2019-04-01T00:00:00",
+            closedDate: "2019-04-30T23:59:59",
             attributeValues: [
                 {
                     value: "true",
@@ -446,42 +446,42 @@ const expectedMetadataPost = {
                         id: "201810",
                     },
                     openingDate: "2018-10-01T00:00:00",
-                    closingDate: "2018-11-01T00:00:00",
+                    closingDate: "2018-11-30T23:59:59",
                 },
                 {
                     period: {
                         id: "201811",
                     },
                     openingDate: "2018-10-01T00:00:00",
-                    closingDate: "2018-11-01T00:00:00",
+                    closingDate: "2018-11-30T23:59:59",
                 },
                 {
                     period: {
                         id: "201812",
                     },
                     openingDate: "2018-10-01T00:00:00",
-                    closingDate: "2018-11-01T00:00:00",
+                    closingDate: "2018-11-30T23:59:59",
                 },
                 {
                     period: {
                         id: "201901",
                     },
                     openingDate: "2018-10-01T00:00:00",
-                    closingDate: "2018-11-01T00:00:00",
+                    closingDate: "2018-11-30T23:59:59",
                 },
                 {
                     period: {
                         id: "201902",
                     },
                     openingDate: "2018-10-01T00:00:00",
-                    closingDate: "2018-11-01T00:00:00",
+                    closingDate: "2018-11-30T23:59:59",
                 },
                 {
                     period: {
                         id: "201903",
                     },
                     openingDate: "2018-10-01T00:00:00",
-                    closingDate: "2018-11-01T00:00:00",
+                    closingDate: "2018-11-30T23:59:59",
                 },
             ],
             expiryDays: 0,

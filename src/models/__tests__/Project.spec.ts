@@ -97,7 +97,7 @@ describe("Project", () => {
                 moment("2020-01-01").format("L")
             );
             expect(project.endDate && project.endDate.format("L")).toEqual(
-                moment("2020-03-30").format("L")
+                moment("2020-03-31").format("L")
             );
             expect(project.sectors.map(sector => sector.code)).toEqual(["SECTOR_LIVELIHOODS"]);
             expect(project.funders.map(funder => funder.displayName)).toEqual([

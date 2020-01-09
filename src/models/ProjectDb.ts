@@ -56,7 +56,12 @@ export default class ProjectDb {
             parent: { id: getOrgUnitId(project.parentOrgUnit) },
             ...getOrgUnitDatesFromProject(startDate, endDate),
             openingDate: toISOString(startDate.clone().subtract(1, "month")),
-            closedDate: toISOString(endDate.clone().add(1, "month")),
+            closedDate: toISOString(
+                endDate
+                    .clone()
+                    .add(1, "month")
+                    .endOf("month")
+            ),
             attributeValues: baseAttributeValues,
         };
 
@@ -408,7 +413,10 @@ async function getOrgUnitGroups(
 
 function getDataSetPeriods(startDate: moment.Moment, endDate: moment.Moment) {
     const projectOpeningDate = startDate;
-    const projectClosingDate = startDate.clone().add(1, "month");
+    const projectClosingDate = startDate
+        .clone()
+        .add(1, "month")
+        .endOf("month");
 
     const targetPeriods = getMonthsRange(startDate, endDate).map(date => ({
         period: { id: date.format("YYYYMM") },
