@@ -1412,7 +1412,7 @@ const expectedMetadataPost = {
         },
         {
             id: "WWqcPhi5Nh3",
-            name: "MyProject - PM Benefits Per Person (%)",
+            name: "MyProject - PM Benefits Per Person",
             publicAccess: "rw------",
             type: "COLUMN",
             aggregationType: "DEFAULT",
