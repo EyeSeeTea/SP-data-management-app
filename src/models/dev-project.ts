@@ -17,9 +17,9 @@ export function getDevProject(initialProject: Project, enabled: boolean) {
 
     return initialProject
         .set("parentOrgUnit", {
-            path: "/J0hschZVMBt/PJb0RtEnqlf",
-            id: "PJb0RtEnqlf",
-            displayName: "Sierra Leona",
+            path: "/J0hschZVMBt/eu2XF73JOzl",
+            id: "eu2XF73JOzl",
+            displayName: "Bahamas",
         })
         .set("sectors", [
             { id: "mGQ5ckOTU8A", displayName: "Agriculture" },
@@ -41,6 +41,7 @@ export function getDevProject(initialProject: Project, enabled: boolean) {
                 .add(3, "month")
                 .endOf("month")
         )
+        .set("locations", [{ id: "GG0k0oNhgS7", displayName: "Abaco" }])
         .set("funders", [
             { id: "OKEZCrPzqph", displayName: "Atlas Copco" },
             { id: "em8NIwi0KvM", displayName: "Agridius Foundation" },

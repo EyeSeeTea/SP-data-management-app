@@ -227,7 +227,7 @@ describe("Project", () => {
 
         it("returns list of organisation units of level 3", async () => {
             mock.onGet("/organisationUnits", {
-                params: { ...baseRequest },
+                params: baseRequest,
             }).replyOnce(200, objectsPaginated);
 
             const { objects, pager } = await Project.getList(

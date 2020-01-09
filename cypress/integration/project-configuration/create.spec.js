@@ -44,7 +44,7 @@ describe("Projects - Create", () => {
         cy.contains("Next").click();
         cy.contains("One Organisation Unit should be selected");
 
-        selectOrgUnit("Sierra Leona");
+        selectOrgUnit("Bahamas");
         cy.contains("Next").click();
 
         // Sectors and Location
@@ -60,7 +60,7 @@ describe("Projects - Create", () => {
         cy.contains("Next").click();
         cy.contains("Select at least one item for Project Locations");
 
-        selectInMultiSelector("locations", "Bahamas");
+        selectInMultiSelector("locations", "Abaco");
 
         cy.contains("Next").click();
 
@@ -112,7 +112,10 @@ describe("Projects - Create", () => {
         cy.contains("Description");
 
         cy.contains("Selected country");
-        cy.contains("Sierra Leona");
+        cy.contains("Bahamas");
+
+        cy.contains("Locations");
+        cy.contains("Abaco");
 
         cy.contains("Sectors");
         cy.contains("# of agriculture groups receiving support for improved");

@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { D2ApiDefault, D2Api, Id, MetadataPick } from "d2-api";
+import { D2ApiDefault, D2Api, Id, Ref, MetadataPick } from "d2-api";
 import fs from "fs";
 import path from "path";
 import DataElementsSet, { DataElement } from "./dataElementsSet";
@@ -53,8 +53,9 @@ const baseConfig = {
     legendSets: {
         achieved: "ACTUAL_TARGET_ACHIEVED",
     },
-    organitionUnitGroupSets: {
+    organisationUnitGroupSets: {
         funder: "FUNDER",
+        location: "LOCATION",
     },
     indicators: {
         actualTargetPrefix: "ACTUAL_TARGET_",
@@ -117,10 +118,16 @@ const metadataParams = {
             organisationUnitGroups: {
                 id: yes,
                 displayName: yes,
+                organisationUnits: { id: yes, level: yes },
             },
         },
         filter: {
-            code: { eq: baseConfig.organitionUnitGroupSets.funder },
+            code: {
+                in: [
+                    baseConfig.organisationUnitGroupSets.funder,
+                    baseConfig.organisationUnitGroupSets.location,
+                ],
+            },
         },
     },
 };
@@ -147,6 +154,7 @@ type CodedObject = { id: Id; code: string };
 
 export type Sector = NamedObject;
 export type Funder = NamedObject;
+export type Location = NamedObject & { countries: Ref[] };
 
 type IndexedObjs<Key extends keyof BaseConfig, ValueType> = Record<
     keyof BaseConfig[Key],
@@ -166,6 +174,7 @@ export type Config = {
     dataElements: DataElement[];
     sectors: Sector[];
     funders: Funder[];
+    locations: Location[];
     attributes: IndexedObjs<"attributes", Attribute>;
     categories: IndexedObjs<"categories", Category>;
     categoryCombos: IndexedObjs<"categoryCombos", CategoryCombo>;
@@ -181,10 +190,20 @@ class ConfigLoader {
         const metadata: Metadata = await this.api.metadata.get(metadataParams).getData();
         const dataElementsMetadata = await this.getDataElementsMetadata(metadata);
         const d2CurrentUser = await this.getCurrentUser();
+        const ouSetsByCode = _(metadata.organisationUnitGroupSets).keyBy(ougSet => ougSet.code);
 
-        const funders = _(metadata.organisationUnitGroupSets)
-            .keyBy(ougSet => ougSet.code)
-            .getOrFail(baseConfig.organitionUnitGroupSets.funder).organisationUnitGroups;
+        const funders = ouSetsByCode.getOrFail(baseConfig.organisationUnitGroupSets.funder)
+            .organisationUnitGroups;
+
+        const locations = ouSetsByCode
+            .getOrFail(baseConfig.organisationUnitGroupSets.location)
+            .organisationUnitGroups.map(oug => ({
+                id: oug.id,
+                displayName: oug.displayName,
+                countries: oug.organisationUnits
+                    .filter(ou => ou.level === 2)
+                    .map(ou => ({ id: ou.id })),
+            }));
 
         const currentUser = {
             ...d2CurrentUser,
@@ -196,6 +215,7 @@ class ConfigLoader {
             currentUser: currentUser,
             ...dataElementsMetadata,
             funders: _.sortBy(funders, funder => funder.displayName),
+            locations: _.sortBy(locations, location => location.displayName),
             indicators: metadata.indicators,
             attributes: indexObjects(metadata, "attributes"),
             categories: indexObjects(metadata, "categories"),
