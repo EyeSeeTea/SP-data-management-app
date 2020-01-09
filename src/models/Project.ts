@@ -65,6 +65,7 @@ import DataElementsSet, { SelectionUpdate, DataElement, PeopleOrBenefit } from "
 import ProjectDb from "./ProjectDb";
 import { toISOString, getMonthsRange } from "../utils/date";
 import { generateUid } from "d2/uid";
+import ProjectDownload from "./ProjectDownload";
 
 export interface ProjectData {
     id: Id;
@@ -361,6 +362,10 @@ class Project {
         return new Project(api, config, projectData);
     }
 
+    download() {
+        return new ProjectDownload(this).generate();
+    }
+
     save() {
         return new ProjectDb(this).save();
     }
@@ -445,8 +450,9 @@ class Project {
             : [];
     }
 
-    getPeriods(): Array<{ id: string }> {
+    getPeriods(): Array<{ date: Moment; id: string }> {
         return getMonthsRange(this.startDate, this.endDate).map(date => ({
+            date,
             id: date.format("YYYYMM"),
         }));
     }

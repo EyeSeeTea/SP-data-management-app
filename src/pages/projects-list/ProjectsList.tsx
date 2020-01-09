@@ -10,6 +10,8 @@ import { Config } from "../../models/Config";
 import { formatDateShort, formatDateLong } from "../../utils/date";
 import ActionButton from "../../components/action-button/ActionButton";
 import { GetPropertiesByType } from "../../types/utils";
+import { downloadFile } from "../../utils/download";
+import { D2Api } from "d2-api";
 
 type UserRolesConfig = Config["base"]["userRoles"];
 
@@ -41,7 +43,12 @@ function columnDate(
     };
 }
 
-function getConfig(goTo: GoTo, currentUser: CurrentUser) {
+async function download(api: D2Api, config: Config, projectId: string) {
+    const project = await Project.get(api, config, projectId);
+    downloadFile(await project.download());
+}
+
+function getComponentConfig(api: D2Api, config: Config, goTo: GoTo, currentUser: CurrentUser) {
     const columns: TableColumn<ProjectForList>[] = [
         { name: "displayName", text: i18n.t("Name"), sortable: true },
         { ...columnDate("lastUpdated", "datetime"), text: i18n.t("Last updated"), sortable: true },
@@ -130,6 +137,7 @@ function getConfig(goTo: GoTo, currentUser: CurrentUser) {
             icon: "cloud_download",
             text: i18n.t("Download Data"),
             multiple: false,
+            onClick: (project: ProjectForList) => download(api, config, project.id),
         },
 
         edit: {
@@ -187,7 +195,7 @@ function getConfig(goTo: GoTo, currentUser: CurrentUser) {
 const ProjectsList: React.FC = () => {
     const goTo = useGoTo();
     const { api, config, currentUser } = useAppContext();
-    const componentConfig = getConfig(goTo, currentUser);
+    const componentConfig = getComponentConfig(api, config, goTo, currentUser);
     const canAccessMer = currentUser.hasRole("admin") || currentUser.hasRole("dataReviewer");
 
     const list = (_d2: unknown, filters: FiltersForList, pagination: Pagination) =>

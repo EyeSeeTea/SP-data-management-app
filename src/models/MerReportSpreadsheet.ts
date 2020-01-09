@@ -27,7 +27,7 @@ interface TextValue extends ValueBase {
 class MerReportSpreadsheet {
     constructor(public merReport: MerReport) {}
 
-    async generate(): Promise<{ blob: Blob; filename: string }> {
+    async generate(): Promise<{ buffer: ExcelJS.Buffer; filename: string }> {
         const { merReport } = this;
         const { date, organisationUnit } = merReport.data;
         const { config } = this.merReport;
@@ -44,11 +44,10 @@ class MerReportSpreadsheet {
         this.addNarrativeSheet(workbook);
         this.addActivitesSheet(workbook);
 
-        const res = await workbook.xlsx.writeBuffer();
-        const blob = new Blob([res], { type: "application/octet-stream" });
+        const buffer = await workbook.xlsx.writeBuffer();
         const orgUnitName = organisationUnit.displayName;
         const filename = ["MER", orgUnitName, date.format("YYYY_MM")].join("-") + ".xlsx";
-        return { filename, blob };
+        return { filename, buffer };
     }
 
     addNarrativeSheet(workbook: Workbook) {
