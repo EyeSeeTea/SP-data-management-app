@@ -1,11 +1,21 @@
 {
     "base": {
         "userRoles": {
-            "feedback": ["PM Feedback"],
-            "dataReviewer": ["Data Reviewer"],
-            "dataViewer": ["Data Viewer"],
-            "admin": ["PM Admin"],
-            "dataEntry": ["Data Entry"]
+            "feedback": [
+                "PM Feedback"
+            ],
+            "dataReviewer": [
+                "Data Reviewer"
+            ],
+            "dataViewer": [
+                "Data Viewer"
+            ],
+            "admin": [
+                "PM Admin"
+            ],
+            "dataEntry": [
+                "Data Entry"
+            ]
         },
         "dataElementGroupSets": {
             "sector": "SECTOR",
@@ -25,11 +35,15 @@
             "newRecurring": "NEW_RECURRING"
         },
         "categoryCombos": {
-            "targetActual": "ACTUAL_TARGET"
+            "targetActual": "ACTUAL_TARGET",
+            "genderNewRecurring": "GENDER_NEW_RECURRING",
+            "default": "default"
         },
         "categoryOptions": {
             "target": "TARGET",
-            "actual": "ACTUAL"
+            "actual": "ACTUAL",
+            "new": "NEW",
+            "recurring": "RECURRING"
         },
         "dataElementGroups": {
             "global": "GLOBAL",
@@ -37,12 +51,16 @@
             "people": "PEOPLE",
             "benefit": "BENEFIT"
         },
+        "legendSets": {
+            "achieved": "ACTUAL_TARGET_ACHIEVED"
+        },
         "organisationUnitGroupSets": {
             "funder": "FUNDER",
             "location": "LOCATION"
         },
         "indicators": {
-            "actualTargetPrefix": "ACTUAL_TARGET_"
+            "actualTargetPrefix": "ACTUAL_TARGET_",
+            "costBenefitPrefix": "COST_BENEFIT_"
         }
     },
     "currentUser": {
@@ -80,25 +98,10 @@
             "displayName": "Agriculture",
             "dataElements": [
                 {
-                    "id": "Ou41h46tMcD"
-                },
-                {
                     "id": "qQy0N1xdwQ1"
                 },
                 {
-                    "id": "mEY5CsRrI0P"
-                },
-                {
-                    "id": "aqCOXJ5URiL"
-                },
-                {
                     "id": "C24wpyjZTGe"
-                },
-                {
-                    "id": "WMAhrqMkpeN"
-                },
-                {
-                    "id": "yIqYlJnhYyj"
                 },
                 {
                     "id": "WS8XV4WWPE7"
@@ -108,6 +111,30 @@
                 },
                 {
                     "id": "KSKcmBgYrov"
+                },
+                {
+                    "id": "ik0ICagvIjm"
+                },
+                {
+                    "id": "aOUffyMug7t"
+                },
+                {
+                    "id": "i0wZ2ZFmfkW"
+                },
+                {
+                    "id": "Ou41h46tMcD"
+                },
+                {
+                    "id": "mEY5CsRrI0P"
+                },
+                {
+                    "id": "aqCOXJ5URiL"
+                },
+                {
+                    "id": "WMAhrqMkpeN"
+                },
+                {
+                    "id": "yIqYlJnhYyj"
                 },
                 {
                     "id": "q8C2wnYFK3T"
@@ -128,15 +155,6 @@
                     "id": "C0QLSs6ymHL"
                 },
                 {
-                    "id": "ik0ICagvIjm"
-                },
-                {
-                    "id": "aOUffyMug7t"
-                },
-                {
-                    "id": "i0wZ2ZFmfkW"
-                },
-                {
                     "id": "SeYl64icyGD"
                 }
             ]
@@ -147,28 +165,13 @@
             "displayName": "Livelihoods",
             "dataElements": [
                 {
-                    "id": "e6wdrrz9ZS6"
-                },
-                {
                     "id": "iyQBe9Xv7bk"
-                },
-                {
-                    "id": "OWQzKQcWkqp"
                 },
                 {
                     "id": "ayoVLBc4lFq"
                 },
                 {
-                    "id": "Wk0ONOEwrQy"
-                },
-                {
-                    "id": "CQkzkkkzpRT"
-                },
-                {
                     "id": "iQCoaXYxswJ"
-                },
-                {
-                    "id": "OKIqOe51jVq"
                 },
                 {
                     "id": "W40WQqgOVuV"
@@ -177,13 +180,34 @@
                     "id": "a8izG9FuLzQ"
                 },
                 {
+                    "id": "iyAnflVLHS3"
+                },
+                {
+                    "id": "yMqK9DKbA3X"
+                },
+                {
+                    "id": "CQPwg8Nipro"
+                },
+                {
+                    "id": "e6wdrrz9ZS6"
+                },
+                {
+                    "id": "OWQzKQcWkqp"
+                },
+                {
+                    "id": "Wk0ONOEwrQy"
+                },
+                {
+                    "id": "CQkzkkkzpRT"
+                },
+                {
+                    "id": "OKIqOe51jVq"
+                },
+                {
                     "id": "WwMbFHHKGgW"
                 },
                 {
                     "id": "eeqkGzLMaSD"
-                },
-                {
-                    "id": "iyAnflVLHS3"
                 },
                 {
                     "id": "yUGuwPFkBrj"
@@ -192,13 +216,7 @@
                     "id": "We61YNYyOX0"
                 },
                 {
-                    "id": "yMqK9DKbA3X"
-                },
-                {
                     "id": "u24zk6wAgFE"
-                },
-                {
-                    "id": "CQPwg8Nipro"
                 },
                 {
                     "id": "imakJ22nlwc"
@@ -211,17 +229,6 @@
     ],
     "dataElements": [
         {
-            "id": "Ou41h46tMcD",
-            "name": "# of people trained on food hygiene and security",
-            "code": "P010107",
-            "sectorId": "mGQ5ckOTU8A",
-            "indicatorType": "sub",
-            "peopleOrBenefit": "people",
-            "series": "101",
-            "pairedDataElementCode": "",
-            "categoryComboId": "GKWiemQPU5U"
-        },
-        {
             "id": "qQy0N1xdwQ1",
             "name": "# of people trained on post-harvest handling",
             "code": "P010105",
@@ -233,65 +240,9 @@
             "categoryComboId": "GKWiemQPU5U"
         },
         {
-            "id": "mEY5CsRrI0P",
-            "name": "# of people participating in internal/external exchange visits or experience sharing visits",
-            "code": "P010111",
-            "sectorId": "mGQ5ckOTU8A",
-            "indicatorType": "sub",
-            "peopleOrBenefit": "people",
-            "series": "101",
-            "pairedDataElementCode": "",
-            "categoryComboId": "GKWiemQPU5U"
-        },
-        {
-            "id": "aqCOXJ5URiL",
-            "name": "# of people trained on other agricultural topics",
-            "code": "P010112",
-            "sectorId": "mGQ5ckOTU8A",
-            "indicatorType": "sub",
-            "peopleOrBenefit": "people",
-            "series": "101",
-            "pairedDataElementCode": "",
-            "categoryComboId": "GKWiemQPU5U"
-        },
-        {
             "id": "C24wpyjZTGe",
             "name": "# of farmer field schools (FFS) established",
             "code": "B010201",
-            "sectorId": "mGQ5ckOTU8A",
-            "indicatorType": "sub",
-            "peopleOrBenefit": "benefit",
-            "series": "102",
-            "pairedDataElementCode": "P010100",
-            "categoryComboId": "bjDvmb4bfuf",
-            "pairedDataElement": {
-                "id": "K6mAC5SiO29",
-                "name": "# of people trained on improved agriculture technologies/practices",
-                "code": "P010100",
-                "sectorId": "mGQ5ckOTU8A",
-                "indicatorType": "global",
-                "peopleOrBenefit": "people",
-                "series": "101",
-                "pairedDataElementCode": "",
-                "categoryComboId": "GKWiemQPU5U"
-            },
-            "pairedDataElementName": "# of people trained on improved agriculture technologies/practices"
-        },
-        {
-            "id": "WMAhrqMkpeN",
-            "name": "# of people trained on productive livestock rearing",
-            "code": "P010108",
-            "sectorId": "mGQ5ckOTU8A",
-            "indicatorType": "sub",
-            "peopleOrBenefit": "people",
-            "series": "101",
-            "pairedDataElementCode": "",
-            "categoryComboId": "GKWiemQPU5U"
-        },
-        {
-            "id": "yIqYlJnhYyj",
-            "name": "# of market groups formed",
-            "code": "B010202",
             "sectorId": "mGQ5ckOTU8A",
             "indicatorType": "sub",
             "peopleOrBenefit": "benefit",
@@ -356,6 +307,106 @@
             "series": "101",
             "pairedDataElementCode": "",
             "categoryComboId": "GKWiemQPU5U"
+        },
+        {
+            "id": "ik0ICagvIjm",
+            "name": "# of people trained on agronomic practices",
+            "code": "P010101",
+            "sectorId": "mGQ5ckOTU8A",
+            "indicatorType": "sub",
+            "peopleOrBenefit": "people",
+            "series": "101",
+            "pairedDataElementCode": "",
+            "categoryComboId": "GKWiemQPU5U"
+        },
+        {
+            "id": "aOUffyMug7t",
+            "name": "# of community animal health workers (CAHWs) trained",
+            "code": "P010110",
+            "sectorId": "mGQ5ckOTU8A",
+            "indicatorType": "sub",
+            "peopleOrBenefit": "people",
+            "series": "101",
+            "pairedDataElementCode": "",
+            "categoryComboId": "GKWiemQPU5U"
+        },
+        {
+            "id": "i0wZ2ZFmfkW",
+            "name": "# of people receiving vocational training",
+            "code": "P020105",
+            "sectorId": "mGQ5ckOTU8A",
+            "indicatorType": "sub",
+            "peopleOrBenefit": "people",
+            "series": "101",
+            "pairedDataElementCode": "",
+            "categoryComboId": "GKWiemQPU5U"
+        },
+        {
+            "id": "Ou41h46tMcD",
+            "name": "# of people trained on food hygiene and security",
+            "code": "P010107",
+            "sectorId": "mGQ5ckOTU8A",
+            "indicatorType": "sub",
+            "peopleOrBenefit": "people",
+            "series": "101",
+            "pairedDataElementCode": "",
+            "categoryComboId": "GKWiemQPU5U"
+        },
+        {
+            "id": "mEY5CsRrI0P",
+            "name": "# of people participating in internal/external exchange visits or experience sharing visits",
+            "code": "P010111",
+            "sectorId": "mGQ5ckOTU8A",
+            "indicatorType": "sub",
+            "peopleOrBenefit": "people",
+            "series": "101",
+            "pairedDataElementCode": "",
+            "categoryComboId": "GKWiemQPU5U"
+        },
+        {
+            "id": "aqCOXJ5URiL",
+            "name": "# of people trained on other agricultural topics",
+            "code": "P010112",
+            "sectorId": "mGQ5ckOTU8A",
+            "indicatorType": "sub",
+            "peopleOrBenefit": "people",
+            "series": "101",
+            "pairedDataElementCode": "",
+            "categoryComboId": "GKWiemQPU5U"
+        },
+        {
+            "id": "WMAhrqMkpeN",
+            "name": "# of people trained on productive livestock rearing",
+            "code": "P010108",
+            "sectorId": "mGQ5ckOTU8A",
+            "indicatorType": "sub",
+            "peopleOrBenefit": "people",
+            "series": "101",
+            "pairedDataElementCode": "",
+            "categoryComboId": "GKWiemQPU5U"
+        },
+        {
+            "id": "yIqYlJnhYyj",
+            "name": "# of market groups formed",
+            "code": "B010202",
+            "sectorId": "mGQ5ckOTU8A",
+            "indicatorType": "sub",
+            "peopleOrBenefit": "benefit",
+            "series": "102",
+            "pairedDataElementCode": "P010100",
+            "categoryComboId": "bjDvmb4bfuf",
+            "pairedDataElement": {
+                "id": "K6mAC5SiO29",
+                "name": "# of people trained on improved agriculture technologies/practices",
+                "code": "P010100",
+                "sectorId": "mGQ5ckOTU8A",
+                "indicatorType": "global",
+                "peopleOrBenefit": "people",
+                "series": "101",
+                "pairedDataElementCode": "",
+                "categoryComboId": "GKWiemQPU5U"
+            },
+            "pairedDataElementName": "# of people trained on improved agriculture technologies/practices"
         },
         {
             "id": "q8C2wnYFK3T",
@@ -437,39 +488,6 @@
             "categoryComboId": "GKWiemQPU5U"
         },
         {
-            "id": "ik0ICagvIjm",
-            "name": "# of people trained on agronomic practices",
-            "code": "P010101",
-            "sectorId": "mGQ5ckOTU8A",
-            "indicatorType": "sub",
-            "peopleOrBenefit": "people",
-            "series": "101",
-            "pairedDataElementCode": "",
-            "categoryComboId": "GKWiemQPU5U"
-        },
-        {
-            "id": "aOUffyMug7t",
-            "name": "# of community animal health workers (CAHWs) trained",
-            "code": "P010110",
-            "sectorId": "mGQ5ckOTU8A",
-            "indicatorType": "sub",
-            "peopleOrBenefit": "people",
-            "series": "101",
-            "pairedDataElementCode": "",
-            "categoryComboId": "GKWiemQPU5U"
-        },
-        {
-            "id": "i0wZ2ZFmfkW",
-            "name": "# of people receiving vocational training",
-            "code": "P020105",
-            "sectorId": "mGQ5ckOTU8A",
-            "indicatorType": "sub",
-            "peopleOrBenefit": "people",
-            "series": "101",
-            "pairedDataElementCode": "",
-            "categoryComboId": "GKWiemQPU5U"
-        },
-        {
             "id": "SeYl64icyGD",
             "name": "# of small business provided with capital for business start-up and/or upgrade",
             "code": "B010205",
@@ -493,17 +511,6 @@
             "pairedDataElementName": "# of people trained on improved agriculture technologies/practices"
         },
         {
-            "id": "e6wdrrz9ZS6",
-            "name": "# of people trained in livelihood topics",
-            "code": "P020100",
-            "sectorId": "m4Cg6FOPPR7",
-            "indicatorType": "global",
-            "peopleOrBenefit": "people",
-            "series": "201",
-            "pairedDataElementCode": "",
-            "categoryComboId": "GKWiemQPU5U"
-        },
-        {
             "id": "iyQBe9Xv7bk",
             "name": "# of other productive assets (specify) distributed",
             "code": "B020211",
@@ -515,17 +522,6 @@
             "categoryComboId": "bjDvmb4bfuf"
         },
         {
-            "id": "OWQzKQcWkqp",
-            "name": "# of people participating in literacy and/or numeracy classes",
-            "code": "P020102",
-            "sectorId": "m4Cg6FOPPR7",
-            "indicatorType": "sub",
-            "peopleOrBenefit": "people",
-            "series": "201",
-            "pairedDataElementCode": "",
-            "categoryComboId": "GKWiemQPU5U"
-        },
-        {
             "id": "ayoVLBc4lFq",
             "name": "# of processing centers built (specify type)",
             "code": "B020207",
@@ -535,6 +531,94 @@
             "series": "202",
             "pairedDataElementCode": "P020307",
             "categoryComboId": "bjDvmb4bfuf"
+        },
+        {
+            "id": "iQCoaXYxswJ",
+            "name": "# of people trained in other (specify) livelihood trainings",
+            "code": "P020107",
+            "sectorId": "m4Cg6FOPPR7",
+            "indicatorType": "sub",
+            "peopleOrBenefit": "people",
+            "series": "201",
+            "pairedDataElementCode": "",
+            "categoryComboId": "GKWiemQPU5U"
+        },
+        {
+            "id": "W40WQqgOVuV",
+            "name": "# of people trained on micro-enterprise management",
+            "code": "P020101",
+            "sectorId": "m4Cg6FOPPR7",
+            "indicatorType": "sub",
+            "peopleOrBenefit": "people",
+            "series": "201",
+            "pairedDataElementCode": "",
+            "categoryComboId": "GKWiemQPU5U"
+        },
+        {
+            "id": "a8izG9FuLzQ",
+            "name": "# of tools distributed",
+            "code": "B020201",
+            "sectorId": "m4Cg6FOPPR7",
+            "indicatorType": "sub",
+            "peopleOrBenefit": "benefit",
+            "series": "202",
+            "pairedDataElementCode": "P020301",
+            "categoryComboId": "bjDvmb4bfuf"
+        },
+        {
+            "id": "iyAnflVLHS3",
+            "name": "# of livestock watering points constructed/rehabilitated",
+            "code": "B020208",
+            "sectorId": "m4Cg6FOPPR7",
+            "indicatorType": "sub",
+            "peopleOrBenefit": "benefit",
+            "series": "202",
+            "pairedDataElementCode": "P020308",
+            "categoryComboId": "bjDvmb4bfuf"
+        },
+        {
+            "id": "yMqK9DKbA3X",
+            "name": "# of livelihood inputs/ assets provided",
+            "code": "B020200",
+            "sectorId": "m4Cg6FOPPR7",
+            "indicatorType": "global",
+            "peopleOrBenefit": "benefit",
+            "series": "202",
+            "pairedDataElementCode": "P020300",
+            "categoryComboId": "bjDvmb4bfuf"
+        },
+        {
+            "id": "CQPwg8Nipro",
+            "name": "# of people trained on construction",
+            "code": "P020104",
+            "sectorId": "m4Cg6FOPPR7",
+            "indicatorType": "sub",
+            "peopleOrBenefit": "people",
+            "series": "201",
+            "pairedDataElementCode": "",
+            "categoryComboId": "GKWiemQPU5U"
+        },
+        {
+            "id": "e6wdrrz9ZS6",
+            "name": "# of people trained in livelihood topics",
+            "code": "P020100",
+            "sectorId": "m4Cg6FOPPR7",
+            "indicatorType": "global",
+            "peopleOrBenefit": "people",
+            "series": "201",
+            "pairedDataElementCode": "",
+            "categoryComboId": "GKWiemQPU5U"
+        },
+        {
+            "id": "OWQzKQcWkqp",
+            "name": "# of people participating in literacy and/or numeracy classes",
+            "code": "P020102",
+            "sectorId": "m4Cg6FOPPR7",
+            "indicatorType": "sub",
+            "peopleOrBenefit": "people",
+            "series": "201",
+            "pairedDataElementCode": "",
+            "categoryComboId": "GKWiemQPU5U"
         },
         {
             "id": "Wk0ONOEwrQy",
@@ -559,17 +643,6 @@
             "categoryComboId": "bjDvmb4bfuf"
         },
         {
-            "id": "iQCoaXYxswJ",
-            "name": "# of people trained in other (specify) livelihood trainings",
-            "code": "P020107",
-            "sectorId": "m4Cg6FOPPR7",
-            "indicatorType": "sub",
-            "peopleOrBenefit": "people",
-            "series": "201",
-            "pairedDataElementCode": "",
-            "categoryComboId": "GKWiemQPU5U"
-        },
-        {
             "id": "OKIqOe51jVq",
             "name": "# of other (specify type) ag/livestock shelters constructed",
             "code": "B020212",
@@ -578,28 +651,6 @@
             "peopleOrBenefit": "benefit",
             "series": "202",
             "pairedDataElementCode": "P020312",
-            "categoryComboId": "bjDvmb4bfuf"
-        },
-        {
-            "id": "W40WQqgOVuV",
-            "name": "# of people trained on micro-enterprise management",
-            "code": "P020101",
-            "sectorId": "m4Cg6FOPPR7",
-            "indicatorType": "sub",
-            "peopleOrBenefit": "people",
-            "series": "201",
-            "pairedDataElementCode": "",
-            "categoryComboId": "GKWiemQPU5U"
-        },
-        {
-            "id": "a8izG9FuLzQ",
-            "name": "# of tools distributed",
-            "code": "B020201",
-            "sectorId": "m4Cg6FOPPR7",
-            "indicatorType": "sub",
-            "peopleOrBenefit": "benefit",
-            "series": "202",
-            "pairedDataElementCode": "P020301",
             "categoryComboId": "bjDvmb4bfuf"
         },
         {
@@ -625,17 +676,6 @@
             "categoryComboId": "GKWiemQPU5U"
         },
         {
-            "id": "iyAnflVLHS3",
-            "name": "# of livestock watering points constructed/rehabilitated",
-            "code": "B020208",
-            "sectorId": "m4Cg6FOPPR7",
-            "indicatorType": "sub",
-            "peopleOrBenefit": "benefit",
-            "series": "202",
-            "pairedDataElementCode": "P020308",
-            "categoryComboId": "bjDvmb4bfuf"
-        },
-        {
             "id": "yUGuwPFkBrj",
             "name": "# of energy-saving stoves installed",
             "code": "B020210",
@@ -658,17 +698,6 @@
             "categoryComboId": "bjDvmb4bfuf"
         },
         {
-            "id": "yMqK9DKbA3X",
-            "name": "# of livelihood inputs/ assets provided",
-            "code": "B020200",
-            "sectorId": "m4Cg6FOPPR7",
-            "indicatorType": "global",
-            "peopleOrBenefit": "benefit",
-            "series": "202",
-            "pairedDataElementCode": "P020300",
-            "categoryComboId": "bjDvmb4bfuf"
-        },
-        {
             "id": "u24zk6wAgFE",
             "name": "# of HH-level storage equipment provided",
             "code": "B020209",
@@ -678,17 +707,6 @@
             "series": "202",
             "pairedDataElementCode": "P020309",
             "categoryComboId": "bjDvmb4bfuf"
-        },
-        {
-            "id": "CQPwg8Nipro",
-            "name": "# of people trained on construction",
-            "code": "P020104",
-            "sectorId": "m4Cg6FOPPR7",
-            "indicatorType": "sub",
-            "peopleOrBenefit": "people",
-            "series": "201",
-            "pairedDataElementCode": "",
-            "categoryComboId": "GKWiemQPU5U"
         },
         {
             "id": "imakJ22nlwc",
@@ -754,7 +772,8 @@
             "displayName": "Agridius Foundation",
             "organisationUnits": [
                 {
-                    "id": "GEgVsWqSjmn"
+                    "level": 3,
+                    "id": "WUDKKsUKqVH"
                 }
             ]
         },
@@ -778,7 +797,8 @@
             "displayName": "Atlas Copco",
             "organisationUnits": [
                 {
-                    "id": "GEgVsWqSjmn"
+                    "level": 3,
+                    "id": "WUDKKsUKqVH"
                 }
             ]
         },
@@ -1610,9 +1630,6 @@
             "countries": [
                 {
                     "id": "eu2XF73JOzl"
-                },
-                {
-                    "id": "GEgVsWqSjmn"
                 }
             ]
         },
@@ -4152,6 +4169,10 @@
             "id": "eCufXa6RkTm"
         },
         {
+            "code": "COST_BENEFIT_B010200",
+            "id": "eoyInzqL7YZ"
+        },
+        {
             "code": "ACTUAL_TARGET_B020205",
             "id": "CaWKoWg00oo"
         },
@@ -4164,12 +4185,20 @@
             "id": "KEK4JEQkH6D"
         },
         {
+            "code": "COST_BENEFIT_B010203",
+            "id": "KwimOrM8ajd"
+        },
+        {
             "code": "ACTUAL_TARGET_B020210",
             "id": "qcI12aprWyB"
         },
         {
             "code": "ACTUAL_TARGET_B010201",
             "id": "W4wRa4w6jHq"
+        },
+        {
+            "code": "COST_BENEFIT_B010201",
+            "id": "yS2hEccryRK"
         },
         {
             "code": "ACTUAL_TARGET_B020202",
@@ -4192,6 +4221,10 @@
             "id": "ewYH6W9w5xR"
         },
         {
+            "code": "COST_BENEFIT_B010204",
+            "id": "e2Adv6Sd340"
+        },
+        {
             "code": "ACTUAL_TARGET_B020200",
             "id": "i01veyO4Cuw"
         },
@@ -4202,6 +4235,10 @@
         {
             "code": "ACTUAL_TARGET_B010202",
             "id": "KuQNbQm437w"
+        },
+        {
+            "code": "COST_BENEFIT_B010202",
+            "id": "yqCS3arpz8N"
         },
         {
             "code": "ACTUAL_TARGET_B020212",
@@ -4296,6 +4333,10 @@
             "id": "Cyus0WpfqB3"
         },
         {
+            "code": "COST_BENEFIT_B010205",
+            "id": "GU0SxhL32qP"
+        },
+        {
             "code": "ACTUAL_TARGET_B020201",
             "id": "uWIFJJactlQ"
         },
@@ -4373,7 +4414,49 @@
     "categoryCombos": {
         "targetActual": {
             "code": "ACTUAL_TARGET",
-            "id": "qAgB0mD1wC6"
+            "id": "qAgB0mD1wC6",
+            "categoryOptionCombos": [
+                {
+                    "id": "zbHz6DMZukO",
+                    "displayName": "Target"
+                },
+                {
+                    "id": "OYYrw87RnAu",
+                    "displayName": "Actual"
+                }
+            ]
+        },
+        "default": {
+            "code": "default",
+            "id": "bjDvmb4bfuf",
+            "categoryOptionCombos": [
+                {
+                    "id": "HllvX50cXC0",
+                    "displayName": "default"
+                }
+            ]
+        },
+        "genderNewRecurring": {
+            "code": "GENDER_NEW_RECURRING",
+            "id": "GKWiemQPU5U",
+            "categoryOptionCombos": [
+                {
+                    "id": "MWVFqIu6s0C",
+                    "displayName": "Male, Recurring"
+                },
+                {
+                    "id": "mESy6ndYTwW",
+                    "displayName": "Male, New"
+                },
+                {
+                    "id": "Q5IlmX3qedn",
+                    "displayName": "Female, Recurring"
+                },
+                {
+                    "id": "MZyzwIh5xGW",
+                    "displayName": "Female, New"
+                }
+            ]
         }
     },
     "categoryOptions": {
@@ -4381,9 +4464,23 @@
             "code": "ACTUAL",
             "id": "eWeQoOlAcxV"
         },
+        "new": {
+            "code": "NEW",
+            "id": "S2y8dcmR2kD"
+        },
+        "recurring": {
+            "code": "RECURRING",
+            "id": "CyILz2yY8ey"
+        },
         "target": {
             "code": "TARGET",
             "id": "imyqCWQ229K"
+        }
+    },
+    "legendSets": {
+        "achieved": {
+            "code": "ACTUAL_TARGET_ACHIEVED",
+            "id": "yoAt108kUFm"
         }
     }
 }

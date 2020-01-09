@@ -71,10 +71,10 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
     );
 
     const pagination: TablePagination = {
-        pageSize: 25,
+        pageSize: 20,
         page: 1,
         total: dataElements.length,
-        pageSizeOptions: [10, 25],
+        pageSizeOptions: [10, 20, 50],
     };
 
     const componentKey = _(fullFilter)

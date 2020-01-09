@@ -23,17 +23,18 @@ export function getMockConfig(api: D2Api, mock: MockAdapter): Promise<Config> {
             ],
             "categories:fields": "categoryOptions[code,id],code,id",
             "categories:filter": ["code:in:[ACTUAL_TARGET,GENDER,NEW_RECURRING]"],
-            "categoryCombos:fields": "code,id",
-            "categoryCombos:filter": ["code:in:[ACTUAL_TARGET]"],
+            "categoryCombos:fields": "categoryOptionCombos[displayName,id],code,id",
+            "categoryCombos:filter": ["code:in:[ACTUAL_TARGET,GENDER_NEW_RECURRING,default]"],
             "categoryOptions:fields": "code,id",
-            "categoryOptions:filter": ["code:in:[TARGET,ACTUAL]"],
+            "categoryOptions:filter": ["code:in:[TARGET,ACTUAL,NEW,RECURRING]"],
+            "legendSets:fields": "code,id",
+            "legendSets:filter": ["code:in:[ACTUAL_TARGET_ACHIEVED]"],
             "dataElements:fields":
                 "attributeValues[attribute[id],value],categoryCombo[id],code,description,displayName,id",
             "dataElementGroupSets:fields":
                 "code,dataElementGroups[code,dataElements[id],displayName,id]",
             "dataElementGroupSets:filter": ["code:in:[SECTOR,SERIES,TYPE_1,TYPE_2]"],
             "indicators:fields": "code,id",
-            "indicators:filter": ["code:$like:ACTUAL_TARGET_"],
             "organisationUnitGroupSets:fields":
                 "code,organisationUnitGroups[displayName,id,organisationUnits[id,level]]",
             "organisationUnitGroupSets:filter": ["code:in:[FUNDER,LOCATION]"],
@@ -75,6 +76,7 @@ describe("Config", () => {
                 "dataElements",
                 "funders",
                 "indicators",
+                "legendSets",
                 "locations",
                 "sectors",
             ]);

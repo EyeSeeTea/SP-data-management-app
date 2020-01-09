@@ -132,7 +132,7 @@ function selectOrgUnit(label) {
         .click();
     cy.contains(label)
         .should("have.css", "color")
-        .and("not.equal", "rgba(0, 0, 0, 0.87)");
+        .and("equal", "rgb(255, 165, 0)");
 }
 
 function selectDatePicker(year, month) {
