@@ -61,12 +61,13 @@ import {
 import { Pagination } from "./../types/ObjectsList";
 import { Pager } from "d2-api/api/models";
 import i18n from "../locales";
-import DataElementsSet, { SelectionUpdate } from "./dataElementsSet";
+import DataElementsSet, { SelectionUpdate, DataElement, PeopleOrBenefit } from "./dataElementsSet";
 import ProjectDb from "./ProjectDb";
 import { Maybe } from "../types/utils";
 import { toISOString, getMonthsRange } from "../utils/date";
 
 export interface ProjectData {
+    id: Id | undefined;
     name: string;
     description: string;
     awardNumber: string;
@@ -80,6 +81,8 @@ export interface ProjectData {
     orgUnit: OrganisationUnit | undefined;
     parentOrgUnit: OrganisationUnit | undefined;
     dataElements: DataElementsSet;
+    dataSets: { actual: DataSetWithPeriods; target: DataSetWithPeriods } | undefined;
+    dashboard: Ref | undefined;
 }
 
 interface NamedObject {
@@ -119,6 +122,7 @@ interface OrganisationUnit {
 const monthFormat = "YYYYMM";
 
 const defaultProjectData = {
+    id: undefined,
     name: "",
     description: "",
     awardNumber: "",
@@ -131,6 +135,8 @@ const defaultProjectData = {
     locations: [],
     orgUnit: undefined,
     parentOrgUnit: undefined,
+    dataSets: undefined,
+    dashboard: undefined,
 };
 
 const yes = true as const;
@@ -185,6 +191,7 @@ class Project {
     };
 
     static fieldNames: Record<ProjectField, string> = {
+        id: i18n.t("Id"),
         name: i18n.t("Name"),
         dataElements: i18n.t("Data Elements"),
         description: i18n.t("Description"),
@@ -198,6 +205,8 @@ class Project {
         locations: i18n.t("Project Locations"),
         orgUnit: i18n.t("Organisation Unit"),
         parentOrgUnit: i18n.t("Parent Organisation Unit"),
+        dataSets: i18n.t("Data Sets"),
+        dashboard: i18n.t("Dashboard"),
     };
 
     static getFieldName(field: ProjectField): string {
@@ -283,6 +292,26 @@ class Project {
             .join("");
     }
 
+    public getSelectedDataElements(
+        filter: { peopleOrBenefit?: PeopleOrBenefit } = {}
+    ): DataElement[] {
+        const { dataElements, sectors } = this.data;
+        const sectorIds = new Set(sectors.map(sector => sector.id));
+        const selectedDataElements = dataElements
+            .get({ onlySelected: true, includePaired: true, ...filter })
+            .filter(de => sectorIds.has(de.sectorId));
+        const orderBySectorId: _.Dictionary<string> = _(sectors)
+            .map((sector, idx) => [sector.id, idx])
+            .fromPairs()
+            .value();
+        const selectedDataElementsSorted = _.orderBy(
+            selectedDataElements,
+            [de => orderBySectorId[de.sectorId], de => de.name],
+            ["asc", "asc"]
+        );
+        return selectedDataElementsSorted;
+    }
+
     public async validate(
         validationKeys: (ValidationKey)[] | undefined = undefined
     ): Promise<Validations> {
@@ -294,6 +323,10 @@ class Project {
         const [keys, promises] = _.unzip(_.toPairs(obj));
         const values = await Promise.all(promises);
         return _.fromPairs(_.zip(keys, values)) as Validations;
+    }
+
+    async getRelations(): Promise<Relations | undefined> {
+        return this.id ? Project.getRelations(this.api, this.config, this.id) : undefined;
     }
 
     static async getRelations(
@@ -447,25 +480,39 @@ class Project {
         }));
     }
 
-    getActualTargetIndicators(
-        dataElements: Array<{ code: string }>
+    private getIndicators(
+        dataElements: Array<{ code: string }>,
+        codePrefix: string
     ): Array<SelectedPick<D2IndicatorSchema, { id: true; code: true }>> {
         const indicatorsByCode = _.keyBy(this.config.indicators, indicator => indicator.code);
-        const { actualTargetPrefix } = this.config.base.indicators;
 
         return _(dataElements)
             .map(de => {
-                const indicatorCode = actualTargetPrefix + de.code;
+                const indicatorCode = codePrefix + de.code;
                 const indicator = _(indicatorsByCode).get(indicatorCode, undefined);
                 if (indicator) {
                     return indicator;
                 } else {
-                    console.error("Data element has no indicator associated: ${de.id}");
+                    console.error(
+                        `Data element (${de.code}) has no associated indicator with code=${indicatorCode}`
+                    );
                     return null;
                 }
             })
             .compact()
             .value();
+    }
+
+    getActualTargetIndicators(
+        dataElements: Array<{ code: string }>
+    ): Array<SelectedPick<D2IndicatorSchema, { id: true; code: true }>> {
+        return this.getIndicators(dataElements, this.config.base.indicators.actualTargetPrefix);
+    }
+
+    getCostBenefitIndicators(
+        dataElements: Array<{ code: string }>
+    ): Array<SelectedPick<D2IndicatorSchema, { id: true; code: true }>> {
+        return this.getIndicators(dataElements, this.config.base.indicators.costBenefitPrefix);
     }
 }
 

@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2019-12-25T09:16:35.288Z\n"
-"PO-Revision-Date: 2019-12-25T09:16:35.288Z\n"
+"POT-Creation-Date: 2020-01-09T12:13:17.417Z\n"
+"PO-Revision-Date: 2020-01-09T12:13:17.417Z\n"
 
 msgid "<No value>"
 msgstr ""
@@ -181,6 +181,9 @@ msgstr ""
 msgid "Total"
 msgstr ""
 
+msgid "Id"
+msgstr ""
+
 msgid "Data Elements"
 msgstr ""
 
@@ -197,6 +200,12 @@ msgid "Organisation Unit"
 msgstr ""
 
 msgid "Parent Organisation Unit"
+msgstr ""
+
+msgid "Data Sets"
+msgstr ""
+
+msgid "Dashboard"
 msgstr ""
 
 msgid "Award Number should be a number of 5 digits"
@@ -226,13 +235,31 @@ msgstr ""
 msgid "{{field}} does not match pattern {{pattern}}"
 msgstr ""
 
-msgid "PM Target vs Actual"
+msgid "PM Target vs Actual - Benefits"
 msgstr ""
 
-msgid "PM Target vs Actual achieved (%)"
+msgid "PM Target vs Actual - People"
 msgstr ""
 
-msgid "PM People Indicators Gender Breakdown"
+msgid "PM Target vs Actual - Unique People"
+msgstr ""
+
+msgid "PM achieved (%) - Benefits"
+msgstr ""
+
+msgid "PM achieved (%) - People"
+msgstr ""
+
+msgid "PM achieved monthly (%)"
+msgstr ""
+
+msgid "PM achieved (%)"
+msgstr ""
+
+msgid "PM achieved by gender (%)"
+msgstr ""
+
+msgid "PM Benefits Per Person"
 msgstr ""
 
 msgid "Select at least one indicator"

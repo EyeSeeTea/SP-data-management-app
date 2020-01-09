@@ -35,10 +35,14 @@ const baseConfig = {
     },
     categoryCombos: {
         targetActual: "ACTUAL_TARGET",
+        genderNewRecurring: "GENDER_NEW_RECURRING",
+        default: "default",
     },
     categoryOptions: {
         target: "TARGET",
         actual: "ACTUAL",
+        new: "NEW",
+        recurring: "RECURRING",
     },
     dataElementGroups: {
         global: "GLOBAL",
@@ -46,11 +50,15 @@ const baseConfig = {
         people: "PEOPLE",
         benefit: "BENEFIT",
     },
+    legendSets: {
+        achieved: "ACTUAL_TARGET_ACHIEVED",
+    },
     organitionUnitGroupSets: {
         funder: "FUNDER",
     },
     indicators: {
         actualTargetPrefix: "ACTUAL_TARGET_",
+        costBenefitPrefix: "COST_BENEFIT_",
     },
 };
 
@@ -62,13 +70,17 @@ function getParamsForIndexables(indexedCodes: _.Dictionary<string>) {
 }
 
 const metadataParams = {
-    attributes: getParamsForIndexables(baseConfig.attributes),
     categories: {
         fields: { id: yes, code: yes, categoryOptions: { id: yes, code: yes } },
         filter: { code: { in: _.values(baseConfig.categories) } },
     },
-    categoryCombos: getParamsForIndexables(baseConfig.categoryCombos),
+    attributes: getParamsForIndexables(baseConfig.attributes),
+    categoryCombos: {
+        fields: { id: yes, code: yes, categoryOptionCombos: { id: yes, displayName: yes } },
+        filter: { code: { in: _.values(baseConfig.categoryCombos) } },
+    },
     categoryOptions: getParamsForIndexables(baseConfig.categoryOptions),
+    legendSets: getParamsForIndexables(baseConfig.legendSets),
     dataElements: {
         fields: {
             id: yes,
@@ -97,9 +109,6 @@ const metadataParams = {
         fields: {
             id: yes,
             code: yes,
-        },
-        filter: {
-            code: { $like: baseConfig.indicators.actualTargetPrefix },
         },
     },
     organisationUnitGroupSets: {
@@ -145,9 +154,10 @@ type IndexedObjs<Key extends keyof BaseConfig, ValueType> = Record<
 >;
 
 type Attribute = CodedObject;
-export type CategoryCombo = CodedObject;
+export type CategoryCombo = CodedObject & { categoryOptionCombos: NamedObject[] };
 export type CategoryOption = CodedObject;
 export type Category = CodedObject & { categoryOptions: CategoryOption[] };
+export type LegendSet = CodedObject;
 export type Indicator = CodedObject;
 
 export type Config = {
@@ -160,6 +170,7 @@ export type Config = {
     categories: IndexedObjs<"categories", Category>;
     categoryCombos: IndexedObjs<"categoryCombos", CategoryCombo>;
     categoryOptions: IndexedObjs<"categoryOptions", CategoryOption>;
+    legendSets: IndexedObjs<"legendSets", LegendSet>;
     indicators: Indicator[];
 };
 
@@ -186,16 +197,11 @@ class ConfigLoader {
             ...dataElementsMetadata,
             funders: _.sortBy(funders, funder => funder.displayName),
             indicators: metadata.indicators,
-            attributes: indexObjects<Attribute, "attributes">(metadata, "attributes"),
-            categories: indexObjects<Category, "categories">(metadata, "categories"),
-            categoryCombos: indexObjects<CategoryCombo, "categoryCombos">(
-                metadata,
-                "categoryCombos"
-            ),
-            categoryOptions: indexObjects<CategoryOption, "categoryOptions">(
-                metadata,
-                "categoryOptions"
-            ),
+            attributes: indexObjects(metadata, "attributes"),
+            categories: indexObjects(metadata, "categories"),
+            categoryCombos: indexObjects(metadata, "categoryCombos"),
+            categoryOptions: indexObjects(metadata, "categoryOptions"),
+            legendSets: indexObjects(metadata, "legendSets"),
         };
 
         return config;
@@ -223,9 +229,17 @@ class ConfigLoader {
     }
 }
 
-type IndexableKeys = "attributes" | "categories" | "categoryCombos" | "categoryOptions";
+interface IndexableTypes {
+    attributes: Attribute;
+    categories: Category;
+    categoryCombos: CategoryCombo;
+    categoryOptions: CategoryOption;
+    legendSets: LegendSet;
+}
 
-function indexObjects<ValueType, Key extends IndexableKeys, RetValue = IndexedObjs<Key, ValueType>>(
+type IndexableKeys = keyof IndexableTypes;
+
+function indexObjects<Key extends IndexableKeys, RetValue = IndexedObjs<Key, IndexableTypes[Key]>>(
     metadata: Metadata,
     key: Key
 ): RetValue {

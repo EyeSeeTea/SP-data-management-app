@@ -10,6 +10,8 @@ import Project from "../../../models/Project";
 import { useSnackbar } from "d2-ui-components";
 import { useHistory } from "react-router";
 import { generateUrl } from "../../../router";
+import { useAppContext } from "../../../contexts/api-context";
+import { saveDataValues } from "../../../models/dev-project";
 
 const useStyles = makeStyles({
     wrapper: {
@@ -23,6 +25,7 @@ const useStyles = makeStyles({
 });
 
 const SaveStep: React.FC<StepProps> = ({ project, onCancel }) => {
+    const { api, isDev } = useAppContext();
     const [isSaving] = useState(false);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
@@ -32,8 +35,9 @@ const SaveStep: React.FC<StepProps> = ({ project, onCancel }) => {
 
     async function save() {
         const { payload, response, project: projectSaved } = await project.save();
-        if (response.status === "OK") {
+        if (response && response.status === "OK") {
             history.push(generateUrl("projects"));
+            if (isDev) saveDataValues(api, projectSaved);
             snackbar.success(i18n.t("Project created:" + " " + projectSaved.name));
         } else {
             setErrorMessage(JSON.stringify({ response, payload }, null, 2));
