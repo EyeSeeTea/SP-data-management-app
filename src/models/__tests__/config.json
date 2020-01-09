@@ -1,21 +1,11 @@
 {
     "base": {
         "userRoles": {
-            "feedback": [
-                "PM Feedback"
-            ],
-            "dataReviewer": [
-                "Data Reviewer"
-            ],
-            "dataViewer": [
-                "Data Viewer"
-            ],
-            "admin": [
-                "PM Admin"
-            ],
-            "dataEntry": [
-                "Data Entry"
-            ]
+            "feedback": ["PM Feedback"],
+            "dataReviewer": ["Data Reviewer"],
+            "dataViewer": ["Data Viewer"],
+            "admin": ["PM Admin"],
+            "dataEntry": ["Data Entry"]
         },
         "dataElementGroupSets": {
             "sector": "SECTOR",
