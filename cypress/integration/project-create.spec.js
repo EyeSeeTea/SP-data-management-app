@@ -114,6 +114,9 @@ describe("Projects - Create", () => {
         cy.contains("Selected country");
         cy.contains("Bahamas");
 
+        cy.contains("Locations");
+        cy.contains("Abaco");
+
         cy.contains("Sectors");
         cy.contains("# of agriculture groups receiving support for improved");
         cy.contains("# of people trained on improved agriculture technologies/practices [MER]");

@@ -86,7 +86,6 @@ describe("ProjectDb", () => {
             const { response, project: savedProject } = await new ProjectDb(project).save();
             expect(response).toBeTruthy();
             expect(savedProject.id).toEqual("WGC0DJ0YSis");
-            expect(true).toEqual(true);
         });
     });
 });
@@ -1564,7 +1563,7 @@ const expectedMetadataPost = {
         },
         {
             id: "ukewRkZsyCI",
-            name: "MyProject - PM Benefits Per Person (%)",
+            name: "MyProject - PM Benefits Per Person",
             publicAccess: "rw------",
             type: "COLUMN",
             aggregationType: "DEFAULT",
