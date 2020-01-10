@@ -84,7 +84,7 @@ class ProjectDownload {
         this.addPeopleSheet(workbook, peopleAnalytics);
 
         const buffer = await workbook.xlsx.writeBuffer();
-        const filename = `Activity Monitoring - ${this.project.name}.xslx`;
+        const filename = `Activity Monitoring - ${this.project.name}.xlsx`;
         return { filename, buffer };
     }
 
@@ -95,14 +95,6 @@ class ProjectDownload {
         const periods = project.getPeriods();
         const dataElements = project.getSelectedDataElements({ peopleOrBenefit: "benefit" });
         const empty = text("");
-        const header = (s: string, options: ValueBase = {}) => {
-            const defaultOptions = {
-                font: { bold: true },
-                alignment: { horizontal: "center" },
-            };
-            const allOptions = Object.assign({}, defaultOptions, options);
-            return text(s, allOptions);
-        };
 
         const cumulativeRow = formula(
             (row, col) =>
@@ -128,7 +120,7 @@ class ProjectDownload {
                     formula(
                         (rowIdx, colIdx) =>
                             [cell(colIdx, rowIdx + 2), "/", cell(colIdx, rowIdx + 1)].join(""),
-                        { numFmt: percentage, fill: fills.cumulative }
+                        { numFmt: percentage, fill: fills.cumulative, font: { bold: true } }
                     ),
                     text("", { merge: [1, 3] }), // Method
                     text("", { merge: [1, 3] }), // Responsible
@@ -167,7 +159,7 @@ class ProjectDownload {
                 header(i18n.t("Indicator Code")),
                 header(i18n.t("Activity Indicator")),
                 header(i18n.t("Data Type")),
-                ...periods.map(period => text(period.date.format("MMM-YY"))),
+                ...periods.map(period => header(period.date.format("MMM-YY"))),
                 header(i18n.t("Cumulative"), { fill: fills.cumulative }),
                 header(i18n.t("Method of Data Collection")),
                 header(i18n.t("Person Responsible")),
@@ -178,7 +170,7 @@ class ProjectDownload {
         const sheet = addWorkSheet(workbook, i18n.t("Benefits"), rows);
         const columnWidths = [1, 2, 5, 3, ...periods.map(_date => 1), 2, 4, 4];
         columnWidths.forEach((width, colIdx) => {
-            sheet.getColumn(colIdx + 1).width = width * 7;
+            sheet.getColumn(colIdx + 1).width = width * 7.5;
         });
 
         return sheet;
@@ -190,14 +182,6 @@ class ProjectDownload {
         const title = [project.name, i18n.t("ACTIVITY MONITORING"), i18n.t("PEOPLE")].join(" - ");
         const dataElements = project.getSelectedDataElements({ peopleOrBenefit: "people" });
         const empty = text("");
-        const header = (s: string, options: Options = {}) => {
-            const defaultOptions = {
-                font: { bold: true },
-                alignment: { horizontal: "center" },
-            };
-            const allOptions = _.merge(defaultOptions, options);
-            return text(s, allOptions);
-        };
 
         const sumRowFormula = formula(
             (row, col) =>
@@ -205,29 +189,37 @@ class ProjectDownload {
             { fill: fills.cumulative }
         );
 
+        const rowsCountByDataElement = 9;
+
         const dataRows: Row[] = _.flatMap(dataElements, (dataElement, index) => {
             return [
                 [
                     header((index + 1).toString(), {
-                        merge: [1, 3],
+                        merge: [1, rowsCountByDataElement],
                         alignment: { vertical: "middle" },
                     }),
-                    header(dataElement.code, { merge: [1, 3], alignment: { vertical: "middle" } }),
-                    empty,
-                    text(dataElement.name, { merge: [1, 3], alignment: { vertical: "middle" } }),
+                    header(dataElement.code, {
+                        merge: [1, rowsCountByDataElement],
+                        alignment: { vertical: "middle" },
+                    }),
+                    text("", { merge: [1, rowsCountByDataElement] }),
+                    text(dataElement.name, {
+                        merge: [1, rowsCountByDataElement],
+                        alignment: { vertical: "middle" },
+                    }),
                     header(i18n.t("Total People Targeted"), { fill: fills.target }),
                     ...this.mapPeriods(
                         period =>
                             analytics.get(dataElement, period.id, [config.categoryOptions.target]),
                         { font: { bold: true }, fill: fills.target }
                     ),
-                    { ...sumRowFormula, merge: [1, 2] },
+                    { ...sumRowFormula, merge: [1, 3] },
                     text("", { merge: [1, 3] }), // Method
                     text("", { merge: [1, 3] }), // Responsible
                 ],
                 [
                     ...repeat(empty, 4),
-                    header(i18n.t("New"), { fill: fills.target }),
+                    text(i18n.t("New"), { fill: fills.target, alignment: { horizontal: "right" } }),
                     ...this.mapPeriods(period =>
                         analytics.get(dataElement, period.id, [
                             config.categoryOptions.target,
@@ -238,7 +230,10 @@ class ProjectDownload {
                 ],
                 [
                     ...repeat(empty, 4),
-                    header(i18n.t("Recurring"), { fill: fills.target }),
+                    text(i18n.t("Recurring"), {
+                        fill: fills.target,
+                        alignment: { horizontal: "right" },
+                    }),
                     ...this.mapPeriods(period =>
                         analytics.get(dataElement, period.id, [
                             config.categoryOptions.target,
@@ -257,7 +252,7 @@ class ProjectDownload {
                     formula(
                         (rowIdx, colIdx) =>
                             [cell(colIdx, rowIdx + 1), "/", cell(colIdx, rowIdx - 3)].join(""),
-                        { numFmt: percentage, fill: fills.cumulative }
+                        { numFmt: percentage, fill: fills.cumulative, font: { bold: true } }
                     ),
                 ],
                 [
@@ -272,7 +267,7 @@ class ProjectDownload {
                 ],
                 [
                     ...repeat(empty, 4),
-                    header(i18n.t("Male New")),
+                    text(i18n.t("Male New"), { alignment: { horizontal: "right" } }),
                     ...this.mapPeriods(period =>
                         analytics.get(dataElement, period.id, [
                             config.categoryOptions.actual,
@@ -284,7 +279,7 @@ class ProjectDownload {
                 ],
                 [
                     ...repeat(empty, 4),
-                    header(i18n.t("Female New")),
+                    text(i18n.t("Female New"), { alignment: { horizontal: "right" } }),
                     ...this.mapPeriods(period =>
                         analytics.get(dataElement, period.id, [
                             config.categoryOptions.actual,
@@ -296,7 +291,7 @@ class ProjectDownload {
                 ],
                 [
                     ...repeat(empty, 4),
-                    header(i18n.t("Male Recurring")),
+                    text(i18n.t("Male Recurring"), { alignment: { horizontal: "right" } }),
                     ...this.mapPeriods(period =>
                         analytics.get(dataElement, period.id, [
                             config.categoryOptions.actual,
@@ -308,7 +303,7 @@ class ProjectDownload {
                 ],
                 [
                     ...repeat(empty, 4),
-                    header(i18n.t("Female Recurring")),
+                    text(i18n.t("Female Recurring"), { alignment: { horizontal: "right" } }),
                     ...this.mapPeriods(period =>
                         analytics.get(dataElement, period.id, [
                             config.categoryOptions.actual,
@@ -335,7 +330,7 @@ class ProjectDownload {
                 header(i18n.t("Counting Method")),
                 header(i18n.t("Activity Indicator")),
                 header(i18n.t("Data Type")),
-                ...periods.map(period => text(period.date.format("MMM-YY"))),
+                ...periods.map(period => header(period.date.format("MMM-YY"))),
                 header(i18n.t("Cumulative"), { fill: fills.cumulative }),
                 header(i18n.t("Method of Data Collection")),
                 header(i18n.t("Person Responsible")),
@@ -344,9 +339,9 @@ class ProjectDownload {
         ];
 
         const sheet = addWorkSheet(workbook, i18n.t("People"), rows);
-        const columnWidths = [1, 2, 2, 5, 3, ...periods.map(_date => 1), 2, 4, 4];
+        const columnWidths = [1, 2, 2.5, 5, 4, ...periods.map(_date => 1), 2, 4, 4];
         columnWidths.forEach((width, colIdx) => {
-            sheet.getColumn(colIdx + 1).width = width * 7;
+            sheet.getColumn(colIdx + 1).width = width * 7.5;
         });
 
         return sheet;
@@ -432,6 +427,15 @@ function float(n: number | undefined, options?: Options): Value {
 
 function text(s: string, options?: Options): Value {
     return { ...options, type: "text", value: s };
+}
+
+function header(s: string, options: ValueBase = {}): Value {
+    const defaultOptions = {
+        font: { bold: true },
+        alignment: { horizontal: "center" },
+    };
+    const allOptions = Object.assign({}, defaultOptions, options);
+    return text(s, allOptions);
 }
 
 export default ProjectDownload;
