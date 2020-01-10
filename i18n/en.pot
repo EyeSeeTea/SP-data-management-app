@@ -83,6 +83,9 @@ msgstr ""
 msgid "Selected country"
 msgstr ""
 
+msgid "Locations"
+msgstr ""
+
 msgid "Sectors"
 msgstr ""
 
@@ -262,7 +265,7 @@ msgstr ""
 msgid "PM achieved by gender (%)"
 msgstr ""
 
-msgid "PM Benefits Per Person (%)"
+msgid "PM Benefits Per Person"
 msgstr ""
 
 msgid "ACTIVITY MONITORING"

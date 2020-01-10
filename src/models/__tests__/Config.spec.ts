@@ -17,12 +17,12 @@ export function getMockConfig(api: D2Api, mock: MockAdapter): Promise<Config> {
     mock.reset();
     mock.onGet("/metadata", {
         params: {
-            "categories:fields": "categoryOptions[code,id],code,id",
-            "categories:filter": ["code:in:[ACTUAL_TARGET,GENDER,NEW_RECURRING]"],
             "attributes:fields": "code,id",
             "attributes:filter": [
                 "code:in:[PM_PAIRED_DE,PM_CREATED_BY_PROJECT_MONITORING,PM_ORGUNIT_PROJECT_ID,PM_PROJECT_DASHBOARD_ID]",
             ],
+            "categories:fields": "categoryOptions[code,id],code,id",
+            "categories:filter": ["code:in:[ACTUAL_TARGET,GENDER,NEW_RECURRING]"],
             "categoryCombos:fields": "categoryOptionCombos[displayName,id],code,id",
             "categoryCombos:filter": ["code:in:[ACTUAL_TARGET,GENDER_NEW_RECURRING,default]"],
             "categoryOptions:fields": "code,id",

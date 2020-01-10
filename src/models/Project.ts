@@ -504,7 +504,7 @@ export function getDatesFromOrgUnit<OU extends OrgUnitWithDates>(
         s ? mapper(moment(s)) : undefined;
     return {
         startDate: process(orgUnit.openingDate, d => d.add(1, "month")),
-        endDate: process(orgUnit.closedDate, d => d.subtract(1, "month")),
+        endDate: process(orgUnit.closedDate, d => d.subtract(1, "month").endOf("month")),
     };
 }
 
@@ -521,7 +521,12 @@ export function getProjectFromOrgUnit<OU extends OrgUnitWithDates>(orgUnit: OU):
 export function getOrgUnitDatesFromProject(startDate: Moment, endDate: Moment): OrgUnitWithDates {
     return {
         openingDate: toISOString(startDate.clone().subtract(1, "month")),
-        closedDate: toISOString(endDate.clone().add(1, "month")),
+        closedDate: toISOString(
+            endDate
+                .clone()
+                .add(1, "month")
+                .endOf("month")
+        ),
     };
 }
 

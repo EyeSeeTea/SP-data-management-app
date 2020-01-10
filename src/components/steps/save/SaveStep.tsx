@@ -79,6 +79,11 @@ const SaveStep: React.FC<StepProps> = ({ project, onCancel }) => {
                         value={project.parentOrgUnit ? project.parentOrgUnit.displayName : "-"}
                     />
 
+                    <LiEntry
+                        label={i18n.t("Locations")}
+                        value={project.locations.map(location => location.displayName).join(", ")}
+                    />
+
                     <LiEntry label={i18n.t("Sectors")} value={getSectorsInfo(project)} />
                 </ul>
 

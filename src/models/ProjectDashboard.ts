@@ -185,7 +185,7 @@ export default class ProjectDashboard {
 
         return getChart(project, {
             key: "cost-benefit",
-            name: i18n.t("PM Benefits Per Person (%)"),
+            name: i18n.t("PM Benefits Per Person"),
             items: project.getCostBenefitIndicators(pairedDataElements),
             reportFilter: [dimensions.period],
             seriesDimension: dimensions.orgUnit,
