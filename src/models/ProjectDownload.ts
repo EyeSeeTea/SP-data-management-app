@@ -167,7 +167,7 @@ class ProjectDownload {
             ...dataRows,
         ];
 
-        const sheet = addWorkSheet(workbook, i18n.t("Benefits"), rows);
+        const sheet = addWorkSheet(workbook, i18n.t("Benefit"), rows);
         const columnWidths = [1, 2, 5, 3, ...periods.map(_date => 1), 2, 4, 4];
         columnWidths.forEach((width, colIdx) => {
             sheet.getColumn(colIdx + 1).width = width * 7.5;

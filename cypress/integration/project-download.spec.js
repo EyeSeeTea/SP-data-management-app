@@ -33,7 +33,7 @@ describe("Download project", () => {
             xhr.send();
         });
 
-        expect(workbook.getWorksheet("Benefits")).to.not.be.undefined;
+        expect(workbook.getWorksheet("Benefit")).to.not.be.undefined;
         expect(workbook.getWorksheet("People")).to.not.be.undefined;
     });
 });

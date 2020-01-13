@@ -56,12 +56,12 @@ describe("ProjectDownload", () => {
         });
 
         it("creates a XLSX-named file with 2 tabs", async () => {
-            expect(workbook.getWorksheet("Benefits")).toBeDefined();
+            expect(workbook.getWorksheet("Benefit")).toBeDefined();
             expect(workbook.getWorksheet("People")).toBeDefined();
         });
 
-        it("should have a Benefits tab with data", () => {
-            const sheet = workbook.getWorksheet("Benefits");
+        it("should have a Benefit tab with data", () => {
+            const sheet = workbook.getWorksheet("Benefit");
             expect(sheet).toBeDefined();
 
             const values = getSheetValues(sheet);
