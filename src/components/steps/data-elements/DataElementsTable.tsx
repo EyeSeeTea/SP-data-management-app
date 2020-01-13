@@ -98,14 +98,21 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
 
     return (
         <ObjectsTable<DataElement>
-            selection={selection}
+            selection={selection.map(id => ({ id }))}
             rows={dataElements}
             forceSelectionColumn={true}
             initialState={{ pagination }}
             columns={columns}
             searchBoxLabel={i18n.t("Search by name / code")}
             onChange={state =>
-                onSelectionChange(sectorId, field, project, onChange, snackbar, state.selection)
+                onSelectionChange(
+                    sectorId,
+                    field,
+                    project,
+                    onChange,
+                    snackbar,
+                    state.selection.map(({ id }) => id)
+                )
             }
             searchBoxColumns={searchBoxColumns}
             key={componentKey}

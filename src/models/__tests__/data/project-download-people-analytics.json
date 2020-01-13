@@ -1,0 +1,469 @@
+{
+    "headers": [
+        {
+            "name": "dx",
+            "column": "Data",
+            "valueType": "TEXT",
+            "type": "java.lang.String",
+            "hidden": false,
+            "meta": true
+        },
+        {
+            "name": "ou",
+            "column": "Organisation unit",
+            "valueType": "TEXT",
+            "type": "java.lang.String",
+            "hidden": false,
+            "meta": true
+        },
+        {
+            "name": "pe",
+            "column": "Period",
+            "valueType": "TEXT",
+            "type": "java.lang.String",
+            "hidden": false,
+            "meta": true
+        },
+        {
+            "name": "GIIHAr9BzzO",
+            "column": "Actual/Target",
+            "valueType": "TEXT",
+            "type": "java.lang.String",
+            "hidden": false,
+            "meta": true
+        },
+        {
+            "name": "a0Cy1qwUuZv",
+            "column": "New/Recurring",
+            "valueType": "TEXT",
+            "type": "java.lang.String",
+            "hidden": false,
+            "meta": true
+        },
+        {
+            "name": "Kyg1O6YEGa9",
+            "column": "Gender",
+            "valueType": "TEXT",
+            "type": "java.lang.String",
+            "hidden": false,
+            "meta": true
+        },
+        {
+            "name": "value",
+            "column": "Value",
+            "valueType": "NUMBER",
+            "type": "java.lang.Double",
+            "hidden": false,
+            "meta": false
+        }
+    ],
+    "metaData": {
+        "items": {
+            "imyqCWQ229K": { "name": "Target" },
+            "yMqK9DKbA3X": { "name": "# of livelihood inputs/ assets provided" },
+            "GIIHAr9BzzO": { "name": "Actual/Target" },
+            "Kyg1O6YEGa9": { "name": "Gender" },
+            "WS8XV4WWPE7": {
+                "name": "# of agriculture groups receiving support for improved livelihoods"
+            },
+            "eWeQoOlAcxV": { "name": "Actual" },
+            "202004": { "name": "April 2020" },
+            "ik0ICagvIjm": { "name": "# of people trained on agronomic practices" },
+            "CyILz2yY8ey": { "name": "Recurring" },
+            "a0Cy1qwUuZv": { "name": "New/Recurring" },
+            "WGC0DJ0YSis": { "name": "0Test1-22569" },
+            "dx": { "name": "Data" },
+            "S2y8dcmR2kD": { "name": "New" },
+            "MZyzwIh5xGW": { "name": "Female, New" },
+            "We61YNYyOX0": { "name": "# of biogas digesters installed" },
+            "ou": { "name": "Organisation unit" },
+            "K6mAC5SiO29": {
+                "name": "# of people trained on improved agriculture technologies/practices"
+            },
+            "202002": { "name": "February 2020" },
+            "202003": { "name": "March 2020" },
+            "mESy6ndYTwW": { "name": "Male, New" },
+            "202001": { "name": "January 2020" },
+            "pe": { "name": "Period" },
+            "Q5IlmX3qedn": { "name": "Female, Recurring" },
+            "HllvX50cXC0": { "name": "default" },
+            "MWVFqIu6s0C": { "name": "Male, Recurring" },
+            "yW2hYVS3S4u": { "name": "Female" },
+            "qk2FihwV6IL": { "name": "Male" }
+        },
+        "dimensions": {
+            "a0Cy1qwUuZv": ["S2y8dcmR2kD", "CyILz2yY8ey"],
+            "GIIHAr9BzzO": ["imyqCWQ229K", "eWeQoOlAcxV"],
+            "dx": ["WS8XV4WWPE7", "ik0ICagvIjm", "K6mAC5SiO29", "We61YNYyOX0", "yMqK9DKbA3X"],
+            "pe": ["202001", "202002", "202003", "202004"],
+            "Kyg1O6YEGa9": ["qk2FihwV6IL", "yW2hYVS3S4u"],
+            "ou": ["WGC0DJ0YSis"],
+            "co": ["mESy6ndYTwW", "MZyzwIh5xGW", "Q5IlmX3qedn", "HllvX50cXC0", "MWVFqIu6s0C"]
+        }
+    },
+    "width": 7,
+    "height": 40,
+    "rows": [
+        [
+            "K6mAC5SiO29",
+            "WGC0DJ0YSis",
+            "202001",
+            "imyqCWQ229K",
+            "CyILz2yY8ey",
+            "qk2FihwV6IL",
+            "7.0"
+        ],
+        [
+            "ik0ICagvIjm",
+            "WGC0DJ0YSis",
+            "202001",
+            "eWeQoOlAcxV",
+            "S2y8dcmR2kD",
+            "yW2hYVS3S4u",
+            "4.0"
+        ],
+        [
+            "K6mAC5SiO29",
+            "WGC0DJ0YSis",
+            "202001",
+            "eWeQoOlAcxV",
+            "CyILz2yY8ey",
+            "qk2FihwV6IL",
+            "2.0"
+        ],
+        [
+            "ik0ICagvIjm",
+            "WGC0DJ0YSis",
+            "202004",
+            "imyqCWQ229K",
+            "CyILz2yY8ey",
+            "qk2FihwV6IL",
+            "5.0"
+        ],
+        [
+            "ik0ICagvIjm",
+            "WGC0DJ0YSis",
+            "202002",
+            "imyqCWQ229K",
+            "CyILz2yY8ey",
+            "yW2hYVS3S4u",
+            "2.0"
+        ],
+        [
+            "ik0ICagvIjm",
+            "WGC0DJ0YSis",
+            "202001",
+            "eWeQoOlAcxV",
+            "CyILz2yY8ey",
+            "qk2FihwV6IL",
+            "9.0"
+        ],
+        [
+            "K6mAC5SiO29",
+            "WGC0DJ0YSis",
+            "202002",
+            "imyqCWQ229K",
+            "S2y8dcmR2kD",
+            "qk2FihwV6IL",
+            "1.0"
+        ],
+        [
+            "K6mAC5SiO29",
+            "WGC0DJ0YSis",
+            "202003",
+            "imyqCWQ229K",
+            "S2y8dcmR2kD",
+            "yW2hYVS3S4u",
+            "5.0"
+        ],
+        [
+            "ik0ICagvIjm",
+            "WGC0DJ0YSis",
+            "202003",
+            "imyqCWQ229K",
+            "S2y8dcmR2kD",
+            "qk2FihwV6IL",
+            "7.0"
+        ],
+        [
+            "ik0ICagvIjm",
+            "WGC0DJ0YSis",
+            "202003",
+            "imyqCWQ229K",
+            "S2y8dcmR2kD",
+            "yW2hYVS3S4u",
+            "4.0"
+        ],
+        [
+            "K6mAC5SiO29",
+            "WGC0DJ0YSis",
+            "202002",
+            "imyqCWQ229K",
+            "CyILz2yY8ey",
+            "yW2hYVS3S4u",
+            "4.0"
+        ],
+        [
+            "ik0ICagvIjm",
+            "WGC0DJ0YSis",
+            "202004",
+            "imyqCWQ229K",
+            "CyILz2yY8ey",
+            "yW2hYVS3S4u",
+            "4.0"
+        ],
+        [
+            "ik0ICagvIjm",
+            "WGC0DJ0YSis",
+            "202004",
+            "imyqCWQ229K",
+            "S2y8dcmR2kD",
+            "yW2hYVS3S4u",
+            "10.0"
+        ],
+        [
+            "K6mAC5SiO29",
+            "WGC0DJ0YSis",
+            "202003",
+            "imyqCWQ229K",
+            "CyILz2yY8ey",
+            "qk2FihwV6IL",
+            "3.0"
+        ],
+        [
+            "K6mAC5SiO29",
+            "WGC0DJ0YSis",
+            "202003",
+            "imyqCWQ229K",
+            "S2y8dcmR2kD",
+            "qk2FihwV6IL",
+            "10.0"
+        ],
+        [
+            "ik0ICagvIjm",
+            "WGC0DJ0YSis",
+            "202001",
+            "imyqCWQ229K",
+            "S2y8dcmR2kD",
+            "qk2FihwV6IL",
+            "3.0"
+        ],
+        [
+            "ik0ICagvIjm",
+            "WGC0DJ0YSis",
+            "202001",
+            "imyqCWQ229K",
+            "S2y8dcmR2kD",
+            "yW2hYVS3S4u",
+            "2.0"
+        ],
+        [
+            "ik0ICagvIjm",
+            "WGC0DJ0YSis",
+            "202001",
+            "imyqCWQ229K",
+            "CyILz2yY8ey",
+            "qk2FihwV6IL",
+            "3.0"
+        ],
+        [
+            "ik0ICagvIjm",
+            "WGC0DJ0YSis",
+            "202001",
+            "imyqCWQ229K",
+            "CyILz2yY8ey",
+            "yW2hYVS3S4u",
+            "9.0"
+        ],
+        [
+            "K6mAC5SiO29",
+            "WGC0DJ0YSis",
+            "202002",
+            "imyqCWQ229K",
+            "S2y8dcmR2kD",
+            "yW2hYVS3S4u",
+            "2.0"
+        ],
+        [
+            "K6mAC5SiO29",
+            "WGC0DJ0YSis",
+            "202001",
+            "eWeQoOlAcxV",
+            "S2y8dcmR2kD",
+            "qk2FihwV6IL",
+            "6.0"
+        ],
+        [
+            "ik0ICagvIjm",
+            "WGC0DJ0YSis",
+            "202002",
+            "imyqCWQ229K",
+            "S2y8dcmR2kD",
+            "yW2hYVS3S4u",
+            "3.0"
+        ],
+        [
+            "ik0ICagvIjm",
+            "WGC0DJ0YSis",
+            "202004",
+            "imyqCWQ229K",
+            "S2y8dcmR2kD",
+            "qk2FihwV6IL",
+            "4.0"
+        ],
+        [
+            "ik0ICagvIjm",
+            "WGC0DJ0YSis",
+            "202001",
+            "eWeQoOlAcxV",
+            "CyILz2yY8ey",
+            "yW2hYVS3S4u",
+            "3.0"
+        ],
+        [
+            "K6mAC5SiO29",
+            "WGC0DJ0YSis",
+            "202003",
+            "imyqCWQ229K",
+            "CyILz2yY8ey",
+            "yW2hYVS3S4u",
+            "2.0"
+        ],
+        [
+            "ik0ICagvIjm",
+            "WGC0DJ0YSis",
+            "202001",
+            "eWeQoOlAcxV",
+            "S2y8dcmR2kD",
+            "qk2FihwV6IL",
+            "4.0"
+        ],
+        [
+            "ik0ICagvIjm",
+            "WGC0DJ0YSis",
+            "202003",
+            "imyqCWQ229K",
+            "CyILz2yY8ey",
+            "yW2hYVS3S4u",
+            "5.0"
+        ],
+        [
+            "K6mAC5SiO29",
+            "WGC0DJ0YSis",
+            "202002",
+            "imyqCWQ229K",
+            "CyILz2yY8ey",
+            "qk2FihwV6IL",
+            "10.0"
+        ],
+        [
+            "ik0ICagvIjm",
+            "WGC0DJ0YSis",
+            "202003",
+            "imyqCWQ229K",
+            "CyILz2yY8ey",
+            "qk2FihwV6IL",
+            "1.0"
+        ],
+        [
+            "ik0ICagvIjm",
+            "WGC0DJ0YSis",
+            "202002",
+            "imyqCWQ229K",
+            "S2y8dcmR2kD",
+            "qk2FihwV6IL",
+            "7.0"
+        ],
+        [
+            "ik0ICagvIjm",
+            "WGC0DJ0YSis",
+            "202002",
+            "imyqCWQ229K",
+            "CyILz2yY8ey",
+            "qk2FihwV6IL",
+            "8.0"
+        ],
+        [
+            "K6mAC5SiO29",
+            "WGC0DJ0YSis",
+            "202001",
+            "eWeQoOlAcxV",
+            "CyILz2yY8ey",
+            "yW2hYVS3S4u",
+            "6.0"
+        ],
+        [
+            "K6mAC5SiO29",
+            "WGC0DJ0YSis",
+            "202001",
+            "imyqCWQ229K",
+            "S2y8dcmR2kD",
+            "yW2hYVS3S4u",
+            "1.0"
+        ],
+        [
+            "K6mAC5SiO29",
+            "WGC0DJ0YSis",
+            "202001",
+            "eWeQoOlAcxV",
+            "S2y8dcmR2kD",
+            "yW2hYVS3S4u",
+            "8.0"
+        ],
+        [
+            "K6mAC5SiO29",
+            "WGC0DJ0YSis",
+            "202001",
+            "imyqCWQ229K",
+            "CyILz2yY8ey",
+            "yW2hYVS3S4u",
+            "5.0"
+        ],
+        [
+            "K6mAC5SiO29",
+            "WGC0DJ0YSis",
+            "202004",
+            "imyqCWQ229K",
+            "S2y8dcmR2kD",
+            "qk2FihwV6IL",
+            "5.0"
+        ],
+        [
+            "K6mAC5SiO29",
+            "WGC0DJ0YSis",
+            "202004",
+            "imyqCWQ229K",
+            "S2y8dcmR2kD",
+            "yW2hYVS3S4u",
+            "10.0"
+        ],
+        [
+            "K6mAC5SiO29",
+            "WGC0DJ0YSis",
+            "202004",
+            "imyqCWQ229K",
+            "CyILz2yY8ey",
+            "yW2hYVS3S4u",
+            "8.0"
+        ],
+        [
+            "K6mAC5SiO29",
+            "WGC0DJ0YSis",
+            "202001",
+            "imyqCWQ229K",
+            "S2y8dcmR2kD",
+            "qk2FihwV6IL",
+            "6.0"
+        ],
+        [
+            "K6mAC5SiO29",
+            "WGC0DJ0YSis",
+            "202004",
+            "imyqCWQ229K",
+            "CyILz2yY8ey",
+            "qk2FihwV6IL",
+            "10.0"
+        ]
+    ],
+    "headerWidth": 7
+}
