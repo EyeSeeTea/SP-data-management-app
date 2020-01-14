@@ -6,6 +6,7 @@ import { Config } from "./Config";
 import Project from "./Project";
 import i18n from "../locales";
 import ProjectAnalytics from "./ProjectAnalytics";
+import { cell } from "../utils/spreadsheets";
 
 type Value = TextValue | NumberValue | FormulaValue;
 
@@ -350,17 +351,6 @@ class ProjectDownload {
     mapPeriods(mapper: (period: Period) => number, options?: Options): Value[] {
         return this.periods.map(period => float(mapper(period), options));
     }
-}
-
-function idOf(idx: number): string {
-    const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    const quotient = Math.floor(idx / letters.length);
-    const remainder = idx % letters.length;
-    return (quotient > 0 ? idOf(quotient - 1) : "") + letters[remainder];
-}
-
-function cell(colIdx: number, rowIdx: number): string {
-    return idOf(colIdx) + (rowIdx + 1).toString();
 }
 
 function addWorkSheet(
