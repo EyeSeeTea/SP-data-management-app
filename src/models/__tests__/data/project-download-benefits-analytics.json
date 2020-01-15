@@ -1,0 +1,110 @@
+{
+    "headers": [
+        {
+            "name": "dx",
+            "column": "Data",
+            "valueType": "TEXT",
+            "type": "java.lang.String",
+            "hidden": false,
+            "meta": true
+        },
+        {
+            "name": "ou",
+            "column": "Organisation unit",
+            "valueType": "TEXT",
+            "type": "java.lang.String",
+            "hidden": false,
+            "meta": true
+        },
+        {
+            "name": "pe",
+            "column": "Period",
+            "valueType": "TEXT",
+            "type": "java.lang.String",
+            "hidden": false,
+            "meta": true
+        },
+        {
+            "name": "GIIHAr9BzzO",
+            "column": "Actual/Target",
+            "valueType": "TEXT",
+            "type": "java.lang.String",
+            "hidden": false,
+            "meta": true
+        },
+        {
+            "name": "value",
+            "column": "Value",
+            "valueType": "NUMBER",
+            "type": "java.lang.Double",
+            "hidden": false,
+            "meta": false
+        }
+    ],
+    "metaData": {
+        "items": {
+            "imyqCWQ229K": { "name": "Target" },
+            "yMqK9DKbA3X": { "name": "# of livelihood inputs/ assets provided" },
+            "GIIHAr9BzzO": { "name": "Actual/Target" },
+            "WS8XV4WWPE7": {
+                "name": "# of agriculture groups receiving support for improved livelihoods"
+            },
+            "ou": { "name": "Organisation unit" },
+            "eWeQoOlAcxV": { "name": "Actual" },
+            "K6mAC5SiO29": {
+                "name": "# of people trained on improved agriculture technologies/practices"
+            },
+            "202004": { "name": "April 2020" },
+            "ik0ICagvIjm": { "name": "# of people trained on agronomic practices" },
+            "202002": { "name": "February 2020" },
+            "WGC0DJ0YSis": { "name": "0Test1-22569" },
+            "202003": { "name": "March 2020" },
+            "mESy6ndYTwW": { "name": "Male, New" },
+            "202001": { "name": "January 2020" },
+            "dx": { "name": "Data" },
+            "MZyzwIh5xGW": { "name": "Female, New" },
+            "pe": { "name": "Period" },
+            "Q5IlmX3qedn": { "name": "Female, Recurring" },
+            "We61YNYyOX0": { "name": "# of biogas digesters installed" },
+            "HllvX50cXC0": { "name": "default" },
+            "MWVFqIu6s0C": { "name": "Male, Recurring" }
+        },
+        "dimensions": {
+            "GIIHAr9BzzO": ["imyqCWQ229K", "eWeQoOlAcxV"],
+            "dx": ["WS8XV4WWPE7", "ik0ICagvIjm", "K6mAC5SiO29", "We61YNYyOX0", "yMqK9DKbA3X"],
+            "pe": ["202001", "202002", "202003", "202004"],
+            "ou": ["WGC0DJ0YSis"],
+            "co": ["mESy6ndYTwW", "MZyzwIh5xGW", "Q5IlmX3qedn", "HllvX50cXC0", "MWVFqIu6s0C"]
+        }
+    },
+    "width": 5,
+    "height": 25,
+    "rows": [
+        ["yMqK9DKbA3X", "WGC0DJ0YSis", "202001", "eWeQoOlAcxV", "1.0"],
+        ["WS8XV4WWPE7", "WGC0DJ0YSis", "202002", "imyqCWQ229K", "3.0"],
+        ["WS8XV4WWPE7", "WGC0DJ0YSis", "202001", "imyqCWQ229K", "4.0"],
+        ["ik0ICagvIjm", "WGC0DJ0YSis", "202002", "imyqCWQ229K", "20.0"],
+        ["ik0ICagvIjm", "WGC0DJ0YSis", "202001", "imyqCWQ229K", "17.0"],
+        ["yMqK9DKbA3X", "WGC0DJ0YSis", "202004", "imyqCWQ229K", "7.0"],
+        ["yMqK9DKbA3X", "WGC0DJ0YSis", "202003", "imyqCWQ229K", "9.0"],
+        ["yMqK9DKbA3X", "WGC0DJ0YSis", "202002", "imyqCWQ229K", "3.0"],
+        ["K6mAC5SiO29", "WGC0DJ0YSis", "202003", "imyqCWQ229K", "20.0"],
+        ["K6mAC5SiO29", "WGC0DJ0YSis", "202004", "imyqCWQ229K", "33.0"],
+        ["yMqK9DKbA3X", "WGC0DJ0YSis", "202001", "imyqCWQ229K", "7.0"],
+        ["We61YNYyOX0", "WGC0DJ0YSis", "202003", "imyqCWQ229K", "9.0"],
+        ["WS8XV4WWPE7", "WGC0DJ0YSis", "202001", "eWeQoOlAcxV", "1.0"],
+        ["We61YNYyOX0", "WGC0DJ0YSis", "202004", "imyqCWQ229K", "9.0"],
+        ["We61YNYyOX0", "WGC0DJ0YSis", "202001", "imyqCWQ229K", "5.0"],
+        ["ik0ICagvIjm", "WGC0DJ0YSis", "202001", "eWeQoOlAcxV", "20.0"],
+        ["K6mAC5SiO29", "WGC0DJ0YSis", "202001", "eWeQoOlAcxV", "22.0"],
+        ["We61YNYyOX0", "WGC0DJ0YSis", "202002", "imyqCWQ229K", "9.0"],
+        ["K6mAC5SiO29", "WGC0DJ0YSis", "202002", "imyqCWQ229K", "17.0"],
+        ["K6mAC5SiO29", "WGC0DJ0YSis", "202001", "imyqCWQ229K", "19.0"],
+        ["ik0ICagvIjm", "WGC0DJ0YSis", "202003", "imyqCWQ229K", "17.0"],
+        ["ik0ICagvIjm", "WGC0DJ0YSis", "202004", "imyqCWQ229K", "23.0"],
+        ["WS8XV4WWPE7", "WGC0DJ0YSis", "202004", "imyqCWQ229K", "6.0"],
+        ["We61YNYyOX0", "WGC0DJ0YSis", "202001", "eWeQoOlAcxV", "5.0"],
+        ["WS8XV4WWPE7", "WGC0DJ0YSis", "202003", "imyqCWQ229K", "8.0"]
+    ],
+    "headerWidth": 5
+}

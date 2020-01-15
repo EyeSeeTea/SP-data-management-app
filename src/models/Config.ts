@@ -43,6 +43,8 @@ const baseConfig = {
         actual: "ACTUAL",
         new: "NEW",
         recurring: "RECURRING",
+        male: "MALE",
+        female: "FEMALE",
     },
     dataElementGroups: {
         global: "GLOBAL",

@@ -1,39 +1,9 @@
-import moment from "moment";
 import _ from "lodash";
 import { getMockApi } from "d2-api";
-import Project from "../Project";
-import { Config } from "../Config";
-import configJson from "./config.json";
 import ProjectDb from "../ProjectDb";
+import { getProject } from "./project-data";
 
 const { api, mock } = getMockApi();
-const config = (configJson as unknown) as Config;
-
-const projectData = {
-    id: "WGC0DJ0YSis",
-    name: "MyProject",
-    startDate: moment("2018-10-01"),
-    endDate: moment("2019-03-01"),
-    parentOrgUnit: {
-        path: "/J0hschZVMBt/eu2XF73JOzl",
-        id: "eu2XF73JOzl",
-        displayName: "Bahamas",
-    },
-    funders: config.funders.slice(0, 2),
-    locations: config.locations.filter(location =>
-        _.isEqual(location.countries[0], { id: "eu2XF73JOzl" })
-    ),
-    awardNumber: "12345",
-    subsequentLettering: "en",
-    sectors: config.sectors.slice(0, 2),
-};
-
-async function getProject(): Promise<Project> {
-    return Project.create(api, config)
-        .setObj(projectData)
-        .updateDataElementsSelection(["WS8XV4WWPE7", "ik0ICagvIjm", "We61YNYyOX0"])
-        .project.updateDataElementsMERSelection(["WS8XV4WWPE7", "We61YNYyOX0"]);
-}
 
 const metadataResponse = {
     status: "OK",
@@ -43,7 +13,7 @@ const metadataResponse = {
 describe("ProjectDb", () => {
     describe("save", () => {
         it("posts metadata", async () => {
-            const project = await getProject();
+            const project = await getProject(api, { orgUnit: undefined });
 
             // Validation
             mock.onGet("/metadata", {
@@ -84,7 +54,7 @@ describe("ProjectDb", () => {
             jest.spyOn(Date, "now").mockReturnValueOnce(new Date("2019/12/15").getTime());
 
             const { response, project: savedProject } = await new ProjectDb(project).save();
-            expect(response).toBeTruthy();
+            expect(response).toBeDefined();
             expect(savedProject.id).toEqual("WGC0DJ0YSis");
         });
     });

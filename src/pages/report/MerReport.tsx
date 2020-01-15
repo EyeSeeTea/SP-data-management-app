@@ -16,6 +16,7 @@ import MerReportSpreadsheet from "../../models/MerReportSpreadsheet";
 import i18n from "../../locales";
 import PageHeader from "../../components/page-header/PageHeader";
 import ReportTextField from "./ReportTextField";
+import { downloadFile } from "../../utils/download";
 
 type Path = string;
 
@@ -67,8 +68,7 @@ const MerReportComponent: React.FC = () => {
 
     async function download() {
         if (!merReport) return;
-        const { filename, blob } = await new MerReportSpreadsheet(merReport).generate();
-        downloadFile(filename, blob);
+        downloadFile(await new MerReportSpreadsheet(merReport).generate());
     }
 
     async function save() {
@@ -189,15 +189,5 @@ const useStyles = makeStyles({
         color: "white",
     },
 });
-
-function downloadFile(filename: string, blob: Blob): void {
-    const element = document.createElement("a");
-    element.href = window.URL.createObjectURL(blob);
-    element.setAttribute("download", filename);
-    element.style.display = "none";
-    document.body.appendChild(element);
-    element.click();
-    document.body.removeChild(element);
-}
 
 export default MerReportComponent;

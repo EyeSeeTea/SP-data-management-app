@@ -3,10 +3,13 @@ import _ from "lodash";
 import moment from "moment";
 import MerReport, { staffKeys, getStaffTranslations } from "./MerReport";
 import i18n from "../locales";
+import { cell } from "../utils/spreadsheets";
 
-type Value = TextValue | NumberValue;
+type Value = TextValue | NumberValue | FormulaValue;
 
 type Row = Value[];
+
+type GetFormulaValue = (relativeColumn: number, relativeRow: number) => string;
 
 interface ValueBase {
     font?: Partial<Font>;
@@ -24,10 +27,15 @@ interface TextValue extends ValueBase {
     value: string;
 }
 
+interface FormulaValue extends ValueBase {
+    type: "formula";
+    value: GetFormulaValue;
+}
+
 class MerReportSpreadsheet {
     constructor(public merReport: MerReport) {}
 
-    async generate(): Promise<{ blob: Blob; filename: string }> {
+    async generate(): Promise<{ buffer: ExcelJS.Buffer; filename: string }> {
         const { merReport } = this;
         const { date, organisationUnit } = merReport.data;
         const { config } = this.merReport;
@@ -44,11 +52,10 @@ class MerReportSpreadsheet {
         this.addNarrativeSheet(workbook);
         this.addActivitesSheet(workbook);
 
-        const res = await workbook.xlsx.writeBuffer();
-        const blob = new Blob([res], { type: "application/octet-stream" });
+        const buffer = await workbook.xlsx.writeBuffer();
         const orgUnitName = organisationUnit.displayName;
         const filename = ["MER", orgUnitName, date.format("YYYY_MM")].join("-") + ".xlsx";
-        return { filename, blob };
+        return { filename, buffer };
     }
 
     addNarrativeSheet(workbook: Workbook) {
@@ -142,7 +149,13 @@ function addWorkSheet(
     const sheet = workbook.addWorksheet(name);
     if (options.columns) sheet.columns = options.columns;
 
-    const sheetRows: CellValue[][] = rows.map(row => row.map(cell => cell.value));
+    const sheetRows: CellValue[][] = rows.map((row, rowIdx) =>
+        row.map((cell, colIdx) =>
+            cell.type === "formula"
+                ? { formula: cell.value(rowIdx, colIdx), date1904: false }
+                : cell.value
+        )
+    );
     sheet.addRows(sheetRows);
     applyStyles(sheet, rows);
     return sheet;
@@ -179,12 +192,14 @@ function getStaffSummary(report: MerReport): Row[] {
         const total = staff.fullTime + staff.partTime;
         return { key: staffKey, values: { ...staff, total } };
     });
-    const totalFullTime = _(valuesList)
-        .map(({ values }) => values.fullTime)
-        .sum();
-    const totalPartTime = _(valuesList)
-        .map(({ values }) => values.partTime)
-        .sum();
+
+    const sumOfPrevious2Rows = formula((row, col) =>
+        ["SUM(", cell(col - 2, row), ":", cell(col - 1, row), ")"].join("")
+    );
+
+    const sumOfPreviousStaffColumns = formula((row, col) =>
+        ["SUM(", cell(col, row - staffKeys.length), ":", cell(col, row - 1), ")"].join("")
+    );
 
     return [
         [text(""), bold(i18n.t("Full-time")), bold(i18n.t("Part-time")), bold(i18n.t("Total"))],
@@ -193,16 +208,20 @@ function getStaffSummary(report: MerReport): Row[] {
                 italic(translations[key]),
                 f(values.fullTime),
                 f(values.partTime),
-                f(values.total),
+                sumOfPrevious2Rows,
             ];
         }),
         [
             bold(i18n.t("Total")),
-            f(totalFullTime),
-            f(totalPartTime),
-            f(totalFullTime + totalPartTime),
+            sumOfPreviousStaffColumns,
+            sumOfPreviousStaffColumns,
+            sumOfPrevious2Rows,
         ],
     ];
+}
+
+function formula(value: GetFormulaValue): FormulaValue {
+    return { type: "formula", value };
 }
 
 function float(n: number | undefined): Value {

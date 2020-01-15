@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2020-01-09T12:32:57.977Z\n"
-"PO-Revision-Date: 2020-01-09T12:32:57.977Z\n"
+"POT-Creation-Date: 2020-01-13T12:55:47.484Z\n"
+"PO-Revision-Date: 2020-01-13T12:55:47.484Z\n"
 
 msgid "<No value>"
 msgstr ""
@@ -266,6 +266,75 @@ msgid "PM achieved by gender (%)"
 msgstr ""
 
 msgid "PM Benefits Per Person"
+msgstr ""
+
+msgid "ACTIVITY MONITORING"
+msgstr ""
+
+msgid "BENEFIT"
+msgstr ""
+
+msgid "% Achievement to Date"
+msgstr ""
+
+msgid "Target Benefit"
+msgstr ""
+
+msgid "Actual Benefit"
+msgstr ""
+
+msgid "Indicator Code"
+msgstr ""
+
+msgid "Activity Indicator"
+msgstr ""
+
+msgid "Data Type"
+msgstr ""
+
+msgid "Cumulative"
+msgstr ""
+
+msgid "Method of Data Collection"
+msgstr ""
+
+msgid "Person Responsible"
+msgstr ""
+
+msgid "Benefit"
+msgstr ""
+
+msgid "PEOPLE"
+msgstr ""
+
+msgid "Total People Targeted"
+msgstr ""
+
+msgid "New"
+msgstr ""
+
+msgid "Recurring"
+msgstr ""
+
+msgid "Total Actual People"
+msgstr ""
+
+msgid "Male New"
+msgstr ""
+
+msgid "Female New"
+msgstr ""
+
+msgid "Male Recurring"
+msgstr ""
+
+msgid "Female Recurring"
+msgstr ""
+
+msgid "Counting Method"
+msgstr ""
+
+msgid "People"
 msgstr ""
 
 msgid "Select at least one indicator"
