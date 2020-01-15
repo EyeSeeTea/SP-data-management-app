@@ -88,7 +88,7 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
 
     const selection = useMemo(() => {
         const getOpts = field === "selection" ? { onlySelected: true } : { onlyMERSelected: true };
-        return dataElementsSet.get({ ...getOpts, sectorId }).map(de => de.id);
+        return dataElementsSet.get({ ...getOpts, sectorId });
     }, [dataElementsSet, sectorId]);
 
     const searchBoxColumns =
@@ -161,14 +161,16 @@ function showRelatedMessage(snackbar: any, selectionUpdate: SelectionUpdate): vo
     if (msg) snackbar.info(msg);
 }
 
-function onSelectionChange(
+function onTableChange(
     sectorId: string,
     field: Field,
     project: Project,
     onChange: (project: Project) => void,
     snackbar: any,
-    dataElementIds: string[]
+    state: TableState<DataElement>
 ): void {
+    const dataElementIds = state.selection.map(de => de.id);
+
     if (field === "selection") {
         const { related, project: projectUpdated } = project.updateDataElementsSelectionForSector(
             dataElementIds,
