@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, ReactNode } from "react";
-import { ObjectsTable, TablePagination, TableColumn } from "d2-ui-components";
+import { ObjectsTable, TablePagination, TableColumn, TableState } from "d2-ui-components";
 import { useSnackbar } from "d2-ui-components";
 import _ from "lodash";
 import DataElementsFilters, { Filter } from "./DataElementsFilters";
@@ -18,10 +18,9 @@ export interface DataElementsTableProps {
     field: Field;
 }
 
-const initialPagination: TablePagination = {
+const initialPagination: Partial<TablePagination> = {
     pageSize: 10,
     page: 1,
-    total: 0,
     pageSizeOptions: [10, 20, 50],
 };
 
@@ -75,17 +74,6 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
         [dataElementsSet, sectorId]
     );
 
-    const pagination: TablePagination = {
-        pageSize: 20,
-        page: 1,
-        total: dataElements.length,
-        pageSizeOptions: [10, 20, 50],
-    };
-
-    const componentKey = _(fullFilter)
-        .map((value, key) => `${key}=${value || ""}`)
-        .join("-");
-
     const selection = useMemo(() => {
         const getOpts = field === "selection" ? { onlySelected: true } : { onlyMERSelected: true };
         return dataElementsSet.get({ ...getOpts, sectorId });
@@ -109,11 +97,9 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
             initialState={{ pagination: initialPagination }}
             columns={columns}
             searchBoxLabel={i18n.t("Search by name / code")}
-            onChange={state =>
-                onSelectionChange(sectorId, field, project, onChange, snackbar, state.selection)
-            }
+            onChange={state => onTableChange(sectorId, field, project, onChange, snackbar, state)}
             searchBoxColumns={searchBoxColumns}
-            key={componentKey}
+            resetKey={JSON.stringify(fullFilter)}
             filterComponents={
                 <DataElementsFilters
                     key="filters"
