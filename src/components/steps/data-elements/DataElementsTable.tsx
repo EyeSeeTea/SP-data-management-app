@@ -18,6 +18,13 @@ export interface DataElementsTableProps {
     field: Field;
 }
 
+const initialPagination: TablePagination = {
+    pageSize: 10,
+    page: 1,
+    total: 0,
+    pageSizeOptions: [10, 20, 50],
+};
+
 const DataElementsTable: React.FC<DataElementsTableProps> = props => {
     const { project, dataElementsSet, sectorId, onChange, field } = props;
     const { isDev } = useAppContext();
@@ -53,7 +60,6 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
     const fullFilter = { ...baseFilter, sectorId };
 
     const dataElements = useMemo(() => dataElementsSet.get(fullFilter), [
-        {}, // PENDING: Remove when fixed problem with d2-ui-components updating rows in-place
         dataElementsSet,
         sectorId,
         field,
@@ -100,7 +106,7 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
             selection={selection}
             rows={dataElements}
             forceSelectionColumn={true}
-            initialState={{ pagination }}
+            initialState={{ pagination: initialPagination }}
             columns={columns}
             searchBoxLabel={i18n.t("Search by name / code")}
             onChange={state =>
