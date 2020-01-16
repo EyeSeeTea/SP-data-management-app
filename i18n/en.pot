@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2020-01-09T12:32:57.977Z\n"
-"PO-Revision-Date: 2020-01-09T12:32:57.977Z\n"
+"POT-Creation-Date: 2020-01-16T12:07:47.249Z\n"
+"PO-Revision-Date: 2020-01-16T12:07:47.249Z\n"
 
 msgid "<No value>"
 msgstr ""
@@ -26,6 +26,9 @@ msgstr ""
 msgid "Series"
 msgstr ""
 
+msgid "Externals"
+msgstr ""
+
 msgid "Only selected"
 msgstr ""
 
@@ -36,6 +39,9 @@ msgid "Code"
 msgstr ""
 
 msgid "People / Benefit"
+msgstr ""
+
+msgid "Counting Method"
 msgstr ""
 
 msgid "Paired DE"
