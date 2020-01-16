@@ -1,11 +1,21 @@
 {
     "base": {
         "userRoles": {
-            "feedback": ["PM Feedback"],
-            "dataReviewer": ["Data Reviewer"],
-            "dataViewer": ["Data Viewer"],
-            "admin": ["PM Admin"],
-            "dataEntry": ["Data Entry"]
+            "feedback": [
+                "PM Feedback"
+            ],
+            "dataReviewer": [
+                "Data Reviewer"
+            ],
+            "dataViewer": [
+                "Data Viewer"
+            ],
+            "admin": [
+                "PM Admin"
+            ],
+            "dataEntry": [
+                "Data Entry"
+            ]
         },
         "dataElementGroupSets": {
             "sector": "SECTOR",
@@ -35,7 +45,9 @@
             "target": "TARGET",
             "actual": "ACTUAL",
             "new": "NEW",
-            "recurring": "RECURRING"
+            "recurring": "RECURRING",
+            "male": "MALE",
+            "female": "FEMALE"
         },
         "dataElementGroups": {
             "global": "GLOBAL",
@@ -231,7 +243,10 @@
             "series": "102",
             "pairedDataElementCode": "P010100",
             "countingMethod": "Some counting",
-            "externals": ["UNHCR", "WHO"],
+            "externals": [
+                "UNHCR",
+                "WHO"
+            ],
             "categoryComboId": "bjDvmb4bfuf",
             "pairedDataElement": {
                 "id": "K6mAC5SiO29",
@@ -523,7 +538,10 @@
             "series": "101",
             "pairedDataElementCode": "",
             "countingMethod": "",
-            "externals": ["MSF", "WHO"],
+            "externals": [
+                "MSF",
+                "WHO"
+            ],
             "categoryComboId": "GKWiemQPU5U"
         },
         {
@@ -4555,6 +4573,14 @@
         "actual": {
             "code": "ACTUAL",
             "id": "eWeQoOlAcxV"
+        },
+        "female": {
+            "code": "FEMALE",
+            "id": "yW2hYVS3S4u"
+        },
+        "male": {
+            "code": "MALE",
+            "id": "qk2FihwV6IL"
         },
         "new": {
             "code": "NEW",

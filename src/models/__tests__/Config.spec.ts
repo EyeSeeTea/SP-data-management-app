@@ -26,7 +26,7 @@ export function getMockConfig(api: D2Api, mock: MockAdapter): Promise<Config> {
             "categoryCombos:fields": "categoryOptionCombos[displayName,id],code,id",
             "categoryCombos:filter": ["code:in:[ACTUAL_TARGET,GENDER_NEW_RECURRING,default]"],
             "categoryOptions:fields": "code,id",
-            "categoryOptions:filter": ["code:in:[TARGET,ACTUAL,NEW,RECURRING]"],
+            "categoryOptions:filter": ["code:in:[TARGET,ACTUAL,NEW,RECURRING,MALE,FEMALE]"],
             "legendSets:fields": "code,id",
             "legendSets:filter": ["code:in:[ACTUAL_TARGET_ACHIEVED]"],
             "dataElements:fields":

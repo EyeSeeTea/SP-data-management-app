@@ -274,6 +274,75 @@ msgstr ""
 msgid "PM Benefits Per Person"
 msgstr ""
 
+msgid "ACTIVITY MONITORING"
+msgstr ""
+
+msgid "BENEFIT"
+msgstr ""
+
+msgid "% Achievement to Date"
+msgstr ""
+
+msgid "Target Benefit"
+msgstr ""
+
+msgid "Actual Benefit"
+msgstr ""
+
+msgid "Indicator Code"
+msgstr ""
+
+msgid "Activity Indicator"
+msgstr ""
+
+msgid "Data Type"
+msgstr ""
+
+msgid "Cumulative"
+msgstr ""
+
+msgid "Method of Data Collection"
+msgstr ""
+
+msgid "Person Responsible"
+msgstr ""
+
+msgid "Benefit"
+msgstr ""
+
+msgid "PEOPLE"
+msgstr ""
+
+msgid "Total People Targeted"
+msgstr ""
+
+msgid "New"
+msgstr ""
+
+msgid "Recurring"
+msgstr ""
+
+msgid "Total Actual People"
+msgstr ""
+
+msgid "Male New"
+msgstr ""
+
+msgid "Female New"
+msgstr ""
+
+msgid "Male Recurring"
+msgstr ""
+
+msgid "Female Recurring"
+msgstr ""
+
+msgid "Counting Method"
+msgstr ""
+
+msgid "People"
+msgstr ""
+
 msgid "Select at least one indicator"
 msgstr ""
 
