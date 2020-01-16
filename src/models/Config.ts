@@ -27,6 +27,7 @@ const baseConfig = {
         createdByApp: "PM_CREATED_BY_PROJECT_MONITORING",
         orgUnitProject: "PM_ORGUNIT_PROJECT_ID",
         projectDashboard: "PM_PROJECT_DASHBOARD_ID",
+        countingMethod: "PM_COUNTING_METHOD",
     },
     categories: {
         targetActual: "ACTUAL_TARGET",
@@ -87,7 +88,7 @@ const metadataParams = {
             id: yes,
             code: yes,
             description: yes,
-            attributeValues: { attribute: { id: yes }, value: yes },
+            attributeValues: { attribute: { id: yes, code: yes }, value: yes },
             displayName: yes,
             categoryCombo: { id: yes },
         },

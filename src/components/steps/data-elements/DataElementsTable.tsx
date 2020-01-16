@@ -44,6 +44,7 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
         { name: "code" as const, text: i18n.t("Code"), sortable: true },
         { name: "indicatorType" as const, text: i18n.t("Indicator Type"), sortable: true },
         { name: "peopleOrBenefit" as const, text: i18n.t("People / Benefit"), sortable: true },
+        { name: "countingMethod" as const, text: i18n.t("Counting Method"), sortable: true },
         ...(isDev ? [{ name: "pairedDataElementCode" as const, text: i18n.t("Paired DE") }] : []),
     ];
 
@@ -114,7 +115,7 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
 
 function getName(field: Field, dataElement: DataElement) {
     return (
-        <React.Fragment>
+        <React.Fragment key={dataElement.name}>
             <span title={dataElement.description}>{dataElement.name}</span>
             {dataElement.pairedDataElement && field === "selection" && (
                 <React.Fragment>
