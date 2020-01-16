@@ -21,6 +21,7 @@ const baseConfig = {
         series: "SERIES",
         type1: "TYPE_1",
         type2: "TYPE_2",
+        externals: "EXTERNAL",
     },
     attributes: {
         pairedDataElement: "PM_PAIRED_DE",

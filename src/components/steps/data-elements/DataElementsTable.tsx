@@ -43,7 +43,18 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
         { name: "code" as const, text: i18n.t("Code"), sortable: true, getValue: getCode },
         { name: "indicatorType" as const, text: i18n.t("Indicator Type"), sortable: true },
         { name: "peopleOrBenefit" as const, text: i18n.t("People / Benefit"), sortable: true },
-        { name: "countingMethod" as const, text: i18n.t("Counting Method"), sortable: true },
+        {
+            name: "countingMethod" as const,
+            text: i18n.t("Counting Method"),
+            sortable: true,
+            getValue: withDefault("countingMethod", "-"),
+        },
+        {
+            name: "externals" as const,
+            text: i18n.t("Externals"),
+            sortable: true,
+            getValue: getExternals,
+        },
         ...(isDev ? [{ name: "pairedDataElementCode" as const, text: i18n.t("Paired DE") }] : []),
     ];
 
@@ -65,14 +76,13 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
         filter,
     ]);
 
-    const filterOptions = useMemo(
-        () => ({
-            series: _.sortBy(
-                _.uniq(dataElementsSet.get({ ...baseFilter, sectorId }).map(de => de.series))
-            ),
-        }),
-        [dataElementsSet, sectorId]
-    );
+    const filterOptions = useMemo(() => {
+        const dataElements = dataElementsSet.get({ ...baseFilter, sectorId });
+        return {
+            series: _.sortBy(_.uniq(dataElements.map(de => de.series))),
+            externals: _.sortBy(_.uniq(_.flatten(dataElements.map(de => de.externals)))),
+        };
+    }, [dataElementsSet, sectorId]);
 
     const selection = useMemo(() => {
         const getOpts = field === "selection" ? { onlySelected: true } : { onlyMERSelected: true };
@@ -113,7 +123,7 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
 };
 
 function getName(field: Field) {
-    return (dataElement: DataElement, _value: ReactNode) => {
+    const Name = (dataElement: DataElement, _value: ReactNode): ReactNode => {
         return (
             <React.Fragment key={dataElement.name}>
                 <span title={dataElement.description}>{dataElement.name}</span>
@@ -128,11 +138,17 @@ function getName(field: Field) {
             </React.Fragment>
         );
     };
+    return Name;
 }
 
 function getCode(dataElement: DataElement, _value: ReactNode) {
     const codes = _.compact([dataElement, dataElement.pairedDataElement]).map(de => de.code);
     return <React.Fragment key={dataElement.name}>{renderJoin(codes, <br />)}</React.Fragment>;
+}
+
+function getExternals(dataElement: DataElement, _value: ReactNode) {
+    const { externals } = dataElement;
+    return <React.Fragment key={externals[0]}>{renderJoin(externals, <br />)}</React.Fragment>;
 }
 
 function getRelatedMessage(dataElements: DataElement[], action: string): string | null {

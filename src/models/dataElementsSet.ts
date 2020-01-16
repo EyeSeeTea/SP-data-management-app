@@ -29,6 +29,7 @@ export interface DataElementWithCodePairing {
     indicatorType: IndicatorType;
     peopleOrBenefit: PeopleOrBenefit;
     countingMethod: string;
+    externals: string[];
     series: string;
     pairedDataElementCode: string;
     categoryComboId: Id;
@@ -58,6 +59,7 @@ type GetOptions = Partial<{
     onlySelected: boolean;
     onlyMERSelected: boolean;
     includePaired: boolean;
+    externals: string[];
 }>;
 
 type DataElementGroupCodes = Config["base"]["dataElementGroups"];
@@ -113,7 +115,14 @@ export default class DataElementsSet {
     ): Promise<DataElement[]> {
         const { dataElementGroupSets } = metadata;
         const sectorsCode = baseConfig.dataElementGroupSets.sector;
+        const externalsCode = baseConfig.dataElementGroupSets.externals;
         const sectorsSet = getBy(dataElementGroupSets, "code", sectorsCode);
+        const externalsSet = getBy(dataElementGroupSets, "code", externalsCode);
+        const externalsByDataElementId = _(externalsSet.dataElementGroups)
+            .flatMap(deg => deg.dataElements.map(de => ({ deId: de.id, name: deg.displayName })))
+            .groupBy(data => data.deId)
+            .mapValues(dataList => _.sortBy(dataList.map(data => data.name)))
+            .value();
         const degCodes = baseConfig.dataElementGroups;
         const dataElementsById = _(metadata.dataElements).keyBy(de => de.id);
 
@@ -128,6 +137,7 @@ export default class DataElementsSet {
                 const indicatorType = getGroupKey(groupCodes, degCodes, ["global", "sub"]);
                 const peopleOrBenefit = getGroupKey(groupCodes, degCodes, ["people", "benefit"]);
                 const seriesPrefix = `SERIES_`;
+                const externals = _(externalsByDataElementId).get(d2DataElement.id, []);
                 const seriesCode = Array.from(groupCodes).find(code =>
                     code.startsWith(seriesPrefix)
                 );
@@ -150,6 +160,7 @@ export default class DataElementsSet {
                         series: seriesCode.replace(seriesPrefix, ""),
                         pairedDataElementCode: pairedDataElement || "",
                         countingMethod: countingMethod || "",
+                        externals,
                         categoryComboId: d2DataElement.categoryCombo.id,
                     };
                     return dataElement;
@@ -178,6 +189,7 @@ export default class DataElementsSet {
             onlySelected,
             onlyMERSelected,
             peopleOrBenefit,
+            externals,
         } = options;
         const { dataElements } = this.data;
         const selected = onlySelected ? new Set(this.data.selected) : new Set();
@@ -198,7 +210,10 @@ export default class DataElementsSet {
                 (!series || dataElement.series === series) &&
                 (!indicatorType || dataElement.indicatorType === indicatorType) &&
                 (!peopleOrBenefit || dataElement.peopleOrBenefit === peopleOrBenefit) &&
-                (!onlyMERSelected || selectedMER.has(dataElement.id))
+                (!onlyMERSelected || selectedMER.has(dataElement.id)) &&
+                (!externals ||
+                    _.isEmpty(externals) ||
+                    _.intersection(dataElement.externals, externals).length > 0)
         );
 
         return dataElementsFiltered;
@@ -323,7 +338,9 @@ function getGroupKey<T extends keyof DataElementGroupCodes>(
 function getBy<T, K extends keyof T>(objs: T[], key: K, value: T[K]): T {
     const matchingObj = objs.find(obj => obj[key] === value);
     if (!matchingObj) {
-        throw new Error(`Cannot get object: ${key}=${value}`);
+        throw new Error(
+            `Cannot get object: ${key}=${value} (${objs.map(obj => obj[key]).join(", ")})`
+        );
     } else {
         return matchingObj;
     }
@@ -355,6 +372,6 @@ function fromPairs<Key extends string, Value>(pairs: Array<[Key, Value]>): Recor
     return pairs.reduce((acc, [key, value]) => ({ ...acc, [key]: value }), empty);
 }
 
-function getKeys<T, K extends keyof T>(obj: T): K[] {
-    return Object.keys(obj) as K[];
+function getKeys<T>(obj: T): Array<keyof T> {
+    return Object.keys(obj) as Array<keyof T>;
 }

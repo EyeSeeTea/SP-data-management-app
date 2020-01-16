@@ -4,6 +4,7 @@ import Dropdown from "../../dropdown/Dropdown";
 import i18n from "../../../locales";
 import { Checkbox, FormControlLabel } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
+import MultipleDropdown from "../../dropdown/MultipleDropdown";
 
 interface DataElementsFiltersProps {
     filter: Filter;
@@ -15,10 +16,12 @@ export interface Filter {
     series?: string;
     indicatorType?: IndicatorType;
     onlySelected?: boolean;
+    externals?: string[];
 }
 
 export interface FilterOptions {
     series: string[];
+    externals: string[];
 }
 
 const DataElementsFilters: React.FC<DataElementsFiltersProps> = props => {
@@ -39,6 +42,13 @@ const DataElementsFilters: React.FC<DataElementsFiltersProps> = props => {
                 value={filter.series}
                 onChange={value => onChange({ ...filter, series: value })}
                 label={i18n.t("Series")}
+            />
+
+            <MultipleDropdown
+                items={filterOptions.externals.map(name => ({ value: name, text: name }))}
+                values={filter.externals || []}
+                onChange={values => onChange({ ...filter, externals: values })}
+                label={i18n.t("Externals")}
             />
 
             <FormControlLabel
