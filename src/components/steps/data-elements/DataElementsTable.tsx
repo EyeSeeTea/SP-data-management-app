@@ -38,10 +38,9 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
             name: "name" as const,
             text: i18n.t("Name"),
             sortable: true,
-            getValue: (dataElement: DataElement, _defaultValue: ReactNode) =>
-                getName(field, dataElement),
+            getValue: getName(field),
         },
-        { name: "code" as const, text: i18n.t("Code"), sortable: true },
+        { name: "code" as const, text: i18n.t("Code"), sortable: true, getValue: getCode },
         { name: "indicatorType" as const, text: i18n.t("Indicator Type"), sortable: true },
         { name: "peopleOrBenefit" as const, text: i18n.t("People / Benefit"), sortable: true },
         { name: "countingMethod" as const, text: i18n.t("Counting Method"), sortable: true },
@@ -113,20 +112,27 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
     );
 };
 
-function getName(field: Field, dataElement: DataElement) {
-    return (
-        <React.Fragment key={dataElement.name}>
-            <span title={dataElement.description}>{dataElement.name}</span>
-            {dataElement.pairedDataElement && field === "selection" && (
-                <React.Fragment>
-                    <br />
-                    <span title={dataElement.pairedDataElement.description}>
-                        {dataElement.pairedDataElement.name}
-                    </span>
-                </React.Fragment>
-            )}
-        </React.Fragment>
-    );
+function getName(field: Field) {
+    return (dataElement: DataElement, _value: ReactNode) => {
+        return (
+            <React.Fragment key={dataElement.name}>
+                <span title={dataElement.description}>{dataElement.name}</span>
+                {dataElement.pairedDataElement && field === "selection" && (
+                    <React.Fragment>
+                        <br />
+                        <span title={dataElement.pairedDataElement.description}>
+                            {dataElement.pairedDataElement.name}
+                        </span>
+                    </React.Fragment>
+                )}
+            </React.Fragment>
+        );
+    };
+}
+
+function getCode(dataElement: DataElement, _value: ReactNode) {
+    const codes = _.compact([dataElement, dataElement.pairedDataElement]).map(de => de.code);
+    return <React.Fragment key={dataElement.name}>{renderJoin(codes, <br />)}</React.Fragment>;
 }
 
 function getRelatedMessage(dataElements: DataElement[], action: string): string | null {
@@ -173,6 +179,18 @@ function onTableChange(
         );
         onChange(projectUpdated);
     }
+}
+
+function renderJoin(nodes: ReactNode[], separator: ReactNode): ReactNode {
+    return _.flatMap(nodes, (node, idx) =>
+        idx < nodes.length - 1 ? [node, separator] : [node]
+    ).map((node, idx) => <React.Fragment key={idx}>{node}</React.Fragment>);
+}
+
+function withDefault(key: keyof DataElement, defaultValue: string) {
+    return (dataElement: DataElement, _value: ReactNode) => {
+        return dataElement[key] || defaultValue;
+    };
 }
 
 export default DataElementsTable;
