@@ -8,7 +8,6 @@ import { CSSProperties } from "@material-ui/core/styles/withStyles";
 import { getProjectFieldName } from "../../../utils/form";
 import { Sector, Location } from "../../../models/Config";
 
-type Option = { value: string; text: string };
 type ModelCollectionField = "sectors" | "locations";
 
 const defaultTitleStyle = { fontSize: "1.1em", color: "grey" };
@@ -59,6 +58,7 @@ const SectorsStep: React.FC<StepProps> = ({ project, onChange }) => {
                 <Title style={{ marginTop: 35 }}>{getProjectFieldName("locations")}</Title>
                 <div data-test-selector="locations" style={{ paddingBottom: 10 }}>
                     <MultiSelector
+                        searchFilterLabel={true}
                         d2={d2}
                         ordered={true}
                         height={300}
