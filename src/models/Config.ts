@@ -21,12 +21,14 @@ const baseConfig = {
         series: "SERIES",
         type1: "TYPE_1",
         type2: "TYPE_2",
+        externals: "EXTERNAL",
     },
     attributes: {
         pairedDataElement: "PM_PAIRED_DE",
         createdByApp: "PM_CREATED_BY_PROJECT_MONITORING",
         orgUnitProject: "PM_ORGUNIT_PROJECT_ID",
         projectDashboard: "PM_PROJECT_DASHBOARD_ID",
+        countingMethod: "PM_COUNTING_METHOD",
     },
     categories: {
         targetActual: "ACTUAL_TARGET",
@@ -89,7 +91,7 @@ const metadataParams = {
             id: yes,
             code: yes,
             description: yes,
-            attributeValues: { attribute: { id: yes }, value: yes },
+            attributeValues: { attribute: { id: yes, code: yes }, value: yes },
             displayName: yes,
             categoryCombo: { id: yes },
         },

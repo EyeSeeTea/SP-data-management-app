@@ -23,8 +23,7 @@ $ yarn start
 Setup (only when config object changes):
 
 ```
-$ export TS_NODE_COMPILER_OPTIONS='{"module":"commonjs"}'
-$ npx ts-node src/models/Config.ts 'http://admin:PASSWORD@SERVER:PORT'
+$ yarn generate-test-fixtures 'http://admin:PASSWORD@SERVER:PORT'
 ```
 
 Unit testing:

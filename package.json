@@ -27,7 +27,7 @@
         "d2": "^31.1.1",
         "d2-api": "0.0.2-beta.15",
         "d2-manifest": "^1.0.0",
-        "d2-ui-components": "1.0.0-beta.9",
+        "d2-ui-components": "1.0.3-beta.2",
         "enzyme": "^3.7.0",
         "enzyme-adapter-react-16": "^1.6.0",
         "enzyme-to-json": "^3.3.4",
@@ -57,17 +57,17 @@
         "eject": "react-scripts eject",
         "prettify": "prettier \"{src,config,cypress}/**/*.{js,jsx,json,css,ts,tsx}\" --write",
         "extract-pot": "d2-i18n-extract -p src/ -o i18n/",
-        "localize": "yarn extract-pot && d2-i18n-generate -n project-monitoring-app -p ./i18n/ -o ./src/locales/",
-        "update-po": "yarn extract-pot && for pofile in i18n/*.po; do msgmerge --backup=off -U $pofile i18n/en.pot; done",
+        "localize": "yarn update-po && d2-i18n-generate -n project-monitoring-app -p ./i18n/ -o ./src/locales/",
+        "update-po": "yarn extract-pot && find i18n -name '*.po' | while read pofile; do msgmerge --backup=off -U $pofile i18n/en.pot; done",
         "manifest": "d2-manifest package.json build/manifest.webapp",
         "cy:verify": "cypress verify",
         "cy:e2e:open": "CYPRESS_E2E=true cypress open",
         "cy:e2e:run": "CYPRESS_E2E=true cypress run --browser chrome",
-        "test-fixtures": "TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' ts-node src/models/Config.ts"
+        "generate-test-fixtures": "TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' ts-node src/models/Config.ts"
     },
     "husky": {
         "hooks": {
-            "pre-push": "yarn prettify && yarn lint && yarn extract-pot && yarn jest"
+            "pre-push": "yarn localize && yarn prettify && yarn lint && yarn jest"
         }
     },
     "devDependencies": {

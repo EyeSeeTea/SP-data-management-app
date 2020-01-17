@@ -11,13 +11,15 @@
             "sector": "SECTOR",
             "series": "SERIES",
             "type1": "TYPE_1",
-            "type2": "TYPE_2"
+            "type2": "TYPE_2",
+            "externals": "EXTERNAL"
         },
         "attributes": {
             "pairedDataElement": "PM_PAIRED_DE",
             "createdByApp": "PM_CREATED_BY_PROJECT_MONITORING",
             "orgUnitProject": "PM_ORGUNIT_PROJECT_ID",
-            "projectDashboard": "PM_PROJECT_DASHBOARD_ID"
+            "projectDashboard": "PM_PROJECT_DASHBOARD_ID",
+            "countingMethod": "PM_COUNTING_METHOD"
         },
         "categories": {
             "targetActual": "ACTUAL_TARGET",
@@ -90,13 +92,13 @@
             "displayName": "Agriculture",
             "dataElements": [
                 {
+                    "id": "WS8XV4WWPE7"
+                },
+                {
                     "id": "qQy0N1xdwQ1"
                 },
                 {
                     "id": "C24wpyjZTGe"
-                },
-                {
-                    "id": "WS8XV4WWPE7"
                 },
                 {
                     "id": "KecRLspBj0V"
@@ -108,22 +110,19 @@
                     "id": "ik0ICagvIjm"
                 },
                 {
-                    "id": "aOUffyMug7t"
-                },
-                {
                     "id": "i0wZ2ZFmfkW"
                 },
                 {
                     "id": "Ou41h46tMcD"
                 },
                 {
+                    "id": "WMAhrqMkpeN"
+                },
+                {
                     "id": "mEY5CsRrI0P"
                 },
                 {
                     "id": "aqCOXJ5URiL"
-                },
-                {
-                    "id": "WMAhrqMkpeN"
                 },
                 {
                     "id": "yIqYlJnhYyj"
@@ -145,6 +144,9 @@
                 },
                 {
                     "id": "C0QLSs6ymHL"
+                },
+                {
+                    "id": "aOUffyMug7t"
                 },
                 {
                     "id": "SeYl64icyGD"
@@ -202,10 +204,10 @@
                     "id": "eeqkGzLMaSD"
                 },
                 {
-                    "id": "yUGuwPFkBrj"
+                    "id": "We61YNYyOX0"
                 },
                 {
-                    "id": "We61YNYyOX0"
+                    "id": "yUGuwPFkBrj"
                 },
                 {
                     "id": "u24zk6wAgFE"
@@ -221,6 +223,34 @@
     ],
     "dataElements": [
         {
+            "id": "WS8XV4WWPE7",
+            "name": "# of agriculture groups receiving support for improved livelihoods",
+            "code": "B010200",
+            "description": "WHO: # of agriculture groups receiving support\nUNHCR: # of agriculture groups receiving full support",
+            "sectorId": "mGQ5ckOTU8A",
+            "indicatorType": "global",
+            "peopleOrBenefit": "benefit",
+            "series": "102",
+            "pairedDataElementCode": "P010100",
+            "countingMethod": "Some counting",
+            "externals": ["UNHCR", "WHO"],
+            "categoryComboId": "bjDvmb4bfuf",
+            "pairedDataElement": {
+                "id": "K6mAC5SiO29",
+                "name": "# of people trained on improved agriculture technologies/practices",
+                "code": "P010100",
+                "sectorId": "mGQ5ckOTU8A",
+                "indicatorType": "global",
+                "peopleOrBenefit": "people",
+                "series": "101",
+                "pairedDataElementCode": "",
+                "countingMethod": "",
+                "externals": [],
+                "categoryComboId": "GKWiemQPU5U"
+            },
+            "pairedDataElementName": "# of people trained on improved agriculture technologies/practices"
+        },
+        {
             "id": "qQy0N1xdwQ1",
             "name": "# of people trained on post-harvest handling",
             "code": "P010105",
@@ -229,6 +259,8 @@
             "peopleOrBenefit": "people",
             "series": "101",
             "pairedDataElementCode": "",
+            "countingMethod": "",
+            "externals": [],
             "categoryComboId": "GKWiemQPU5U"
         },
         {
@@ -240,6 +272,8 @@
             "peopleOrBenefit": "benefit",
             "series": "102",
             "pairedDataElementCode": "P010100",
+            "countingMethod": "",
+            "externals": [],
             "categoryComboId": "bjDvmb4bfuf",
             "pairedDataElement": {
                 "id": "K6mAC5SiO29",
@@ -250,30 +284,8 @@
                 "peopleOrBenefit": "people",
                 "series": "101",
                 "pairedDataElementCode": "",
-                "categoryComboId": "GKWiemQPU5U"
-            },
-            "pairedDataElementName": "# of people trained on improved agriculture technologies/practices"
-        },
-        {
-            "id": "WS8XV4WWPE7",
-            "name": "# of agriculture groups receiving support for improved livelihoods",
-            "code": "B010200",
-            "description": "Description for of agriculture groups receiving support for improved livelihoods\nSecond line",
-            "sectorId": "mGQ5ckOTU8A",
-            "indicatorType": "global",
-            "peopleOrBenefit": "benefit",
-            "series": "102",
-            "pairedDataElementCode": "P010100",
-            "categoryComboId": "bjDvmb4bfuf",
-            "pairedDataElement": {
-                "id": "K6mAC5SiO29",
-                "name": "# of people trained on improved agriculture technologies/practices",
-                "code": "P010100",
-                "sectorId": "mGQ5ckOTU8A",
-                "indicatorType": "global",
-                "peopleOrBenefit": "people",
-                "series": "101",
-                "pairedDataElementCode": "",
+                "countingMethod": "",
+                "externals": [],
                 "categoryComboId": "GKWiemQPU5U"
             },
             "pairedDataElementName": "# of people trained on improved agriculture technologies/practices"
@@ -287,6 +299,8 @@
             "peopleOrBenefit": "people",
             "series": "101",
             "pairedDataElementCode": "",
+            "countingMethod": "",
+            "externals": [],
             "categoryComboId": "GKWiemQPU5U"
         },
         {
@@ -298,6 +312,8 @@
             "peopleOrBenefit": "people",
             "series": "101",
             "pairedDataElementCode": "",
+            "countingMethod": "",
+            "externals": [],
             "categoryComboId": "GKWiemQPU5U"
         },
         {
@@ -309,17 +325,8 @@
             "peopleOrBenefit": "people",
             "series": "101",
             "pairedDataElementCode": "",
-            "categoryComboId": "GKWiemQPU5U"
-        },
-        {
-            "id": "aOUffyMug7t",
-            "name": "# of community animal health workers (CAHWs) trained",
-            "code": "P010110",
-            "sectorId": "mGQ5ckOTU8A",
-            "indicatorType": "sub",
-            "peopleOrBenefit": "people",
-            "series": "101",
-            "pairedDataElementCode": "",
+            "countingMethod": "",
+            "externals": [],
             "categoryComboId": "GKWiemQPU5U"
         },
         {
@@ -331,6 +338,8 @@
             "peopleOrBenefit": "people",
             "series": "101",
             "pairedDataElementCode": "",
+            "countingMethod": "",
+            "externals": [],
             "categoryComboId": "GKWiemQPU5U"
         },
         {
@@ -342,28 +351,8 @@
             "peopleOrBenefit": "people",
             "series": "101",
             "pairedDataElementCode": "",
-            "categoryComboId": "GKWiemQPU5U"
-        },
-        {
-            "id": "mEY5CsRrI0P",
-            "name": "# of people participating in internal/external exchange visits or experience sharing visits",
-            "code": "P010111",
-            "sectorId": "mGQ5ckOTU8A",
-            "indicatorType": "sub",
-            "peopleOrBenefit": "people",
-            "series": "101",
-            "pairedDataElementCode": "",
-            "categoryComboId": "GKWiemQPU5U"
-        },
-        {
-            "id": "aqCOXJ5URiL",
-            "name": "# of people trained on other agricultural topics",
-            "code": "P010112",
-            "sectorId": "mGQ5ckOTU8A",
-            "indicatorType": "sub",
-            "peopleOrBenefit": "people",
-            "series": "101",
-            "pairedDataElementCode": "",
+            "countingMethod": "",
+            "externals": [],
             "categoryComboId": "GKWiemQPU5U"
         },
         {
@@ -375,6 +364,34 @@
             "peopleOrBenefit": "people",
             "series": "101",
             "pairedDataElementCode": "",
+            "countingMethod": "",
+            "externals": [],
+            "categoryComboId": "GKWiemQPU5U"
+        },
+        {
+            "id": "mEY5CsRrI0P",
+            "name": "# of people participating in internal/external exchange visits or experience sharing visits",
+            "code": "P010111",
+            "sectorId": "mGQ5ckOTU8A",
+            "indicatorType": "sub",
+            "peopleOrBenefit": "people",
+            "series": "101",
+            "pairedDataElementCode": "",
+            "countingMethod": "",
+            "externals": [],
+            "categoryComboId": "GKWiemQPU5U"
+        },
+        {
+            "id": "aqCOXJ5URiL",
+            "name": "# of people trained on other agricultural topics",
+            "code": "P010112",
+            "sectorId": "mGQ5ckOTU8A",
+            "indicatorType": "sub",
+            "peopleOrBenefit": "people",
+            "series": "101",
+            "pairedDataElementCode": "",
+            "countingMethod": "",
+            "externals": [],
             "categoryComboId": "GKWiemQPU5U"
         },
         {
@@ -386,6 +403,8 @@
             "peopleOrBenefit": "benefit",
             "series": "102",
             "pairedDataElementCode": "P010100",
+            "countingMethod": "",
+            "externals": [],
             "categoryComboId": "bjDvmb4bfuf",
             "pairedDataElement": {
                 "id": "K6mAC5SiO29",
@@ -396,6 +415,8 @@
                 "peopleOrBenefit": "people",
                 "series": "101",
                 "pairedDataElementCode": "",
+                "countingMethod": "",
+                "externals": [],
                 "categoryComboId": "GKWiemQPU5U"
             },
             "pairedDataElementName": "# of people trained on improved agriculture technologies/practices"
@@ -409,6 +430,8 @@
             "peopleOrBenefit": "benefit",
             "series": "102",
             "pairedDataElementCode": "P010100",
+            "countingMethod": "",
+            "externals": [],
             "categoryComboId": "bjDvmb4bfuf",
             "pairedDataElement": {
                 "id": "K6mAC5SiO29",
@@ -419,6 +442,8 @@
                 "peopleOrBenefit": "people",
                 "series": "101",
                 "pairedDataElementCode": "",
+                "countingMethod": "",
+                "externals": [],
                 "categoryComboId": "GKWiemQPU5U"
             },
             "pairedDataElementName": "# of people trained on improved agriculture technologies/practices"
@@ -432,6 +457,8 @@
             "peopleOrBenefit": "benefit",
             "series": "102",
             "pairedDataElementCode": "P010100",
+            "countingMethod": "",
+            "externals": [],
             "categoryComboId": "bjDvmb4bfuf",
             "pairedDataElement": {
                 "id": "K6mAC5SiO29",
@@ -442,6 +469,8 @@
                 "peopleOrBenefit": "people",
                 "series": "101",
                 "pairedDataElementCode": "",
+                "countingMethod": "",
+                "externals": [],
                 "categoryComboId": "GKWiemQPU5U"
             },
             "pairedDataElementName": "# of people trained on improved agriculture technologies/practices"
@@ -455,6 +484,8 @@
             "peopleOrBenefit": "people",
             "series": "101",
             "pairedDataElementCode": "",
+            "countingMethod": "",
+            "externals": [],
             "categoryComboId": "GKWiemQPU5U"
         },
         {
@@ -466,6 +497,8 @@
             "peopleOrBenefit": "people",
             "series": "101",
             "pairedDataElementCode": "",
+            "countingMethod": "",
+            "externals": [],
             "categoryComboId": "GKWiemQPU5U"
         },
         {
@@ -477,6 +510,22 @@
             "peopleOrBenefit": "people",
             "series": "101",
             "pairedDataElementCode": "",
+            "countingMethod": "",
+            "externals": [],
+            "categoryComboId": "GKWiemQPU5U"
+        },
+        {
+            "id": "aOUffyMug7t",
+            "name": "# of community animal health workers (CAHWs) trained",
+            "code": "P010110",
+            "description": "WHO: # of community animal health workers trained\nMSF: # of community animal health workers fully trained",
+            "sectorId": "mGQ5ckOTU8A",
+            "indicatorType": "sub",
+            "peopleOrBenefit": "people",
+            "series": "101",
+            "pairedDataElementCode": "",
+            "countingMethod": "",
+            "externals": ["MSF", "WHO"],
             "categoryComboId": "GKWiemQPU5U"
         },
         {
@@ -488,6 +537,8 @@
             "peopleOrBenefit": "benefit",
             "series": "102",
             "pairedDataElementCode": "P010100",
+            "countingMethod": "",
+            "externals": [],
             "categoryComboId": "bjDvmb4bfuf",
             "pairedDataElement": {
                 "id": "K6mAC5SiO29",
@@ -498,6 +549,8 @@
                 "peopleOrBenefit": "people",
                 "series": "101",
                 "pairedDataElementCode": "",
+                "countingMethod": "",
+                "externals": [],
                 "categoryComboId": "GKWiemQPU5U"
             },
             "pairedDataElementName": "# of people trained on improved agriculture technologies/practices"
@@ -511,6 +564,8 @@
             "peopleOrBenefit": "benefit",
             "series": "202",
             "pairedDataElementCode": "P020311",
+            "countingMethod": "",
+            "externals": [],
             "categoryComboId": "bjDvmb4bfuf"
         },
         {
@@ -522,6 +577,8 @@
             "peopleOrBenefit": "benefit",
             "series": "202",
             "pairedDataElementCode": "P020307",
+            "countingMethod": "",
+            "externals": [],
             "categoryComboId": "bjDvmb4bfuf"
         },
         {
@@ -533,6 +590,8 @@
             "peopleOrBenefit": "people",
             "series": "201",
             "pairedDataElementCode": "",
+            "countingMethod": "",
+            "externals": [],
             "categoryComboId": "GKWiemQPU5U"
         },
         {
@@ -544,6 +603,8 @@
             "peopleOrBenefit": "people",
             "series": "201",
             "pairedDataElementCode": "",
+            "countingMethod": "",
+            "externals": [],
             "categoryComboId": "GKWiemQPU5U"
         },
         {
@@ -555,6 +616,8 @@
             "peopleOrBenefit": "benefit",
             "series": "202",
             "pairedDataElementCode": "P020301",
+            "countingMethod": "",
+            "externals": [],
             "categoryComboId": "bjDvmb4bfuf"
         },
         {
@@ -566,6 +629,8 @@
             "peopleOrBenefit": "benefit",
             "series": "202",
             "pairedDataElementCode": "P020308",
+            "countingMethod": "",
+            "externals": [],
             "categoryComboId": "bjDvmb4bfuf"
         },
         {
@@ -577,6 +642,8 @@
             "peopleOrBenefit": "benefit",
             "series": "202",
             "pairedDataElementCode": "P020300",
+            "countingMethod": "",
+            "externals": [],
             "categoryComboId": "bjDvmb4bfuf"
         },
         {
@@ -588,6 +655,8 @@
             "peopleOrBenefit": "people",
             "series": "201",
             "pairedDataElementCode": "",
+            "countingMethod": "",
+            "externals": [],
             "categoryComboId": "GKWiemQPU5U"
         },
         {
@@ -599,6 +668,8 @@
             "peopleOrBenefit": "people",
             "series": "201",
             "pairedDataElementCode": "",
+            "countingMethod": "",
+            "externals": [],
             "categoryComboId": "GKWiemQPU5U"
         },
         {
@@ -610,6 +681,8 @@
             "peopleOrBenefit": "people",
             "series": "201",
             "pairedDataElementCode": "",
+            "countingMethod": "",
+            "externals": [],
             "categoryComboId": "GKWiemQPU5U"
         },
         {
@@ -621,6 +694,8 @@
             "peopleOrBenefit": "benefit",
             "series": "202",
             "pairedDataElementCode": "P020306",
+            "countingMethod": "",
+            "externals": [],
             "categoryComboId": "bjDvmb4bfuf"
         },
         {
@@ -632,6 +707,8 @@
             "peopleOrBenefit": "benefit",
             "series": "202",
             "pairedDataElementCode": "P020304",
+            "countingMethod": "",
+            "externals": [],
             "categoryComboId": "bjDvmb4bfuf"
         },
         {
@@ -643,6 +720,8 @@
             "peopleOrBenefit": "benefit",
             "series": "202",
             "pairedDataElementCode": "P020312",
+            "countingMethod": "",
+            "externals": [],
             "categoryComboId": "bjDvmb4bfuf"
         },
         {
@@ -654,6 +733,8 @@
             "peopleOrBenefit": "benefit",
             "series": "202",
             "pairedDataElementCode": "P020302",
+            "countingMethod": "",
+            "externals": [],
             "categoryComboId": "bjDvmb4bfuf"
         },
         {
@@ -665,18 +746,9 @@
             "peopleOrBenefit": "people",
             "series": "201",
             "pairedDataElementCode": "",
+            "countingMethod": "",
+            "externals": [],
             "categoryComboId": "GKWiemQPU5U"
-        },
-        {
-            "id": "yUGuwPFkBrj",
-            "name": "# of energy-saving stoves installed",
-            "code": "B020210",
-            "sectorId": "m4Cg6FOPPR7",
-            "indicatorType": "sub",
-            "peopleOrBenefit": "benefit",
-            "series": "202",
-            "pairedDataElementCode": "P020310",
-            "categoryComboId": "bjDvmb4bfuf"
         },
         {
             "id": "We61YNYyOX0",
@@ -687,6 +759,21 @@
             "peopleOrBenefit": "benefit",
             "series": "202",
             "pairedDataElementCode": "P020305",
+            "countingMethod": "",
+            "externals": [],
+            "categoryComboId": "bjDvmb4bfuf"
+        },
+        {
+            "id": "yUGuwPFkBrj",
+            "name": "# of energy-saving stoves installed",
+            "code": "B020210",
+            "sectorId": "m4Cg6FOPPR7",
+            "indicatorType": "sub",
+            "peopleOrBenefit": "benefit",
+            "series": "202",
+            "pairedDataElementCode": "P020310",
+            "countingMethod": "",
+            "externals": [],
             "categoryComboId": "bjDvmb4bfuf"
         },
         {
@@ -698,6 +785,8 @@
             "peopleOrBenefit": "benefit",
             "series": "202",
             "pairedDataElementCode": "P020309",
+            "countingMethod": "",
+            "externals": [],
             "categoryComboId": "bjDvmb4bfuf"
         },
         {
@@ -709,6 +798,8 @@
             "peopleOrBenefit": "people",
             "series": "201",
             "pairedDataElementCode": "",
+            "countingMethod": "",
+            "externals": [],
             "categoryComboId": "GKWiemQPU5U"
         },
         {
@@ -720,6 +811,8 @@
             "peopleOrBenefit": "benefit",
             "series": "202",
             "pairedDataElementCode": "P020303",
+            "countingMethod": "",
+            "externals": [],
             "categoryComboId": "bjDvmb4bfuf"
         }
     ],
@@ -742,12 +835,7 @@
         {
             "id": "KqWm4Q0ftG1",
             "displayName": "AECOM International Sudan",
-            "organisationUnits": [
-                {
-                    "level": 3,
-                    "id": "V1W9xn7LBPt"
-                }
-            ]
+            "organisationUnits": []
         },
         {
             "id": "CeApFdQGS5x",
@@ -775,19 +863,7 @@
             "organisationUnits": [
                 {
                     "level": 3,
-                    "id": "Secpn3E03w3"
-                },
-                {
-                    "level": 3,
-                    "id": "Ws6cAgyIx7t"
-                },
-                {
-                    "level": 3,
-                    "id": "WUDKKsUKqVH"
-                },
-                {
-                    "level": 3,
-                    "id": "Kq4UNsaPLzv"
+                    "id": "eSplJWzunIH"
                 }
             ]
         },
@@ -812,23 +888,7 @@
             "organisationUnits": [
                 {
                     "level": 3,
-                    "id": "Secpn3E03w3"
-                },
-                {
-                    "level": 3,
-                    "id": "Ws6cAgyIx7t"
-                },
-                {
-                    "level": 3,
-                    "id": "WUDKKsUKqVH"
-                },
-                {
-                    "level": 3,
-                    "id": "V1W9xn7LBPt"
-                },
-                {
-                    "level": 3,
-                    "id": "Kq4UNsaPLzv"
+                    "id": "eSplJWzunIH"
                 }
             ]
         },
@@ -4380,6 +4440,10 @@
         }
     ],
     "attributes": {
+        "countingMethod": {
+            "code": "PM_COUNTING_METHOD",
+            "id": "OOi8Yw1TrmS"
+        },
         "createdByApp": {
             "code": "PM_CREATED_BY_PROJECT_MONITORING",
             "id": "mgCKcJuP5n0"

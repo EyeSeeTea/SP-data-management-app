@@ -81,6 +81,7 @@ const UserOrgUnits: React.FC<UserOrgUnitsProps> = props => {
                     withElevation={withElevation}
                     typeInput="radio"
                     height={height}
+                    fullWidth={false}
                 />
             ) : (
                 <LinearProgress />

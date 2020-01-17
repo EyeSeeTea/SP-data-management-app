@@ -28,6 +28,8 @@ export interface DataElementWithCodePairing {
     sectorId: Id;
     indicatorType: IndicatorType;
     peopleOrBenefit: PeopleOrBenefit;
+    countingMethod: string;
+    externals: string[]; // an empty string means internals
     series: string;
     pairedDataElementCode: string;
     categoryComboId: Id;
@@ -57,6 +59,7 @@ type GetOptions = Partial<{
     onlySelected: boolean;
     onlyMERSelected: boolean;
     includePaired: boolean;
+    externals: string[];
 }>;
 
 type DataElementGroupCodes = Config["base"]["dataElementGroups"];
@@ -112,61 +115,59 @@ export default class DataElementsSet {
     ): Promise<DataElement[]> {
         const { dataElementGroupSets } = metadata;
         const sectorsCode = baseConfig.dataElementGroupSets.sector;
+        const externalsCode = baseConfig.dataElementGroupSets.externals;
         const sectorsSet = getBy(dataElementGroupSets, "code", sectorsCode);
-        const pairedDataElementCode = baseConfig.attributes.pairedDataElement;
-        const attributePairedElements = getBy(metadata.attributes, "code", pairedDataElementCode);
-        const codes = baseConfig.dataElementGroups;
+        const externalsSet = getBy(dataElementGroupSets, "code", externalsCode);
+        const externalsByDataElementId = _(externalsSet.dataElementGroups)
+            .flatMap(deg => deg.dataElements.map(de => ({ deId: de.id, name: deg.displayName })))
+            .groupBy(data => data.deId)
+            .mapValues(dataList => _.sortBy(dataList.map(data => data.name)))
+            .value();
+        const degCodes = baseConfig.dataElementGroups;
         const dataElementsById = _(metadata.dataElements).keyBy(de => de.id);
 
         return _.flatMap(sectorsSet.dataElementGroups, sectorGroup => {
             const groupCodesByDataElementId = getGroupCodeByDataElementId(dataElementGroupSets);
 
-            const dataElements = _(sectorGroup.dataElements)
-                .map(dataElementRef => {
-                    const d2DataElement = dataElementsById.getOrFail(dataElementRef.id);
-                    const pairedDataElement = _(d2DataElement.attributeValues)
-                        .map(attributeValue =>
-                            attributeValue.attribute.id == attributePairedElements.id
-                                ? attributeValue.value
-                                : null
-                        )
-                        .compact()
-                        .first();
+            const dataElements = sectorGroup.dataElements.map(dataElementRef => {
+                const d2DataElement = dataElementsById.getOrFail(dataElementRef.id);
+                const attrsMap = getAttrsMap(baseConfig.attributes, d2DataElement.attributeValues);
+                const { pairedDataElement, countingMethod } = attrsMap;
+                const groupCodes = groupCodesByDataElementId[d2DataElement.id] || new Set();
+                const indicatorType = getGroupKey(groupCodes, degCodes, ["global", "sub"]);
+                const peopleOrBenefit = getGroupKey(groupCodes, degCodes, ["people", "benefit"]);
+                const seriesPrefix = `SERIES_`;
+                const externals = _(externalsByDataElementId).get(d2DataElement.id, []);
+                const seriesCode = Array.from(groupCodes).find(code =>
+                    code.startsWith(seriesPrefix)
+                );
 
-                    const groupCodes = groupCodesByDataElementId[d2DataElement.id] || new Set();
-                    const indicatorType = getGroupKey(groupCodes, codes, ["global", "sub"]);
-                    const peopleOrBenefit = getGroupKey(groupCodes, codes, ["people", "benefit"]);
-                    const seriesPrefix = `SERIES_`;
-                    const seriesCode = Array.from(groupCodes).find(code =>
-                        code.startsWith(seriesPrefix)
-                    );
+                if (!indicatorType) {
+                    console.error(`Data Element ${d2DataElement.id} has no indicator type 1`);
+                } else if (!peopleOrBenefit) {
+                    console.error(`Data Element ${d2DataElement.id} has no indicator type 2`);
+                } else if (!seriesCode) {
+                    console.error(`Data Element ${d2DataElement.id} has no series`);
+                } else {
+                    const dataElement: DataElementWithCodePairing = {
+                        id: d2DataElement.id,
+                        name: d2DataElement.displayName,
+                        code: d2DataElement.code,
+                        description: d2DataElement.description,
+                        sectorId: sectorGroup.id,
+                        indicatorType,
+                        peopleOrBenefit,
+                        series: seriesCode.replace(seriesPrefix, ""),
+                        pairedDataElementCode: pairedDataElement || "",
+                        countingMethod: countingMethod || "",
+                        externals,
+                        categoryComboId: d2DataElement.categoryCombo.id,
+                    };
+                    return dataElement;
+                }
+            });
 
-                    if (!indicatorType) {
-                        console.error(`Data Element ${d2DataElement.id} has no indicator type 1`);
-                    } else if (!peopleOrBenefit) {
-                        console.error(`Data Element ${d2DataElement.id} has no indicator type 2`);
-                    } else if (!seriesCode) {
-                        console.error(`Data Element ${d2DataElement.id} has no series`);
-                    } else {
-                        const dataElement: DataElementWithCodePairing = {
-                            id: d2DataElement.id,
-                            name: d2DataElement.displayName,
-                            code: d2DataElement.code,
-                            description: d2DataElement.description,
-                            sectorId: sectorGroup.id,
-                            indicatorType,
-                            peopleOrBenefit,
-                            series: seriesCode.replace(seriesPrefix, ""),
-                            pairedDataElementCode: pairedDataElement || "",
-                            categoryComboId: d2DataElement.categoryCombo.id,
-                        };
-                        return dataElement;
-                    }
-                })
-                .compact()
-                .value();
-
-            return getMainDataElements(dataElements);
+            return getMainDataElements(_.compact(dataElements));
         });
     }
 
@@ -188,6 +189,7 @@ export default class DataElementsSet {
             onlySelected,
             onlyMERSelected,
             peopleOrBenefit,
+            externals,
         } = options;
         const { dataElements } = this.data;
         const selected = onlySelected ? new Set(this.data.selected) : new Set();
@@ -208,7 +210,11 @@ export default class DataElementsSet {
                 (!series || dataElement.series === series) &&
                 (!indicatorType || dataElement.indicatorType === indicatorType) &&
                 (!peopleOrBenefit || dataElement.peopleOrBenefit === peopleOrBenefit) &&
-                (!onlyMERSelected || selectedMER.has(dataElement.id))
+                (!onlyMERSelected || selectedMER.has(dataElement.id)) &&
+                (!externals ||
+                    _.isEmpty(externals) ||
+                    _.intersection(dataElement.externals, externals).length > 0 ||
+                    (_.includes(externals, "") && _.isEmpty(dataElement.externals)))
         );
 
         return dataElementsFiltered;
@@ -333,8 +339,40 @@ function getGroupKey<T extends keyof DataElementGroupCodes>(
 function getBy<T, K extends keyof T>(objs: T[], key: K, value: T[K]): T {
     const matchingObj = objs.find(obj => obj[key] === value);
     if (!matchingObj) {
-        throw new Error(`Cannot get object: ${key}=${value}`);
+        throw new Error(
+            `Cannot get object: ${key}=${value} (${objs.map(obj => obj[key]).join(", ")})`
+        );
     } else {
         return matchingObj;
     }
+}
+
+type AttributeValue = { attribute: { code: string }; value: string };
+
+function getAttrsMap(
+    attributes: BaseConfig["attributes"],
+    attributeValues: AttributeValue[]
+): Record<keyof BaseConfig["attributes"], string | null> {
+    const valuesByAttributeCode = fromPairs(
+        attributeValues.map(attributeValue => [attributeValue.attribute.code, attributeValue.value])
+    );
+
+    return fromPairs(
+        getKeys(attributes).map(key => {
+            const code = attributes[key];
+            const value = _(valuesByAttributeCode).get(code, null);
+            return [key, value];
+        })
+    );
+}
+
+/* Type-safe helpers */
+
+function fromPairs<Key extends string, Value>(pairs: Array<[Key, Value]>): Record<Key, Value> {
+    const empty = {} as Record<Key, Value>;
+    return pairs.reduce((acc, [key, value]) => ({ ...acc, [key]: value }), empty);
+}
+
+function getKeys<T>(obj: T): Array<keyof T> {
+    return Object.keys(obj) as Array<keyof T>;
 }

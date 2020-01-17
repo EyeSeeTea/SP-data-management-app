@@ -19,7 +19,7 @@ export function getMockConfig(api: D2Api, mock: MockAdapter): Promise<Config> {
         params: {
             "attributes:fields": "code,id",
             "attributes:filter": [
-                "code:in:[PM_PAIRED_DE,PM_CREATED_BY_PROJECT_MONITORING,PM_ORGUNIT_PROJECT_ID,PM_PROJECT_DASHBOARD_ID]",
+                "code:in:[PM_PAIRED_DE,PM_CREATED_BY_PROJECT_MONITORING,PM_ORGUNIT_PROJECT_ID,PM_PROJECT_DASHBOARD_ID,PM_COUNTING_METHOD]",
             ],
             "categories:fields": "categoryOptions[code,id],code,id",
             "categories:filter": ["code:in:[ACTUAL_TARGET,GENDER,NEW_RECURRING]"],
@@ -30,10 +30,10 @@ export function getMockConfig(api: D2Api, mock: MockAdapter): Promise<Config> {
             "legendSets:fields": "code,id",
             "legendSets:filter": ["code:in:[ACTUAL_TARGET_ACHIEVED]"],
             "dataElements:fields":
-                "attributeValues[attribute[id],value],categoryCombo[id],code,description,displayName,id",
+                "attributeValues[attribute[code,id],value],categoryCombo[id],code,description,displayName,id",
             "dataElementGroupSets:fields":
                 "code,dataElementGroups[code,dataElements[id],displayName,id]",
-            "dataElementGroupSets:filter": ["code:in:[SECTOR,SERIES,TYPE_1,TYPE_2]"],
+            "dataElementGroupSets:filter": ["code:in:[SECTOR,SERIES,TYPE_1,TYPE_2,EXTERNAL]"],
             "indicators:fields": "code,id",
             "organisationUnitGroupSets:fields":
                 "code,organisationUnitGroups[displayName,id,organisationUnits[id,level]]",

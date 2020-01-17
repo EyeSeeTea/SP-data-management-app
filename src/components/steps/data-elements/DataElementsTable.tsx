@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, ReactNode } from "react";
-import { ObjectsTable, TablePagination, TableColumn } from "d2-ui-components";
+import { ObjectsTable, TablePagination, TableColumn, TableState } from "d2-ui-components";
 import { useSnackbar } from "d2-ui-components";
 import _ from "lodash";
 import DataElementsFilters, { Filter } from "./DataElementsFilters";
@@ -18,6 +18,12 @@ export interface DataElementsTableProps {
     field: Field;
 }
 
+const initialPagination: Partial<TablePagination> = {
+    pageSize: 10,
+    page: 1,
+    pageSizeOptions: [10, 20, 50],
+};
+
 const DataElementsTable: React.FC<DataElementsTableProps> = props => {
     const { project, dataElementsSet, sectorId, onChange, field } = props;
     const { isDev } = useAppContext();
@@ -32,13 +38,23 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
             name: "name" as const,
             text: i18n.t("Name"),
             sortable: true,
-            getValue: (dataElement: DataElement, _defaultValue: ReactNode) =>
-                getName(field, dataElement),
+            getValue: getName(field),
         },
-        { name: "code" as const, text: i18n.t("Code"), sortable: true },
+        { name: "code" as const, text: i18n.t("Code"), sortable: true, getValue: getCode },
         { name: "indicatorType" as const, text: i18n.t("Indicator Type"), sortable: true },
         { name: "peopleOrBenefit" as const, text: i18n.t("People / Benefit"), sortable: true },
-        { name: "series" as const, text: i18n.t("Series"), sortable: true },
+        {
+            name: "countingMethod" as const,
+            text: i18n.t("Counting Method"),
+            sortable: true,
+            getValue: withDefault("countingMethod", "-"),
+        },
+        {
+            name: "externals" as const,
+            text: i18n.t("Externals"),
+            sortable: true,
+            getValue: getExternals,
+        },
         ...(isDev ? [{ name: "pairedDataElementCode" as const, text: i18n.t("Paired DE") }] : []),
     ];
 
@@ -54,36 +70,22 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
     const fullFilter = { ...baseFilter, sectorId };
 
     const dataElements = useMemo(() => dataElementsSet.get(fullFilter), [
-        {}, // PENDING: Remove when fixed problem with d2-ui-components updating rows in-place
         dataElementsSet,
         sectorId,
         field,
         filter,
     ]);
 
-    const filterOptions = useMemo(
-        () => ({
-            series: _.sortBy(
-                _.uniq(dataElementsSet.get({ ...baseFilter, sectorId }).map(de => de.series))
-            ),
-        }),
-        [dataElementsSet, sectorId]
-    );
-
-    const pagination: TablePagination = {
-        pageSize: 20,
-        page: 1,
-        total: dataElements.length,
-        pageSizeOptions: [10, 20, 50],
-    };
-
-    const componentKey = _(fullFilter)
-        .map((value, key) => `${key}=${value || ""}`)
-        .join("-");
+    const filterOptions = useMemo(() => {
+        const dataElements = dataElementsSet.get({ ...baseFilter, sectorId });
+        return {
+            externals: _.sortBy(_.uniq(_.flatten(dataElements.map(de => de.externals)))),
+        };
+    }, [dataElementsSet, sectorId]);
 
     const selection = useMemo(() => {
         const getOpts = field === "selection" ? { onlySelected: true } : { onlyMERSelected: true };
-        return dataElementsSet.get({ ...getOpts, sectorId }).map(de => de.id);
+        return dataElementsSet.get({ ...getOpts, sectorId });
     }, [dataElementsSet, sectorId]);
 
     const searchBoxColumns =
@@ -101,14 +103,12 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
             selection={selection}
             rows={dataElements}
             forceSelectionColumn={true}
-            initialState={{ pagination }}
+            initialState={{ pagination: initialPagination }}
             columns={columns}
             searchBoxLabel={i18n.t("Search by name / code")}
-            onChange={state =>
-                onSelectionChange(sectorId, field, project, onChange, snackbar, state.selection)
-            }
+            onChange={state => onTableChange(sectorId, field, project, onChange, snackbar, state)}
             searchBoxColumns={searchBoxColumns}
-            key={componentKey}
+            resetKey={JSON.stringify(fullFilter)}
             filterComponents={
                 <DataElementsFilters
                     key="filters"
@@ -121,20 +121,33 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
     );
 };
 
-function getName(field: Field, dataElement: DataElement) {
-    return (
-        <React.Fragment>
-            <span title={dataElement.description}>{dataElement.name}</span>
-            {dataElement.pairedDataElement && field === "selection" && (
-                <React.Fragment>
-                    <br />
-                    <span title={dataElement.pairedDataElement.description}>
-                        {dataElement.pairedDataElement.name}
-                    </span>
-                </React.Fragment>
-            )}
-        </React.Fragment>
-    );
+function getName(field: Field) {
+    const Name = (dataElement: DataElement, _value: ReactNode): ReactNode => {
+        return (
+            <React.Fragment key={dataElement.name}>
+                <span title={dataElement.description}>{dataElement.name}</span>
+                {dataElement.pairedDataElement && field === "selection" && (
+                    <React.Fragment>
+                        <br />
+                        <span title={dataElement.pairedDataElement.description}>
+                            {dataElement.pairedDataElement.name}
+                        </span>
+                    </React.Fragment>
+                )}
+            </React.Fragment>
+        );
+    };
+    return Name;
+}
+
+function getCode(dataElement: DataElement, _value: ReactNode) {
+    const codes = _.compact([dataElement, dataElement.pairedDataElement]).map(de => de.code);
+    return <React.Fragment key={dataElement.name}>{renderJoin(codes, <br />)}</React.Fragment>;
+}
+
+function getExternals(dataElement: DataElement, _value: ReactNode) {
+    const { externals } = dataElement;
+    return <React.Fragment key={externals[0]}>{renderJoin(externals, <br />)}</React.Fragment>;
 }
 
 function getRelatedMessage(dataElements: DataElement[], action: string): string | null {
@@ -156,14 +169,16 @@ function showRelatedMessage(snackbar: any, selectionUpdate: SelectionUpdate): vo
     if (msg) snackbar.info(msg);
 }
 
-function onSelectionChange(
+function onTableChange(
     sectorId: string,
     field: Field,
     project: Project,
     onChange: (project: Project) => void,
     snackbar: any,
-    dataElementIds: string[]
+    state: TableState<DataElement>
 ): void {
+    const dataElementIds = state.selection.map(de => de.id);
+
     if (field === "selection") {
         const { related, project: projectUpdated } = project.updateDataElementsSelectionForSector(
             dataElementIds,
@@ -179,6 +194,18 @@ function onSelectionChange(
         );
         onChange(projectUpdated);
     }
+}
+
+function renderJoin(nodes: ReactNode[], separator: ReactNode): ReactNode {
+    return _.flatMap(nodes, (node, idx) =>
+        idx < nodes.length - 1 ? [node, separator] : [node]
+    ).map((node, idx) => <React.Fragment key={idx}>{node}</React.Fragment>);
+}
+
+function withDefault(key: keyof DataElement, defaultValue: string) {
+    return (dataElement: DataElement, _value: ReactNode) => {
+        return dataElement[key] || defaultValue;
+    };
 }
 
 export default DataElementsTable;
