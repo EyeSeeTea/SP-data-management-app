@@ -28,6 +28,10 @@ const DataElementsFilters: React.FC<DataElementsFiltersProps> = props => {
     const { filter, filterOptions, onChange } = props;
     const classes = useStyles();
 
+    const externalsOptions = [{ value: "", text: i18n.t("Internals") }].concat(
+        filterOptions.externals.map(name => ({ value: name, text: name }))
+    );
+
     return (
         <div>
             <Dropdown
@@ -45,7 +49,7 @@ const DataElementsFilters: React.FC<DataElementsFiltersProps> = props => {
             />
 
             <MultipleDropdown
-                items={filterOptions.externals.map(name => ({ value: name, text: name }))}
+                items={externalsOptions}
                 values={filter.externals || []}
                 onChange={values => onChange({ ...filter, externals: values })}
                 label={i18n.t("Externals")}

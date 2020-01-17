@@ -29,7 +29,7 @@ export interface DataElementWithCodePairing {
     indicatorType: IndicatorType;
     peopleOrBenefit: PeopleOrBenefit;
     countingMethod: string;
-    externals: string[];
+    externals: string[]; // an empty string means internals
     series: string;
     pairedDataElementCode: string;
     categoryComboId: Id;
@@ -213,7 +213,8 @@ export default class DataElementsSet {
                 (!onlyMERSelected || selectedMER.has(dataElement.id)) &&
                 (!externals ||
                     _.isEmpty(externals) ||
-                    _.intersection(dataElement.externals, externals).length > 0)
+                    _.intersection(dataElement.externals, externals).length > 0 ||
+                    (_.includes(externals, "") && _.isEmpty(dataElement.externals)))
         );
 
         return dataElementsFiltered;
