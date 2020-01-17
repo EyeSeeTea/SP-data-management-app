@@ -26,7 +26,7 @@ const useStyles = makeStyles({
 
 const SaveStep: React.FC<StepProps> = ({ project, onCancel }) => {
     const { api, isDev } = useAppContext();
-    const [isSaving] = useState(false);
+    const [isSaving, setSaving] = useState(false);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const snackbar = useSnackbar();
@@ -35,7 +35,9 @@ const SaveStep: React.FC<StepProps> = ({ project, onCancel }) => {
 
     async function save() {
         try {
+            setSaving(true);
             const { payload, response, project: projectSaved } = await project.save();
+            setSaving(false);
             if (response && response.status === "OK") {
                 history.push(generateUrl("projects"));
                 if (isDev) saveDataValues(api, projectSaved);
@@ -44,6 +46,7 @@ const SaveStep: React.FC<StepProps> = ({ project, onCancel }) => {
                 setErrorMessage(JSON.stringify({ response, payload }, null, 2));
             }
         } catch (err) {
+            setSaving(false);
             snackbar.error(err.message || err.toString());
         }
     }
