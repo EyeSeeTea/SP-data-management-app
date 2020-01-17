@@ -79,7 +79,6 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
     const filterOptions = useMemo(() => {
         const dataElements = dataElementsSet.get({ ...baseFilter, sectorId });
         return {
-            series: _.sortBy(_.uniq(dataElements.map(de => de.series))),
             externals: _.sortBy(_.uniq(_.flatten(dataElements.map(de => de.externals)))),
         };
     }, [dataElementsSet, sectorId]);

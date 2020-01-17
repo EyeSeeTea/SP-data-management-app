@@ -13,14 +13,12 @@ interface DataElementsFiltersProps {
 }
 
 export interface Filter {
-    series?: string;
     indicatorType?: IndicatorType;
     onlySelected?: boolean;
     externals?: string[];
 }
 
 export interface FilterOptions {
-    series: string[];
     externals: string[];
 }
 
@@ -39,13 +37,6 @@ const DataElementsFilters: React.FC<DataElementsFiltersProps> = props => {
                 value={filter.indicatorType}
                 onChange={value => onChange({ ...filter, indicatorType: value as IndicatorType })}
                 label={i18n.t("Indicator Type")}
-            />
-
-            <Dropdown
-                items={filterOptions.series.map(name => ({ value: name, text: name }))}
-                value={filter.series}
-                onChange={value => onChange({ ...filter, series: value })}
-                label={i18n.t("Series")}
             />
 
             <MultipleDropdown

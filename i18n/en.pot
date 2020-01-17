@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2020-01-16T12:07:47.249Z\n"
-"PO-Revision-Date: 2020-01-16T12:07:47.249Z\n"
+"POT-Creation-Date: 2020-01-17T11:49:00.829Z\n"
+"PO-Revision-Date: 2020-01-17T11:49:00.829Z\n"
 
 msgid "<No value>"
 msgstr ""
@@ -20,10 +20,10 @@ msgstr ""
 msgid "Back"
 msgstr ""
 
-msgid "Indicator Type"
+msgid "Internals"
 msgstr ""
 
-msgid "Series"
+msgid "Indicator Type"
 msgstr ""
 
 msgid "Externals"
@@ -335,9 +335,6 @@ msgid "Male Recurring"
 msgstr ""
 
 msgid "Female Recurring"
-msgstr ""
-
-msgid "Counting Method"
 msgstr ""
 
 msgid "People"
