@@ -157,12 +157,9 @@ export default class DataElementsSet {
                     console.error(`DataElement ${deKey} has no indicator type 1`);
                 } else if (!peopleOrBenefit) {
                     console.error(`DataElement ${deKey} has no indicator type 2`);
-                } else if (seriesGroups.length === 0) {
-                    console.error(`DataElement ${deKey} has no series`);
-                    return;
                 } else if (seriesGroups.length > 1) {
                     console.error(
-                        `DataElement ${deKey} has ${seriesGroups.length} series, use first`
+                        `DataElement ${deKey} has ${seriesGroups.length} series, using first`
                     );
                 } else {
                     const dataElement: DataElementWithCodePairing = {
@@ -174,7 +171,7 @@ export default class DataElementsSet {
                         isMainSector: attrsMap.mainSector === sectorGroup.code,
                         indicatorType,
                         peopleOrBenefit,
-                        series: seriesGroups[0].code,
+                        series: seriesGroups.length > 0 ? seriesGroups[0].code : "",
                         pairedDataElementCode: pairedDataElement || "",
                         countingMethod: countingMethod || "",
                         externals,

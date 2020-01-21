@@ -284,7 +284,25 @@ export async function getConfig(api: D2Api): Promise<Config> {
 
 async function getFromApp(baseUrl: string) {
     const api = new D2ApiDefault({ baseUrl });
-    const config = await getConfig(api);
+    const allConfig = await getConfig(api);
+    const deIds = [
+        "WS8XV4WWPE7",
+        "ik0ICagvIjm",
+        "K6mAC5SiO29",
+        "We61YNYyOX0",
+        "yMqK9DKbA3X",
+        "qQy0N1xdwQ1",
+        "iyQBe9Xv7bk",
+        "u24zk6wAgFE",
+        "WS8XV4WWPE7",
+        "yUGuwPFkBrj",
+    ];
+    const config: Config = {
+        ...allConfig,
+        funders: allConfig.funders.slice(0, 5),
+        locations: allConfig.locations.slice(0, 5),
+        dataElements: allConfig.dataElements.filter(de => deIds.includes(de.id)),
+    };
     const jsonPath = path.join(__dirname, "__tests__", "config.json");
     fs.writeFileSync(jsonPath, JSON.stringify(config, null, 4) + "\n");
     console.log(`Written: ${jsonPath}`);

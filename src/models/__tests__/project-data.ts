@@ -31,10 +31,11 @@ export const projectData = {
     ),
     awardNumber: "12345",
     subsequentLettering: "en",
-    sectors: config.sectors.slice(0, 2),
+    sectors: _(config.sectors)
+        .filter(sector => ["Agriculture", "Livelihood"].includes(sector.displayName))
+        .sortBy(sector => sector.displayName)
+        .value(),
 };
-
-type R1 = Partial<RequiredProps<ProjectData>>;
 
 export function getProject<K extends keyof ProjectData>(
     api: D2Api,
@@ -42,6 +43,6 @@ export function getProject<K extends keyof ProjectData>(
 ): Project {
     return Project.create(api, config)
         .setObj(Object.assign({}, projectData, partialProjectData || {}))
-        .updateDataElementsSelection(["WS8XV4WWPE7", "ik0ICagvIjm", "We61YNYyOX0"])
-        .project.updateDataElementsMERSelection(["WS8XV4WWPE7", "We61YNYyOX0"]);
+        .updateDataElementsSelection(["WS8XV4WWPE7", "ik0ICagvIjm", "yMqK9DKbA3X"])
+        .project.updateDataElementsMERSelection(["WS8XV4WWPE7", "yMqK9DKbA3X"]);
 }
