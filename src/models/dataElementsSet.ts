@@ -26,6 +26,7 @@ export interface DataElementWithCodePairing {
     code: string;
     description: string;
     sectorId: Id;
+    isMainSector: boolean;
     indicatorType: IndicatorType;
     peopleOrBenefit: PeopleOrBenefit;
     countingMethod: string;
@@ -170,6 +171,7 @@ export default class DataElementsSet {
                         code: d2DataElement.code,
                         description: d2DataElement.description,
                         sectorId: sectorGroup.id,
+                        isMainSector: attrsMap.mainSector === sectorGroup.code,
                         indicatorType,
                         peopleOrBenefit,
                         series: seriesGroups[0].code,
@@ -216,7 +218,9 @@ export default class DataElementsSet {
             : dataElements;
 
         const dataElementsIncluded = includePaired
-            ? _.uniqBy(_.flatMap(mainDEs, de => _.compact([de, de.pairedDataElement])), "id")
+            ? _.uniqBy(_.flatMap(mainDEs, de => _.compact([de, de.pairedDataElement])), de =>
+                  [de.id, de.sectorId].join("-")
+              )
             : mainDEs;
 
         const dataElementsFiltered = dataElementsIncluded.filter(

@@ -222,8 +222,7 @@ export default class ProjectDb {
     ) {
         const { project } = this;
         const dataSetId = getUid("dataSet", project.uid + baseDataSet.code);
-
-        const dataElements = project.dataElements.get({ onlySelected: true, includePaired: true });
+        const dataElements = project.getSelectedDataElements();
 
         const dataElementsInSectors = _(dataElements)
             .filter(de => project.sectors.some(sector => sector.id === de.sectorId))

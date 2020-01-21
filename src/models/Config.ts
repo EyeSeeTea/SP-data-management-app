@@ -29,6 +29,7 @@ const baseConfig = {
         orgUnitProject: "PM_ORGUNIT_PROJECT_ID",
         projectDashboard: "PM_PROJECT_DASHBOARD_ID",
         countingMethod: "PM_COUNTING_METHOD",
+        mainSector: "PM_MAIN_SECTOR",
     },
     categories: {
         targetActual: "ACTUAL_TARGET",
