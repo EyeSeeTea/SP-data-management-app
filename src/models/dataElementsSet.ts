@@ -272,8 +272,14 @@ export default class DataElementsSet {
     }
 
     getFullSelection(dataElementIds: string[], sectorId: string, getOptions: GetOptions): string[] {
-        const selectedIdsInOtherSectors = this.get(getOptions)
-            .filter(de => de.sectorId !== sectorId)
+        const allDataElements = this.get(getOptions);
+        const previousIdsInSector = allDataElements
+            .filter(de => de.sectorId === sectorId)
+            .map(de => de.id);
+        const unselectedIds = new Set(_.difference(previousIdsInSector, dataElementIds));
+
+        const selectedIdsInOtherSectors = allDataElements
+            .filter(de => de.sectorId !== sectorId && !unselectedIds.has(de.id))
             .map(de => de.id);
         return _.union(selectedIdsInOtherSectors, dataElementIds);
     }
