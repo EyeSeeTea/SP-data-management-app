@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2020-01-17T11:49:00.829Z\n"
-"PO-Revision-Date: 2020-01-17T11:49:00.829Z\n"
+"POT-Creation-Date: 2020-01-22T12:28:28.099Z\n"
+"PO-Revision-Date: 2020-01-22T12:28:28.099Z\n"
 
 msgid "<No value>"
 msgstr ""
@@ -472,18 +472,13 @@ msgstr ""
 msgid "Delete"
 msgstr ""
 
-msgid ""
-"Click the blue button to create a new project or select a previously "
-"created project that you may want to access.\n"
-"\n"
-"             Click the three dots on the right side of the screen if you "
-"wish to perform an action over a project."
-msgstr ""
-
 msgid "MER Reports"
 msgstr ""
 
 msgid "Create Project"
+msgstr ""
+
+msgid "Search by name"
 msgstr ""
 
 msgid "Help message for MER"

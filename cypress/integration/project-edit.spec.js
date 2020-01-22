@@ -47,6 +47,6 @@ describe("Projects - Edit", () => {
             .contains("Save")
             .click();
 
-        cy.contains("Project created");
+        cy.contains("Project saved");
     });
 });
