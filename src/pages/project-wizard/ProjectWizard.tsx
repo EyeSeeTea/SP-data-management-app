@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import { useHistory, useLocation } from "react-router";
 import _ from "lodash";
 import { Wizard, useSnackbar } from "d2-ui-components";
@@ -19,6 +19,7 @@ import SaveStep from "../../components/steps/save/SaveStep";
 import DataElementsStep from "../../components/steps/data-elements/DataElementsStep";
 import { getDevProject } from "../../models/dev-project";
 import { Config } from "../../models/Config";
+import { helpTexts } from "./help-texts";
 
 type Action = { type: "create" } | { type: "edit"; id: string };
 
@@ -56,7 +57,7 @@ interface Step {
     validationKeys?: ValidationKey[];
     validationKeysLive?: ValidationKey[];
     description?: string;
-    help?: string;
+    help?: ReactNode;
 }
 
 class ProjectWizardImpl extends React.Component<Props, State> {
@@ -104,7 +105,7 @@ class ProjectWizardImpl extends React.Component<Props, State> {
                 description: i18n.t(
                     `Choose a name for the project and define the period for which data entry will be enabled and select funders for your project`
                 ),
-                help: i18n.t("TODO"),
+                help: helpTexts.generalInfo,
             },
             {
                 key: "organisation-units",
@@ -114,28 +115,27 @@ class ProjectWizardImpl extends React.Component<Props, State> {
                 description: i18n.t(
                     `Select the organisation unit associated with the project. At least one must be selected.`
                 ),
-                help: i18n.t("TODO"),
             },
             {
                 key: "sectors",
                 label: i18n.t("Sectors & Project Locations"),
                 component: SectorsStep,
                 validationKeys: ["sectors", "locations"],
-                help: i18n.t("TODO"),
+                help: helpTexts.sectors,
             },
             {
                 key: "indicators",
                 label: i18n.t("Selection of Indicators"),
                 component: DataElementsSelection,
                 validationKeys: ["dataElements"],
-                help: i18n.t("TODO"),
+                help: helpTexts.indicators,
             },
             {
                 key: "mer-indicators",
                 label: i18n.t("Selection of MER Indicators"),
                 component: DataElementsMER,
                 validationKeys: ["dataElementsMER"],
-                help: i18n.t("TODO"),
+                help: helpTexts.merIndicators,
             },
             {
                 key: "save",
@@ -144,9 +144,7 @@ class ProjectWizardImpl extends React.Component<Props, State> {
                 description: i18n.t(
                     'Setup of your project is complete. Click the "Save" button to save your project.'
                 ),
-                help: i18n.t(
-                    `Please review the project summary. Click the "Save" button to create the data set and all associated metadata for this project`
-                ),
+                help: helpTexts.save,
             },
         ];
     }
