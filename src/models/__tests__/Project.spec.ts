@@ -99,14 +99,12 @@ describe("Project", () => {
             expect(project.endDate && project.endDate.format("L")).toEqual(
                 moment("2020-03-31").format("L")
             );
-            expect(project.sectors.map(sector => sector.code)).toEqual(["SECTOR_LIVELIHOODS"]);
+            expect(project.sectors.map(sector => sector.code)).toEqual(["SECTOR_LIVELIHOOD"]);
             expect(project.funders.map(funder => funder.displayName)).toEqual([
-                "Atlas Copco",
-                "CARE",
+                "2018 World Food Program",
+                "ACWME",
             ]);
-            expect(project.locations.map(location => location.displayName)).toEqual([
-                "Grand Bahama",
-            ]);
+            expect(project.locations.map(location => location.displayName)).toEqual(["Abaco"]);
             expect(project.orgUnit && project.orgUnit.id).toEqual("R3rGhxWbAI9");
             expect(project.parentOrgUnit && project.parentOrgUnit.id).toEqual("eu2XF73JOzl");
             expect(project.dataSets && project.dataSets.actual.code).toEqual("R3rGhxWbAI9_ACTUAL");
@@ -119,8 +117,8 @@ describe("Project", () => {
 
         it("has data element sets", () => {
             expect(project.dataElements.get({ onlySelected: true }).map(de => de.id)).toEqual([
-                "yMqK9DKbA3X",
                 "u24zk6wAgFE",
+                "yMqK9DKbA3X",
             ]);
             expect(project.dataElements.get({ onlyMERSelected: true }).map(de => de.id)).toEqual([
                 "u24zk6wAgFE",
@@ -263,18 +261,18 @@ describe("Project", () => {
             const project = (await getProject()).setObj({
                 sectors: [
                     { id: "mGQ5ckOTU8A", displayName: "Agriculture", code: "SECTOR_AGRICULTURE" },
-                    { id: "m4Cg6FOPPR7", displayName: "Livelihoods", code: "SECTOR_LIVELIHOODS" },
+                    { id: "GkiSljtLcOI", displayName: "Livelihood", code: "SECTOR_LIVELIHOOD" },
                 ],
             });
             const errors = await project.validate(["dataElements"]);
             expect(errors.dataElements).toEqual([
-                "The following sectors have no indicators selected: Agriculture, Livelihoods",
+                "The following sectors have no indicators selected: Agriculture, Livelihood",
             ]);
 
             const { project: project2 } = project.updateDataElementsSelection(["qQy0N1xdwQ1"]);
             const errors2 = await project2.validate(["dataElements"]);
             expect(errors2.dataElements).toEqual([
-                "The following sectors have no indicators selected: Livelihoods",
+                "The following sectors have no indicators selected: Livelihood",
             ]);
 
             const { project: project3 } = project2.updateDataElementsSelection([
@@ -397,13 +395,13 @@ const metadataForGet = {
             ],
             organisationUnitGroups: [
                 {
-                    id: "OKEZCrPzqph",
+                    id: "WKUXmz4LIUG",
                 },
                 {
-                    id: "GsGG8967YDU",
+                    id: "OE0KdZRX2FC",
                 },
                 {
-                    id: "muk9Io6cQZY",
+                    id: "GG0k0oNhgS7",
                 },
             ],
         },
@@ -455,7 +453,7 @@ const metadataForGet = {
             ],
             sections: [
                 {
-                    code: "SECTOR_LIVELIHOODS_imYbEtdoQZx",
+                    code: "SECTOR_LIVELIHOOD_imYbEtdoQZx",
                 },
             ],
         },
@@ -505,7 +503,7 @@ const metadataForGet = {
             ],
             sections: [
                 {
-                    code: "SECTOR_LIVELIHOODS_KC6gi00Jm6H",
+                    code: "SECTOR_LIVELIHOOD_KC6gi00Jm6H",
                 },
             ],
         },
