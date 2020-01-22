@@ -11,6 +11,7 @@ import Project, { DataSet } from "../../models/Project";
 import { useAppContext } from "../../contexts/api-context";
 import { D2Api } from "d2-api";
 import { Config } from "../../models/Config";
+import { link } from "../../utils/form";
 
 type Type = "target" | "actual";
 
@@ -98,12 +99,23 @@ function getTranslations(type: Type, projectName: string | undefined) {
     const baseTitle = isTarget
         ? i18n.t("Set Target Values for Project")
         : i18n.t("Set Actual Values for Project");
+    const baseHelp = isTarget
+        ? i18n.t(
+              `If you have questions regarding target data entry, please refer to the document located at this link`
+          )
+        : i18n.t(`
+            If you have questions regarding actual data entry, please refer to the document located at this link`);
+    const help = (
+        <p>
+            {baseHelp}:&nbsp;{link("http://todo.com")}
+        </p>
+    );
     return {
         title: baseTitle + ": " + (projectName || "..."),
         subtitle: i18n.t(
             `Once cells turn into green, all information is saved and you can leave the Data Entry Section`
         ),
-        help: i18n.t(`This is an example of help message.`),
+        help,
     };
 }
 

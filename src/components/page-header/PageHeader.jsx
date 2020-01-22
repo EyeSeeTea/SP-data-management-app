@@ -39,7 +39,7 @@ PageHeader.propTypes = {
     variant: PropTypes.string,
     title: PropTypes.string.isRequired,
     onBackClick: PropTypes.func.isRequired,
-    help: PropTypes.string,
+    help: PropTypes.node,
     pageVisited: PropTypes.bool,
 };
 
