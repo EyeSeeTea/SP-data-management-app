@@ -329,14 +329,15 @@ describe("Project", () => {
                 params: baseRequest,
             }).replyOnce(200, objectsPaginated);
 
-            const { objects, pager } = await Project.getList(
+            const { objects, pagination } = await Project.getList(
                 api,
                 config,
                 {},
-                { page: 1, pageSize: 10, sorting: ["displayName", "asc"] }
+                { field: "displayName", order: "asc" },
+                { page: 1, pageSize: 10 }
             );
 
-            expect(pager).toEqual(objectsPaginated.pager);
+            expect(pagination).toEqual(objectsPaginated.pager);
             expect(objects).toEqual(objectsPaginated.organisationUnits);
         });
 
@@ -348,14 +349,15 @@ describe("Project", () => {
                 },
             }).replyOnce(200, objectsPaginated);
 
-            const { objects, pager } = await Project.getList(
+            const { objects, pagination } = await Project.getList(
                 api,
                 config,
                 { search: "abc", createdByCurrentUser: true },
-                { page: 1, pageSize: 10, sorting: ["displayName", "asc"] }
+                { field: "displayName", order: "asc" },
+                { page: 1, pageSize: 10 }
             );
 
-            expect(pager).toEqual(objectsPaginated.pager);
+            expect(pagination).toEqual(objectsPaginated.pager);
             expect(objects).toEqual(objectsPaginated.organisationUnits);
         });
     });

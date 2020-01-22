@@ -7,27 +7,27 @@ describe("Project Configuration - List page", () => {
     });
 
     it("shows list of user projects", () => {
-        cy.get(".data-table__rows > :nth-child(1) > :nth-child(4) span").should("not.be.empty");
+        cy.contains("00Cypress Project");
     });
 
     it("opens details window when mouse clicked", () => {
-        cy.get(".data-table__rows > :nth-child(1) > :nth-child(4) span").click();
-        cy.get(".detail-field").contains("Name");
-        cy.get(".detail-field").contains("Code");
-        cy.get(".detail-field").contains("Description");
-        cy.get(".detail-field").contains("Last Updated");
-        cy.get(".detail-field").contains("Last Updated By");
-        cy.get(".detail-field").contains("Created");
-        cy.get(".detail-field").contains("Created By");
-        cy.get(".detail-field").contains("Opening Date");
-        cy.get(".detail-field").contains("Closed Date");
-        cy.get(".detail-field").contains("API Link");
+        cy.contains("00Cypress Project").click();
+        cy.get(".MuiPaper-root:nth-child(2)").within(() => {
+            cy.contains("Name");
+            cy.contains("Code");
+            cy.contains("Description");
+            cy.contains("Last Updated");
+            cy.contains("Last Updated By");
+            cy.contains("Created");
+            cy.contains("Created By");
+            cy.contains("Opening Date");
+            cy.contains("Closed Date");
+            cy.contains("API Link");
+        });
     });
 
     it("opens context window when right button mouse is clicked", () => {
-        cy.get(".data-table__rows > :nth-child(1) > :nth-child(4) span")
-            .first()
-            .trigger("contextmenu");
+        cy.contains("00Cypress Project").trigger("contextmenu");
 
         cy.contains("Details");
         cy.contains("Add Actual Values");
@@ -39,10 +39,9 @@ describe("Project Configuration - List page", () => {
         cy.contains("Delete");
     });
 
-    it("shows list of user dataset sorted alphabetically", () => {
-        cy.get("[data-test='displayName-sorting-asc']");
-        cy.get(".data-table__rows > * > :nth-child(2) span").then(spans$ => {
-            const names = spans$.get().map(x => x.innerText);
+    it("shows list of projects sorted alphabetically", () => {
+        cy.get(".MuiTableBody-root tr > td:nth-child(2)").then(el => {
+            const names = el.get().map(x => x.innerText);
             const sortedNames = _(names)
                 .orderBy(name => name.toLowerCase())
                 .value();
@@ -50,69 +49,36 @@ describe("Project Configuration - List page", () => {
         });
     });
 
-    it("shows list of user dataset sorted alphabetically by name desc", () => {
-        runAndWaitForRequest("/api/*", () => cy.contains("Name").click());
+    it("shows list of projects sorted alphabetically by name desc", () => {
+        runAndWaitForRequest("/api/*", () => {
+            cy.contains("Name").click();
+        });
 
-        cy.get("[data-test='displayName-sorting-desc']");
-        cy.get(".data-table__rows > * > :nth-child(2) span").then(spans$ => {
-            const names = spans$.get().map(x => x.innerText);
+        cy.get(".MuiTableBody-root tr > td:nth-child(2)").then(el => {
+            const names = el.get().map(x => x.innerText);
             const sortedNames = _(names)
                 .orderBy(name => name.toLowerCase())
                 .reverse()
                 .value();
             assert.isTrue(_.isEqual(names, sortedNames));
         });
-
-        it("shows list of user dataset sorted alphabetically by name desc", () => {
-            cy.contains("Name").click();
-            cy.get("[data-test='displayName-sorting-desc']");
-
-            cy.get(".data-table__rows > * > :nth-child(2) span").then(spans$ => {
-                const names = spans$.get().map(x => x.innerText);
-                const sortedNames = _(names)
-                    .orderBy(name => name.toLowerCase())
-                    .reverse()
-                    .value();
-                assert.isTrue(_.isEqual(names, sortedNames));
-            });
-        });
-
-        it("can filter datasets by name", () => {
-            cy.get("[data-test='search'] input")
-                .clear()
-                .type("cypress test");
-
-            cy.contains("No results found");
-        });
-
-        it("will navegate to dashboard from the actions menu", () => {
-            cy.get(".data-table__rows > :nth-child(1) button").click();
-            cy.get("span[role=menuitem]")
-                .contains("Go to Dashboard")
-                .click();
-
-            cy.get("h5").contains("Dashboard");
-            cy.url().should("include", "/dashboard");
-        });
-
-        it("will navegate to actual values from the actions menu", () => {
-            cy.get(".data-table__rows > :nth-child(1) button").click();
-            cy.get("span[role=menuitem]")
-                .contains("Add Actual Values")
-                .click();
-
-            cy.get("h5").contains("Set Actual Values for Project");
-            cy.url().should("include", "/actual-values/");
-        });
     });
 
-    function runAndWaitForRequest(urlPattern, action) {
-        cy.server()
-            .route("GET", urlPattern)
-            .as(urlPattern);
+    it("can filter projects by name", () => {
+        cy.get("[placeholder='Search by name']")
+            .clear()
+            .type("Non existing name 1234$%&");
 
-        action();
-
-        cy.wait("@" + urlPattern);
-    }
+        cy.contains("No results found");
+    });
 });
+
+function runAndWaitForRequest(urlPattern, action) {
+    cy.server()
+        .route("GET", urlPattern)
+        .as(urlPattern);
+
+    action();
+
+    cy.wait("@" + urlPattern);
+}

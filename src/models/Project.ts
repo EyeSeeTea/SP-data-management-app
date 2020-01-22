@@ -44,7 +44,8 @@ Project model.
         api,
         config,
         { search: "abc", createdByCurrentUser: true },
-        { page: 2, pageSize: 10, sorting: ["displayName", "desc"] }
+        { field: "displayName", order: "desc" },
+        { page: 2, pageSize: 10 }
     )
 */
 
@@ -58,14 +59,13 @@ import {
     D2OrganisationUnit,
     D2IndicatorSchema,
 } from "d2-api";
-import { Pagination } from "./../types/ObjectsList";
-import { Pager } from "d2-api/api/models";
 import i18n from "../locales";
 import DataElementsSet, { SelectionUpdate, DataElement, PeopleOrBenefit } from "./dataElementsSet";
 import ProjectDb from "./ProjectDb";
 import { toISOString, getMonthsRange } from "../utils/date";
 import { generateUid } from "d2/uid";
 import ProjectDownload from "./ProjectDownload";
+import { TablePagination, TableSorting } from "d2-ui-components";
 
 export interface ProjectData {
     id: Id;
@@ -374,20 +374,19 @@ class Project {
         api: D2Api,
         config: Config,
         filters: FiltersForList,
-        pagination: Pagination
-    ): Promise<{ objects: ProjectForList[]; pager: Pager }> {
-        const order = pagination.sorting
-            ? _.thru(pagination.sorting, ([field, order]) => `${field}:i${order}`)
-            : undefined;
+        sorting: TableSorting<ProjectForList>,
+        pagination: { page?: number; pageSize?: number }
+    ): Promise<{ objects: ProjectForList[]; pagination: Partial<TablePagination> }> {
+        const order = `${sorting.field}:i${sorting.order}`;
         const userId = config.currentUser.id;
 
         return api.models.organisationUnits
             .get({
                 paging: true,
                 fields: orgUnitFields,
-                order: order,
-                page: pagination.page,
-                pageSize: pagination.pageSize,
+                order,
+                page: pagination.page || 1,
+                pageSize: pagination.pageSize || 20,
                 filter: {
                     name: { ilike: filters.search },
                     level: { eq: "3" },
@@ -395,7 +394,10 @@ class Project {
                 },
             })
             .getData()
-            .then(data => ({ ...data, objects: data.objects.map(getProjectFromOrgUnit) }));
+            .then(data => ({
+                pagination: data.pager,
+                objects: data.objects.map(getProjectFromOrgUnit),
+            }));
     }
 
     updateDataElementsSelection(

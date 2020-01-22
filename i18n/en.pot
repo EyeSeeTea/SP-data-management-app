@@ -504,18 +504,13 @@ msgstr ""
 msgid "Delete"
 msgstr ""
 
-msgid ""
-"Click the blue button to create a new project or select a previously "
-"created project that you may want to access.\n"
-"\n"
-"             Click the three dots on the right side of the screen if you "
-"wish to perform an action over a project."
-msgstr ""
-
 msgid "MER Reports"
 msgstr ""
 
 msgid "Create Project"
+msgstr ""
+
+msgid "Search by name"
 msgstr ""
 
 msgid ""
