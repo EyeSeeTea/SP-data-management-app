@@ -55,7 +55,7 @@ describe("Projects - Create", () => {
         cy.contains("Select at least one item for Sectors");
 
         selectInMultiSelector("sectors", "Agriculture");
-        selectInMultiSelector("sectors", "Livelihoods");
+        selectInMultiSelector("sectors", "Livelihood");
 
         cy.contains("Next").click();
         cy.contains("Select at least one item for Project Locations");
@@ -73,7 +73,7 @@ describe("Projects - Create", () => {
             .prev("td")
             .click();
 
-        cy.contains("Livelihoods").click();
+        cy.contains("Livelihood").click();
         cy.contains("# of HH-level storage equipment provided")
             .parent("td")
             .prev("td")
@@ -90,7 +90,7 @@ describe("Projects - Create", () => {
             .prev("td")
             .click();
 
-        cy.contains("Livelihoods").click();
+        cy.contains("Livelihood").click();
         cy.contains("# of HH-level storage equipment provided")
             .parent("td")
             .prev("td")
