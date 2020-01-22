@@ -19,7 +19,7 @@ export function getMockConfig(api: D2Api, mock: MockAdapter): Promise<Config> {
         params: {
             "attributes:fields": "code,id",
             "attributes:filter": [
-                "code:in:[PM_PAIRED_DE,PM_CREATED_BY_PROJECT_MONITORING,PM_ORGUNIT_PROJECT_ID,PM_PROJECT_DASHBOARD_ID,PM_COUNTING_METHOD]",
+                "code:in:[PM_PAIRED_DE,PM_CREATED_BY_PROJECT_MONITORING,PM_ORGUNIT_PROJECT_ID,PM_PROJECT_DASHBOARD_ID,PM_COUNTING_METHOD,PM_MAIN_SECTOR]",
             ],
             "categories:fields": "categoryOptions[code,id],code,id",
             "categories:filter": ["code:in:[ACTUAL_TARGET,GENDER,NEW_RECURRING]"],

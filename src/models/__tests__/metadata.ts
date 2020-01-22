@@ -2558,9 +2558,9 @@ export const metadata = {
                     ],
                 },
                 {
-                    code: "SECTOR_LIVELIHOODS",
+                    code: "SECTOR_LIVELIHOOD",
                     id: "m4Cg6FOPPR7",
-                    displayName: "Livelihoods",
+                    displayName: "Livelihood",
                     dataElements: [
                         { id: "iyQBe9Xv7bk" },
                         { id: "ayoVLBc4lFq" },

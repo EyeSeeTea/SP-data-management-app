@@ -7,6 +7,7 @@ import User from "../../models/user";
 import i18n from "../../locales";
 import { getIdFromOrgUnit } from "../../utils/dhis2";
 import { D2Api } from "d2-api";
+import { makeStyles } from "@material-ui/styles";
 
 type Path = string;
 
@@ -47,6 +48,7 @@ async function getOrganisationUnit(
 const UserOrgUnits: React.FC<UserOrgUnitsProps> = props => {
     const [rootIds, setRootIds] = useState<string[]>([]);
     const snackbar = useSnackbar();
+    const classes = useStyles();
     const { d2, api, config } = useAppContext();
     const user = new User(config);
     const { onChange, selected, selectableLevels, withElevation = true, height } = props;
@@ -69,7 +71,7 @@ const UserOrgUnits: React.FC<UserOrgUnitsProps> = props => {
     }
 
     return (
-        <div>
+        <div className={classes.wrapper}>
             {rootIds.length > 0 ? (
                 <OrgUnitsSelector
                     d2={d2}
@@ -89,5 +91,9 @@ const UserOrgUnits: React.FC<UserOrgUnitsProps> = props => {
         </div>
     );
 };
+
+const useStyles = makeStyles({
+    wrapper: { width: 900 },
+});
 
 export default UserOrgUnits;

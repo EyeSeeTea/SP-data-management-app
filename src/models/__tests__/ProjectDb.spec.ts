@@ -34,12 +34,13 @@ describe("ProjectDb", () => {
                 params: {
                     "organisationUnitGroups:fields": ":owner",
                     "organisationUnitGroups:filter": [
-                        "id:in:[OE0KdZRX2FC,WKUXmz4LIUG,GG0k0oNhgS7,GsGG8967YDU,eCi0GarbBwv]",
+                        "id:in:[OE0KdZRX2FC,WKUXmz4LIUG,GG0k0oNhgS7]",
                     ],
                 },
             }).replyOnce(200, orgUnitsMetadata);
 
             mock.onPost("/metadata", expectedMetadataPost).replyOnce(200, metadataResponse);
+
             mock.onPost("/metadata", expectedSectionsMetadataPost).replyOnce(200, metadataResponse);
 
             mock.onPut("/organisationUnits/WGC0DJ0YSis", expectedOrgUnitPut).replyOnce(200);
@@ -48,8 +49,6 @@ describe("ProjectDb", () => {
                 "/dataStore/project-monitoring-app/mer-WGC0DJ0YSis",
                 expectedDataStoreMer
             ).replyOnce(200);
-
-            mock.onPost("/metadata", expectedMetadataPost).replyOnce(200, metadataResponse);
 
             jest.spyOn(Date, "now").mockReturnValueOnce(new Date("2019/12/15").getTime());
 
@@ -111,7 +110,7 @@ const orgUnitsMetadata = {
 };
 
 const expectedDataStoreMer = {
-    dataElements: ["WS8XV4WWPE7", "We61YNYyOX0"],
+    dataElements: ["yMqK9DKbA3X", "WS8XV4WWPE7"],
 };
 
 const expectedOrgUnitPut = {
@@ -158,28 +157,28 @@ const expectedSectionsMetadataPost = {
                     id: "WS8XV4WWPE7",
                 },
                 {
-                    id: "K6mAC5SiO29",
+                    id: "ik0ICagvIjm",
                 },
                 {
-                    id: "ik0ICagvIjm",
+                    id: "K6mAC5SiO29",
                 },
             ],
             greyedFields: [],
         },
         {
-            id: "yoimQ4ZPy9e",
+            id: "eIe2SLzuupw",
             dataSet: {
                 id: "SCS4Dusnfdd",
             },
             sortOrder: 1,
-            name: "Livelihoods",
-            code: "SECTOR_LIVELIHOODS_SCS4Dusnfdd",
+            name: "Livelihood",
+            code: "SECTOR_LIVELIHOOD_SCS4Dusnfdd",
             dataElements: [
                 {
                     id: "yMqK9DKbA3X",
                 },
                 {
-                    id: "We61YNYyOX0",
+                    id: "GQyudNlGzkI",
                 },
             ],
             greyedFields: [],
@@ -197,28 +196,28 @@ const expectedSectionsMetadataPost = {
                     id: "WS8XV4WWPE7",
                 },
                 {
-                    id: "K6mAC5SiO29",
+                    id: "ik0ICagvIjm",
                 },
                 {
-                    id: "ik0ICagvIjm",
+                    id: "K6mAC5SiO29",
                 },
             ],
             greyedFields: [],
         },
         {
-            id: "SUyCGPaTZwf",
+            id: "uiiKwDjex3L",
             dataSet: {
                 id: "CwUxT9UIX3z",
             },
             sortOrder: 1,
-            name: "Livelihoods",
-            code: "SECTOR_LIVELIHOODS_CwUxT9UIX3z",
+            name: "Livelihood",
+            code: "SECTOR_LIVELIHOOD_CwUxT9UIX3z",
             dataElements: [
                 {
                     id: "yMqK9DKbA3X",
                 },
                 {
-                    id: "We61YNYyOX0",
+                    id: "GQyudNlGzkI",
                 },
             ],
             greyedFields: [],
@@ -338,75 +337,8 @@ const expectedMetadataPost = {
                     id: "WGC0DJ0YSis",
                 },
             ],
-            dataSetElements: [
-                {
-                    dataSet: {
-                        id: "SCS4Dusnfdd",
-                    },
-                    dataElement: {
-                        id: "WS8XV4WWPE7",
-                    },
-                    categoryCombo: {
-                        id: "bjDvmb4bfuf",
-                    },
-                },
-                {
-                    dataSet: {
-                        id: "SCS4Dusnfdd",
-                    },
-                    dataElement: {
-                        id: "K6mAC5SiO29",
-                    },
-                    categoryCombo: {
-                        id: "GKWiemQPU5U",
-                    },
-                },
-                {
-                    dataSet: {
-                        id: "SCS4Dusnfdd",
-                    },
-                    dataElement: {
-                        id: "ik0ICagvIjm",
-                    },
-                    categoryCombo: {
-                        id: "GKWiemQPU5U",
-                    },
-                },
-                {
-                    dataSet: {
-                        id: "SCS4Dusnfdd",
-                    },
-                    dataElement: {
-                        id: "yMqK9DKbA3X",
-                    },
-                    categoryCombo: {
-                        id: "bjDvmb4bfuf",
-                    },
-                },
-                {
-                    dataSet: {
-                        id: "SCS4Dusnfdd",
-                    },
-                    dataElement: {
-                        id: "We61YNYyOX0",
-                    },
-                    categoryCombo: {
-                        id: "bjDvmb4bfuf",
-                    },
-                },
-            ],
             timelyDays: 0,
             formType: "DEFAULT",
-            sections: [
-                {
-                    id: "qQopuH2XmFM",
-                    code: "SECTOR_AGRICULTURE_SCS4Dusnfdd",
-                },
-                {
-                    id: "yoimQ4ZPy9e",
-                    code: "SECTOR_LIVELIHOODS_SCS4Dusnfdd",
-                },
-            ],
             name: "MyProject Target",
             code: "WGC0DJ0YSis_TARGET",
             openFuturePeriods: 0,
@@ -469,6 +401,73 @@ const expectedMetadataPost = {
                     },
                 },
             ],
+            sections: [
+                {
+                    id: "qQopuH2XmFM",
+                    code: "SECTOR_AGRICULTURE_SCS4Dusnfdd",
+                },
+                {
+                    id: "eIe2SLzuupw",
+                    code: "SECTOR_LIVELIHOOD_SCS4Dusnfdd",
+                },
+            ],
+            dataSetElements: [
+                {
+                    dataSet: {
+                        id: "SCS4Dusnfdd",
+                    },
+                    dataElement: {
+                        id: "WS8XV4WWPE7",
+                    },
+                    categoryCombo: {
+                        id: "bjDvmb4bfuf",
+                    },
+                },
+                {
+                    dataSet: {
+                        id: "SCS4Dusnfdd",
+                    },
+                    dataElement: {
+                        id: "ik0ICagvIjm",
+                    },
+                    categoryCombo: {
+                        id: "GKWiemQPU5U",
+                    },
+                },
+                {
+                    dataSet: {
+                        id: "SCS4Dusnfdd",
+                    },
+                    dataElement: {
+                        id: "K6mAC5SiO29",
+                    },
+                    categoryCombo: {
+                        id: "GKWiemQPU5U",
+                    },
+                },
+                {
+                    dataSet: {
+                        id: "SCS4Dusnfdd",
+                    },
+                    dataElement: {
+                        id: "yMqK9DKbA3X",
+                    },
+                    categoryCombo: {
+                        id: "bjDvmb4bfuf",
+                    },
+                },
+                {
+                    dataSet: {
+                        id: "SCS4Dusnfdd",
+                    },
+                    dataElement: {
+                        id: "GQyudNlGzkI",
+                    },
+                    categoryCombo: {
+                        id: "GKWiemQPU5U",
+                    },
+                },
+            ],
         },
         {
             id: "CwUxT9UIX3z",
@@ -484,75 +483,8 @@ const expectedMetadataPost = {
                     id: "WGC0DJ0YSis",
                 },
             ],
-            dataSetElements: [
-                {
-                    dataSet: {
-                        id: "CwUxT9UIX3z",
-                    },
-                    dataElement: {
-                        id: "WS8XV4WWPE7",
-                    },
-                    categoryCombo: {
-                        id: "bjDvmb4bfuf",
-                    },
-                },
-                {
-                    dataSet: {
-                        id: "CwUxT9UIX3z",
-                    },
-                    dataElement: {
-                        id: "K6mAC5SiO29",
-                    },
-                    categoryCombo: {
-                        id: "GKWiemQPU5U",
-                    },
-                },
-                {
-                    dataSet: {
-                        id: "CwUxT9UIX3z",
-                    },
-                    dataElement: {
-                        id: "ik0ICagvIjm",
-                    },
-                    categoryCombo: {
-                        id: "GKWiemQPU5U",
-                    },
-                },
-                {
-                    dataSet: {
-                        id: "CwUxT9UIX3z",
-                    },
-                    dataElement: {
-                        id: "yMqK9DKbA3X",
-                    },
-                    categoryCombo: {
-                        id: "bjDvmb4bfuf",
-                    },
-                },
-                {
-                    dataSet: {
-                        id: "CwUxT9UIX3z",
-                    },
-                    dataElement: {
-                        id: "We61YNYyOX0",
-                    },
-                    categoryCombo: {
-                        id: "bjDvmb4bfuf",
-                    },
-                },
-            ],
             timelyDays: 0,
             formType: "DEFAULT",
-            sections: [
-                {
-                    id: "Kg4EmzighjA",
-                    code: "SECTOR_AGRICULTURE_CwUxT9UIX3z",
-                },
-                {
-                    id: "SUyCGPaTZwf",
-                    code: "SECTOR_LIVELIHOODS_CwUxT9UIX3z",
-                },
-            ],
             name: "MyProject Actual",
             code: "WGC0DJ0YSis_ACTUAL",
             openFuturePeriods: 1,
@@ -612,6 +544,73 @@ const expectedMetadataPost = {
                     value: "WGC0DJ0YSis",
                     attribute: {
                         id: "qgSqj6sBF7j",
+                    },
+                },
+            ],
+            sections: [
+                {
+                    id: "Kg4EmzighjA",
+                    code: "SECTOR_AGRICULTURE_CwUxT9UIX3z",
+                },
+                {
+                    id: "uiiKwDjex3L",
+                    code: "SECTOR_LIVELIHOOD_CwUxT9UIX3z",
+                },
+            ],
+            dataSetElements: [
+                {
+                    dataSet: {
+                        id: "CwUxT9UIX3z",
+                    },
+                    dataElement: {
+                        id: "WS8XV4WWPE7",
+                    },
+                    categoryCombo: {
+                        id: "bjDvmb4bfuf",
+                    },
+                },
+                {
+                    dataSet: {
+                        id: "CwUxT9UIX3z",
+                    },
+                    dataElement: {
+                        id: "ik0ICagvIjm",
+                    },
+                    categoryCombo: {
+                        id: "GKWiemQPU5U",
+                    },
+                },
+                {
+                    dataSet: {
+                        id: "CwUxT9UIX3z",
+                    },
+                    dataElement: {
+                        id: "K6mAC5SiO29",
+                    },
+                    categoryCombo: {
+                        id: "GKWiemQPU5U",
+                    },
+                },
+                {
+                    dataSet: {
+                        id: "CwUxT9UIX3z",
+                    },
+                    dataElement: {
+                        id: "yMqK9DKbA3X",
+                    },
+                    categoryCombo: {
+                        id: "bjDvmb4bfuf",
+                    },
+                },
+                {
+                    dataSet: {
+                        id: "CwUxT9UIX3z",
+                    },
+                    dataElement: {
+                        id: "GQyudNlGzkI",
+                    },
+                    categoryCombo: {
+                        id: "GKWiemQPU5U",
                     },
                 },
             ],
@@ -706,12 +705,6 @@ const expectedMetadataPost = {
                     dataDimensionItemType: "DATA_ELEMENT",
                     dataElement: {
                         id: "WS8XV4WWPE7",
-                    },
-                },
-                {
-                    dataDimensionItemType: "DATA_ELEMENT",
-                    dataElement: {
-                        id: "We61YNYyOX0",
                     },
                 },
                 {
@@ -817,6 +810,12 @@ const expectedMetadataPost = {
                     dataDimensionItemType: "DATA_ELEMENT",
                     dataElement: {
                         id: "K6mAC5SiO29",
+                    },
+                },
+                {
+                    dataDimensionItemType: "DATA_ELEMENT",
+                    dataElement: {
+                        id: "GQyudNlGzkI",
                     },
                 },
             ],
@@ -972,6 +971,12 @@ const expectedMetadataPost = {
                         id: "K6mAC5SiO29",
                     },
                 },
+                {
+                    dataDimensionItemType: "DATA_ELEMENT",
+                    dataElement: {
+                        id: "GQyudNlGzkI",
+                    },
+                },
             ],
             organisationUnits: [
                 {
@@ -1114,12 +1119,6 @@ const expectedMetadataPost = {
                 {
                     dataDimensionItemType: "INDICATOR",
                     indicator: {
-                        id: "CaWKoWg00oo",
-                    },
-                },
-                {
-                    dataDimensionItemType: "INDICATOR",
-                    indicator: {
                         id: "i01veyO4Cuw",
                     },
                 },
@@ -1196,6 +1195,12 @@ const expectedMetadataPost = {
                     dataDimensionItemType: "INDICATOR",
                     indicator: {
                         id: "eYmeRzhBFV4",
+                    },
+                },
+                {
+                    dataDimensionItemType: "INDICATOR",
+                    indicator: {
+                        id: "K4sH0aQDdeL",
                     },
                 },
             ],
@@ -1285,13 +1290,13 @@ const expectedMetadataPost = {
                 {
                     dataDimensionItemType: "INDICATOR",
                     indicator: {
-                        id: "CaWKoWg00oo",
+                        id: "i01veyO4Cuw",
                     },
                 },
                 {
                     dataDimensionItemType: "INDICATOR",
                     indicator: {
-                        id: "i01veyO4Cuw",
+                        id: "K4sH0aQDdeL",
                     },
                 },
             ],
@@ -1369,13 +1374,13 @@ const expectedMetadataPost = {
                 {
                     dataDimensionItemType: "INDICATOR",
                     indicator: {
-                        id: "CaWKoWg00oo",
+                        id: "i01veyO4Cuw",
                     },
                 },
                 {
                     dataDimensionItemType: "INDICATOR",
                     indicator: {
-                        id: "i01veyO4Cuw",
+                        id: "K4sH0aQDdeL",
                     },
                 },
             ],
@@ -1442,6 +1447,12 @@ const expectedMetadataPost = {
                     dataDimensionItemType: "INDICATOR",
                     indicator: {
                         id: "eYmeRzhBFV4",
+                    },
+                },
+                {
+                    dataDimensionItemType: "INDICATOR",
+                    indicator: {
+                        id: "K4sH0aQDdeL",
                     },
                 },
             ],
@@ -1549,6 +1560,12 @@ const expectedMetadataPost = {
                     dataDimensionItemType: "INDICATOR",
                     indicator: {
                         id: "eoyInzqL7YZ",
+                    },
+                },
+                {
+                    dataDimensionItemType: "INDICATOR",
+                    indicator: {
+                        id: "Gob5qHAX60C",
                     },
                 },
             ],
