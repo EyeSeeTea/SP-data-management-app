@@ -6,7 +6,7 @@ describe("Projects - Edit", () => {
     before(() => {
         cy.login("admin");
         cy.loadPage();
-        cy.contains("Cypress Project").trigger("contextmenu");
+        cy.contains("00Cypress Project").trigger("contextmenu");
         cy.contains("Edit").click();
     });
 
@@ -32,7 +32,7 @@ describe("Projects - Edit", () => {
         cy.waitForStep("Summary and Save");
 
         cy.contains("Name");
-        cy.contains("Cypress Project");
+        cy.contains("00Cypress Project");
         cy.contains("Period dates");
         cy.contains(`February 1, ${projectYear} -> June 30, ${projectYear}`);
         cy.contains("Description");
@@ -46,5 +46,7 @@ describe("Projects - Edit", () => {
         cy.get("[data-wizard-contents] button")
             .contains("Save")
             .click();
+
+        cy.contains("Project created");
     });
 });

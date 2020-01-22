@@ -20,7 +20,7 @@ describe("Projects - Create", () => {
         cy.contains("Award Number should be a number of 5 digits");
         cy.contains("Subsequent Lettering must be a string of two letters only");
 
-        cy.get("[data-field='name']").type("Cypress Project");
+        cy.get("[data-field='name']").type("00Cypress Project");
         cy.get("[data-field='awardNumber']").type(Math.floor(10000 + Math.random() * 90000));
         cy.get("[data-field='subsequentLettering']").type("SL");
 
@@ -55,7 +55,7 @@ describe("Projects - Create", () => {
         cy.contains("Select at least one item for Sectors");
 
         selectInMultiSelector("sectors", "Agriculture");
-        selectInMultiSelector("sectors", "Livelihoods");
+        selectInMultiSelector("sectors", "Livelihood");
 
         cy.contains("Next").click();
         cy.contains("Select at least one item for Project Locations");
@@ -73,7 +73,7 @@ describe("Projects - Create", () => {
             .prev("td")
             .click();
 
-        cy.contains("Livelihoods").click();
+        cy.contains("Livelihood").click();
         cy.contains("# of HH-level storage equipment provided")
             .parent("td")
             .prev("td")
@@ -90,7 +90,7 @@ describe("Projects - Create", () => {
             .prev("td")
             .click();
 
-        cy.contains("Livelihoods").click();
+        cy.contains("Livelihood").click();
         cy.contains("# of HH-level storage equipment provided")
             .parent("td")
             .prev("td")
@@ -104,7 +104,7 @@ describe("Projects - Create", () => {
         cy.get("[data-test-current=true]").contains("Save");
 
         cy.contains("Name");
-        cy.contains("Cypress Project");
+        cy.contains("00Cypress Project");
 
         cy.contains("Period dates");
         cy.contains(`February 1, ${projectYear} -> June 30, ${projectYear}`);
@@ -126,6 +126,8 @@ describe("Projects - Create", () => {
         cy.get("[data-wizard-contents] button")
             .contains("Save")
             .click();
+
+        cy.contains("Project created");
     });
 });
 

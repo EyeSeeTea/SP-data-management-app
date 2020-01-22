@@ -5,9 +5,7 @@ describe("Download project", () => {
     beforeEach(() => {
         cy.login("admin");
         cy.loadPage();
-        cy.get(".data-table__rows > :nth-child(1) > :nth-child(2) span")
-            .first()
-            .trigger("contextmenu");
+        cy.contains("00Cypress Project").trigger("contextmenu");
         cy.contains("Download").click();
     });
 
