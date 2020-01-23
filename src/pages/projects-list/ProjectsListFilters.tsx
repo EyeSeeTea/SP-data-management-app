@@ -51,7 +51,7 @@ const ProjectsListFilters: React.FC<ProjectsListFiltersProps> = props => {
             />
 
             <FormControlLabel
-                label={i18n.t("Only selected")}
+                label={i18n.t("Active")}
                 className={classes.checkbox}
                 control={
                     <Checkbox

@@ -331,7 +331,7 @@ export default class ProjectDb {
         const code = orgUnit.code || "";
         const { startDate, endDate } = getDatesFromOrgUnit(orgUnit);
         const sectorCodes = projectDataSets.actual.sections.map(section =>
-            _.initial((section.code || "").split("_")).join("_")
+            getSectorCodeFromSectionCode(section.code)
         );
         const sectors = _(config.sectors)
             .keyBy(sector => sector.code)
@@ -365,6 +365,10 @@ export default class ProjectDb {
         const project = new Project(api, config, { ...projectData, initialData: projectData });
         return project;
     }
+}
+
+export function getSectorCodeFromSectionCode(code: string | undefined) {
+    return _.initial((code || "").split("_")).join("_");
 }
 
 type OrgUnitsMeta = Pick<MetadataPayload, "organisationUnits" | "organisationUnitGroups">;
