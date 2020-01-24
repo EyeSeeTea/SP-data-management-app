@@ -11,7 +11,7 @@ import i18n from "../../locales";
 import _ from "lodash";
 import { useAppContext, CurrentUser } from "../../contexts/api-context";
 import { useGoTo, GoTo } from "../../router";
-import Project, { ProjectForList } from "../../models/Project";
+import Project, { ProjectForList, FiltersForList } from "../../models/Project";
 import { Config } from "../../models/Config";
 import { formatDateShort, formatDateLong } from "../../utils/date";
 import ActionButton from "../../components/action-button/ActionButton";
@@ -19,6 +19,8 @@ import { GetPropertiesByType } from "../../types/utils";
 import { downloadFile } from "../../utils/download";
 import { D2Api } from "d2-api";
 import { Icon } from "@material-ui/core";
+import ProjectsListFilters, { Filter } from "./ProjectsListFilters";
+import Spinner from "../../components/spinner/Spinner";
 
 type UserRolesConfig = Config["base"]["userRoles"];
 
@@ -37,6 +39,19 @@ function getComponentConfig(api: D2Api, config: Config, goTo: GoTo, currentUser:
 
     const columns: TableColumn<ProjectForList>[] = [
         { name: "displayName", text: i18n.t("Name"), sortable: true },
+        {
+            name: "parent",
+            text: i18n.t("Country"),
+            sortable: false,
+            getValue: (project: ProjectForList) => project.parent.displayName,
+        },
+        {
+            name: "sectors",
+            text: i18n.t("Sectors"),
+            sortable: false,
+            getValue: (project: ProjectForList) =>
+                project.sectors.map(sector => sector.displayName).join(", "),
+        },
         { ...columnDate("lastUpdated", "datetime"), text: i18n.t("Last updated"), sortable: true },
         {
             ...columnDate("created", "datetime"),
@@ -48,27 +63,18 @@ function getComponentConfig(api: D2Api, config: Config, goTo: GoTo, currentUser:
     ];
 
     const details = [
-        { name: "displayName" as const, text: i18n.t("Name") },
-        {
-            name: "code" as const,
-            text: i18n.t("Code"),
-            getValue: (project: ProjectForList) => `${project.code}`,
-        },
+        ...columns.map(({ sortable, ...other }) => other),
         { name: "displayDescription" as const, text: i18n.t("Description") },
-        { ...columnDate("lastUpdated" as const, "datetime"), text: i18n.t("Last Updated") },
-        {
-            name: "lastUpdatedBy" as const,
-            text: i18n.t("Last Updated By"),
-            getValue: (project: ProjectForList) => ` ${project.lastUpdatedBy.name}`,
-        },
-        { ...columnDate("created" as const, "datetime"), text: i18n.t("Created") },
         {
             name: "user" as const,
             text: i18n.t("Created By"),
             getValue: (project: ProjectForList) => `${project.user.displayName}`,
         },
-        { ...columnDate("openingDate", "date"), text: i18n.t("Opening Date") },
-        { ...columnDate("closedDate", "date"), text: i18n.t("Closed Date") },
+        {
+            name: "code" as const,
+            text: i18n.t("Code"),
+            getValue: (project: ProjectForList) => `${project.code}`,
+        },
         {
             name: "href" as const,
             text: i18n.t("API Link"),
@@ -178,50 +184,48 @@ const ProjectsList: React.FC = () => {
     const goTo = useGoTo();
     const { api, config, currentUser } = useAppContext();
     const componentConfig = getComponentConfig(api, config, goTo, currentUser);
-
     const [rows, setRows] = useState<ProjectForList[] | undefined>(undefined);
     const [pagination, setPagination] = useState(componentConfig.initialPagination);
     const [sorting, setSorting] = useState<ProjectTableSorting>(componentConfig.initialSorting);
     const [search, setSearch] = useState("");
-
-    async function getProjects() {
-        const res = await Project.getList(api, config, { search }, sorting, pagination);
-        setRows(res.objects);
-        setPagination(pagination => ({ ...pagination, ...res.pagination }));
-    }
+    const [filter, setFilter] = useState<Filter>({});
+    const [isLoading, setLoading] = useState(true);
 
     useEffect(() => {
         getProjects();
-    }, [pagination.page, sorting, search]);
+    }, [pagination.page, sorting, search, filter]);
+
+    const filterOptions = React.useMemo(
+        () => ({ countries: config.countries, sectors: config.sectors }),
+        [config]
+    );
+
+    async function getProjects() {
+        const filters: FiltersForList = {
+            search,
+            countryIds: filter.countries,
+            onlyActive: filter.onlyActive,
+        };
+        setLoading(true);
+        const res = await Project.getList(api, config, filters, sorting, pagination);
+        setRows(res.objects);
+        setPagination(pagination => ({ ...pagination, ...res.pagination }));
+        setLoading(false);
+    }
 
     function onStateChange(state: TableState<ProjectForList>) {
         setPagination(state.pagination);
         setSorting(state.sorting);
     }
 
-    const canAccessMer = currentUser.hasRole("admin") || currentUser.hasRole("dataReviewer");
+    const canAccessReports = currentUser.hasRole("admin") || currentUser.hasRole("dataReviewer");
     const newProjectPageHandler = currentUser.canCreateProject() && (() => goTo("projects.new"));
 
     return (
         <React.Fragment>
-            <div style={{ position: "absolute", top: 70, right: 420, zIndex: 1000 }}>
-                {canAccessMer && (
-                    <ActionButton
-                        label={i18n.t("MER Reports")}
-                        onClick={() => goTo("report")}
-                        style={{ marginRight: 20 }}
-                    />
-                )}
-
-                {newProjectPageHandler && (
-                    <ActionButton
-                        label={i18n.t("Create Project")}
-                        onClick={newProjectPageHandler}
-                    />
-                )}
-            </div>
-
             <div style={{ marginTop: 25 }}>
+                {isLoading ? <span data-test-loading /> : <span data-test-loaded />}
+
                 <ObjectsTable<ProjectForList>
                     searchBoxLabel={i18n.t("Search by name")}
                     searchBoxColumns={["displayName"]}
@@ -232,6 +236,30 @@ const ProjectsList: React.FC = () => {
                     details={componentConfig.details}
                     actions={componentConfig.actions}
                     rows={rows || []}
+                    filterComponents={
+                        <React.Fragment key="filters">
+                            <ProjectsListFilters
+                                filter={filter}
+                                filterOptions={filterOptions}
+                                onChange={setFilter}
+                            />
+
+                            {canAccessReports && (
+                                <ActionButton
+                                    label={i18n.t("MER Reports")}
+                                    onClick={() => goTo("report")}
+                                    style={{ marginLeft: 50, marginRight: 20 }}
+                                />
+                            )}
+
+                            {newProjectPageHandler && (
+                                <ActionButton
+                                    label={i18n.t("Create Project")}
+                                    onClick={newProjectPageHandler}
+                                />
+                            )}
+                        </React.Fragment>
+                    }
                 />
             </div>
         </React.Fragment>

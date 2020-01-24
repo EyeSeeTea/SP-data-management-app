@@ -18,6 +18,7 @@ const MultipleDropdown: React.FC<MultipleDropdownProps> = props => {
         <DropdownForm label={label}>
             <Select
                 multiple={true}
+                data-test-multiple-dropdown={label}
                 value={values}
                 onChange={ev => onChange(ev.target.value as string[])}
                 MenuProps={{

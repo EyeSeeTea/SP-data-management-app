@@ -41,27 +41,26 @@ describe("Projects - Create", () => {
 
         // Organisation Unit Step
 
-        cy.waitForStep("Organisation Unit");
+        cy.waitForStep("Organisation Unit & Project Locations");
         cy.contains("Next").click();
         cy.contains("One Organisation Unit should be selected");
 
         selectOrgUnit("Bahamas");
         cy.contains("Next").click();
 
+        cy.contains("Select at least one item for Project Locations");
+        selectInMultiSelector("locations", "Abaco");
+        cy.contains("Next").click();
+
         // Sectors and Location
 
-        cy.waitForStep("Sectors & Project Locations");
+        cy.waitForStep("Sectors");
 
         cy.contains("Next").click();
         cy.contains("Select at least one item for Sectors");
 
         selectInMultiSelector("sectors", "Agriculture");
         selectInMultiSelector("sectors", "Livelihood");
-
-        cy.contains("Next").click();
-        cy.contains("Select at least one item for Project Locations");
-
-        selectInMultiSelector("locations", "Abaco");
 
         cy.contains("Next").click();
 

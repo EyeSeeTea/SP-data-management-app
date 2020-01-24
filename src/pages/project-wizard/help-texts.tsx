@@ -13,11 +13,13 @@ export const helpTexts = {
         - Funders- to add funders, ensure you click the funder first and the orange arrow button second.`,
         { nsSeparator: false }
     ),
-    sectors: i18n.t(
-        `- Remember to add multiple sectors if your project has multiple sectors.
-        - Locations- to add locations, ensure you click the location first and the orange arrow button second.`,
+    organisationUnits: i18n.t(
+        `- Locations- to add locations, ensure you click the location first and the orange arrow button second.`,
         { nsSeparator: false }
     ),
+    sectors: i18n.t(`- Remember to add multiple sectors if your project has multiple sectors.`, {
+        nsSeparator: false,
+    }),
     indicators: (
         <p>
             {i18n.t(

@@ -311,54 +311,55 @@ describe("Project", () => {
                 total: 12,
                 pageSize: 5,
             },
-            organisationUnits: [{ id: "1234a" }, { id: "1234b" }],
+            organisationUnits: [
+                { id: "1234a", parent: { id: "parent1" } },
+                { id: "1234b", parent: { id: "parent2" } },
+            ],
         };
 
         const baseRequest = {
             paging: true,
             fields:
-                "closedDate,code,created,displayDescription,displayName,href,id,lastUpdated,lastUpdatedBy[name],openingDate,publicAccess,user[displayName,id]",
+                "closedDate,code,created,displayDescription,displayName,href,id,lastUpdated,lastUpdatedBy[name],openingDate,parent[displayName,id],publicAccess,user[displayName,id]",
             order: "displayName:iasc",
             page: 1,
             pageSize: 10,
             filter: ["level:eq:3"],
         };
 
-        it("returns list of organisation units of level 3", async () => {
-            mock.onGet("/organisationUnits", {
-                params: baseRequest,
-            }).replyOnce(200, objectsPaginated);
-
-            const { objects, pagination } = await Project.getList(
-                api,
-                config,
-                {},
-                { field: "displayName", order: "asc" },
-                { page: 1, pageSize: 10 }
-            );
-
-            expect(pagination).toEqual(objectsPaginated.pager);
-            expect(objects).toEqual(objectsPaginated.organisationUnits);
-        });
-
-        it("returns list of organisation units filtered", async () => {
+        it.only("returns list of organisation units filtered", async () => {
             mock.onGet("/organisationUnits", {
                 params: {
                     ...baseRequest,
-                    filter: ["level:eq:3", "name:ilike:abc", "user.id:eq:M5zQapPyTZI"],
+                    filter: [
+                        "level:eq:3",
+                        "name:ilike:abc",
+                        "parent.id:in:[parent1]",
+                        "user.id:eq:M5zQapPyTZI",
+                    ],
                 },
             }).replyOnce(200, objectsPaginated);
+
+            mock.onGet("/metadata", {
+                params: {
+                    "dataSets:fields": "code,sections[code]",
+                    "dataSets:filter": ["code:in:[1234a_ACTUAL,1234b_ACTUAL]"],
+                },
+            }).replyOnce(200, {});
 
             const { objects, pagination } = await Project.getList(
                 api,
                 config,
-                { search: "abc", createdByCurrentUser: true },
+                { search: "abc", createdByCurrentUser: true, countryIds: ["parent1"] },
                 { field: "displayName", order: "asc" },
                 { page: 1, pageSize: 10 }
             );
 
             expect(pagination).toEqual(objectsPaginated.pager);
-            expect(objects).toEqual(objectsPaginated.organisationUnits);
+            expect(objects).toEqual([
+                { id: "1234a", parent: { id: "parent1" }, sectors: [] },
+                { id: "1234b", parent: { id: "parent2" }, sectors: [] },
+            ]);
         });
     });
 });

@@ -38,6 +38,8 @@ export function getMockConfig(api: D2Api, mock: MockAdapter): Promise<Config> {
             "organisationUnitGroupSets:fields":
                 "code,organisationUnitGroups[displayName,id,organisationUnits[id,level]]",
             "organisationUnitGroupSets:filter": ["code:in:[FUNDER,LOCATION]"],
+            "organisationUnits:fields": "displayName,id",
+            "organisationUnits:filter": ["level:eq:2"],
         },
     }).replyOnce(200, metadata);
 
@@ -72,6 +74,7 @@ describe("Config", () => {
                 "categories",
                 "categoryCombos",
                 "categoryOptions",
+                "countries",
                 "currentUser",
                 "dataElements",
                 "funders",

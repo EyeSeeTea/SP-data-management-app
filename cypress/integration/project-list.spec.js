@@ -1,5 +1,7 @@
 import _ from "lodash";
 
+const projectName = "00Cypress Project";
+
 describe("Project Configuration - List page", () => {
     beforeEach(() => {
         cy.login("admin");
@@ -7,11 +9,11 @@ describe("Project Configuration - List page", () => {
     });
 
     it("shows list of user projects", () => {
-        cy.contains("00Cypress Project");
+        cy.contains(projectName);
     });
 
     it("opens details window when mouse clicked", () => {
-        cy.contains("00Cypress Project").click();
+        cy.contains(projectName).click();
         cy.get(".MuiPaper-root:nth-child(2)").within(() => {
             cy.contains("Name");
             cy.contains("Code");
@@ -27,7 +29,7 @@ describe("Project Configuration - List page", () => {
     });
 
     it("opens context window when right button mouse is clicked", () => {
-        cy.contains("00Cypress Project").trigger("contextmenu");
+        cy.contains(projectName).trigger("contextmenu");
 
         cy.contains("Details");
         cy.contains("Add Actual Values");
@@ -49,8 +51,10 @@ describe("Project Configuration - List page", () => {
         });
     });
 
-    it("shows list of projects sorted alphabetically by name desc", () => {
-        runAndWaitForRequest("/api/*", () => {
+    it.only("shows list of projects sorted alphabetically by name desc", () => {
+        cy.get("[data-test-loaded]");
+
+        runAndWaitForRequest("/api/metadata*", () => {
             cy.contains("Name").click();
         });
 
@@ -60,6 +64,7 @@ describe("Project Configuration - List page", () => {
                 .orderBy(name => name.toLowerCase())
                 .reverse()
                 .value();
+            console.log({ names, sortedNames });
             assert.isTrue(_.isEqual(names, sortedNames));
         });
     });
