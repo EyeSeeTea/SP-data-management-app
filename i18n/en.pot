@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2020-01-22T16:05:38.777Z\n"
-"PO-Revision-Date: 2020-01-22T16:05:38.777Z\n"
+"POT-Creation-Date: 2020-01-24T08:22:38.896Z\n"
+"PO-Revision-Date: 2020-01-24T08:22:38.896Z\n"
 
 msgid "<No value>"
 msgstr ""
@@ -450,6 +450,9 @@ msgid ""
 "“Previous” button located on the bottom right side of the screen."
 msgstr ""
 
+msgid "Country"
+msgstr ""
+
 msgid "Last updated"
 msgstr ""
 
@@ -462,19 +465,7 @@ msgstr ""
 msgid "Closed date"
 msgstr ""
 
-msgid "Last Updated"
-msgstr ""
-
-msgid "Last Updated By"
-msgstr ""
-
 msgid "Created By"
-msgstr ""
-
-msgid "Opening Date"
-msgstr ""
-
-msgid "Closed Date"
 msgstr ""
 
 msgid "API Link"
@@ -504,13 +495,19 @@ msgstr ""
 msgid "Delete"
 msgstr ""
 
+msgid "Search by name"
+msgstr ""
+
 msgid "MER Reports"
 msgstr ""
 
 msgid "Create Project"
 msgstr ""
 
-msgid "Search by name"
+msgid "Countries"
+msgstr ""
+
+msgid "Active"
 msgstr ""
 
 msgid ""

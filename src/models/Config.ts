@@ -6,6 +6,22 @@ import DataElementsSet, { DataElement } from "./dataElementsSet";
 import { GetItemType } from "../types/utils";
 import "../utils/lodash-mixins";
 
+export type Config = {
+    base: typeof baseConfig;
+    currentUser: CurrentUser;
+    dataElements: DataElement[];
+    sectors: Sector[];
+    funders: Funder[];
+    locations: Location[];
+    attributes: IndexedObjs<"attributes", Attribute>;
+    categories: IndexedObjs<"categories", Category>;
+    categoryCombos: IndexedObjs<"categoryCombos", CategoryCombo>;
+    categoryOptions: IndexedObjs<"categoryOptions", CategoryOption>;
+    legendSets: IndexedObjs<"legendSets", LegendSet>;
+    indicators: Indicator[];
+    countries: NamedObject[];
+};
+
 const yes = true as const;
 
 const baseConfig = {
@@ -117,6 +133,10 @@ const metadataParams = {
             code: yes,
         },
     },
+    organisationUnits: {
+        fields: { id: yes, displayName: yes },
+        filter: { level: { eq: "2" } }, // Only countries
+    },
     organisationUnitGroupSets: {
         fields: {
             code: yes,
@@ -173,21 +193,6 @@ export type Category = CodedObject & { categoryOptions: CategoryOption[] };
 export type LegendSet = CodedObject;
 export type Indicator = CodedObject;
 
-export type Config = {
-    base: typeof baseConfig;
-    currentUser: CurrentUser;
-    dataElements: DataElement[];
-    sectors: Sector[];
-    funders: Funder[];
-    locations: Location[];
-    attributes: IndexedObjs<"attributes", Attribute>;
-    categories: IndexedObjs<"categories", Category>;
-    categoryCombos: IndexedObjs<"categoryCombos", CategoryCombo>;
-    categoryOptions: IndexedObjs<"categoryOptions", CategoryOption>;
-    legendSets: IndexedObjs<"legendSets", LegendSet>;
-    indicators: Indicator[];
-};
-
 class ConfigLoader {
     constructor(public api: D2Api) {}
 
@@ -227,6 +232,7 @@ class ConfigLoader {
             categoryCombos: indexObjects(metadata, "categoryCombos"),
             categoryOptions: indexObjects(metadata, "categoryOptions"),
             legendSets: indexObjects(metadata, "legendSets"),
+            countries: _.sortBy(metadata.organisationUnits, ou => ou.displayName),
         };
 
         return config;
@@ -285,7 +291,7 @@ export async function getConfig(api: D2Api): Promise<Config> {
 async function getFromApp(baseUrl: string) {
     const api = new D2ApiDefault({ baseUrl });
     const allConfig = await getConfig(api);
-    const deIds = [
+    const dataElementIds = [
         "WS8XV4WWPE7",
         "ik0ICagvIjm",
         "K6mAC5SiO29",
@@ -301,7 +307,7 @@ async function getFromApp(baseUrl: string) {
         ...allConfig,
         funders: allConfig.funders.slice(0, 5),
         locations: allConfig.locations.slice(0, 5),
-        dataElements: allConfig.dataElements.filter(de => deIds.includes(de.id)),
+        dataElements: allConfig.dataElements.filter(de => dataElementIds.includes(de.id)),
     };
     const jsonPath = path.join(__dirname, "__tests__", "config.json");
     fs.writeFileSync(jsonPath, JSON.stringify(config, null, 4) + "\n");

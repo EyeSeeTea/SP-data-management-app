@@ -1453,7 +1453,11 @@
             "organisationUnits": [
                 {
                     "level": 3,
-                    "id": "K2M23ek5eL8"
+                    "id": "eUmf5DYByGd"
+                },
+                {
+                    "level": 3,
+                    "id": "xEAZ8ZjX5g2"
                 }
             ]
         },
@@ -3407,5 +3411,71 @@
             "code": "ACTUAL_TARGET_ACHIEVED",
             "id": "yoAt108kUFm"
         }
-    }
+    },
+    "countries": [
+        {
+            "id": "eu2XF73JOzl",
+            "displayName": "Bahamas"
+        },
+        {
+            "id": "iiqkef8z9uo",
+            "displayName": "Bolivia"
+        },
+        {
+            "id": "iwiydbbuiUs",
+            "displayName": "Cambodia"
+        },
+        {
+            "id": "aSgRoxyXeX8",
+            "displayName": "Colombia"
+        },
+        {
+            "id": "WOUvEv46NeR",
+            "displayName": "DRC"
+        },
+        {
+            "id": "Sm8vKiwUPie",
+            "displayName": "Ethiopia"
+        },
+        {
+            "id": "ugQ7vNtTtdY",
+            "displayName": "Haiti"
+        },
+        {
+            "id": "OIjEJaV8fWc",
+            "displayName": "Iraq"
+        },
+        {
+            "id": "So8QA5eT1Oy",
+            "displayName": "Kenya"
+        },
+        {
+            "id": "S6mKzbkq02p",
+            "displayName": "Liberia"
+        },
+        {
+            "id": "muOqfsK4cMw",
+            "displayName": "Myanmar"
+        },
+        {
+            "id": "WmczKCGK8FQ",
+            "displayName": "Niger"
+        },
+        {
+            "id": "OKQDUzFwGoC",
+            "displayName": "Philippines"
+        },
+        {
+            "id": "Ww8TTOdRxf7",
+            "displayName": "South Sudan"
+        },
+        {
+            "id": "uAsAoB72yOf",
+            "displayName": "Uganda"
+        },
+        {
+            "id": "aqWKqMN5pUb",
+            "displayName": "Vietnam"
+        }
+    ]
 }

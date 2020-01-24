@@ -61,7 +61,7 @@ import {
 } from "d2-api";
 import i18n from "../locales";
 import DataElementsSet, { SelectionUpdate, DataElement, PeopleOrBenefit } from "./dataElementsSet";
-import ProjectDb from "./ProjectDb";
+import ProjectDb, { getSectorCodeFromSectionCode } from "./ProjectDb";
 import { toISOString, getMonthsRange } from "../utils/date";
 import { generateUid } from "d2/uid";
 import ProjectDownload from "./ProjectDownload";
@@ -148,16 +148,22 @@ const orgUnitFields = {
     created: yes,
     lastUpdated: yes,
     lastUpdatedBy: { name: yes },
+    parent: { id: yes, displayName: yes },
     openingDate: yes,
     closedDate: yes,
     code: yes,
 };
 
-export type ProjectForList = SelectedPick<D2OrganisationUnitSchema, typeof orgUnitFields>;
+export type ProjectForList = SelectedPick<D2OrganisationUnitSchema, typeof orgUnitFields> & {
+    sectors: Sector[];
+};
 
 export type FiltersForList = Partial<{
     search: string;
     createdByCurrentUser: boolean;
+    countryIds: string[];
+    sectorIds: string[];
+    onlyActive: boolean;
 }>;
 
 function defineGetters(sourceObject: any, targetObject: any) {
@@ -379,8 +385,17 @@ class Project {
     ): Promise<{ objects: ProjectForList[]; pagination: Partial<TablePagination> }> {
         const order = `${sorting.field}:i${sorting.order}`;
         const userId = config.currentUser.id;
+        const filterCountryIds = _.isEmpty(filters.countryIds) ? undefined : filters.countryIds;
+        const now = moment();
+        const { openingDate, closedDate } = getOrgUnitDatesFromProject(now, now);
+        const dateFilter = filters.onlyActive
+            ? {
+                  openingDate: { le: moment(openingDate).format("YYYY-MM-DD") },
+                  closedDate: { ge: moment(closedDate).format("YYYY-MM-DD") },
+              }
+            : {};
 
-        return api.models.organisationUnits
+        const { objects, pager } = await api.models.organisationUnits
             .get({
                 paging: true,
                 fields: orgUnitFields,
@@ -388,16 +403,43 @@ class Project {
                 page: pagination.page || 1,
                 pageSize: pagination.pageSize || 20,
                 filter: {
-                    name: { ilike: filters.search },
                     level: { eq: "3" },
-                    "user.id": { eq: filters.createdByCurrentUser ? userId : undefined },
+                    ...dateFilter,
+                    ...(filters.search ? { name: { ilike: filters.search } } : {}),
+                    ...(filters.createdByCurrentUser ? { "user.id": { eq: userId } } : {}),
+                    ...(filterCountryIds ? { "parent.id": { in: filterCountryIds } } : {}),
                 },
             })
-            .getData()
-            .then(data => ({
-                pagination: data.pager,
-                objects: data.objects.map(getProjectFromOrgUnit),
-            }));
+            .getData();
+
+        const orgUnits = objects.map(getProjectFromOrgUnit);
+        const dataSetCodes = orgUnits.map(ou => `${ou.id}_ACTUAL`);
+
+        const { dataSets } = await api.metadata
+            .get({
+                dataSets: {
+                    fields: { code: true, sections: { code: true } },
+                    filter: { code: { in: dataSetCodes } },
+                },
+            })
+            .getData();
+
+        const dataSetByOrgUnitId = _.keyBy(dataSets, dataSet => dataSet.code.split("_")[0]);
+        const sectorsByCode = _.keyBy(config.sectors, sector => sector.code);
+
+        const orgUnitsWithSectors = orgUnits.map(orgUnit => {
+            const dataSet = _(dataSetByOrgUnitId).get(orgUnit.id, null);
+            if (!dataSet) {
+                return { ...orgUnit, sectors: [] };
+            } else {
+                const sectors = dataSet.sections.map(
+                    section => sectorsByCode[getSectorCodeFromSectionCode(section.code)]
+                );
+                return { ...orgUnit, sectors };
+            }
+        });
+
+        return { pagination: pager, objects: orgUnitsWithSectors };
     }
 
     updateDataElementsSelection(
