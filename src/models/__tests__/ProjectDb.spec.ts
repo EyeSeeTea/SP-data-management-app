@@ -500,35 +500,35 @@ const expectedMetadataPost = {
                     period: {
                         id: "201811",
                     },
-                    openingDate: "2018-11-01T00:00:00",
+                    openingDate: "2018-10-01T00:00:00",
                     closingDate: "2018-12-10T00:00:00",
                 },
                 {
                     period: {
                         id: "201812",
                     },
-                    openingDate: "2018-12-01T00:00:00",
+                    openingDate: "2018-10-01T00:00:00",
                     closingDate: "2019-01-10T00:00:00",
                 },
                 {
                     period: {
                         id: "201901",
                     },
-                    openingDate: "2019-01-01T00:00:00",
+                    openingDate: "2018-10-01T00:00:00",
                     closingDate: "2019-02-10T00:00:00",
                 },
                 {
                     period: {
                         id: "201902",
                     },
-                    openingDate: "2019-02-01T00:00:00",
+                    openingDate: "2018-10-01T00:00:00",
                     closingDate: "2019-03-10T00:00:00",
                 },
                 {
                     period: {
                         id: "201903",
                     },
-                    openingDate: "2019-03-01T00:00:00",
+                    openingDate: "2018-10-01T00:00:00",
                     closingDate: "2019-04-10T00:00:00",
                 },
             ],

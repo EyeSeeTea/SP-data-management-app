@@ -429,7 +429,7 @@ function getDataSetPeriods(startDate: moment.Moment, endDate: moment.Moment) {
 
     const actualPeriods = getMonthsRange(startDate, endDate).map(date => ({
         period: { id: date.format("YYYYMM") },
-        openingDate: toISOString(date.clone().startOf("month")),
+        openingDate: toISOString(projectOpeningDate),
         closingDate: toISOString(
             date
                 .clone()
