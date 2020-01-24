@@ -47,14 +47,7 @@ describe("MerReport", () => {
         it("sets empty staff summary", () => {
             expect(report.data).toEqual(
                 expect.objectContaining({
-                    staffSummary: {
-                        nationalStaff: { fullTime: 0, partTime: 0 },
-                        ifs: { fullTime: 0, partTime: 0 },
-                        ifsDependents: { fullTime: 0, partTime: 0 },
-                        regional: { fullTime: 0, partTime: 0 },
-                        regionalDependents: { fullTime: 0, partTime: 0 },
-                        interns: { fullTime: 0, partTime: 0 },
-                    },
+                    staffSummary: {},
                 })
             );
         });
@@ -156,7 +149,7 @@ describe("MerReport", () => {
                             name: "# of energy-saving stoves installed",
                             actual: 0,
                             target: 0,
-                            achieved: undefined,
+                            achieved: null,
                             comment: "",
                         },
                     ],

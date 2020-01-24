@@ -1,3 +1,4 @@
+import { StaffSummary } from "./MerReport";
 import { GetItemType } from "./../types/utils";
 import moment, { Moment } from "moment";
 import _ from "lodash";
@@ -23,6 +24,8 @@ export type StaffKey = GetItemType<typeof staffKeys>;
 
 export type StaffSummary = Record<StaffKey, StaffInfo>;
 
+export type StaffInfo = { fullTime: Maybe<number>; partTime: Maybe<number> };
+
 interface OrganisationUnit {
     id: string;
     path: string;
@@ -40,17 +43,14 @@ interface Data {
     staffSummary: StaffSummary;
 }
 
-export type StaffInfo = { fullTime: number; partTime: number };
-
 const initialData = {
     countryDirector: "",
     executiveSummary: "",
     ministrySummary: "",
     projectedActivitiesNextMonth: "",
-    staffSummary: _.fromPairs(staffKeys.map(key => [key, { fullTime: 0, partTime: 0 }])) as Record<
-        StaffKey,
-        StaffInfo
-    >,
+    staffSummary: _.fromPairs(
+        staffKeys.map(key => [key, { fullTime: null, partTime: null }])
+    ) as Record<StaffKey, StaffInfo>,
 };
 
 export interface ProjectInfo {
@@ -81,7 +81,7 @@ export interface DataElementInfo {
     name: string;
     target: number;
     actual: number;
-    achieved: number | undefined;
+    achieved: number | null;
     comment: string;
 }
 
@@ -107,9 +107,19 @@ class MerReport {
         selectData: Pick<Data, "date" | "organisationUnit">
     ): Promise<MerReport> {
         const { organisationUnit, date } = selectData;
-        const { report } = await getReportData(api, organisationUnit, date);
+        const reportData = await getReportData(api, organisationUnit, date);
+        const { reportInfo, report, reportPeriod } = reportData;
         const comments = report ? report.comments : {};
         const projectsData = await MerReport.getProjectsData(api, config, selectData, comments);
+        const reports = (reportInfo && reportInfo.reports) || {};
+
+        // Merge old and current values to build the staff summary
+        const staffSummary = _(reports)
+            .toPairs()
+            .sortBy(([period, _report]) => period)
+            .map(([period, report]) => (period <= reportPeriod ? report : null))
+            .compact()
+            .reduce((acc, report) => mergeNonNil(acc, report.staffSummary), {} as StaffSummary);
 
         const data: Data = {
             ...selectData,
@@ -119,8 +129,8 @@ class MerReport {
                 "executiveSummary",
                 "ministrySummary",
                 "projectedActivitiesNextMonth",
-                "staffSummary",
             ]),
+            staffSummary,
             projectsData,
         };
         return new MerReport(api, config, data);
@@ -135,9 +145,9 @@ class MerReport {
     }
 
     getStaffTotals(): { partTime: number; fullTime: number; total: number } {
-        const staffs = staffKeys.map(key => this.data.staffSummary[key]);
-        const partTime = _.sum(staffs.map(staff => staff.partTime));
-        const fullTime = _.sum(staffs.map(staff => staff.fullTime));
+        const staffs = staffKeys.map(key => _(this.data.staffSummary).get(key, undefined));
+        const partTime = _.sum(_.compact(staffs.map(staff => (staff ? staff.partTime : null))));
+        const fullTime = _.sum(_.compact(staffs.map(staff => (staff ? staff.fullTime : null))));
         return { partTime, fullTime, total: partTime + fullTime };
     }
 
@@ -323,7 +333,7 @@ class MerReport {
                 );
                 const sumActual = _.sum(allActual.map(v => v.value));
                 const sumTarget = _.sum(allTarget.map(v => v.value));
-                const allAchieved = sumTarget > 0 ? (100.0 * sumActual) / sumTarget : undefined;
+                const allAchieved = sumTarget > 0 ? (100.0 * sumActual) / sumTarget : null;
 
                 return {
                     id: dataElement.id,
@@ -380,7 +390,7 @@ function getReportStorageKey(organisationUnit: Ref): string {
     return ["mer", organisationUnit.id].join("-");
 }
 
-type Maybe<T> = T | undefined;
+type Maybe<T> = T | undefined | null;
 
 async function getReportData<OU extends Ref>(
     api: D2Api,
@@ -394,6 +404,10 @@ async function getReportData<OU extends Ref>(
     const reports = reportInfo ? reportInfo.reports : undefined;
     const report = reports ? reports[reportPeriod] : undefined;
     return { reportInfo, report, reportPeriod };
+}
+
+function mergeNonNil<T>(obj1: T, obj2: T): T {
+    return _.mergeWith({}, obj1, obj2, (val1, val2) => (_.isNil(val2) ? val1 : undefined));
 }
 
 export type MerReportData = Data;
