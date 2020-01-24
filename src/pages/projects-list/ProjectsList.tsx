@@ -63,27 +63,18 @@ function getComponentConfig(api: D2Api, config: Config, goTo: GoTo, currentUser:
     ];
 
     const details = [
-        { name: "displayName" as const, text: i18n.t("Name") },
-        {
-            name: "code" as const,
-            text: i18n.t("Code"),
-            getValue: (project: ProjectForList) => `${project.code}`,
-        },
+        ...columns.map(({ sortable, ...other }) => other),
         { name: "displayDescription" as const, text: i18n.t("Description") },
-        { ...columnDate("lastUpdated" as const, "datetime"), text: i18n.t("Last Updated") },
-        {
-            name: "lastUpdatedBy" as const,
-            text: i18n.t("Last Updated By"),
-            getValue: (project: ProjectForList) => ` ${project.lastUpdatedBy.name}`,
-        },
-        { ...columnDate("created" as const, "datetime"), text: i18n.t("Created") },
         {
             name: "user" as const,
             text: i18n.t("Created By"),
             getValue: (project: ProjectForList) => `${project.user.displayName}`,
         },
-        { ...columnDate("openingDate", "date"), text: i18n.t("Opening Date") },
-        { ...columnDate("closedDate", "date"), text: i18n.t("Closed Date") },
+        {
+            name: "code" as const,
+            text: i18n.t("Code"),
+            getValue: (project: ProjectForList) => `${project.code}`,
+        },
         {
             name: "href" as const,
             text: i18n.t("API Link"),
