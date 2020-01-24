@@ -49,11 +49,11 @@ const UserOrgUnits: React.FC<UserOrgUnitsProps> = props => {
     const [rootIds, setRootIds] = useState<string[]>([]);
     const snackbar = useSnackbar();
     const classes = useStyles();
-    const { d2, api, config } = useAppContext();
-    const user = new User(config);
+    const { api, config } = useAppContext();
     const { onChange, selected, selectableLevels, withElevation = true, height } = props;
 
     useEffect(() => {
+        const user = new User(config);
         const rootIds = user.getOrgUnits().map(ou => ou.id);
         if (_(rootIds).isEmpty()) {
             snackbar.error(
@@ -62,7 +62,7 @@ const UserOrgUnits: React.FC<UserOrgUnitsProps> = props => {
         } else {
             setRootIds(rootIds);
         }
-    }, [d2]);
+    }, [config]);
 
     async function onChangeOu(orgUnitPaths: string[]) {
         const lastSelectedPath = _.last(orgUnitPaths);
@@ -74,7 +74,7 @@ const UserOrgUnits: React.FC<UserOrgUnitsProps> = props => {
         <div className={classes.wrapper}>
             {rootIds.length > 0 ? (
                 <OrgUnitsSelector
-                    d2={d2}
+                    api={api}
                     onChange={onChangeOu}
                     selected={selected ? [selected.path] : []}
                     selectableLevels={selectableLevels}
