@@ -17,10 +17,10 @@ describe("Projects - Edit", () => {
         cy.contains("Funders");
         cy.contains("Next").click();
 
-        cy.waitForStep("Organisation Unit");
+        cy.waitForStep("Organisation Unit & Project Locations");
         cy.contains("Next").click();
 
-        cy.waitForStep("Sectors & Project Locations");
+        cy.waitForStep("Sectors");
         cy.contains("Next").click();
 
         cy.waitForStep("Selection of Indicators");
