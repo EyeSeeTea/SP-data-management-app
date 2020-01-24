@@ -1,7 +1,7 @@
 import { GetItemType } from "./../types/utils";
 import moment, { Moment } from "moment";
 import _ from "lodash";
-import { D2Api, Id } from "d2-api";
+import { D2Api, Id, Ref } from "d2-api";
 import { Config } from "./Config";
 import { getDataStore } from "../utils/dhis2";
 import DataStore from "d2-api/api/dataStore";
@@ -53,9 +53,15 @@ const initialData = {
     >,
 };
 
-type ProjectInfo = { dataElements: string[] } | undefined;
+export interface ProjectInfo {
+    merDataElementIds: string[];
+}
 
-interface DataStoreReport {
+interface ReportInfo {
+    reports?: Record<string, Report>;
+}
+
+interface Report {
     created: string;
     createdBy: Id;
     updated: string;
@@ -95,31 +101,20 @@ class MerReport {
         this.dataStore = getDataStore(this.api);
     }
 
-    static getReportKey(selectData: Pick<Data, "date" | "organisationUnit">): string {
-        const { organisationUnit, date } = selectData;
-        const dateString = date.format("YYYYMM");
-        return ["mer", organisationUnit.id, dateString].join("-");
-    }
-
-    getReportKey() {
-        return MerReport.getReportKey(this.data);
-    }
-
     static async create(
         api: D2Api,
         config: Config,
         selectData: Pick<Data, "date" | "organisationUnit">
     ): Promise<MerReport> {
-        const storeReport = await getDataStore(api)
-            .get<DataStoreReport>(MerReport.getReportKey(selectData))
-            .getData();
-        const comments = storeReport ? storeReport.comments : {};
+        const { organisationUnit, date } = selectData;
+        const { report } = await getReportData(api, organisationUnit, date);
+        const comments = report ? report.comments : {};
         const projectsData = await MerReport.getProjectsData(api, config, selectData, comments);
 
         const data: Data = {
             ...selectData,
             ...initialData,
-            ..._.pick(storeReport, [
+            ..._.pick(report, [
                 "countryDirector",
                 "executiveSummary",
                 "ministrySummary",
@@ -177,13 +172,15 @@ class MerReport {
     }
 
     async save(): Promise<void> {
-        const { dataStore, config } = this;
-        const { organisationUnit, date, staffSummary } = this.data;
+        const { dataStore, config, api } = this;
+        const { projectsData, organisationUnit, date, staffSummary } = this.data;
         const { countryDirector, executiveSummary } = this.data;
         const { ministrySummary, projectedActivitiesNextMonth } = this.data;
-        const storeReportKey = MerReport.getReportKey({ organisationUnit, date });
-        const previousValue = await dataStore.get<DataStoreReport>(storeReportKey).getData();
-        const comments = _(this.data.projectsData)
+        const storeReportKey = getReportStorageKey(organisationUnit);
+        const reportData = await getReportData(api, organisationUnit, date);
+        const { reportInfo: oldProjectInfo, report: oldReport, reportPeriod } = reportData;
+
+        const comments = _(projectsData)
             .flatMap(projectInfo => {
                 return projectInfo.dataElements.map(deInfo => {
                     return [getKey([projectInfo.id, deInfo.id]), deInfo.comment];
@@ -192,9 +189,9 @@ class MerReport {
             .fromPairs()
             .value();
 
-        const storeRerport: DataStoreReport = {
-            created: previousValue ? previousValue.created : toISOString(date),
-            createdBy: previousValue ? previousValue.createdBy : config.currentUser.id,
+        const storeReport: Report = {
+            created: oldReport ? oldReport.created : toISOString(date),
+            createdBy: oldReport ? oldReport.createdBy : config.currentUser.id,
             updated: toISOString(date),
             updatedBy: config.currentUser.id,
             countryDirector,
@@ -205,7 +202,15 @@ class MerReport {
             comments,
         };
 
-        await dataStore.save(storeReportKey, storeRerport);
+        const newStoreValue: ReportInfo = {
+            ...oldProjectInfo,
+            reports: {
+                ...(oldProjectInfo && oldProjectInfo.reports),
+                [reportPeriod]: storeReport,
+            },
+        };
+
+        await dataStore.save(storeReportKey, newStoreValue);
     }
 
     static async getProjectsData(
@@ -238,7 +243,7 @@ class MerReport {
                 await runPromises(
                     organisationUnits.map(orgUnit => () =>
                         dataStore
-                            .get<ProjectInfo>("mer-" + orgUnit.id)
+                            .get<ProjectInfo | undefined>(getProjectStorageKey(orgUnit))
                             .getData()
                             .then(value => [orgUnit.id, value] as [string, ProjectInfo])
                     ),
@@ -254,10 +259,10 @@ class MerReport {
 
         const months = getMonthsRange(moment(oldestPeriod), date);
         const periods = months.map(date => date.format("YYYYMM"));
-        const reportPeriod = date.format("YYYYMM");
+        const reportPeriod = getReportPeriod(date);
         const allDataElementIds = _(projectInfoByOrgUnitId)
             .values()
-            .flatMap(info => (info ? info.dataElements : []))
+            .flatMap(info => (info ? info.merDataElementIds : []))
             .uniq()
             .value();
 
@@ -307,7 +312,7 @@ class MerReport {
             const project = getProjectFromOrgUnit(orgUnit);
             const formatDate = (dateStr: string): string => moment(dateStr).format("MMM YYYY");
             const projectInfo = projectInfoByOrgUnitId[orgUnit.id];
-            const dataElementIds = projectInfo ? projectInfo.dataElements : [];
+            const dataElementIds = projectInfo ? projectInfo.merDataElementIds : [];
             const getDataElementInfo = (deId: Id) => {
                 const dataElement = _(dataElementsById).getOrFail(deId);
                 const keyPrefix = [reportPeriod, orgUnit.id, dataElement.id];
@@ -361,6 +366,34 @@ export function getStaffTranslations(): Record<StaffKey, string> {
 
 function getKey(parts: string[]): string {
     return parts.join("-");
+}
+
+function getReportPeriod(date: Moment): string {
+    return date.format("YYYYMM");
+}
+
+export function getProjectStorageKey(organisationUnit: Ref): string {
+    return ["project", organisationUnit.id].join("-");
+}
+
+function getReportStorageKey(organisationUnit: Ref): string {
+    return ["mer", organisationUnit.id].join("-");
+}
+
+type Maybe<T> = T | undefined;
+
+async function getReportData<OU extends Ref>(
+    api: D2Api,
+    organisationUnit: OU,
+    date: Moment
+): Promise<{ reportInfo: Maybe<ReportInfo>; report: Maybe<Report>; reportPeriod: string }> {
+    const reportInfo = await getDataStore(api)
+        .get<ReportInfo | undefined>(getReportStorageKey(organisationUnit))
+        .getData();
+    const reportPeriod = getReportPeriod(date);
+    const reports = reportInfo ? reportInfo.reports : undefined;
+    const report = reports ? reports[reportPeriod] : undefined;
+    return { reportInfo, report, reportPeriod };
 }
 
 export type MerReportData = Data;

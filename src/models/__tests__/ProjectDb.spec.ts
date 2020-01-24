@@ -46,7 +46,7 @@ describe("ProjectDb", () => {
             mock.onPut("/organisationUnits/WGC0DJ0YSis", expectedOrgUnitPut).replyOnce(200);
 
             mock.onPost(
-                "/dataStore/project-monitoring-app/mer-WGC0DJ0YSis",
+                "/dataStore/project-monitoring-app/project-WGC0DJ0YSis",
                 expectedDataStoreMer
             ).replyOnce(200);
 
@@ -110,7 +110,7 @@ const orgUnitsMetadata = {
 };
 
 const expectedDataStoreMer = {
-    dataElements: ["yMqK9DKbA3X", "WS8XV4WWPE7"],
+    merDataElementIds: ["yMqK9DKbA3X", "WS8XV4WWPE7"],
 };
 
 const expectedOrgUnitPut = {
