@@ -248,7 +248,7 @@ const ProjectsList: React.FC = () => {
                                 <ActionButton
                                     label={i18n.t("MER Reports")}
                                     onClick={() => goTo("report")}
-                                    style={{ marginRight: 20 }}
+                                    style={{ marginLeft: 50, marginRight: 20 }}
                                 />
                             )}
 
