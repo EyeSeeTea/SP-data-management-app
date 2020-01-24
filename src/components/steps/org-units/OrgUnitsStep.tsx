@@ -34,6 +34,7 @@ const OrgUnitsStep: React.FC<StepProps> = ({ project, onChange }) => {
 
     return (
         <React.Fragment>
+            <Title style={{ marginTop: 35 }}>{getProjectFieldName("orgUnit")}</Title>
             <UserOrgUnits
                 onChange={setOrgUnit}
                 selected={project.parentOrgUnit}
