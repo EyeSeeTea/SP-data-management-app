@@ -53,7 +53,7 @@ describe("ProjectDb", () => {
             jest.spyOn(Date, "now").mockReturnValueOnce(new Date("2019/12/15").getTime());
 
             const { response, project: savedProject } = await new ProjectDb(project).save();
-            expect(response).toBeDefined();
+            expect(response && response.status).toEqual("OK");
             expect(savedProject.id).toEqual("WGC0DJ0YSis");
         });
     });
