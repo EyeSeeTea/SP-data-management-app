@@ -47,7 +47,14 @@ describe("MerReport", () => {
         it("sets empty staff summary", () => {
             expect(report.data).toEqual(
                 expect.objectContaining({
-                    staffSummary: {},
+                    staffSummary: {
+                        ifs: { fullTime: null, partTime: null },
+                        interns: { fullTime: null, partTime: null },
+                        regional: { fullTime: null, partTime: null },
+                        ifsDependents: { fullTime: null, partTime: null },
+                        nationalStaff: { fullTime: null, partTime: null },
+                        regionalDependents: { fullTime: null, partTime: null },
+                    },
                 })
             );
         });

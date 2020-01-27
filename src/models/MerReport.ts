@@ -24,6 +24,8 @@ export type StaffKey = GetItemType<typeof staffKeys>;
 
 export type StaffSummary = Record<StaffKey, StaffInfo>;
 
+const emptyStaffSummary = {} as StaffSummary;
+
 export type StaffInfo = { fullTime: Maybe<number>; partTime: Maybe<number> };
 
 interface OrganisationUnit {
@@ -108,18 +110,9 @@ class MerReport {
     ): Promise<MerReport> {
         const { organisationUnit, date } = selectData;
         const reportData = await getReportData(api, organisationUnit, date);
-        const { reportInfo, report, reportPeriod } = reportData;
+        const { report } = reportData;
         const comments = report ? report.comments : {};
         const projectsData = await MerReport.getProjectsData(api, config, selectData, comments);
-        const reports = (reportInfo && reportInfo.reports) || {};
-
-        // Merge old and current values to build the staff summary
-        const staffSummary = _(reports)
-            .toPairs()
-            .sortBy(([period, _report]) => period)
-            .map(([period, report]) => (period <= reportPeriod ? report : null))
-            .compact()
-            .reduce((acc, report) => mergeNonNil(acc, report.staffSummary), {} as StaffSummary);
 
         const data: Data = {
             ...selectData,
@@ -129,8 +122,8 @@ class MerReport {
                 "executiveSummary",
                 "ministrySummary",
                 "projectedActivitiesNextMonth",
+                "staffSummary",
             ]),
-            staffSummary,
             projectsData,
         };
         return new MerReport(api, config, data);
@@ -186,9 +179,12 @@ class MerReport {
         const { projectsData, organisationUnit, date, staffSummary } = this.data;
         const { countryDirector, executiveSummary } = this.data;
         const { ministrySummary, projectedActivitiesNextMonth } = this.data;
+        const now = moment();
         const storeReportKey = getReportStorageKey(organisationUnit);
         const reportData = await getReportData(api, organisationUnit, date);
         const { reportInfo: oldProjectInfo, report: oldReport, reportPeriod } = reportData;
+        const oldEmptyStaffSummary = oldReport ? oldReport.staffSummary : emptyStaffSummary;
+        const newStaffSummary = mergeNotEqual(oldEmptyStaffSummary, staffSummary);
 
         const comments = _(projectsData)
             .flatMap(projectInfo => {
@@ -200,15 +196,15 @@ class MerReport {
             .value();
 
         const storeReport: Report = {
-            created: oldReport ? oldReport.created : toISOString(date),
+            created: oldReport ? oldReport.created : toISOString(now),
             createdBy: oldReport ? oldReport.createdBy : config.currentUser.id,
-            updated: toISOString(date),
+            updated: toISOString(now),
             updatedBy: config.currentUser.id,
             countryDirector,
             executiveSummary,
             ministrySummary,
             projectedActivitiesNextMonth,
-            staffSummary,
+            staffSummary: newStaffSummary,
             comments,
         };
 
@@ -396,18 +392,39 @@ async function getReportData<OU extends Ref>(
     api: D2Api,
     organisationUnit: OU,
     date: Moment
-): Promise<{ reportInfo: Maybe<ReportInfo>; report: Maybe<Report>; reportPeriod: string }> {
+): Promise<{
+    reportInfo: Maybe<ReportInfo>;
+    report: Maybe<Report>;
+    reportPeriod: string;
+}> {
     const reportInfo = await getDataStore(api)
         .get<ReportInfo | undefined>(getReportStorageKey(organisationUnit))
         .getData();
     const reportPeriod = getReportPeriod(date);
     const reports = reportInfo ? reportInfo.reports : undefined;
     const report = reports ? reports[reportPeriod] : undefined;
-    return { reportInfo, report, reportPeriod };
+
+    // Merge old and current values to build the final staff summary for this period
+    const staffSummary = _(reports)
+        .toPairs()
+        .sortBy(([period, _report]) => period)
+        .map(([period, report]) => (period <= reportPeriod ? report : null))
+        .compact()
+        .reduce((acc, report) => mergeNotNil(acc, report.staffSummary), emptyStaffSummary);
+
+    const reportWithStaffSummary = report ? { ...report, staffSummary } : undefined;
+
+    return { reportInfo, report: reportWithStaffSummary, reportPeriod };
 }
 
-function mergeNonNil<T>(obj1: T, obj2: T): T {
+function mergeNotNil<T>(obj1: T, obj2: T): T {
     return _.mergeWith({}, obj1, obj2, (val1, val2) => (_.isNil(val2) ? val1 : undefined));
+}
+
+function mergeNotEqual<T>(obj1: T, obj2: T): T {
+    return _.mergeWith({}, obj1, obj2, (val1, val2) =>
+        typeof val1 === "object" ? undefined : val1 === val2 ? null : val2
+    );
 }
 
 export type MerReportData = Data;
