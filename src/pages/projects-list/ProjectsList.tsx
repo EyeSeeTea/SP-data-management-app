@@ -147,6 +147,14 @@ function getComponentConfig(api: D2Api, config: Config, goTo: GoTo, currentUser:
                 console.log("delete", projects);
             },
         },
+
+        dataApproval: {
+            name: "data-approval",
+            icon: <Icon>data_approval</Icon>,
+            text: i18n.t("Data Approval"),
+            multiple: false,
+            onClick: (projects: ProjectForList[]) => goTo("dataApproval", { id: projects[0].id }),
+        },
     };
 
     const actionsForUserRoles: ActionsRoleMapping<typeof allActions> = {
@@ -160,6 +168,7 @@ function getComponentConfig(api: D2Api, config: Config, goTo: GoTo, currentUser:
             "reopenDatasets",
             "edit",
             "delete",
+            "dataApproval",
         ],
         dataEntry: ["actualValues", "targetValues", "dashboard", "downloadData"],
     };

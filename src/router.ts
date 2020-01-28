@@ -9,6 +9,7 @@ const routes = {
     targetValues: ({ id }: { id: string }) => `/target-values/${id}`,
     dashboard: ({ id }: { id: string }) => `/dashboard/${id}`,
     dashboards: () => `/dashboard`,
+    dataApproval: ({ id }: { id: string }) => `/data-approval/${id}`,
 };
 
 type Routes = typeof routes;
