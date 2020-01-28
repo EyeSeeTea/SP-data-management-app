@@ -20,7 +20,6 @@ import { downloadFile } from "../../utils/download";
 import { D2Api } from "d2-api";
 import { Icon } from "@material-ui/core";
 import ProjectsListFilters, { Filter } from "./ProjectsListFilters";
-import Spinner from "../../components/spinner/Spinner";
 
 type UserRolesConfig = Config["base"]["userRoles"];
 
@@ -29,10 +28,10 @@ type ActionsRoleMapping<Actions> = {
 };
 
 function getComponentConfig(api: D2Api, config: Config, goTo: GoTo, currentUser: CurrentUser) {
-    const initialPagination: Partial<TablePagination> = {
+    const initialPagination = {
         page: 1,
-        pageSize: 20,
-        pageSizeOptions: [10, 20, 50],
+        pageSize: 3,
+        pageSizeOptions: [3, 10, 20, 50],
     };
 
     const initialSorting = { field: "displayName" as const, order: "asc" as const };
@@ -45,6 +44,7 @@ function getComponentConfig(api: D2Api, config: Config, goTo: GoTo, currentUser:
             sortable: false,
             getValue: (project: ProjectForList) => project.parent.displayName,
         },
+        { name: "code", text: i18n.t("Code"), sortable: true },
         {
             name: "sectors",
             text: i18n.t("Sectors"),
@@ -183,7 +183,9 @@ type ProjectTableSorting = TableSorting<ProjectForList>;
 const ProjectsList: React.FC = () => {
     const goTo = useGoTo();
     const { api, config, currentUser } = useAppContext();
-    const componentConfig = getComponentConfig(api, config, goTo, currentUser);
+    const componentConfig = React.useMemo(() => {
+        return getComponentConfig(api, config, goTo, currentUser);
+    }, [api, config, currentUser]);
     const [rows, setRows] = useState<ProjectForList[] | undefined>(undefined);
     const [pagination, setPagination] = useState(componentConfig.initialPagination);
     const [sorting, setSorting] = useState<ProjectTableSorting>(componentConfig.initialSorting);
@@ -209,7 +211,7 @@ const ProjectsList: React.FC = () => {
         setLoading(true);
         const res = await Project.getList(api, config, filters, sorting, pagination);
         setRows(res.objects);
-        setPagination(pagination => ({ ...pagination, ...res.pagination }));
+        setPagination(pagination => ({ ...pagination, ...res.pager }));
         setLoading(false);
     }
 
@@ -228,7 +230,6 @@ const ProjectsList: React.FC = () => {
 
                 <ObjectsTable<ProjectForList>
                     searchBoxLabel={i18n.t("Search by name")}
-                    searchBoxColumns={["displayName"]}
                     onChangeSearch={setSearch}
                     pagination={pagination}
                     onChange={onStateChange}
