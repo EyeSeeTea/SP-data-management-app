@@ -133,8 +133,9 @@ export default class DataElementsSet {
 
         return _.flatMap(sectorsSet.dataElementGroups, sectorGroup => {
             const groupCodesByDataElementId = getGroupCodeByDataElementId(dataElementGroupSets);
-            const seriesGroupsForSector = seriesSet.dataElementGroups.filter(deg => {
-                // series Code = SERIES_PROTECTION_1002
+            const seriesGroups = _.uniqBy(seriesSet.dataElementGroups, deg => deg.id);
+            const seriesGroupsForSector = seriesGroups.filter(deg => {
+                // series code = SERIES_PROTECTION_1002
                 const [_seriesLiteral, sectorCode, series] = deg.code.split("_");
                 return sectorGroup.code.split("_")[1] === sectorCode ? series : null;
             });

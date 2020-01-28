@@ -386,17 +386,20 @@ class Project {
         const data = await getOrgUnitListData(api, config, filters, sorting, pagination);
         const { order, pager, ids } = data;
 
-        const { objects: d2OrgUnits } = await api.models.organisationUnits
-            .get({
-                paging: false,
-                fields: orgUnitFields,
-                filter: { id: { in: ids } },
-                order,
-            })
-            .getData();
+        const { objects: d2OrgUnits } =
+            ids.length === 0
+                ? { objects: [] }
+                : await api.models.organisationUnits
+                      .get({
+                          paging: false,
+                          fields: orgUnitFields,
+                          filter: { id: { in: ids } },
+                          order,
+                      })
+                      .getData();
 
         const projects = d2OrgUnits.map(getProjectFromOrgUnit);
-        const dataSetCodes = projects.map(ou => `${ou.id}_ACTUAL`);
+        const dataSetCodes = _.sortBy(projects.map(ou => `${ou.id}_ACTUAL`));
 
         const { dataSets } = await api.metadata
             .get({
@@ -646,6 +649,7 @@ async function getOrgUnitListData(
     const filterCountryIds = _.isEmpty(filters.countryIds) ? undefined : filters.countryIds;
     const now = moment();
     const { openingDate, closedDate } = getOrgUnitDatesFromProject(now, now);
+
     const dateFilter = filters.onlyActive
         ? {
               openingDate: { le: moment(openingDate).format("YYYY-MM-DD") },
@@ -653,30 +657,51 @@ async function getOrgUnitListData(
           }
         : {};
 
-    const { objects: d2OrgUnitRefs } = await api.models.organisationUnits
+    const { objects: d2OrgUnits } = await api.models.organisationUnits
         .get({
             paging: false,
-            fields: { id: true },
+            // Rename fields to make response as light as possible
+            fields: {
+                id: { $fn: { name: "rename", to: "i" } as const },
+                code: { $fn: { name: "rename", to: "c" } as const },
+                displayName: { $fn: { name: "rename", to: "n" } as const },
+            },
             order,
             filter: {
                 level: { eq: "3" },
                 ...dateFilter,
-                ...(filters.search ? { name: { ilike: filters.search } } : {}),
                 ...(filters.createdByCurrentUser ? { "user.id": { eq: userId } } : {}),
                 ...(filterCountryIds ? { "parent.id": { in: filterCountryIds } } : {}),
             },
         })
         .getData();
 
+    // Apply filters that are not possible in the api request
+    const search = filters.search ? filters.search.toLowerCase() : undefined;
+
+    const d2OrgUnitsFiltered = search
+        ? d2OrgUnits.filter(ou => {
+              const name = ou.n.toLowerCase();
+              const code = ou.c.toLowerCase();
+              // OR filter, not supported by the API
+              return name.includes(search) || code.includes(search);
+          })
+        : d2OrgUnits;
+
     const pager = {
         page: pagination.page,
         pageSize: pagination.pageSize,
-        total: d2OrgUnitRefs.length,
+        total: d2OrgUnitsFiltered.length,
     };
     const { page, pageSize } = pagination;
     const start = (page - 1) * pageSize;
 
-    const ids = d2OrgUnitRefs.slice(start, start + pageSize).map(ou => ou.id);
+    const ids = _(d2OrgUnitsFiltered)
+        .slice(start, start + pageSize)
+        .map(ou => ou.i)
+        .sortBy()
+        .value();
+
     return { order, pager, ids };
 }
 
