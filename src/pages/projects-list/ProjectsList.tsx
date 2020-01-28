@@ -57,7 +57,7 @@ function getComponentConfig(api: D2Api, config: Config, goTo: GoTo, currentUser:
     ];
 
     const details = [
-        ...columns.map(({ sortable, ...other }) => other),
+        ...columns.map(column => _.omit(column, ["sortable"])),
         { name: "displayDescription" as const, text: i18n.t("Description") },
         {
             name: "user" as const,
