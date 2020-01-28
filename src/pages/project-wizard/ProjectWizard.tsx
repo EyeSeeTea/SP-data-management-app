@@ -109,11 +109,11 @@ class ProjectWizardImpl extends React.Component<Props, State> {
             },
             {
                 key: "organisation-units",
-                label: i18n.t("Organisation Unit & Project Locations"),
+                label: i18n.t("Country & Project Locations"),
                 component: OrgUnitsStep,
                 validationKeys: ["parentOrgUnit", "locations"],
                 description: i18n.t(
-                    `Select the organisation unit and project location associated with the project. At least one must be selected.`
+                    `Select the country and project location associated with the project. At least one must be selected.`
                 ),
                 help: helpTexts.organisationUnits,
             },

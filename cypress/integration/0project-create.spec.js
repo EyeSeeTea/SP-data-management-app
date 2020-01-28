@@ -41,7 +41,7 @@ describe("Projects - Create", () => {
 
         // Organisation Unit Step
 
-        cy.waitForStep("Organisation Unit & Project Locations");
+        cy.waitForStep("Country & Project Locations");
         cy.contains("Next").click();
         cy.contains("One Organisation Unit should be selected");
 
