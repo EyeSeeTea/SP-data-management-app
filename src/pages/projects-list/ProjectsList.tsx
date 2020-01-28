@@ -1,17 +1,10 @@
 import React, { useState, useEffect } from "react";
-import {
-    ObjectsTable,
-    TablePagination,
-    TableColumn,
-    TableAction,
-    TableSorting,
-    TableState,
-} from "d2-ui-components";
+import { ObjectsTable, TableColumn, TableAction, TableSorting, TableState } from "d2-ui-components";
 import i18n from "../../locales";
 import _ from "lodash";
 import { useAppContext, CurrentUser } from "../../contexts/api-context";
 import { useGoTo, GoTo } from "../../router";
-import Project, { ProjectForList, FiltersForList } from "../../models/Project";
+import Project from "../../models/Project";
 import { Config } from "../../models/Config";
 import { formatDateShort, formatDateLong } from "../../utils/date";
 import ActionButton from "../../components/action-button/ActionButton";
@@ -20,6 +13,7 @@ import { downloadFile } from "../../utils/download";
 import { D2Api } from "d2-api";
 import { Icon } from "@material-ui/core";
 import ProjectsListFilters, { Filter } from "./ProjectsListFilters";
+import { ProjectForList, FiltersForList } from "../../models/ProjectsList";
 
 type UserRolesConfig = Config["base"]["userRoles"];
 
