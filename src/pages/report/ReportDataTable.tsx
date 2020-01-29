@@ -62,11 +62,13 @@ const ReportDataTable: React.FC<ReportDataTableProps> = props => {
                                     <br />
                                     <i>{project.dateInfo}</i>
                                 </TableCell>
-                                <DataElementCells
-                                    project={project}
-                                    dataElement={project.dataElements[0]}
-                                    onChange={onCommentChange}
-                                />
+                                {project.dataElements.length > 0 && (
+                                    <DataElementCells
+                                        project={project}
+                                        dataElement={project.dataElements[0]}
+                                        onChange={onCommentChange}
+                                    />
+                                )}
                             </TableRow>
 
                             {project.dataElements.slice(1).map(dataElement => (

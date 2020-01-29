@@ -320,7 +320,12 @@ class MerReport {
             const projectInfo = projectInfoByOrgUnitId[orgUnit.id];
             const dataElementIds = projectInfo ? projectInfo.merDataElementIds : [];
             const getDataElementInfo = (deId: Id) => {
-                const dataElement = _(dataElementsById).getOrFail(deId);
+                const dataElement = _(dataElementsById).get(deId, null);
+                if (!dataElement) {
+                    console.error(`Cannot found data element: ${deId}`);
+                    return;
+                }
+
                 const keyPrefix = [reportPeriod, orgUnit.id, dataElement.id];
                 const values = valuesByOrgUnitAndDataElement[getKey([orgUnit.id, deId])] || [];
                 const [allTarget, allActual] = _.partition(
@@ -341,17 +346,23 @@ class MerReport {
             };
             if (_.isEmpty(dataElementIds)) return null;
 
-            return {
-                id: orgUnit.id,
-                name: project.displayName,
-                dateInfo: `${formatDate(project.openingDate)} -> ${formatDate(project.closedDate)}`,
-                dataElements: dataElementIds.map(getDataElementInfo).map(dataElementInfo => ({
+            const dataElements = _(dataElementIds)
+                .map(getDataElementInfo)
+                .compact()
+                .map(dataElementInfo => ({
                     ...dataElementInfo,
                     comment: _(commentsByProjectAndDataElement).get(
                         getKey([project.id, dataElementInfo.id]),
                         ""
                     ),
-                })),
+                }))
+                .value();
+
+            return {
+                id: orgUnit.id,
+                name: project.displayName,
+                dateInfo: `${formatDate(project.openingDate)} -> ${formatDate(project.closedDate)}`,
+                dataElements,
             };
         });
 
