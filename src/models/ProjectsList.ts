@@ -1,6 +1,6 @@
 import _ from "lodash";
 import { TableSorting, TablePagination } from "d2-ui-components";
-import { D2Api, D2OrganisationUnitSchema, SelectedPick } from "d2-api";
+import { D2Api, D2OrganisationUnitSchema, SelectedPick, Id } from "d2-api";
 import { Config } from "./Config";
 import moment from "moment";
 import { Sector, getOrgUnitDatesFromProject, getProjectFromOrgUnit } from "./Project";
@@ -63,14 +63,16 @@ export default class ProjectsList {
         const projects = d2OrgUnits.map(getProjectFromOrgUnit);
         const dataSetCodes = _.sortBy(projects.map(ou => `${ou.id}_ACTUAL`));
 
-        const { dataSets } = await api.metadata
-            .get({
-                dataSets: {
-                    fields: { code: true, sections: { code: true } },
-                    filter: { code: { in: dataSetCodes } },
-                },
-            })
-            .getData();
+        const { dataSets } = _(dataSetCodes).isEmpty()
+            ? { dataSets: [] }
+            : await api.metadata
+                  .get({
+                      dataSets: {
+                          fields: { code: true, sections: { code: true } },
+                          filter: { code: { in: dataSetCodes } },
+                      },
+                  })
+                  .getData();
 
         const dataSetByOrgUnitId = _.keyBy(dataSets, dataSet => dataSet.code.split("_")[0]);
         const sectorsByCode = _.keyBy(config.sectors, sector => sector.code);
@@ -129,10 +131,10 @@ export default class ProjectsList {
             })
             .getData();
 
-        // Apply filters that are not possible in the api request
+        // Apply filters that are not possible in the api request: (NAME or CODE) and SECTORS
         const search = filters.search ? filters.search.toLowerCase() : undefined;
 
-        const d2OrgUnitsFiltered = search
+        const d2OrgUnitsFilteredByNameAndCode = search
             ? d2OrgUnits.filter(ou => {
                   const name = ou.n.toLowerCase();
                   const code = ou.c.toLowerCase();
@@ -140,6 +142,13 @@ export default class ProjectsList {
                   return name.includes(search) || code.includes(search);
               })
             : d2OrgUnits;
+
+        const d2OrgUnitsFiltered = await this.filterOrgUnitBySectors(
+            d2OrgUnitsFilteredByNameAndCode,
+            filters.sectorIds
+        );
+
+        // Paginator
 
         const pager = {
             page: pagination.page,
@@ -156,5 +165,36 @@ export default class ProjectsList {
             .value();
 
         return { order, pager, ids };
+    }
+
+    async filterOrgUnitBySectors(orgUnits: Array<{ i: Id }>, sectorIds: Id[] | undefined) {
+        if (!sectorIds || _.isEmpty(sectorIds) || _.isEmpty(orgUnits)) return orgUnits;
+
+        const { api, config } = this;
+        const sectorsById = _.keyBy(config.sectors, sector => sector.id);
+
+        const sectorCodes = _(sectorsById)
+            .at(sectorIds)
+            .compact()
+            .map(sector => sector.code)
+            .value();
+
+        const { objects: sections } = await api.models.sections
+            .get({
+                paging: false,
+                fields: { dataSet: { code: true } },
+                rootJunction: "OR",
+                filter: { code: sectorCodes.map(code => ({ $like: code })) },
+            })
+            .getData();
+
+        const orgUnitIdsWithinSections = new Set(
+            _(sections)
+                .map(section => section.dataSet.code.split("_")[0] || "")
+                .compact()
+                .value()
+        );
+
+        return orgUnits.filter(ou => orgUnitIdsWithinSections.has(ou.i));
     }
 }

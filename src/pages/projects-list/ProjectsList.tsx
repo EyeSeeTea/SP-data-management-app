@@ -200,6 +200,7 @@ const ProjectsList: React.FC = () => {
         const filters: FiltersForList = {
             search,
             countryIds: filter.countries,
+            sectorIds: filter.sectors,
             onlyActive: filter.onlyActive,
         };
         setLoading(true);
