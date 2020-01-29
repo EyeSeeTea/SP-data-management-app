@@ -14,11 +14,11 @@ import { GetItemType } from "../types/utils";
     # [... Array of data elements ...]
 */
 
-export const indicatorTypes = ["global" as const, "sub" as const];
-export const peopleOrBenefit = ["people" as const, "benefit" as const];
+export const indicatorTypes = ["global", "sub", "custom"] as const;
+export const peopleOrBenefitList = ["people", "benefit"] as const;
 
-export type IndicatorType = GetItemType<typeof indicatorTypes>;
-export type PeopleOrBenefit = GetItemType<typeof peopleOrBenefit>;
+export type IndicatorType = typeof indicatorTypes[number];
+export type PeopleOrBenefit = typeof peopleOrBenefitList[number];
 
 export interface DataElementWithCodePairing {
     id: Id;
@@ -148,8 +148,8 @@ export default class DataElementsSet {
                 const attrsMap = getAttrsMap(baseConfig.attributes, d2DataElement.attributeValues);
                 const { pairedDataElement, countingMethod } = attrsMap;
                 const groupCodes = groupCodesByDataElementId[d2DataElement.id] || new Set();
-                const indicatorType = getGroupKey(groupCodes, degCodes, ["global", "sub"]);
-                const peopleOrBenefit = getGroupKey(groupCodes, degCodes, ["people", "benefit"]);
+                const indicatorType = getGroupKey(groupCodes, degCodes, indicatorTypes);
+                const peopleOrBenefit = getGroupKey(groupCodes, degCodes, peopleOrBenefitList);
                 const externals = _(externalsByDataElementId).get(d2DataElement.id, []);
                 const deKey = `${d2DataElement.code}:${sectorGroup.code}`;
 
@@ -353,7 +353,7 @@ function getGroupCodeByDataElementId(
 function getGroupKey<T extends keyof DataElementGroupCodes>(
     groupCodes: Set<string>,
     degCodes: DataElementGroupCodes,
-    keys: (T)[]
+    keys: readonly T[]
 ): T | undefined {
     return keys.find(key => groupCodes.has(degCodes[key]));
 }

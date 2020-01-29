@@ -68,6 +68,7 @@ const baseConfig = {
     dataElementGroups: {
         global: "GLOBAL",
         sub: "SUB",
+        custom: "CUSTOM",
         people: "PEOPLE",
         benefit: "BENEFIT",
     },
