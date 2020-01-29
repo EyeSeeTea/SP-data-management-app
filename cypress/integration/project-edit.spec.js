@@ -17,7 +17,7 @@ describe("Projects - Edit", () => {
         cy.contains("Funders");
         cy.contains("Next").click();
 
-        cy.waitForStep("Organisation Unit & Project Locations");
+        cy.waitForStep("Country & Project Locations");
         cy.contains("Next").click();
 
         cy.waitForStep("Sectors");
