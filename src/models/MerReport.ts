@@ -312,7 +312,11 @@ class MerReport {
             .groupBy(val => getKey([val.orgUnitId, val.dataElementId]))
             .value();
 
-        const dataElementsById = _.keyBy(config.dataElements, "id");
+        const allDataElements = _(config.dataElements)
+            .flatMap(de => _.compact([de, de.pairedDataElement]))
+            .uniqBy(de => de.id)
+            .value();
+        const dataElementsById = _.keyBy(allDataElements, "id");
 
         const projectsData: Array<Project | null> = organisationUnits.map(orgUnit => {
             const project = getProjectFromOrgUnit(orgUnit);
