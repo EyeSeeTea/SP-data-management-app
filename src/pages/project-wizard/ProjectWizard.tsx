@@ -102,18 +102,16 @@ class ProjectWizardImpl extends React.Component<Props, State> {
                     "code",
                     "funders",
                 ],
-                description: i18n.t(
-                    `Choose a name for the project and define the period for which data entry will be enabled and select funders for your project`
-                ),
+                description: i18n.t(`Please fill out information below for your project:`),
                 help: helpTexts.generalInfo,
             },
             {
                 key: "organisation-units",
-                label: i18n.t("Organisation Unit & Project Locations"),
+                label: i18n.t("Country & Project Locations"),
                 component: OrgUnitsStep,
                 validationKeys: ["parentOrgUnit", "locations"],
                 description: i18n.t(
-                    `Select the organisation unit and project location associated with the project. At least one must be selected.`
+                    `Please select your country office and project location/s below:`
                 ),
                 help: helpTexts.organisationUnits,
             },
@@ -143,7 +141,7 @@ class ProjectWizardImpl extends React.Component<Props, State> {
                 label: i18n.t("Summary and Save"),
                 component: SaveStep,
                 description: i18n.t(
-                    'Setup of your project is complete. Click the "Save" button to save your project.'
+                    "The setup of your project is complete. Please review the information below and click the “Save” button once complete."
                 ),
                 help: helpTexts.save,
             },

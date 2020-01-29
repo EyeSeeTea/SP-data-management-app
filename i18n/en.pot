@@ -208,7 +208,7 @@ msgstr ""
 msgid "Organisation Unit"
 msgstr ""
 
-msgid "Parent Organisation Unit"
+msgid "Country"
 msgstr ""
 
 msgid "Data Sets"
@@ -408,17 +408,7 @@ msgstr ""
 msgid "General info"
 msgstr ""
 
-msgid ""
-"Choose a name for the project and define the period for which data entry "
-"will be enabled and select funders for your project"
-msgstr ""
-
-msgid "Organisation Unit & Project Locations"
-msgstr ""
-
-msgid ""
-"Select the organisation unit and project location associated with the "
-"project. At least one must be selected."
+msgid "Country & Project Locations"
 msgstr ""
 
 msgid "Selection of Indicators"
@@ -431,8 +421,8 @@ msgid "Summary and Save"
 msgstr ""
 
 msgid ""
-"Setup of your project is complete. Click the \"Save\" button to save your "
-"project."
+"The setup of your project is complete. Please review the information below "
+"and click the “Save” button once complete."
 msgstr ""
 
 msgid "Edit project"
@@ -476,9 +466,6 @@ msgstr ""
 msgid ""
 "If you need to correct an item in your project, please click the grey "
 "“Previous” button located on the bottom right side of the screen."
-msgstr ""
-
-msgid "Country"
 msgstr ""
 
 msgid "Last updated"
