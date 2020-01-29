@@ -24,8 +24,8 @@ type ActionsRoleMapping<Actions> = {
 function getComponentConfig(api: D2Api, config: Config, goTo: GoTo, currentUser: CurrentUser) {
     const initialPagination = {
         page: 1,
-        pageSize: 3,
-        pageSizeOptions: [3, 10, 20, 50],
+        pageSize: 20,
+        pageSizeOptions: [10, 20, 50],
     };
 
     const initialSorting = { field: "displayName" as const, order: "asc" as const };
