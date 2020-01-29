@@ -172,7 +172,7 @@ class Project {
         funders: i18n.t("Funders"),
         locations: i18n.t("Project Locations"),
         orgUnit: i18n.t("Organisation Unit"),
-        parentOrgUnit: i18n.t("Parent Organisation Unit"),
+        parentOrgUnit: i18n.t("Country"),
         dataSets: i18n.t("Data Sets"),
         dashboard: i18n.t("Dashboard"),
         initialData: i18n.t("Initial Data"),
