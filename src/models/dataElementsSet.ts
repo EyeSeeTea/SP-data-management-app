@@ -1,10 +1,10 @@
 import _ from "lodash";
 import { Id } from "d2-api";
 
-import { Config, DataElementGroupSet, BaseConfig, Metadata } from "./Config";
+import { Config, DataElementGroupSet, BaseConfig, Metadata, CurrentUser } from "./Config";
 import { Sector } from "./Project";
 import i18n from "../locales";
-import { GetItemType } from "../types/utils";
+import User from "./user";
 
 /*
     Abstract list of Project data element of type DataElement. Usage:
@@ -34,6 +34,7 @@ export interface DataElementWithCodePairing {
     series: string;
     pairedDataElementCode: string;
     categoryComboId: Id;
+    isEnabledForUser: boolean;
 }
 
 export interface DataElement extends DataElementWithCodePairing {
@@ -80,7 +81,7 @@ export default class DataElementsSet {
         sectorAndSeries: Record<string, DataElement[]>;
     };
 
-    constructor(private data: DataElementsData) {
+    constructor(private config: Config, private data: DataElementsData) {
         this.dataElementsBy = {
             id: _.keyBy(data.dataElements, de => de.id),
             code: _.keyBy(data.dataElements, de => de.code),
@@ -111,6 +112,7 @@ export default class DataElementsSet {
     }
 
     static async getDataElements(
+        currentUser: CurrentUser,
         baseConfig: BaseConfig,
         metadata: Metadata
     ): Promise<DataElement[]> {
@@ -130,6 +132,7 @@ export default class DataElementsSet {
             .value();
         const degCodes = baseConfig.dataElementGroups;
         const dataElementsById = _(metadata.dataElements).keyBy(de => de.id);
+        const userIsAdmin = new User({ base: baseConfig, currentUser }).hasRole("admin");
 
         return _.flatMap(sectorsSet.dataElementGroups, sectorGroup => {
             const groupCodesByDataElementId = getGroupCodeByDataElementId(dataElementGroupSets);
@@ -155,13 +158,11 @@ export default class DataElementsSet {
                 const deKey = `${d2DataElement.code}:${sectorGroup.code}`;
 
                 if (!indicatorType) {
-                    console.error(`DataElement ${deKey} has no indicator type 1`);
+                    console.error(`DataElement ${deKey} has no indicator type`);
                 } else if (!peopleOrBenefit) {
-                    console.error(`DataElement ${deKey} has no indicator type 2`);
+                    console.error(`DataElement ${deKey} has no indicator type people/benefit`);
                 } else if (seriesGroups.length > 1) {
-                    console.error(
-                        `DataElement ${deKey} has ${seriesGroups.length} series, using first`
-                    );
+                    console.error(`DataElement ${deKey} has ${seriesGroups.length} series`);
                 } else {
                     const dataElement: DataElementWithCodePairing = {
                         id: d2DataElement.id,
@@ -177,6 +178,7 @@ export default class DataElementsSet {
                         countingMethod: countingMethod || "",
                         externals,
                         categoryComboId: d2DataElement.categoryCombo.id,
+                        isEnabledForUser: indicatorType !== "custom" || userIsAdmin,
                     };
                     return dataElement;
                 }
@@ -187,7 +189,7 @@ export default class DataElementsSet {
     }
 
     static build(config: Config) {
-        return new DataElementsSet({
+        return new DataElementsSet(config, {
             dataElements: config.dataElements,
             selected: [],
             selectedMER: [],
@@ -252,7 +254,7 @@ export default class DataElementsSet {
             .union(related.selected.map(de => de.id))
             .difference(related.unselected.map(de => de.id))
             .value();
-        const dataElementsUpdated = new DataElementsSet({
+        const dataElementsUpdated = new DataElementsSet(this.config, {
             ...this.data,
             selected: finalSelected,
         });
@@ -266,7 +268,7 @@ export default class DataElementsSet {
 
     updateMERSelection(dataElementIds: string[]): DataElementsSet {
         const selectedIds = this.get({ onlySelected: true, includePaired: true }).map(de => de.id);
-        return new DataElementsSet({
+        return new DataElementsSet(this.config, {
             ...this.data,
             selectedMER: _.intersection(selectedIds, dataElementIds),
         });
@@ -319,6 +321,7 @@ function getMainDataElements(dataElements: DataElementWithCodePairing[]): DataEl
             .filter(de => de.peopleOrBenefit === "benefit")
             .map(de => de.pairedDataElementCode)
             .uniq()
+            .compact()
             .value()
     );
     const dataElementsByCode = _(dataElements).keyBy(de => de.code);

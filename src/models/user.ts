@@ -1,8 +1,10 @@
 import _ from "lodash";
 import { Config } from "./Config";
 
+type UserConfig = Pick<Config, "base" | "currentUser">;
+
 export default class User {
-    constructor(private config: Config) {}
+    constructor(private config: UserConfig) {}
 
     canCreateProject(): boolean {
         return this.hasRole("admin");
