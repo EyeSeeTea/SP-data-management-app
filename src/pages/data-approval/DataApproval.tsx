@@ -127,24 +127,21 @@ const DataApproval: React.FC = () => {
                 onBackClick={() => goToLandingPage()}
             />
             <Paper style={{ marginBottom: 20, padding: 20 }}>
-                <div>
-                    <Dropdown
-                        items={periodItems ? periodItems : []}
-                        value={date}
-                        onChange={value => setState({ ...state, date: value })}
-                        label={i18n.t("Period")}
-                        hideEmpty={true}
-                    />
-                </div>
-                <div>
-                    <Dropdown
-                        items={categoryComboItems ? categoryComboItems : []}
-                        value={categoryCombo}
-                        onChange={value => setState({ ...state, categoryCombo: value })}
-                        label={i18n.t("Actual/Target")}
-                        hideEmpty={true}
-                    />
-                </div>
+                <Dropdown
+                    items={periodItems ? periodItems : []}
+                    value={date}
+                    onChange={value => setState({ ...state, date: value })}
+                    label={i18n.t("Period")}
+                    hideEmpty={true}
+                />
+
+                <Dropdown
+                    items={categoryComboItems ? categoryComboItems : []}
+                    value={categoryCombo}
+                    onChange={value => setState({ ...state, categoryCombo: value })}
+                    label={i18n.t("Actual/Target")}
+                    hideEmpty={true}
+                />
             </Paper>
 
             {error && <p>{error}</p>}
