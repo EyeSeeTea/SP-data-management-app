@@ -4,25 +4,16 @@ import { useHistory, useRouteMatch } from "react-router";
 import { History } from "history";
 import { makeStyles } from "@material-ui/core/styles";
 import { Paper, Button, LinearProgress } from "@material-ui/core";
-import { DatePicker, useSnackbar, ConfirmationDialog } from "d2-ui-components";
-import { Moment } from "moment";
+import { useSnackbar, ConfirmationDialog } from "d2-ui-components";
 import Dropdown from "../../components/dropdown/Dropdown";
 import Project, { DataSet, getPeriodsData } from "../../models/Project";
-import { D2Api } from "d2-api";
+import { D2Api, Id } from "d2-api";
 import { Config } from "../../models/Config";
 import _ from "lodash";
 
-// import MerReport, { MerReportData } from "../../models/MerReport";
 import { useAppContext } from "../../contexts/api-context";
-import UserOrgUnits from "../../components/org-units/UserOrgUnits";
-// import { getDevMerReport } from "../../models/dev-project";
-// import ReportDataTable from "./ReportDataTable";
-// import StaffTable from "./StaffTable";
-// import MerReportSpreadsheet from "../../models/MerReportSpreadsheet";
 import i18n from "../../locales";
 import PageHeader from "../../components/page-header/PageHeader";
-// import ReportTextField from "./ReportTextField";
-import { downloadFile } from "../../utils/download";
 
 const monthFormat = "YYYYMM";
 
@@ -30,21 +21,45 @@ function goTo(history: History, url: string) {
     history.push(url);
 }
 
-type Attributes = Record<string, string>;
 type RouterParams = { id: string };
 
-type GetState<Data> = { loading: boolean; data?: Data; error?: string };
+type GetState<Data> = {
+    loading: boolean;
+    error?: string;
+    date?: string;
+    categoryCombo?: Id;
+    data?: Data;
+    report?: string;
+    showApproveButton: boolean;
+    showUnapproveButton: boolean;
+};
 
-type State = GetState<{
+type State = GetState<DataInterface>;
+
+type CategoryOptionCombosDataApprovals = CategoryOptionComboDataApprovals[];
+
+interface CategoryOptionComboDataApprovals {
+    level: Level;
+    ou: string;
+    permissions: {
+        mayApprove: boolean;
+        mayUnapprove: boolean;
+        mayAccept: boolean;
+        mayUnaccept: boolean;
+        mayReadData: boolean;
+    };
+    accepted: boolean;
+    id: string;
+    ouName: string;
+}
+
+type Level = {} | { level: string; id: string };
+
+interface DataInterface {
     name: string;
     orgUnit: { id: string; displayName: string };
     dataSet: DataSet;
-}>;
-
-interface DataEntryProps {
-    orgUnitId: string;
-    dataSet: DataSet;
-    attributes: Attributes;
+    categoryCombos: Array<{ id: Id; displayName: string }>;
 }
 
 function getTranslations() {
@@ -54,44 +69,43 @@ function getTranslations() {
 }
 
 const DataApproval: React.FC = () => {
-    // const { orgUnitId, dataSet, attributes } = props;
     const match = useRouteMatch<RouterParams>();
     const projectId = match ? match.params.id : null;
     const history = useHistory();
     const classes = useStyles();
-    const [state, setState] = useState<State>({ loading: true });
+    const [state, setState] = useState<State>({
+        loading: true,
+        showApproveButton: false,
+        showUnapproveButton: false,
+    });
     const goToLandingPage = () => goTo(history, "/");
     const { api, config, isDev } = useAppContext();
-    const { data, loading, error } = state;
+    const { data, date, categoryCombo, loading, error } = state;
     const translations = getTranslations();
     const snackbar = useSnackbar();
-    // const initial = isDev ? getDevMerReport() : { date: null, orgUnit: null };
-    const initial = { date: "", orgUnit: null };
-    // const [showExitWarning, showExitWarningSet] = useState<boolean>(false);
-    // const [dropdownValue, dropdownValueSet] = useState<boolean>(false);
-    const [wasReportModified, wasReportModifiedSet] = useState<boolean>(false);
-    const [date, setDate] = useState<string | undefined>(initial.date);
+
     let periodItems;
+    let categoryComboItems;
     if (data) {
         const { periodIds, currentPeriodId } = getPeriodsData(data.dataSet);
         periodItems = periodIds.map(periodId => ({
             text: moment(periodId, monthFormat).format("MMMM YYYY"),
             value: periodId,
         }));
+        categoryComboItems = data.categoryCombos.map(categoryCombo => ({
+            text: categoryCombo.displayName,
+            value: categoryCombo.id,
+        }));
     }
 
-
-
-    // const [orgUnit, setOrgUnit] = useState<MerReportData["organisationUnit"] | null>(
-    //     initial.orgUnit
-    // );
-    // const [merReport, setMerReport_] = useState<MerReport | undefined | null>(null);
     const title = i18n.t("Data Approval");
 
-
-
-
     useEffect(() => loadData(projectId, api, config, setState), [projectId]);
+    useEffect(() => getReport(date, categoryCombo, data, api, setState), [
+        data,
+        date,
+        categoryCombo,
+    ]);
 
     return (
         <React.Fragment>
@@ -106,45 +120,224 @@ const DataApproval: React.FC = () => {
                 saveText={i18n.t("Yes")}
                 cancelText={i18n.t("No")}
             /> */}
+
             <PageHeader
                 title={title}
                 help={translations.help}
                 onBackClick={() => goToLandingPage()}
             />
-            <Paper style={{ marginBottom: 20 }}>
-                <Dropdown
-                    items={periodItems ? periodItems : []}
-                    value={date}
-                    onChange={setDate}
-                    label="Period"
-                    hideEmpty={true}
-                />
+            <Paper style={{ marginBottom: 20, padding: 20 }}>
+                <div>
+                    <Dropdown
+                        items={periodItems ? periodItems : []}
+                        value={date}
+                        onChange={value => setState({ ...state, date: value })}
+                        label={i18n.t("Period")}
+                        hideEmpty={true}
+                    />
+                </div>
+                <div>
+                    <Dropdown
+                        items={categoryComboItems ? categoryComboItems : []}
+                        value={categoryCombo}
+                        onChange={value => setState({ ...state, categoryCombo: value })}
+                        label={i18n.t("Actual/Target")}
+                        hideEmpty={true}
+                    />
+                </div>
             </Paper>
-{/* 
-            {merReport === undefined && <LinearProgress />}
 
-            {merReport && !merReport.hasProjects() && (
-                <div>{i18n.t("No open projects in the selected date and organisation unit")}</div>
+            {error && <p>{error}</p>}
+
+            {state.report && (
+                <Paper style={{ marginBottom: 20, padding: 20 }}>
+                    <link
+                        rel="stylesheet"
+                        type="text/css"
+                        href={"/dhis-web-reporting/style/dhis-web-reporting.css"}
+                    />
+                    <link
+                        rel="stylesheet"
+                        type="text/css"
+                        href={"/dhis-web-commons/css/widgets.css"}
+                    />
+
+                    <div
+                        dangerouslySetInnerHTML={{
+                            __html: state.report,
+                        }}
+                    ></div>
+
+                    {state.showApproveButton && (
+                        <Button
+                            onClick={() => approve(date, categoryCombo, data, api, setState, true)}
+                            variant="contained"
+                            className={classes.approveButton}
+                        >
+                            {i18n.t("Approve")}
+                        </Button>
+                    )}
+
+                    {state.showUnapproveButton && (
+                        <Button
+                            onClick={() => approve(date, categoryCombo, data, api, setState, false)}
+                            variant="contained"
+                            className={classes.approveButton}
+                        >
+                            {i18n.t("Unapprove")}
+                        </Button>
+                    )}
+                </Paper>
             )}
-
-            {merReport && merReport.hasProjects() && ( */}
-            <React.Fragment>Niti</React.Fragment>
-            {/* )} */}
         </React.Fragment>
     );
 };
 
 const useStyles = makeStyles({
-    buttonsWrapper: {
-        padding: 5,
-        marginLeft: 30,
-    },
-    saveButton: {
+    approveButton: {
         margin: 10,
         backgroundColor: "#2b98f0",
         color: "white",
     },
 });
+
+// http://dev2.eyeseetea.com:8081/dhis-web-reporting/generateDataSetReport.action?ds=qAox84AQUBS&pe=202012&ou=J0hschZVMBt&dimension=ao%3AlbxlzyXK4zr
+// http://dev2.eyeseetea.com:8081/api/dataApprovals/categoryOptionCombos?ds=qAox84AQUBS&pe=202012&ou=J0hschZVMBt
+
+//Approve / Unapprove (POST)
+//http://dev2.eyeseetea.com:8081/api/dataApprovals/approvals
+//http://dev2.eyeseetea.com:8081/api/dataApprovals/unapprovals
+
+async function approve(
+    date: string | undefined,
+    categoryCombo: Id | undefined,
+    data: DataInterface | undefined,
+    api: D2Api,
+    setState: React.Dispatch<React.SetStateAction<State>>,
+    shouldApprove: boolean
+) {
+    try {
+        if (!categoryCombo || !date || !data) return;
+
+        const url = "/dataApprovals/" + (shouldApprove ? "approvals" : "unapprovals");
+        const dataSetId = data.dataSet.id;
+        const orgUnitId = data.orgUnit.id;
+
+        api.post(
+            url,
+            {},
+            {
+                ds: [dataSetId],
+                pe: [date],
+                approvals: [{ ou: orgUnitId, aoc: categoryCombo }],
+            }
+        )
+            .getData()
+            .then(() => {
+                setState(state => ({
+                    ...state,
+                    showApproveButton: !state.showApproveButton,
+                    showUnapproveButton: !state.showUnapproveButton,
+                }));
+            })
+            .catch(err =>
+                // snackbar.error(
+                //     i18n.t("Error approving/unapproving report") + ": " + err.message ||
+                //         err.toString()
+                // )
+                setState({
+                    error: err.message || err.toString(),
+                    loading: false,
+                    showApproveButton: false,
+                    showUnapproveButton: false,
+                })
+            );
+    } catch (err) {
+        // snackbar.error(
+        //     i18n.t("Error approving/unapproving report") + ": " + err.message || err.toString()
+        // );
+        setState({
+            error: err.message || err.toString(),
+            loading: false,
+            showApproveButton: false,
+            showUnapproveButton: false,
+        });
+    }
+}
+
+function getReport(
+    date: string | undefined,
+    categoryCombo: Id | undefined,
+    data: DataInterface | undefined,
+    api: D2Api,
+    setState: React.Dispatch<React.SetStateAction<State>>
+) {
+    if (!categoryCombo || !date || !data) return;
+
+    const datasetId = data.dataSet.id;
+    const orgUnitId = data.orgUnit.id;
+
+    api.get<CategoryOptionCombosDataApprovals>("/dataApprovals/categoryOptionCombos", {
+        ds: datasetId,
+        pe: date,
+        ou: orgUnitId,
+    })
+        .getData()
+        .then(response => {
+            const categoryOptionCombosDataApprovals = _.filter(response, {
+                ou: orgUnitId,
+                id: categoryCombo,
+            });
+            const catOptComboDataApprovals = _(categoryOptionCombosDataApprovals).get(0, null);
+
+            console.log(catOptComboDataApprovals);
+            if (!catOptComboDataApprovals) {
+                setState({
+                    error: i18n.t("Cannot load category option combo"),
+                    loading: false,
+                    showApproveButton: false,
+                    showUnapproveButton: false,
+                });
+                return;
+            }
+
+            const showApproveButton =
+                catOptComboDataApprovals.permissions.mayApprove &&
+                !catOptComboDataApprovals.accepted;
+
+            const showUnapproveButton =
+                catOptComboDataApprovals.permissions.mayUnapprove &&
+                catOptComboDataApprovals.accepted;
+
+            api.baseConnection
+                .get("/dhis-web-reporting/generateDataSetReport.action", {
+                    params: {
+                        ds: datasetId,
+                        pe: date,
+                        ou: orgUnitId,
+                        dimension: "ao:" + categoryCombo,
+                    },
+                })
+                .then(report =>
+                    setState(state => ({
+                        ...state,
+                        date: date,
+                        report: report.data,
+                        loading: false,
+                        showApproveButton: showApproveButton,
+                        showUnapproveButton: showUnapproveButton,
+                    }))
+                )
+                .catch(err =>
+                    setState({
+                        error: err.message || err.toString(),
+                        loading: false,
+                        showApproveButton: false,
+                        showUnapproveButton: false,
+                    })
+                );
+        });
+}
 
 function loadData(
     projectId: string | null | undefined,
@@ -159,16 +352,46 @@ function loadData(
         .then(project => {
             const orgUnit = project ? project.orgUnit : null;
             const dataSet = project && project.dataSets ? project.dataSets["actual"] : null;
-            if (project && orgUnit && dataSet) {
+            const categoryCombos =
+                project && project.config
+                    ? project.config.categoryCombos.targetActual.categoryOptionCombos
+                    : null;
+
+            // const categoryComboActual =
+            //     project && project.config
+            //         ? _.filter(project.config.categoryCombos.targetActual.categoryOptionCombos, {
+            //               displayName: "Actual",
+            //           })
+            //         : null;
+            if (project && orgUnit && dataSet && categoryCombos) {
                 setState({
-                    data: { name: project.name, orgUnit, dataSet },
+                    data: {
+                        name: project.name,
+                        orgUnit,
+                        dataSet,
+                        categoryCombos: categoryCombos,
+                    },
                     loading: false,
+                    showApproveButton: false,
+                    showUnapproveButton: false,
                 });
             } else {
-                setState({ error: i18n.t("Cannot load project relations"), loading: false });
+                setState({
+                    error: i18n.t("Cannot load project relations"),
+                    loading: false,
+                    showApproveButton: false,
+                    showUnapproveButton: false,
+                });
             }
         })
-        .catch(err => setState({ error: err.message || err.toString(), loading: false }));
+        .catch(err =>
+            setState({
+                error: err.message || err.toString(),
+                loading: false,
+                showApproveButton: false,
+                showUnapproveButton: false,
+            })
+        );
 }
 
 export default DataApproval;

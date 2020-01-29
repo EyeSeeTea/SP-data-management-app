@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2020-01-28T09:39:41.927Z\n"
-"PO-Revision-Date: 2020-01-28T09:39:41.927Z\n"
+"POT-Creation-Date: 2020-01-29T15:59:53.356Z\n"
+"PO-Revision-Date: 2020-01-29T15:59:53.356Z\n"
 
 msgid "<No value>"
 msgstr ""
@@ -362,7 +362,22 @@ msgid ""
 "you want to proceed?"
 msgstr ""
 
-msgid "No open projects in the selected date and organisation unit"
+msgid "Period"
+msgstr ""
+
+msgid "Actual/Target"
+msgstr ""
+
+msgid "Approve"
+msgstr ""
+
+msgid "Unapprove"
+msgstr ""
+
+msgid "Error approving/unapproving report"
+msgstr ""
+
+msgid "Cannot load category option combo"
 msgstr ""
 
 msgid "Set Target Values for Project"
@@ -546,6 +561,9 @@ msgid "Error saving report"
 msgstr ""
 
 msgid "Date"
+msgstr ""
+
+msgid "No open projects in the selected date and organisation unit"
 msgstr ""
 
 msgid "Projected Activities for the next month"

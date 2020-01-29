@@ -150,7 +150,7 @@ function getComponentConfig(api: D2Api, config: Config, goTo: GoTo, currentUser:
 
         dataApproval: {
             name: "data-approval",
-            icon: <Icon>data_approval</Icon>,
+            icon: <Icon>playlist_add_check</Icon>,
             text: i18n.t("Data Approval"),
             multiple: false,
             onClick: (projects: ProjectForList[]) => goTo("dataApproval", { id: projects[0].id }),
@@ -158,7 +158,14 @@ function getComponentConfig(api: D2Api, config: Config, goTo: GoTo, currentUser:
     };
 
     const actionsForUserRoles: ActionsRoleMapping<typeof allActions> = {
-        dataReviewer: ["actualValues", "targetValues", "dashboard", "downloadData", "edit"],
+        dataReviewer: [
+            "actualValues",
+            "targetValues",
+            "dashboard",
+            "downloadData",
+            "edit",
+            "dataApproval",
+        ],
         dataViewer: ["dashboard", "downloadData"],
         admin: [
             "actualValues",

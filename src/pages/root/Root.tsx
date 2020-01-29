@@ -35,11 +35,11 @@ const Root = () => {
                 />
                 <Route path={generateUrl("dashboard", idParam)} render={() => <Dashboard />} />
                 <Route path={generateUrl("dashboards")} render={() => <Dashboard />} />
-                <Route render={() => <ProjectsList />} />
                 <Route
                     path={generateUrl("dataApproval", idParam)}
                     render={() => <DataApproval />}
                 />
+                <Route render={() => <ProjectsList />} />
             </Switch>
         </HashRouter>
     );
