@@ -122,8 +122,8 @@ class MerReport {
                 "executiveSummary",
                 "ministrySummary",
                 "projectedActivitiesNextMonth",
-                "staffSummary",
             ]),
+            staffSummary: reportData.staffSummary,
             projectsData,
         };
         return new MerReport(api, config, data);
@@ -182,8 +182,12 @@ class MerReport {
         const now = moment();
         const storeReportKey = getReportStorageKey(organisationUnit);
         const reportData = await getReportData(api, organisationUnit, date);
-        const { reportInfo: oldProjectInfo, report: oldReport, reportPeriod } = reportData;
-        const oldEmptyStaffSummary = oldReport ? oldReport.staffSummary : emptyStaffSummary;
+        const {
+            reportInfo: oldProjectInfo,
+            staffSummary: oldEmptyStaffSummary,
+            report: oldReport,
+            reportPeriod,
+        } = reportData;
         const newStaffSummary = mergeNotEqual(oldEmptyStaffSummary, staffSummary);
 
         const comments = _(projectsData)
@@ -411,6 +415,7 @@ async function getReportData<OU extends Ref>(
     reportInfo: Maybe<ReportInfo>;
     report: Maybe<Report>;
     reportPeriod: string;
+    staffSummary: StaffSummary;
 }> {
     const reportInfo = await getDataStore(api)
         .get<ReportInfo | undefined>(getReportStorageKey(organisationUnit))
@@ -427,9 +432,7 @@ async function getReportData<OU extends Ref>(
         .compact()
         .reduce((acc, report) => mergeNotNil(acc, report.staffSummary), emptyStaffSummary);
 
-    const reportWithStaffSummary = report ? { ...report, staffSummary } : undefined;
-
-    return { reportInfo, report: reportWithStaffSummary, reportPeriod };
+    return { reportInfo, staffSummary, report, reportPeriod };
 }
 
 function mergeNotNil<T>(obj1: T, obj2: T): T {

@@ -202,7 +202,6 @@ function getStaffSummary(report: MerReport): Row[] {
     return [
         [text(""), bold(i18n.t("Full-time")), bold(i18n.t("Part-time")), bold(i18n.t("Total"))],
         ...valuesList.map(({ key, values }) => {
-            console.log(values);
             return [
                 italic(translations[key]),
                 float(values ? values.fullTime : null),
