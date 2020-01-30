@@ -147,7 +147,7 @@ function getCode(dataElement: DataElement, _value: ReactNode) {
 
 function getExternals(dataElement: DataElement, _value: ReactNode) {
     const { externals } = dataElement;
-    return <React.Fragment key={externals[0]}>{renderJoin(externals, <br />)}</React.Fragment>;
+    return <React.Fragment key={externals[0]}>{externals.join(", ")}</React.Fragment>;
 }
 
 function getRelatedMessage(dataElements: DataElement[], action: string): string | null {
