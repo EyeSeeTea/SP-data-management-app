@@ -79,8 +79,8 @@ describe("Project", () => {
                 },
             }).replyOnce(200, metadataForGet);
 
-            mock.onGet("/dataStore/project-monitoring-app/mer-R3rGhxWbAI9").replyOnce(200, {
-                dataElements: ["u24zk6wAgFE"],
+            mock.onGet("/dataStore/project-monitoring-app/project-R3rGhxWbAI9").replyOnce(200, {
+                merDataElementIds: ["u24zk6wAgFE"],
             });
 
             project = await Project.get(api, config, "R3rGhxWbAI9");
@@ -304,61 +304,74 @@ describe("Project", () => {
     });
 
     describe("getList", () => {
-        const objectsPaginated = {
-            pager: {
-                page: 1,
-                pageCount: 3,
-                total: 12,
-                pageSize: 5,
-            },
-            organisationUnits: [
-                { id: "1234a", parent: { id: "parent1" } },
-                { id: "1234b", parent: { id: "parent2" } },
-            ],
-        };
+        const organisationUnitsUnpaginated = [
+            { i: "1", c: "code1", n: "name1" },
+            { i: "2", c: "other2", n: "other2" },
+            { i: "3", c: "CODE3", n: "name3" },
+            { i: "4", c: "other4", n: "other4" },
+            { i: "5", c: "code5", n: "NAME5" },
+        ];
 
-        const baseRequest = {
-            paging: true,
-            fields:
-                "closedDate,code,created,displayDescription,displayName,href,id,lastUpdated,lastUpdatedBy[name],openingDate,parent[displayName,id],publicAccess,user[displayName,id]",
-            order: "displayName:iasc",
-            page: 1,
-            pageSize: 10,
-            filter: ["level:eq:3"],
-        };
+        const organisationUnits = [
+            { id: "1", code: "code1", displayName: "name1" },
+            { id: "2", code: "other2", displayName: "other2" },
+            { id: "3", code: "CODE3", displayName: "name3" },
+            { id: "4", code: "other4", displayName: "other4" },
+            { id: "5", code: "code5", displayName: "NAME5" },
+        ];
+
+        const orgUnitsById = _.keyBy(organisationUnits, ou => ou.id);
 
         it.only("returns list of organisation units filtered", async () => {
             mock.onGet("/organisationUnits", {
                 params: {
-                    ...baseRequest,
-                    filter: [
-                        "level:eq:3",
-                        "name:ilike:abc",
-                        "parent.id:in:[parent1]",
-                        "user.id:eq:M5zQapPyTZI",
-                    ],
+                    paging: false,
+                    fields: "code~rename(c),displayName~rename(n),id~rename(i)",
+                    order: "displayName:idesc",
+                    filter: ["level:eq:3", "parent.id:in:[parent1]", "user.id:eq:M5zQapPyTZI"],
                 },
-            }).replyOnce(200, objectsPaginated);
+            }).replyOnce(200, { organisationUnits: _.reverse(organisationUnitsUnpaginated) });
+
+            mock.onGet("/organisationUnits", {
+                params: {
+                    paging: false,
+                    fields:
+                        "closedDate,code,created,displayDescription,displayName,href,id,lastUpdated,lastUpdatedBy[name],openingDate,parent[displayName,id],publicAccess,user[displayName,id]",
+                    order: "displayName:idesc",
+                    filter: ["id:in:[3,5]"],
+                },
+            }).replyOnce(200, { organisationUnits: _.at(orgUnitsById, ["5", "3"]) });
 
             mock.onGet("/metadata", {
                 params: {
                     "dataSets:fields": "code,sections[code]",
-                    "dataSets:filter": ["code:in:[1234a_ACTUAL,1234b_ACTUAL]"],
+                    "dataSets:filter": ["code:in:[3_ACTUAL,5_ACTUAL]"],
                 },
-            }).replyOnce(200, {});
+            }).replyOnce(200, {
+                dataSets: [
+                    { id: "ds3", code: "3_ACTUAL", sections: [{ code: "SECTOR_AGRICULTURE_ds3" }] },
+                ],
+            });
 
-            const { objects, pagination } = await Project.getList(
+            const { objects, pager: pagination } = await Project.getList(
                 api,
                 config,
-                { search: "abc", createdByCurrentUser: true, countryIds: ["parent1"] },
-                { field: "displayName", order: "asc" },
-                { page: 1, pageSize: 10 }
+                { search: "name", createdByCurrentUser: true, countryIds: ["parent1"] },
+                { field: "displayName", order: "desc" },
+                { page: 1, pageSize: 2 }
             );
 
-            expect(pagination).toEqual(objectsPaginated.pager);
+            expect(pagination).toEqual({ page: 1, pageSize: 2, total: 3 });
             expect(objects).toEqual([
-                { id: "1234a", parent: { id: "parent1" }, sectors: [] },
-                { id: "1234b", parent: { id: "parent2" }, sectors: [] },
+                { id: "5", code: "code5", displayName: "NAME5", sectors: [] },
+                {
+                    id: "3",
+                    code: "CODE3",
+                    displayName: "name3",
+                    sectors: expect.arrayContaining([
+                        expect.objectContaining({ code: "SECTOR_AGRICULTURE" }),
+                    ]),
+                },
             ]);
         });
     });

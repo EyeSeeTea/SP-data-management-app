@@ -1,4 +1,3 @@
-import { RequiredProps } from "./../../types/utils";
 import { ProjectData } from "./../Project";
 import { D2Api } from "d2-api";
 import _ from "lodash";

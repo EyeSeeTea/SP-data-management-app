@@ -1,4 +1,5 @@
 import React from "react";
+import _ from "lodash";
 import {
     Table,
     TableRow,
@@ -52,12 +53,13 @@ const StaffTable: React.FC<StaffTableProps> = props => {
             <TableBody>
                 {staffKeys.map(staffKey => {
                     const staff = merReport.data.staffSummary;
-                    const total = (staff[staffKey].fullTime || 0) + (staff[staffKey].partTime || 0);
+                    const values = _(staff).get(staffKey, null);
+                    const total = values ? (values.fullTime || 0) + (values.partTime || 0) : 0;
                     return (
                         <TableRow key={staffKey}>
                             <TableCell>{translations[staffKey]}</TableCell>
                             <TableCell>
-                                <TimeTextField
+                                <StaffField
                                     staff={staff}
                                     staffKey={staffKey}
                                     timeKey="fullTime"
@@ -65,7 +67,7 @@ const StaffTable: React.FC<StaffTableProps> = props => {
                                 />
                             </TableCell>
                             <TableCell>
-                                <TimeTextField
+                                <StaffField
                                     staff={staff}
                                     staffKey={staffKey}
                                     timeKey="partTime"
@@ -89,17 +91,22 @@ const StaffTable: React.FC<StaffTableProps> = props => {
     );
 };
 
-const TimeTextField: React.FC<{
+const StaffField: React.FC<{
     staff: StaffSummary;
     staffKey: StaffKey;
     timeKey: keyof StaffInfo;
     onChange: (key: StaffKey, staff: StaffInfo) => void;
 }> = ({ staff, staffKey: key, timeKey, onChange }) => {
+    const values = _(staff).get(key, null);
+    const value = values ? values[timeKey] : null;
+
     return (
         <TextFieldOnBlur
-            value={staff[key][timeKey].toString()}
+            value={_.isNil(value) ? "" : value.toString()}
             type="number"
-            onBlurChange={value => onChange(key, { ...staff[key], [timeKey]: parseFloat(value) })}
+            onBlurChange={value =>
+                onChange(key, { ...staff[key], [timeKey]: value ? parseFloat(value) : null })
+            }
         />
     );
 };

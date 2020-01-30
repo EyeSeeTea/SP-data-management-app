@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2020-01-29T15:59:53.356Z\n"
-"PO-Revision-Date: 2020-01-29T15:59:53.356Z\n"
+"POT-Creation-Date: 2020-01-30T10:30:40.203Z\n"
+"PO-Revision-Date: 2020-01-30T10:30:40.203Z\n"
 
 msgid "<No value>"
 msgstr ""
@@ -468,19 +468,22 @@ msgid ""
 "“Previous” button located on the bottom right side of the screen."
 msgstr ""
 
-msgid "Last updated"
+msgid "Last Updated"
 msgstr ""
 
 msgid "Created"
 msgstr ""
 
-msgid "Opening date"
+msgid "Opening Date"
 msgstr ""
 
-msgid "Closed date"
+msgid "Closed Date"
 msgstr ""
 
 msgid "Created By"
+msgstr ""
+
+msgid "Last Updated By"
 msgstr ""
 
 msgid "API Link"
@@ -547,6 +550,11 @@ msgstr ""
 msgid "Error saving report"
 msgstr ""
 
+msgid ""
+"You are about to exit the report, any changes will be lost. Are you sure "
+"you want to proceed?"
+msgstr ""
+
 msgid "Date"
 msgstr ""
 
@@ -557,4 +565,10 @@ msgid "Projected Activities for the next month"
 msgstr ""
 
 msgid "Download"
+msgstr ""
+
+msgid "Target to date"
+msgstr ""
+
+msgid "Actual to date"
 msgstr ""

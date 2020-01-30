@@ -19,7 +19,7 @@ interface ValueBase {
 
 interface NumberValue extends ValueBase {
     type: "number";
-    value: number;
+    value: number | "";
 }
 
 interface TextValue extends ValueBase {
@@ -185,12 +185,10 @@ function applyStyles(sheet: Worksheet, rows: Row[]): void {
 }
 
 function getStaffSummary(report: MerReport): Row[] {
-    const f = float;
     const translations = getStaffTranslations();
     const valuesList = staffKeys.map(staffKey => {
-        const staff = report.data.staffSummary[staffKey];
-        const total = staff.fullTime + staff.partTime;
-        return { key: staffKey, values: { ...staff, total } };
+        const staff = _(report.data.staffSummary).get(staffKey, null);
+        return { key: staffKey, values: staff };
     });
 
     const sumOfPrevious2Rows = formula((row, col) =>
@@ -206,8 +204,8 @@ function getStaffSummary(report: MerReport): Row[] {
         ...valuesList.map(({ key, values }) => {
             return [
                 italic(translations[key]),
-                f(values.fullTime),
-                f(values.partTime),
+                float(values ? values.fullTime : null),
+                float(values ? values.partTime : null),
                 sumOfPrevious2Rows,
             ];
         }),
@@ -224,8 +222,8 @@ function formula(value: GetFormulaValue): FormulaValue {
     return { type: "formula", value };
 }
 
-function float(n: number | undefined): Value {
-    return { type: "number", value: n || 0.0 };
+function float(n: number | null | undefined): Value {
+    return { type: "number", value: _.isNil(n) ? "" : n };
 }
 
 function insertColumns(rows: Row[], count: number): Row[] {
