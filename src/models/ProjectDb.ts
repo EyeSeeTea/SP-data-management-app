@@ -233,12 +233,16 @@ export default class ProjectDb {
             categoryCombo: { id: dataElement.categoryComboId },
         }));
 
-        const dataElementIdsSectorsCount = _.countBy(dataElementsInSectors, de => de.id);
+        const sectorIdForDataElementId = _(dataElementsInSectors)
+            .groupBy(de => de.id)
+            .map((des, deId) => [deId, _.sortBy(des, de => (de.isMainSector ? 0 : 1))[0].sectorId])
+            .fromPairs()
+            .value();
 
         const sections = project.sectors.map((sector, index) => {
             const dataElementsForSector = dataElements
                 .filter(de => de.sectorId === sector.id)
-                .filter(de => dataElementIdsSectorsCount[de.id] === 1 || de.isMainSector)
+                .filter(de => sectorIdForDataElementId[de.id] === sector.id)
                 .map(de => ({ id: de.id }));
 
             return {
