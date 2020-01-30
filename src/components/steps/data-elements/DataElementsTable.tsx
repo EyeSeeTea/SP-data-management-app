@@ -85,9 +85,7 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
 
     const selection = useMemo(() => {
         const getOpts = field === "selection" ? { onlySelected: true } : { onlyMERSelected: true };
-        return dataElementsSet
-            .get({ ...getOpts, sectorId })
-            .map(de => ({ id: de.id, disabled: !de.isEnabledForUser }));
+        return dataElementsSet.get({ ...getOpts, sectorId }).map(de => ({ id: de.id }));
     }, [dataElementsSet, sectorId]);
 
     const searchBoxColumns =

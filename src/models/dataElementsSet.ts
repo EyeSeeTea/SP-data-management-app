@@ -34,7 +34,7 @@ export interface DataElementWithCodePairing {
     series: string;
     pairedDataElementCode: string;
     categoryComboId: Id;
-    isEnabledForUser: boolean;
+    selectable: boolean;
 }
 
 export interface DataElement extends DataElementWithCodePairing {
@@ -156,6 +156,10 @@ export default class DataElementsSet {
                 const peopleOrBenefit = getGroupKey(groupCodes, degCodes, peopleOrBenefitList);
                 const externals = _(externalsByDataElementId).get(d2DataElement.id, []);
                 const deKey = `${d2DataElement.code}:${sectorGroup.code}`;
+                const isSelectable = indicatorType !== "custom" || userIsAdmin;
+                const name =
+                    d2DataElement.displayName +
+                    (isSelectable ? "" : ` ${i18n.t("[only for admin users]")}`);
 
                 if (!indicatorType) {
                     console.error(`DataElement ${deKey} has no indicator type`);
@@ -166,7 +170,7 @@ export default class DataElementsSet {
                 } else {
                     const dataElement: DataElementWithCodePairing = {
                         id: d2DataElement.id,
-                        name: d2DataElement.displayName,
+                        name: name,
                         code: d2DataElement.code,
                         description: d2DataElement.description,
                         sectorId: sectorGroup.id,
@@ -178,7 +182,7 @@ export default class DataElementsSet {
                         countingMethod: countingMethod || "",
                         externals,
                         categoryComboId: d2DataElement.categoryCombo.id,
-                        isEnabledForUser: indicatorType !== "custom" || userIsAdmin,
+                        selectable: isSelectable,
                     };
                     return dataElement;
                 }
