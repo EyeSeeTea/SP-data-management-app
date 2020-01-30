@@ -1,21 +1,11 @@
 {
     "base": {
         "userRoles": {
-            "feedback": [
-                "PM Feedback"
-            ],
-            "dataReviewer": [
-                "Data Reviewer"
-            ],
-            "dataViewer": [
-                "Data Viewer"
-            ],
-            "admin": [
-                "PM Admin"
-            ],
-            "dataEntry": [
-                "Data Entry"
-            ]
+            "feedback": ["PM Feedback"],
+            "dataReviewer": ["Data Reviewer"],
+            "dataViewer": ["Data Viewer"],
+            "admin": ["PM Admin"],
+            "dataEntry": ["Data Entry"]
         },
         "dataElementGroupSets": {
             "sector": "SECTOR",
@@ -1451,9 +1441,7 @@
             "series": "SERIES_AGRICULTURE_101",
             "pairedDataElementCode": "",
             "countingMethod": "",
-            "externals": [
-                "WFP"
-            ],
+            "externals": ["WFP"],
             "categoryComboId": "GKWiemQPU5U"
         },
         {
@@ -1468,10 +1456,7 @@
             "series": "SERIES_AGRICULTURE_101",
             "pairedDataElementCode": "",
             "countingMethod": "",
-            "externals": [
-                "DFID",
-                "OFDA"
-            ],
+            "externals": ["DFID", "OFDA"],
             "categoryComboId": "GKWiemQPU5U"
         },
         {
@@ -1486,10 +1471,7 @@
             "series": "SERIES_AGRICULTURE_101",
             "pairedDataElementCode": "",
             "countingMethod": "",
-            "externals": [
-                "GAC",
-                "UNHCR"
-            ],
+            "externals": ["GAC", "UNHCR"],
             "categoryComboId": "GKWiemQPU5U"
         }
     ],
