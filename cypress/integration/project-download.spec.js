@@ -1,5 +1,4 @@
 import ExcelJS from "exceljs";
-import { Worksheet } from "exceljs";
 
 describe("Download project", () => {
     beforeEach(() => {

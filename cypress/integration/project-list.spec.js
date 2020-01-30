@@ -14,18 +14,17 @@ describe("Project Configuration - List page", () => {
 
     it("opens details window when mouse clicked", () => {
         cy.contains(projectName).click();
-        cy.get(".MuiPaper-root:nth-child(2)").within(() => {
-            cy.contains("Name");
-            cy.contains("Code");
-            cy.contains("Description");
-            cy.contains("Last Updated");
-            cy.contains("Last Updated By");
-            cy.contains("Created");
-            cy.contains("Created By");
-            cy.contains("Opening Date");
-            cy.contains("Closed Date");
-            cy.contains("API Link");
-        });
+
+        cy.contains("Name");
+        cy.contains("Code");
+        cy.contains("Description");
+        cy.contains("Last Updated");
+        cy.contains("Last Updated By");
+        cy.contains("Created");
+        cy.contains("Created By");
+        cy.contains("Opening Date");
+        cy.contains("Closed Date");
+        cy.contains("API Link");
     });
 
     it("opens context window when right button mouse is clicked", () => {
@@ -51,9 +50,8 @@ describe("Project Configuration - List page", () => {
         });
     });
 
-    it.only("shows list of projects sorted alphabetically by name desc", () => {
+    it("shows list of projects sorted alphabetically by name desc", () => {
         cy.get("[data-test-loaded]");
-
         runAndWaitForRequest("/api/metadata*", () => {
             cy.contains("Name").click();
         });

@@ -50,22 +50,15 @@ Project model.
 */
 
 import _ from "lodash";
-import {
-    D2Api,
-    SelectedPick,
-    Id,
-    D2OrganisationUnitSchema,
-    Ref,
-    D2OrganisationUnit,
-    D2IndicatorSchema,
-} from "d2-api";
+import { D2Api, SelectedPick, Id, Ref, D2OrganisationUnit, D2IndicatorSchema } from "d2-api";
 import i18n from "../locales";
-import DataElementsSet, { SelectionUpdate, DataElement, PeopleOrBenefit } from "./dataElementsSet";
-import ProjectDb, { getSectorCodeFromSectionCode } from "./ProjectDb";
+import DataElementsSet, { DataElement, PeopleOrBenefit, SelectionUpdate } from "./dataElementsSet";
+import ProjectDb from "./ProjectDb";
 import { toISOString, getMonthsRange } from "../utils/date";
 import { generateUid } from "d2/uid";
 import ProjectDownload from "./ProjectDownload";
-import { TablePagination, TableSorting } from "d2-ui-components";
+import { TableSorting } from "d2-ui-components";
+import ProjectList, { ProjectForList, FiltersForList } from "./ProjectsList";
 
 export interface ProjectData {
     id: Id;
@@ -135,36 +128,6 @@ const defaultProjectData = {
     dataSets: undefined,
     dashboard: undefined,
 };
-
-const yes = true as const;
-
-const orgUnitFields = {
-    id: yes,
-    user: { id: yes, displayName: yes },
-    displayName: yes,
-    displayDescription: yes,
-    href: yes,
-    publicAccess: yes,
-    created: yes,
-    lastUpdated: yes,
-    lastUpdatedBy: { name: yes },
-    parent: { id: yes, displayName: yes },
-    openingDate: yes,
-    closedDate: yes,
-    code: yes,
-};
-
-export type ProjectForList = SelectedPick<D2OrganisationUnitSchema, typeof orgUnitFields> & {
-    sectors: Sector[];
-};
-
-export type FiltersForList = Partial<{
-    search: string;
-    createdByCurrentUser: boolean;
-    countryIds: string[];
-    sectorIds: string[];
-    onlyActive: boolean;
-}>;
 
 function defineGetters(sourceObject: any, targetObject: any) {
     Object.keys(sourceObject).forEach(function(key) {
@@ -381,65 +344,10 @@ class Project {
         config: Config,
         filters: FiltersForList,
         sorting: TableSorting<ProjectForList>,
-        pagination: { page?: number; pageSize?: number }
-    ): Promise<{ objects: ProjectForList[]; pagination: Partial<TablePagination> }> {
-        const order = `${sorting.field}:i${sorting.order}`;
-        const userId = config.currentUser.id;
-        const filterCountryIds = _.isEmpty(filters.countryIds) ? undefined : filters.countryIds;
-        const now = moment();
-        const { openingDate, closedDate } = getOrgUnitDatesFromProject(now, now);
-        const dateFilter = filters.onlyActive
-            ? {
-                  openingDate: { le: moment(openingDate).format("YYYY-MM-DD") },
-                  closedDate: { ge: moment(closedDate).format("YYYY-MM-DD") },
-              }
-            : {};
-
-        const { objects, pager } = await api.models.organisationUnits
-            .get({
-                paging: true,
-                fields: orgUnitFields,
-                order,
-                page: pagination.page || 1,
-                pageSize: pagination.pageSize || 20,
-                filter: {
-                    level: { eq: "3" },
-                    ...dateFilter,
-                    ...(filters.search ? { name: { ilike: filters.search } } : {}),
-                    ...(filters.createdByCurrentUser ? { "user.id": { eq: userId } } : {}),
-                    ...(filterCountryIds ? { "parent.id": { in: filterCountryIds } } : {}),
-                },
-            })
-            .getData();
-
-        const orgUnits = objects.map(getProjectFromOrgUnit);
-        const dataSetCodes = orgUnits.map(ou => `${ou.id}_ACTUAL`);
-
-        const { dataSets } = await api.metadata
-            .get({
-                dataSets: {
-                    fields: { code: true, sections: { code: true } },
-                    filter: { code: { in: dataSetCodes } },
-                },
-            })
-            .getData();
-
-        const dataSetByOrgUnitId = _.keyBy(dataSets, dataSet => dataSet.code.split("_")[0]);
-        const sectorsByCode = _.keyBy(config.sectors, sector => sector.code);
-
-        const orgUnitsWithSectors = orgUnits.map(orgUnit => {
-            const dataSet = _(dataSetByOrgUnitId).get(orgUnit.id, null);
-            if (!dataSet) {
-                return { ...orgUnit, sectors: [] };
-            } else {
-                const sectors = dataSet.sections.map(
-                    section => sectorsByCode[getSectorCodeFromSectionCode(section.code)]
-                );
-                return { ...orgUnit, sectors };
-            }
-        });
-
-        return { pagination: pager, objects: orgUnitsWithSectors };
+        pagination: { page: number; pageSize: number }
+    ) {
+        const projectsList = new ProjectList(api, config);
+        return projectsList.get(filters, sorting, pagination);
     }
 
     updateDataElementsSelection(
