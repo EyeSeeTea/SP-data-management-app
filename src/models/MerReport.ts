@@ -1,4 +1,3 @@
-import { StaffSummary } from "./MerReport";
 import { GetItemType } from "./../types/utils";
 import moment, { Moment } from "moment";
 import _ from "lodash";
@@ -22,11 +21,9 @@ export const staffKeys = [
 
 export type StaffKey = GetItemType<typeof staffKeys>;
 
-export type StaffSummary = Record<StaffKey, StaffInfo>;
+export type StaffSummary = Partial<Record<StaffKey, StaffInfo>>;
 
-const emptyStaffSummary = {} as StaffSummary;
-
-export type StaffInfo = { fullTime: Maybe<number>; partTime: Maybe<number> };
+export type StaffInfo = Partial<{ fullTime: number; partTime: number }>;
 
 interface OrganisationUnit {
     id: string;
@@ -45,14 +42,14 @@ interface Data {
     staffSummary: StaffSummary;
 }
 
+const emptyStaffSummary: StaffSummary = {};
+
 const initialData = {
     countryDirector: "",
     executiveSummary: "",
     ministrySummary: "",
     projectedActivitiesNextMonth: "",
-    staffSummary: _.fromPairs(
-        staffKeys.map(key => [key, { fullTime: null, partTime: null }])
-    ) as Record<StaffKey, StaffInfo>,
+    staffSummary: emptyStaffSummary,
 };
 
 export interface ProjectInfo {
@@ -72,7 +69,7 @@ interface Report {
     executiveSummary: string;
     ministrySummary: string;
     projectedActivitiesNextMonth: string;
-    staffSummary: Record<StaffKey, StaffInfo>;
+    staffSummary: StaffSummary;
     comments: {
         [orgUnitCountryAndDataElementId: string]: string;
     };
@@ -123,7 +120,7 @@ class MerReport {
                 "ministrySummary",
                 "projectedActivitiesNextMonth",
             ]),
-            staffSummary: reportData.staffSummary,
+            staffSummary: reportData.staffSummaryCurrent,
             projectsData,
         };
         return new MerReport(api, config, data);
@@ -182,13 +179,9 @@ class MerReport {
         const now = moment();
         const storeReportKey = getReportStorageKey(organisationUnit);
         const reportData = await getReportData(api, organisationUnit, date);
-        const {
-            reportInfo: oldProjectInfo,
-            staffSummary: oldEmptyStaffSummary,
-            report: oldReport,
-            reportPeriod,
-        } = reportData;
-        const newStaffSummary = mergeNotEqual(oldEmptyStaffSummary, staffSummary);
+        const { reportInfo: reportInfoOld, report: reportOld } = reportData;
+        const { reportPeriod, staffSummaryPrev } = reportData;
+        const newStaffSummary = mergeNotEqual(staffSummaryPrev, staffSummary);
 
         const comments = _(projectsData)
             .flatMap(projectInfo => {
@@ -200,8 +193,8 @@ class MerReport {
             .value();
 
         const storeReport: Report = {
-            created: oldReport ? oldReport.created : toISOString(now),
-            createdBy: oldReport ? oldReport.createdBy : config.currentUser.id,
+            created: reportOld ? reportOld.created : toISOString(now),
+            createdBy: reportOld ? reportOld.createdBy : config.currentUser.id,
             updated: toISOString(now),
             updatedBy: config.currentUser.id,
             countryDirector,
@@ -213,9 +206,9 @@ class MerReport {
         };
 
         const newStoreValue: ReportInfo = {
-            ...oldProjectInfo,
+            ...reportInfoOld,
             reports: {
-                ...(oldProjectInfo && oldProjectInfo.reports),
+                ...(reportInfoOld && reportInfoOld.reports),
                 [reportPeriod]: storeReport,
             },
         };
@@ -415,7 +408,8 @@ async function getReportData<OU extends Ref>(
     reportInfo: Maybe<ReportInfo>;
     report: Maybe<Report>;
     reportPeriod: string;
-    staffSummary: StaffSummary;
+    staffSummaryPrev: StaffSummary;
+    staffSummaryCurrent: StaffSummary;
 }> {
     const reportInfo = await getDataStore(api)
         .get<ReportInfo | undefined>(getReportStorageKey(organisationUnit))
@@ -425,24 +419,46 @@ async function getReportData<OU extends Ref>(
     const report = reports ? reports[reportPeriod] : undefined;
 
     // Merge old and current values to build the final staff summary for this period
-    const staffSummary = _(reports)
+    const staffSummaryPrev = _(reports)
         .toPairs()
         .sortBy(([period, _report]) => period)
-        .map(([period, report]) => (period <= reportPeriod ? report : null))
+        .map(([period, report]) => (period < reportPeriod ? report : null))
         .compact()
         .reduce((acc, report) => mergeNotNil(acc, report.staffSummary), emptyStaffSummary);
 
-    return { reportInfo, staffSummary, report, reportPeriod };
+    const staffSummaryCurrent = report
+        ? mergeNotNil(staffSummaryPrev, report.staffSummary)
+        : staffSummaryPrev;
+
+    return { reportInfo, staffSummaryPrev, staffSummaryCurrent, report, reportPeriod };
 }
 
-function mergeNotNil<T>(obj1: T, obj2: T): T {
-    return _.mergeWith({}, obj1, obj2, (val1, val2) => (_.isNil(val2) ? val1 : undefined));
+function mergeNotNil<T>(staff1: StaffSummary, staff2: StaffSummary): StaffSummary {
+    return mergeStaffSummaries(staff1, staff2, (val1, val2) => (_.isNil(val2) ? val1 : val2));
 }
 
-function mergeNotEqual<T>(obj1: T, obj2: T): T {
-    return _.mergeWith({}, obj1, obj2, (val1, val2) =>
-        typeof val1 === "object" ? undefined : val1 === val2 ? null : val2
+function mergeNotEqual(staff1: StaffSummary, staff2: StaffSummary): StaffSummary {
+    return mergeStaffSummaries(staff1, staff2, (val1, val2) =>
+        _.isNil(val1) ? val2 : val1 === val2 ? undefined : val2
     );
+}
+
+function mergeStaffSummaries(
+    staff1: StaffSummary,
+    staff2: StaffSummary,
+    merger: (val1: Maybe<number>, val2: Maybe<number>) => Maybe<number>
+): StaffSummary {
+    return _(staffKeys)
+        .map(staffKey => {
+            const time1 = staff1[staffKey] || {};
+            const time2 = staff2[staffKey] || {};
+            const fullTime = merger(time1.fullTime, time2.fullTime);
+            const partTime = merger(time1.partTime, time2.partTime);
+            return [staffKey, _.omitBy({ partTime, fullTime }, _.isNil)];
+        })
+        .fromPairs()
+        .thru(staffSummary => _.omitBy(staffSummary, _.isEmpty))
+        .value();
 }
 
 export type MerReportData = Data;
