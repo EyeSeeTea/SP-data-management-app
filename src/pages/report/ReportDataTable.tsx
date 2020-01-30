@@ -45,6 +45,8 @@ const ReportDataTable: React.FC<ReportDataTableProps> = props => {
                         <TableCell style={{ width: "35em" }}>{i18n.t("Indicators")}</TableCell>
                         <TableCell style={{ width: "3em" }}>{i18n.t("Target")}</TableCell>
                         <TableCell style={{ width: "3em" }}>{i18n.t("Actual")}</TableCell>
+                        <TableCell style={{ width: "3em" }}>{i18n.t("Target to date")}</TableCell>
+                        <TableCell style={{ width: "3em" }}>{i18n.t("Actual to date")}</TableCell>
                         <TableCell style={{ width: "5em" }}>
                             {" "}
                             {i18n.t("Achieved to date (%)")}
@@ -109,6 +111,8 @@ const DataElementCells: React.FC<DataElementCellsProps> = ({ project, dataElemen
         <TableCell>{dataElement.name}</TableCell>
         <TableCell>{formatNumber(dataElement.target)}</TableCell>
         <TableCell>{formatNumber(dataElement.actual)}</TableCell>
+        <TableCell>{formatNumber(dataElement.targetAchieved)}</TableCell>
+        <TableCell>{formatNumber(dataElement.actualAchieved)}</TableCell>
         <TableCell>{formatNumber(dataElement.achieved, "%")}</TableCell>
         <TableCell>
             <TextFieldOnBlur

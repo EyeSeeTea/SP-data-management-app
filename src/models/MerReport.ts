@@ -80,7 +80,9 @@ export interface DataElementInfo {
     name: string;
     target: number;
     actual: number;
-    achieved: number | null;
+    targetAchieved: number;
+    actualAchieved: number;
+    achieved: Maybe<number>;
     comment: string;
 }
 
@@ -333,16 +335,18 @@ class MerReport {
                     values,
                     value => value.categoryOption === "target"
                 );
-                const sumActual = _.sum(allActual.map(v => v.value));
-                const sumTarget = _.sum(allTarget.map(v => v.value));
-                const allAchieved = sumTarget > 0 ? (100.0 * sumActual) / sumTarget : null;
+                const actualAchieved = _.sum(allActual.map(v => v.value));
+                const targetAchieved = _.sum(allTarget.map(v => v.value));
+                const achieved = targetAchieved ? (100 * actualAchieved) / targetAchieved : null;
 
                 return {
                     id: dataElement.id,
                     name: dataElement.name,
                     actual: _(valuesByKey).get(getKey([...keyPrefix, "actual"]), 0.0),
                     target: _(valuesByKey).get(getKey([...keyPrefix, "target"]), 0.0),
-                    achieved: allAchieved,
+                    actualAchieved,
+                    targetAchieved,
+                    achieved: achieved,
                 };
             };
             if (_.isEmpty(dataElementIds)) return null;
