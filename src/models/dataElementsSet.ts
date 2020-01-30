@@ -243,6 +243,13 @@ export default class DataElementsSet {
         return dataElementsFiltered;
     }
 
+    updateSelected(dataElementIds: string[]): DataElementsSet {
+        return new DataElementsSet(this.config, {
+            ...this.data,
+            selected: dataElementIds,
+        });
+    }
+
     updateSelection(
         dataElementIds: string[]
     ): { related: SelectionUpdate; dataElements: DataElementsSet } {
@@ -270,7 +277,7 @@ export default class DataElementsSet {
         return this.data.selectedMER;
     }
 
-    updateMERSelection(dataElementIds: string[]): DataElementsSet {
+    updateMERSelected(dataElementIds: string[]): DataElementsSet {
         const selectedIds = this.get({ onlySelected: true, includePaired: true }).map(de => de.id);
         return new DataElementsSet(this.config, {
             ...this.data,

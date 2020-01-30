@@ -340,8 +340,8 @@ export default class ProjectDb {
             .value();
         const dataElementsSet = DataElementsSet.build(config);
         const dataElementsSetWithSelections = dataElementsSet
-            .updateSelection(projectDataSets.actual.dataSetElements.map(dse => dse.dataElement.id))
-            .dataElements.updateMERSelection(dataElementIdsForMer);
+            .updateSelected(projectDataSets.actual.dataSetElements.map(dse => dse.dataElement.id))
+            .updateMERSelected(dataElementIdsForMer);
 
         const projectData = {
             id: orgUnit.id,

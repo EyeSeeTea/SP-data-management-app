@@ -457,7 +457,7 @@ class Project {
 
     updateDataElementsMERSelection(dataElementIds: string[]): Project {
         const { dataElements } = this.data;
-        return this.setObj({ dataElements: dataElements.updateMERSelection(dataElementIds) });
+        return this.setObj({ dataElements: dataElements.updateMERSelected(dataElementIds) });
     }
 
     updateDataElementsMERSelectionForSector(dataElementIds: string[], sectorId: string): Project {
@@ -465,7 +465,7 @@ class Project {
         const ids = dataElements.getFullSelection(dataElementIds, sectorId, {
             onlyMERSelected: true,
         });
-        return this.setObj({ dataElements: dataElements.updateMERSelection(ids) });
+        return this.setObj({ dataElements: dataElements.updateMERSelected(ids) });
     }
 
     public get uid() {
