@@ -152,12 +152,12 @@ const DataApproval: React.FC = () => {
                     <link
                         rel="stylesheet"
                         type="text/css"
-                        href={"/dhis-web-reporting/style/dhis-web-reporting.css"}
+                        href={api.baseUrl + "/dhis-web-reporting/style/dhis-web-reporting.css"}
                     />
                     <link
                         rel="stylesheet"
                         type="text/css"
-                        href={"/dhis-web-commons/css/widgets.css"}
+                        href={api.baseUrl + "/dhis-web-commons/css/widgets.css"}
                     />
 
                     <div
