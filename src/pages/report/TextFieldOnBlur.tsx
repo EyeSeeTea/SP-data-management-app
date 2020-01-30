@@ -13,7 +13,7 @@ const TextFieldOnBlur: React.FC<TextFieldOnBlurProps> = props => {
         <TextField
             {...otherProps}
             defaultValue={value}
-            onBlur={ev => onBlurChange(ev.target.value)}
+            onBlur={ev => onBlurChange(ev.target.value.trim())}
         />
     );
 };

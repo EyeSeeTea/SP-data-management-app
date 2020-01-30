@@ -16,35 +16,39 @@ export function mockApiForMerReportEmpty(mock: MockAdapter) {
 
 export function mockApiForMerReportWithData(mock: MockAdapter) {
     mock.reset();
-    mock.onGet("/dataStore/project-monitoring-app/mer-PJb0RtEnqlf-201912").replyOnce(200, {
-        created: "2019-12-17T17:21:23",
-        createdBy: "M5zQapPyTZI",
-        updated: "2019-12-18T10:17:18",
-        updatedBy: "M5zQapPyTZI",
-        countryDirector: "Country Director",
-        executiveSummary: "Executive Summary",
-        ministrySummary: "Ministry Summary",
-        projectedActivitiesNextMonth: "Projected",
-        staffSummary: {
-            ifs: { fullTime: 1, partTime: 2 },
-            interns: { fullTime: 3, partTime: 4 },
-            regional: { fullTime: 5, partTime: 6 },
-            ifsDependents: { fullTime: 7, partTime: 8 },
-            nationalStaff: { fullTime: 9, partTime: 10 },
-            regionalDependents: { fullTime: 11, partTime: 12 },
-        },
-        comments: {
-            "uWuM0QT2pVl-WS8XV4WWPE7": "comment1",
-            "uWuM0QT2pVl-We61YNYyOX0": "comment2",
-            "SKuiiu7Vbwv-WS8XV4WWPE7": "comment3",
-            "SKuiiu7Vbwv-We61YNYyOX0": "comment4",
+    mock.onGet("/dataStore/project-monitoring-app/mer-PJb0RtEnqlf").replyOnce(200, {
+        reports: {
+            201912: {
+                created: "2019-12-17T17:21:23",
+                createdBy: "M5zQapPyTZI",
+                updated: "2019-12-18T10:17:18",
+                updatedBy: "M5zQapPyTZI",
+                countryDirector: "Country Director",
+                executiveSummary: "Executive Summary",
+                ministrySummary: "Ministry Summary",
+                projectedActivitiesNextMonth: "Projected",
+                staffSummary: {
+                    ifs: { fullTime: 1, partTime: 2 },
+                    interns: { fullTime: 3, partTime: 4 },
+                    regional: { fullTime: 5, partTime: 6 },
+                    ifsDependents: { fullTime: 7, partTime: 8 },
+                    nationalStaff: { fullTime: 9, partTime: 10 },
+                    regionalDependents: { fullTime: 11, partTime: 12 },
+                },
+                comments: {
+                    "uWuM0QT2pVl-WS8XV4WWPE7": "comment1",
+                    "uWuM0QT2pVl-We61YNYyOX0": "comment2",
+                    "SKuiiu7Vbwv-WS8XV4WWPE7": "comment3",
+                    "SKuiiu7Vbwv-We61YNYyOX0": "comment4",
+                },
+            },
         },
     });
-    mock.onGet("/dataStore/project-monitoring-app/mer-uWuM0QT2pVl").replyOnce(200, {
-        dataElements: ["WS8XV4WWPE7", "We61YNYyOX0"],
+    mock.onGet("/dataStore/project-monitoring-app/project-uWuM0QT2pVl").replyOnce(200, {
+        merDataElementIds: ["WS8XV4WWPE7", "We61YNYyOX0"],
     });
-    mock.onGet("/dataStore/project-monitoring-app/mer-SKuiiu7Vbwv").replyOnce(200, {
-        dataElements: ["yUGuwPFkBrj"],
+    mock.onGet("/dataStore/project-monitoring-app/project-SKuiiu7Vbwv").replyOnce(200, {
+        merDataElementIds: ["yUGuwPFkBrj"],
     });
     mock.onGet("/metadata", {
         params: {

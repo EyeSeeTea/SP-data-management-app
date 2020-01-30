@@ -45,14 +45,14 @@ describe("ProjectDb", () => {
             mock.onPut("/organisationUnits/WGC0DJ0YSis", expectedOrgUnitPut).replyOnce(200);
 
             mock.onPost(
-                "/dataStore/project-monitoring-app/mer-WGC0DJ0YSis",
+                "/dataStore/project-monitoring-app/project-WGC0DJ0YSis",
                 expectedDataStoreMer
             ).replyOnce(200);
 
             jest.spyOn(Date, "now").mockReturnValueOnce(new Date("2019/12/15").getTime());
 
             const { response, project: savedProject } = await new ProjectDb(project).save();
-            expect(response).toBeDefined();
+            expect(response && response.status).toEqual("OK");
             expect(savedProject.id).toEqual("WGC0DJ0YSis");
         });
     });
@@ -109,7 +109,7 @@ const orgUnitsMetadata = {
 };
 
 const expectedDataStoreMer = {
-    dataElements: ["yMqK9DKbA3X", "WS8XV4WWPE7"],
+    merDataElementIds: ["yMqK9DKbA3X", "WS8XV4WWPE7"],
 };
 
 const expectedOrgUnitPut = {

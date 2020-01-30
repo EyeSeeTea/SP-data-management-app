@@ -10,10 +10,9 @@ import { getUid, getDataStore, getIds } from "../utils/dhis2";
 import { Config } from "./Config";
 import { runPromises } from "../utils/promises";
 import DataElementsSet from "./dataElementsSet";
+import { ProjectInfo, getProjectStorageKey } from "./MerReport";
 
 const expiryDaysInMonthActual = 10;
-
-type DataStoreProjectInfo = { dataElements: string[] };
 
 export default class ProjectDb {
     api: D2Api;
@@ -184,8 +183,8 @@ export default class ProjectDb {
     saveMERData(orgUnitId: Id): D2ApiResponse<void> {
         const dataStore = getDataStore(this.project.api);
         const dataElementsForMER = this.project.dataElements.get({ onlyMERSelected: true });
-        const value = { dataElements: dataElementsForMER.map(de => de.id) };
-        return dataStore.save(ProjectDb.getMerDataStoreInfoKey(orgUnitId), value);
+        const value: ProjectInfo = { merDataElementIds: dataElementsForMER.map(de => de.id) };
+        return dataStore.save(getProjectStorageKey({ id: orgUnitId }), value);
     }
 
     /*
@@ -268,10 +267,6 @@ export default class ProjectDb {
         return { dataSets: [dataSet], sections };
     }
 
-    static getMerDataStoreInfoKey(id: Id): string {
-        return `mer-${id}`;
-    }
-
     static async get(api: D2Api, config: Config, id: string): Promise<Project> {
         const { organisationUnits, dataSets } = await api.metadata
             .get({
@@ -323,10 +318,10 @@ export default class ProjectDb {
 
         const dataStore = getDataStore(api);
         const value = await dataStore
-            .get<DataStoreProjectInfo>(ProjectDb.getMerDataStoreInfoKey(id))
+            .get<ProjectInfo | undefined>(getProjectStorageKey({ id }))
             .getData();
         if (!value) console.error("Cannot get MER selections");
-        const dataElementIdsForMer = value ? value.dataElements : [];
+        const dataElementIdsForMer = value ? value.merDataElementIds : [];
 
         const code = orgUnit.code || "";
         const { startDate, endDate } = getDatesFromOrgUnit(orgUnit);

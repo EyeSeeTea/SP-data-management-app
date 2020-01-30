@@ -79,8 +79,8 @@ describe("Project", () => {
                 },
             }).replyOnce(200, metadataForGet);
 
-            mock.onGet("/dataStore/project-monitoring-app/mer-R3rGhxWbAI9").replyOnce(200, {
-                dataElements: ["u24zk6wAgFE"],
+            mock.onGet("/dataStore/project-monitoring-app/project-R3rGhxWbAI9").replyOnce(200, {
+                merDataElementIds: ["u24zk6wAgFE"],
             });
 
             project = await Project.get(api, config, "R3rGhxWbAI9");

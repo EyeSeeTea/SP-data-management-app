@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2020-01-30T09:41:46.882Z\n"
-"PO-Revision-Date: 2020-01-30T09:41:46.882Z\n"
+"POT-Creation-Date: 2020-01-30T10:30:40.203Z\n"
+"PO-Revision-Date: 2020-01-30T10:30:40.203Z\n"
 
 msgid "<No value>"
 msgstr ""
@@ -539,4 +539,10 @@ msgid "Projected Activities for the next month"
 msgstr ""
 
 msgid "Download"
+msgstr ""
+
+msgid "Target to date"
+msgstr ""
+
+msgid "Actual to date"
 msgstr ""
