@@ -45,13 +45,13 @@ const ReportDataTable: React.FC<ReportDataTableProps> = props => {
                         <TableCell style={{ width: "35em" }}>{i18n.t("Indicators")}</TableCell>
                         <TableCell style={{ width: "3em" }}>{i18n.t("Target")}</TableCell>
                         <TableCell style={{ width: "3em" }}>{i18n.t("Actual")}</TableCell>
-                        <TableCell style={{ width: "3em" }}>{i18n.t("Target to date")}</TableCell>
-                        <TableCell style={{ width: "3em" }}>{i18n.t("Actual to date")}</TableCell>
+                        <TableCell style={{ width: "4em" }}>{i18n.t("Target to date")}</TableCell>
+                        <TableCell style={{ width: "4em" }}>{i18n.t("Actual to date")}</TableCell>
                         <TableCell style={{ width: "5em" }}>
                             {" "}
                             {i18n.t("Achieved to date (%)")}
                         </TableCell>
-                        <TableCell style={{ width: "40em" }}>{i18n.t("Comment")}</TableCell>
+                        <TableCell style={{ width: "30em" }}>{i18n.t("Comment")}</TableCell>
                     </TableRow>
                 </TableHead>
 
