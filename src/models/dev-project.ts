@@ -23,7 +23,7 @@ export function getDevProject(initialProject: Project, enabled: boolean) {
         })
         .set("sectors", [
             { id: "mGQ5ckOTU8A", displayName: "Agriculture", code: "SECTOR_AGRICULTURE" },
-            { id: "m4Cg6FOPPR7", displayName: "Livelihoods", code: "SECTOR_LIVELIHOODS" },
+            { id: "GkiSljtLcOI", displayName: "Livelihood", code: "SECTOR_LIVELIHOOD" },
         ])
         .set(
             "dataElements",
