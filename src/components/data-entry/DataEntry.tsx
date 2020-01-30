@@ -44,8 +44,7 @@ function setEntryStyling(iframe: HTMLIFrameElement) {
     on(iframeDocument, "#selectionBox", el => (el.style.display = "none"));
     on(iframeDocument, "body", el => (el.style.marginTop = "-55px"));
     on(iframeDocument, "#mainPage", el => (el.style.margin = "65px 10px 10px 10px"));
-    on(iframeDocument, "#completenessDiv", el => (el.style.backgroundColor = "#5c9ccc"));
-    on(iframeDocument, "#completenessDiv", el => (el.style.border = "#5c9ccc"));
+    on(iframeDocument, "#completenessDiv", el => el.remove());
     on(iframeDocument, "#moduleHeader", el => el.remove());
 }
 
