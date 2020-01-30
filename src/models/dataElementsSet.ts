@@ -133,9 +133,10 @@ export default class DataElementsSet {
 
         return _.flatMap(sectorsSet.dataElementGroups, sectorGroup => {
             const groupCodesByDataElementId = getGroupCodeByDataElementId(dataElementGroupSets);
-            const seriesGroupsForSector = seriesSet.dataElementGroups.filter(deg => {
-                // series Code = SERIES_PROTECTION_1002
-                const [_seriesLiteral, sectorCode, series] = deg.code.split("_");
+            const seriesGroups = _.uniqBy(seriesSet.dataElementGroups, deg => deg.id);
+            const seriesGroupsForSector = seriesGroups.filter(deg => {
+                // series code = SERIES_PROTECTION_1002
+                const [, sectorCode, series] = deg.code.split("_");
                 return sectorGroup.code.split("_")[1] === sectorCode ? series : null;
             });
             const dataElements = sectorGroup.dataElements.map(dataElementRef => {
@@ -397,17 +398,4 @@ function fromPairs<Key extends string, Value>(pairs: Array<[Key, Value]>): Recor
 
 function getKeys<T>(obj: T): Array<keyof T> {
     return Object.keys(obj) as Array<keyof T>;
-}
-
-function accumulate<Key extends string, Value>(pairs: Array<[Key, Value]>): Record<Key, Value[]> {
-    const output = {} as Record<Key, Value[]>;
-    pairs.forEach(([key, value]) => {
-        if (!output[key]) {
-            output[key] = [value];
-        } else {
-            output[key].push(value);
-        }
-    });
-
-    return output;
 }

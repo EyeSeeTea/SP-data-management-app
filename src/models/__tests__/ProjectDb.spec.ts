@@ -1,4 +1,3 @@
-import _ from "lodash";
 import { getMockApi } from "d2-api";
 import ProjectDb from "../ProjectDb";
 import { getProject } from "./project-data";

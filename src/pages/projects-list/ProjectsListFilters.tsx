@@ -26,20 +26,8 @@ export interface FilterOptions {
 const ProjectsListFilters: React.FC<ProjectsListFiltersProps> = props => {
     const { filter, filterOptions, onChange } = props;
     const classes = useStyles();
-
-    const countryItems = React.useMemo(() => {
-        return filterOptions.countries.map(option => ({
-            value: option.id,
-            text: option.displayName,
-        }));
-    }, [filterOptions.countries]);
-
-    const sectorsItems = React.useMemo(() => {
-        return filterOptions.sectors.map(option => ({
-            value: option.id,
-            text: option.displayName,
-        }));
-    }, [filterOptions.countries]);
+    const countryItems = useMemoOptions(filterOptions.countries);
+    const sectorItems = useMemoOptions(filterOptions.sectors);
 
     return (
         <div>
@@ -48,6 +36,13 @@ const ProjectsListFilters: React.FC<ProjectsListFiltersProps> = props => {
                 values={filter.countries || []}
                 onChange={countries => onChange({ ...filter, countries })}
                 label={i18n.t("Countries")}
+            />
+
+            <MultipleDropdown
+                items={sectorItems}
+                values={filter.sectors || []}
+                onChange={sectors => onChange({ ...filter, sectors })}
+                label={i18n.t("Sectors")}
             />
 
             <FormControlLabel
@@ -67,5 +62,14 @@ const ProjectsListFilters: React.FC<ProjectsListFiltersProps> = props => {
 const useStyles = makeStyles({
     checkbox: { marginLeft: 5 },
 });
+
+function useMemoOptions(options: Option[]) {
+    return React.useMemo(() => {
+        return options.map(option => ({
+            value: option.id,
+            text: option.displayName,
+        }));
+    }, [options]);
+}
 
 export default ProjectsListFilters;
