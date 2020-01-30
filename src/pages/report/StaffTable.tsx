@@ -104,7 +104,9 @@ const StaffField: React.FC<{
         <TextFieldOnBlur
             value={_.isNil(value) ? "" : value.toString()}
             type="number"
-            onBlurChange={value => onChange(key, { ...staff[key], [timeKey]: parseFloat(value) })}
+            onBlurChange={value =>
+                onChange(key, { ...staff[key], [timeKey]: value ? parseFloat(value) : null })
+            }
         />
     );
 };
