@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { ObjectsTable, TableColumn, TableAction, TableSorting, TableState } from "d2-ui-components";
+import { TablePagination } from "d2-ui-components";
 import i18n from "../../locales";
 import _ from "lodash";
 import { useAppContext, CurrentUser } from "../../contexts/api-context";
@@ -137,9 +138,7 @@ function getComponentConfig(api: D2Api, config: Config, goTo: GoTo, currentUser:
             icon: <Icon>delete</Icon>,
             text: i18n.t("Delete"),
             multiple: true,
-            onClick: (projects: ProjectForList[]) => {
-                console.log("delete", projects);
-            },
+            onClick: (_projects: ProjectForList[]) => {},
         },
     };
 
@@ -188,15 +187,15 @@ const ProjectsList: React.FC = () => {
     const [isLoading, setLoading] = useState(true);
 
     useEffect(() => {
-        getProjects();
-    }, [pagination.page, sorting, search, filter]);
+        getProjects({ page: 1 });
+    }, [search, filter]);
 
     const filterOptions = React.useMemo(
         () => ({ countries: config.countries, sectors: config.sectors }),
         [config]
     );
 
-    async function getProjects() {
+    async function getProjects(paginationOptions: Partial<TablePagination>) {
         const filters: FiltersForList = {
             search,
             countryIds: filter.countries,
@@ -204,15 +203,17 @@ const ProjectsList: React.FC = () => {
             onlyActive: filter.onlyActive,
         };
         setLoading(true);
-        const res = await Project.getList(api, config, filters, sorting, pagination);
+        const listPagination = { ...pagination, ...paginationOptions };
+        const res = await Project.getList(api, config, filters, sorting, listPagination);
         setRows(res.objects);
-        setPagination(pagination => ({ ...pagination, ...res.pager }));
+        setPagination({ ...listPagination, ...res.pager });
         setLoading(false);
     }
 
-    function onStateChange(state: TableState<ProjectForList>) {
-        setPagination(state.pagination);
-        setSorting(state.sorting);
+    function onStateChange(newState: TableState<ProjectForList>) {
+        const { pagination, sorting } = newState;
+        setSorting(sorting);
+        getProjects(pagination);
     }
 
     const canAccessReports = currentUser.hasRole("admin") || currentUser.hasRole("dataReviewer");

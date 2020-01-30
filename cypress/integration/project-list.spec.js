@@ -51,7 +51,7 @@ describe("Project Configuration - List page", () => {
         });
     });
 
-    it.only("shows list of projects sorted alphabetically by name desc", () => {
+    it("shows list of projects sorted alphabetically by name desc", () => {
         cy.get("[data-test-loaded]");
 
         runAndWaitForRequest("/api/metadata*", () => {
