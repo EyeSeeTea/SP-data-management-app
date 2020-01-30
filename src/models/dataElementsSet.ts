@@ -413,16 +413,3 @@ function fromPairs<Key extends string, Value>(pairs: Array<[Key, Value]>): Recor
 function getKeys<T>(obj: T): Array<keyof T> {
     return Object.keys(obj) as Array<keyof T>;
 }
-
-function accumulate<Key extends string, Value>(pairs: Array<[Key, Value]>): Record<Key, Value[]> {
-    const output = {} as Record<Key, Value[]>;
-    pairs.forEach(([key, value]) => {
-        if (!output[key]) {
-            output[key] = [value];
-        } else {
-            output[key].push(value);
-        }
-    });
-
-    return output;
-}

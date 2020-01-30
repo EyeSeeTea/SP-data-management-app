@@ -2,10 +2,6 @@
 
 ```
 $ yarn install
-
-# In d2-api folder, run: yarn build && cd build && yarn link
-
-$ yarn link d2-api
 ```
 
 ## Development
@@ -23,7 +19,7 @@ $ yarn start
 Setup (only when config object changes):
 
 ```
-$ yarn generate-test-fixtures 'http://admin:PASSWORD@SERVER:PORT'
+$ yarn generate-test-fixtures 'http://admin:PASSWORD@SERVER'
 ```
 
 Unit testing:

@@ -47,14 +47,7 @@ describe("MerReport", () => {
         it("sets empty staff summary", () => {
             expect(report.data).toEqual(
                 expect.objectContaining({
-                    staffSummary: {
-                        nationalStaff: { fullTime: 0, partTime: 0 },
-                        ifs: { fullTime: 0, partTime: 0 },
-                        ifsDependents: { fullTime: 0, partTime: 0 },
-                        regional: { fullTime: 0, partTime: 0 },
-                        regionalDependents: { fullTime: 0, partTime: 0 },
-                        interns: { fullTime: 0, partTime: 0 },
-                    },
+                    staffSummary: {},
                 })
             );
         });
@@ -132,7 +125,9 @@ describe("MerReport", () => {
                             name:
                                 "# of agriculture groups receiving support for improved livelihoods",
                             actual: 1,
+                            actualAchieved: 2,
                             target: 3,
+                            targetAchieved: 5,
                             achieved: 40,
                             comment: "comment1",
                         },
@@ -140,7 +135,9 @@ describe("MerReport", () => {
                             id: "We61YNYyOX0",
                             name: "# of biogas digesters installed",
                             actual: 2,
+                            actualAchieved: 6,
                             target: 4,
+                            targetAchieved: 7,
                             achieved: 85.71428571428571,
                             comment: "comment2",
                         },
@@ -155,8 +152,10 @@ describe("MerReport", () => {
                             id: "yUGuwPFkBrj",
                             name: "# of energy-saving stoves installed",
                             actual: 0,
+                            actualAchieved: 0,
                             target: 0,
-                            achieved: undefined,
+                            targetAchieved: 0,
+                            achieved: null,
                             comment: "",
                         },
                     ],

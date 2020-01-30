@@ -262,7 +262,8 @@ class ConfigLoader {
         const sectors = _(metadata.dataElementGroupSets)
             .keyBy(degSet => degSet.code)
             .getOrFail(baseConfig.dataElementGroupSets.sector).dataElementGroups;
-        return { sectors, dataElements };
+        const sortedSectors = _.sortBy(sectors, sector => sector.displayName);
+        return { sectors: sortedSectors, dataElements };
     }
 }
 
@@ -317,7 +318,7 @@ async function getFromApp(baseUrl: string) {
     };
     const jsonPath = path.join(__dirname, "__tests__", "config.json");
     fs.writeFileSync(jsonPath, JSON.stringify(config, null, 4) + "\n");
-    console.log(`Written: ${jsonPath}`);
+    console.info(`Written: ${jsonPath}`);
 }
 
 if (require.main === module) {

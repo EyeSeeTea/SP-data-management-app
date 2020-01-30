@@ -52,7 +52,7 @@ export function getDevProject(initialProject: Project, enabled: boolean) {
 
 export function getDevMerReport() {
     return {
-        date: moment(),
+        date: moment("2020-03-01"),
         orgUnit: {
             path: "/J0hschZVMBt/eu2XF73JOzl",
             id: "eu2XF73JOzl",

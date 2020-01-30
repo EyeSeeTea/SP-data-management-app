@@ -1,7 +1,7 @@
 import { GetItemType } from "./../types/utils";
 import moment, { Moment } from "moment";
 import _ from "lodash";
-import { D2Api, Id } from "d2-api";
+import { D2Api, Id, Ref } from "d2-api";
 import { Config } from "./Config";
 import { getDataStore } from "../utils/dhis2";
 import DataStore from "d2-api/api/dataStore";
@@ -21,7 +21,9 @@ export const staffKeys = [
 
 export type StaffKey = GetItemType<typeof staffKeys>;
 
-export type StaffSummary = Record<StaffKey, StaffInfo>;
+export type StaffSummary = Partial<Record<StaffKey, StaffInfo>>;
+
+export type StaffInfo = Partial<{ fullTime: number; partTime: number }>;
 
 interface OrganisationUnit {
     id: string;
@@ -40,22 +42,25 @@ interface Data {
     staffSummary: StaffSummary;
 }
 
-export type StaffInfo = { fullTime: number; partTime: number };
+const emptyStaffSummary: StaffSummary = {};
 
 const initialData = {
     countryDirector: "",
     executiveSummary: "",
     ministrySummary: "",
     projectedActivitiesNextMonth: "",
-    staffSummary: _.fromPairs(staffKeys.map(key => [key, { fullTime: 0, partTime: 0 }])) as Record<
-        StaffKey,
-        StaffInfo
-    >,
+    staffSummary: emptyStaffSummary,
 };
 
-type ProjectInfo = { dataElements: string[] } | undefined;
+export interface ProjectInfo {
+    merDataElementIds: string[];
+}
 
-interface DataStoreReport {
+interface ReportInfo {
+    reports?: Record<string, Report>;
+}
+
+interface Report {
     created: string;
     createdBy: Id;
     updated: string;
@@ -64,7 +69,7 @@ interface DataStoreReport {
     executiveSummary: string;
     ministrySummary: string;
     projectedActivitiesNextMonth: string;
-    staffSummary: Record<StaffKey, StaffInfo>;
+    staffSummary: StaffSummary;
     comments: {
         [orgUnitCountryAndDataElementId: string]: string;
     };
@@ -75,7 +80,9 @@ export interface DataElementInfo {
     name: string;
     target: number;
     actual: number;
-    achieved: number | undefined;
+    targetAchieved: number;
+    actualAchieved: number;
+    achieved: Maybe<number>;
     comment: string;
 }
 
@@ -95,37 +102,27 @@ class MerReport {
         this.dataStore = getDataStore(this.api);
     }
 
-    static getReportKey(selectData: Pick<Data, "date" | "organisationUnit">): string {
-        const { organisationUnit, date } = selectData;
-        const dateString = date.format("YYYYMM");
-        return ["mer", organisationUnit.id, dateString].join("-");
-    }
-
-    getReportKey() {
-        return MerReport.getReportKey(this.data);
-    }
-
     static async create(
         api: D2Api,
         config: Config,
         selectData: Pick<Data, "date" | "organisationUnit">
     ): Promise<MerReport> {
-        const storeReport = await getDataStore(api)
-            .get<DataStoreReport>(MerReport.getReportKey(selectData))
-            .getData();
-        const comments = storeReport ? storeReport.comments : {};
+        const { organisationUnit, date } = selectData;
+        const reportData = await getReportData(api, organisationUnit, date);
+        const { report } = reportData;
+        const comments = report ? report.comments : {};
         const projectsData = await MerReport.getProjectsData(api, config, selectData, comments);
 
         const data: Data = {
             ...selectData,
             ...initialData,
-            ..._.pick(storeReport, [
+            ..._.pick(report, [
                 "countryDirector",
                 "executiveSummary",
                 "ministrySummary",
                 "projectedActivitiesNextMonth",
-                "staffSummary",
             ]),
+            staffSummary: reportData.staffSummaryCurrent,
             projectsData,
         };
         return new MerReport(api, config, data);
@@ -140,9 +137,9 @@ class MerReport {
     }
 
     getStaffTotals(): { partTime: number; fullTime: number; total: number } {
-        const staffs = staffKeys.map(key => this.data.staffSummary[key]);
-        const partTime = _.sum(staffs.map(staff => staff.partTime));
-        const fullTime = _.sum(staffs.map(staff => staff.fullTime));
+        const staffs = staffKeys.map(key => _(this.data.staffSummary).get(key, undefined));
+        const partTime = _.sum(_.compact(staffs.map(staff => (staff ? staff.partTime : null))));
+        const fullTime = _.sum(_.compact(staffs.map(staff => (staff ? staff.fullTime : null))));
         return { partTime, fullTime, total: partTime + fullTime };
     }
 
@@ -177,13 +174,18 @@ class MerReport {
     }
 
     async save(): Promise<void> {
-        const { dataStore, config } = this;
-        const { organisationUnit, date, staffSummary } = this.data;
+        const { dataStore, config, api } = this;
+        const { projectsData, organisationUnit, date, staffSummary } = this.data;
         const { countryDirector, executiveSummary } = this.data;
         const { ministrySummary, projectedActivitiesNextMonth } = this.data;
-        const storeReportKey = MerReport.getReportKey({ organisationUnit, date });
-        const previousValue = await dataStore.get<DataStoreReport>(storeReportKey).getData();
-        const comments = _(this.data.projectsData)
+        const now = moment();
+        const storeReportKey = getReportStorageKey(organisationUnit);
+        const reportData = await getReportData(api, organisationUnit, date);
+        const { reportInfo: reportInfoOld, report: reportOld } = reportData;
+        const { reportPeriod, staffSummaryPrev } = reportData;
+        const newStaffSummary = mergeNotEqual(staffSummaryPrev, staffSummary);
+
+        const comments = _(projectsData)
             .flatMap(projectInfo => {
                 return projectInfo.dataElements.map(deInfo => {
                     return [getKey([projectInfo.id, deInfo.id]), deInfo.comment];
@@ -192,20 +194,28 @@ class MerReport {
             .fromPairs()
             .value();
 
-        const storeRerport: DataStoreReport = {
-            created: previousValue ? previousValue.created : toISOString(date),
-            createdBy: previousValue ? previousValue.createdBy : config.currentUser.id,
-            updated: toISOString(date),
+        const storeReport: Report = {
+            created: reportOld ? reportOld.created : toISOString(now),
+            createdBy: reportOld ? reportOld.createdBy : config.currentUser.id,
+            updated: toISOString(now),
             updatedBy: config.currentUser.id,
             countryDirector,
             executiveSummary,
             ministrySummary,
             projectedActivitiesNextMonth,
-            staffSummary,
+            staffSummary: newStaffSummary,
             comments,
         };
 
-        await dataStore.save(storeReportKey, storeRerport);
+        const newStoreValue: ReportInfo = {
+            ...reportInfoOld,
+            reports: {
+                ...(reportInfoOld && reportInfoOld.reports),
+                [reportPeriod]: storeReport,
+            },
+        };
+
+        await dataStore.save(storeReportKey, newStoreValue);
     }
 
     static async getProjectsData(
@@ -238,7 +248,7 @@ class MerReport {
                 await runPromises(
                     organisationUnits.map(orgUnit => () =>
                         dataStore
-                            .get<ProjectInfo>("mer-" + orgUnit.id)
+                            .get<ProjectInfo | undefined>(getProjectStorageKey(orgUnit))
                             .getData()
                             .then(value => [orgUnit.id, value] as [string, ProjectInfo])
                     ),
@@ -254,10 +264,10 @@ class MerReport {
 
         const months = getMonthsRange(moment(oldestPeriod), date);
         const periods = months.map(date => date.format("YYYYMM"));
-        const reportPeriod = date.format("YYYYMM");
+        const reportPeriod = getReportPeriod(date);
         const allDataElementIds = _(projectInfoByOrgUnitId)
             .values()
-            .flatMap(info => (info ? info.dataElements : []))
+            .flatMap(info => (info ? info.merDataElementIds : []))
             .uniq()
             .value();
 
@@ -301,46 +311,63 @@ class MerReport {
             .groupBy(val => getKey([val.orgUnitId, val.dataElementId]))
             .value();
 
-        const dataElementsById = _.keyBy(config.dataElements, "id");
+        const allDataElements = _(config.dataElements)
+            .flatMap(de => _.compact([de, de.pairedDataElement]))
+            .uniqBy(de => de.id)
+            .value();
+        const dataElementsById = _.keyBy(allDataElements, "id");
 
         const projectsData: Array<Project | null> = organisationUnits.map(orgUnit => {
             const project = getProjectFromOrgUnit(orgUnit);
             const formatDate = (dateStr: string): string => moment(dateStr).format("MMM YYYY");
             const projectInfo = projectInfoByOrgUnitId[orgUnit.id];
-            const dataElementIds = projectInfo ? projectInfo.dataElements : [];
+            const dataElementIds = projectInfo ? projectInfo.merDataElementIds : [];
             const getDataElementInfo = (deId: Id) => {
-                const dataElement = _(dataElementsById).getOrFail(deId);
+                const dataElement = _(dataElementsById).get(deId, null);
+                if (!dataElement) {
+                    console.error(`Cannot found data element: ${deId}`);
+                    return;
+                }
+
                 const keyPrefix = [reportPeriod, orgUnit.id, dataElement.id];
                 const values = valuesByOrgUnitAndDataElement[getKey([orgUnit.id, deId])] || [];
                 const [allTarget, allActual] = _.partition(
                     values,
                     value => value.categoryOption === "target"
                 );
-                const sumActual = _.sum(allActual.map(v => v.value));
-                const sumTarget = _.sum(allTarget.map(v => v.value));
-                const allAchieved = sumTarget > 0 ? (100.0 * sumActual) / sumTarget : undefined;
+                const actualAchieved = _.sum(allActual.map(v => v.value));
+                const targetAchieved = _.sum(allTarget.map(v => v.value));
+                const achieved = targetAchieved ? (100 * actualAchieved) / targetAchieved : null;
 
                 return {
                     id: dataElement.id,
                     name: dataElement.name,
                     actual: _(valuesByKey).get(getKey([...keyPrefix, "actual"]), 0.0),
                     target: _(valuesByKey).get(getKey([...keyPrefix, "target"]), 0.0),
-                    achieved: allAchieved,
+                    actualAchieved,
+                    targetAchieved,
+                    achieved: achieved,
                 };
             };
             if (_.isEmpty(dataElementIds)) return null;
 
-            return {
-                id: orgUnit.id,
-                name: project.displayName,
-                dateInfo: `${formatDate(project.openingDate)} -> ${formatDate(project.closedDate)}`,
-                dataElements: dataElementIds.map(getDataElementInfo).map(dataElementInfo => ({
+            const dataElements = _(dataElementIds)
+                .map(getDataElementInfo)
+                .compact()
+                .map(dataElementInfo => ({
                     ...dataElementInfo,
                     comment: _(commentsByProjectAndDataElement).get(
                         getKey([project.id, dataElementInfo.id]),
                         ""
                     ),
-                })),
+                }))
+                .value();
+
+            return {
+                id: orgUnit.id,
+                name: project.displayName,
+                dateInfo: `${formatDate(project.openingDate)} -> ${formatDate(project.closedDate)}`,
+                dataElements,
             };
         });
 
@@ -361,6 +388,81 @@ export function getStaffTranslations(): Record<StaffKey, string> {
 
 function getKey(parts: string[]): string {
     return parts.join("-");
+}
+
+function getReportPeriod(date: Moment): string {
+    return date.format("YYYYMM");
+}
+
+export function getProjectStorageKey(organisationUnit: Ref): string {
+    return ["project", organisationUnit.id].join("-");
+}
+
+function getReportStorageKey(organisationUnit: Ref): string {
+    return ["mer", organisationUnit.id].join("-");
+}
+
+type Maybe<T> = T | undefined | null;
+
+async function getReportData<OU extends Ref>(
+    api: D2Api,
+    organisationUnit: OU,
+    date: Moment
+): Promise<{
+    reportInfo: Maybe<ReportInfo>;
+    report: Maybe<Report>;
+    reportPeriod: string;
+    staffSummaryPrev: StaffSummary;
+    staffSummaryCurrent: StaffSummary;
+}> {
+    const reportInfo = await getDataStore(api)
+        .get<ReportInfo | undefined>(getReportStorageKey(organisationUnit))
+        .getData();
+    const reportPeriod = getReportPeriod(date);
+    const reports = reportInfo ? reportInfo.reports : undefined;
+    const report = reports ? reports[reportPeriod] : undefined;
+
+    // Merge old and current values to build the final staff summary for this period
+    const staffSummaryPrev = _(reports)
+        .toPairs()
+        .sortBy(([period, _report]) => period)
+        .map(([period, report]) => (period < reportPeriod ? report : null))
+        .compact()
+        .reduce((acc, report) => mergeNotNil(acc, report.staffSummary), emptyStaffSummary);
+
+    const staffSummaryCurrent = report
+        ? mergeNotNil(staffSummaryPrev, report.staffSummary)
+        : staffSummaryPrev;
+
+    return { reportInfo, staffSummaryPrev, staffSummaryCurrent, report, reportPeriod };
+}
+
+function mergeNotNil<T>(staff1: StaffSummary, staff2: StaffSummary): StaffSummary {
+    return mergeStaffSummaries(staff1, staff2, (val1, val2) => (_.isNil(val2) ? val1 : val2));
+}
+
+function mergeNotEqual(staff1: StaffSummary, staff2: StaffSummary): StaffSummary {
+    return mergeStaffSummaries(staff1, staff2, (val1, val2) =>
+        _.isNil(val1) ? val2 : val1 === val2 ? undefined : val2
+    );
+}
+
+function mergeStaffSummaries(
+    staff1: StaffSummary,
+    staff2: StaffSummary,
+    merger: (val1: Maybe<number>, val2: Maybe<number>) => Maybe<number>
+): StaffSummary {
+    return _(staffKeys)
+        .map(staffKey => {
+            const time1 = staff1[staffKey] || {};
+            const time2 = staff2[staffKey] || {};
+            const fullTime = merger(time1.fullTime, time2.fullTime);
+            const partTime = merger(time1.partTime, time2.partTime);
+            return [staffKey, _.omitBy({ partTime, fullTime }, _.isNil)];
+        })
+        .fromPairs()
+        .thru(staffSummary => _.omitBy(staffSummary, _.isEmpty))
+        .value();
 }
 
 export type MerReportData = Data;

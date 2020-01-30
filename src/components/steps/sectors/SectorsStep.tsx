@@ -1,5 +1,4 @@
 import React, { useMemo } from "react";
-import _ from "lodash";
 import { Card, CardContent } from "@material-ui/core";
 import { MultiSelector } from "d2-ui-components";
 import { StepProps } from "../../../pages/project-wizard/ProjectWizard";
