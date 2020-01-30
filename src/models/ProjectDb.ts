@@ -225,25 +225,29 @@ export default class ProjectDb {
 
         const dataElementsInSectors = _(dataElements)
             .filter(de => project.sectors.some(sector => sector.id === de.sectorId))
-            .uniqBy(de => de.id)
             .value();
 
-        const dataSetElements = dataElementsInSectors.map(dataElement => ({
+        const dataSetElements = _.uniqBy(dataElementsInSectors, de => de.id).map(dataElement => ({
             dataSet: { id: dataSetId },
             dataElement: { id: dataElement.id },
             categoryCombo: { id: dataElement.categoryComboId },
         }));
 
+        const dataElementIdsSectorsCount = _.countBy(dataElementsInSectors, de => de.id);
+
         const sections = project.sectors.map((sector, index) => {
+            const dataElementsForSector = dataElements
+                .filter(de => de.sectorId === sector.id)
+                .filter(de => dataElementIdsSectorsCount[de.id] === 1 || de.isMainSector)
+                .map(de => ({ id: de.id }));
+
             return {
                 id: getUid("section", project.uid + baseDataSet.code + sector.id),
                 dataSet: { id: dataSetId },
                 sortOrder: index,
                 name: sector.displayName,
                 code: sector.code + "_" + dataSetId,
-                dataElements: dataElements
-                    .filter(de => de.sectorId === sector.id)
-                    .map(de => ({ id: de.id })),
+                dataElements: dataElementsForSector,
                 greyedFields: [],
             };
         });
