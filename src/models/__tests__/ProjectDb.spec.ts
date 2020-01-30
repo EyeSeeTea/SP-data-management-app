@@ -324,6 +324,7 @@ const expectedMetadataPost = {
     dataSets: [
         {
             id: "SCS4Dusnfdd",
+            workflow: { id: "CCy0oNyvlV1" },
             description: "",
             periodType: "Monthly",
             dataElementDecoration: true,
@@ -472,6 +473,7 @@ const expectedMetadataPost = {
             id: "CwUxT9UIX3z",
             description: "",
             periodType: "Monthly",
+            workflow: { id: "CCy0oNyvlV1" },
             dataElementDecoration: true,
             renderAsTabs: true,
             categoryCombo: {
@@ -1555,12 +1557,6 @@ const expectedMetadataPost = {
                 },
             ],
             dataDimensionItems: [
-                {
-                    dataDimensionItemType: "INDICATOR",
-                    indicator: {
-                        id: "eoyInzqL7YZ",
-                    },
-                },
                 {
                     dataDimensionItemType: "INDICATOR",
                     indicator: {

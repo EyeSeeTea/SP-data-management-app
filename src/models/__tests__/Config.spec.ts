@@ -40,6 +40,8 @@ export function getMockConfig(api: D2Api, mock: MockAdapter): Promise<Config> {
             "organisationUnitGroupSets:filter": ["code:in:[FUNDER,LOCATION]"],
             "organisationUnits:fields": "displayName,id",
             "organisationUnits:filter": ["level:eq:2"],
+            "dataApprovalWorkflows:fields": "code,id",
+            "dataApprovalWorkflows:filter": ["code:in:[PM_PROJECT]"],
         },
     }).replyOnce(200, metadata);
 
@@ -76,6 +78,7 @@ describe("Config", () => {
                 "categoryOptions",
                 "countries",
                 "currentUser",
+                "dataApprovalWorkflows",
                 "dataElements",
                 "funders",
                 "indicators",
