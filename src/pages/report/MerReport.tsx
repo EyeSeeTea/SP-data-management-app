@@ -34,6 +34,8 @@ function getTranslations() {
     };
 }
 
+type ProceedWarning = { type: "hidden" } | { type: "visible"; action: () => void };
+
 const MerReportComponent: React.FC = () => {
     const history = useHistory();
     const classes = useStyles();
@@ -42,8 +44,9 @@ const MerReportComponent: React.FC = () => {
     const translations = getTranslations();
     const snackbar = useSnackbar();
     const initial = isDev ? getDevMerReport() : { date: null, orgUnit: null };
-    const [showExitWarning, showExitWarningSet] = useState<boolean>(false);
-    const [wasReportModified, wasReportModifiedSet] = useState<boolean>(false);
+    const [proceedWarning, setProceedWarning] = useState<ProceedWarning>({ type: "hidden" });
+    const [wasReportModified, wasReportModifiedSet] = useState(false);
+    const [isDatePickerOpen, setDatePickerOpen] = useState(false);
     const [date, setDate] = useState<Moment | null>(initial.date);
     const [orgUnit, setOrgUnit] = useState<MerReportData["organisationUnit"] | null>(
         initial.orgUnit
@@ -55,6 +58,7 @@ const MerReportComponent: React.FC = () => {
         if (date && orgUnit) {
             const selectData = { date, organisationUnit: orgUnit };
             setMerReport_(undefined);
+            wasReportModifiedSet(false);
             MerReport.create(api, config, selectData).then(setMerReport_);
         }
     }, [date, orgUnit]);
@@ -86,39 +90,63 @@ const MerReportComponent: React.FC = () => {
         }
     }
 
+    function confirmIfUnsavedChanges(action: () => void) {
+        if (wasReportModified) {
+            setProceedWarning({ type: "visible", action });
+        } else {
+            action();
+        }
+    }
+
+    function runProceedAction(action: () => void) {
+        setProceedWarning({ type: "hidden" });
+        action();
+    }
+
+    function setDateAndClosePicker(date: Moment) {
+        setDate(date);
+        setDatePickerOpen(false);
+    }
+
     return (
         <React.Fragment>
-            <ConfirmationDialog
-                isOpen={showExitWarning}
-                onSave={goToLandingPage}
-                onCancel={() => showExitWarningSet(false)}
-                title={title}
-                description={i18n.t(
-                    "You are about to exit the report, any changes will be lost. Are you sure you want to proceed?"
-                )}
-                saveText={i18n.t("Yes")}
-                cancelText={i18n.t("No")}
-            />
+            {proceedWarning.type === "visible" && (
+                <ConfirmationDialog
+                    isOpen={true}
+                    onSave={() => runProceedAction(proceedWarning.action)}
+                    onCancel={() => runProceedAction(() => {})}
+                    title={title}
+                    description={i18n.t(
+                        "Any changes will be lost. Are you sure you want to proceed?"
+                    )}
+                    saveText={i18n.t("Yes")}
+                    cancelText={i18n.t("No")}
+                />
+            )}
+
             <PageHeader
                 title={title}
                 help={translations.help}
-                onBackClick={() =>
-                    wasReportModified ? showExitWarningSet(true) : goToLandingPage()
-                }
+                onBackClick={() => confirmIfUnsavedChanges(goToLandingPage)}
             />
+
             <Paper style={{ marginBottom: 20 }}>
                 <DatePicker
+                    open={isDatePickerOpen}
                     label={i18n.t("Date")}
                     value={date ? date.toDate() : null}
-                    onChange={setDate}
+                    onChange={setDateAndClosePicker}
                     format="MMMM YYYY"
                     views={["year", "month"]}
                     style={{ marginLeft: 20 }}
+                    onOpen={() => confirmIfUnsavedChanges(() => setDatePickerOpen(true))}
+                    onClose={() => setDatePickerOpen(false)}
                 />
+
                 <UserOrgUnits
-                    onChange={orgUnit => setOrgUnit(orgUnit)}
+                    onChange={orgUnit => confirmIfUnsavedChanges(() => setOrgUnit(orgUnit))}
                     selected={orgUnit}
-                    selectableLevels={[2]}
+                    selectableLevels={selectableLevels}
                     withElevation={false}
                     height={200}
                 />
@@ -181,6 +209,8 @@ const MerReportComponent: React.FC = () => {
         </React.Fragment>
     );
 };
+
+const selectableLevels = [2];
 
 const useStyles = makeStyles({
     buttonsWrapper: {
