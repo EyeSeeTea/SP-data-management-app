@@ -17,6 +17,7 @@ import i18n from "../../locales";
 import PageHeader from "../../components/page-header/PageHeader";
 import ReportTextField from "./ReportTextField";
 import { downloadFile } from "../../utils/download";
+import { useBoolean } from "../../utils/hooks";
 
 function goTo(history: History, url: string) {
     history.push(url);
@@ -46,7 +47,7 @@ const MerReportComponent: React.FC = () => {
     const initial = isDev ? getDevMerReport() : { date: null, orgUnit: null };
     const [proceedWarning, setProceedWarning] = useState<ProceedWarning>({ type: "hidden" });
     const [wasReportModified, wasReportModifiedSet] = useState(false);
-    const [isDatePickerOpen, setDatePickerOpen] = useState(false);
+    const datePicker = useBoolean(false);
     const [date, setDate] = useState<Moment | null>(initial.date);
     const [orgUnit, setOrgUnit] = useState<MerReportData["organisationUnit"] | null>(
         initial.orgUnit
@@ -105,7 +106,7 @@ const MerReportComponent: React.FC = () => {
 
     function setDateAndClosePicker(date: Moment) {
         setDate(date);
-        setDatePickerOpen(false);
+        datePicker.disable();
     }
 
     return (
@@ -132,15 +133,15 @@ const MerReportComponent: React.FC = () => {
 
             <Paper style={{ marginBottom: 20 }}>
                 <DatePicker
-                    open={isDatePickerOpen}
+                    open={datePicker.isEnabled}
                     label={i18n.t("Date")}
                     value={date ? date.toDate() : null}
                     onChange={setDateAndClosePicker}
                     format="MMMM YYYY"
                     views={["year", "month"]}
                     style={{ marginLeft: 20 }}
-                    onOpen={() => confirmIfUnsavedChanges(() => setDatePickerOpen(true))}
-                    onClose={() => setDatePickerOpen(false)}
+                    onOpen={() => confirmIfUnsavedChanges(() => datePicker.enable())}
+                    onClose={() => datePicker.disable()}
                 />
 
                 <UserOrgUnits
