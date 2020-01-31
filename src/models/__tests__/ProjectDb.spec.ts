@@ -324,6 +324,7 @@ const expectedMetadataPost = {
     dataSets: [
         {
             id: "SCS4Dusnfdd",
+            publicAccess: "rwrw----",
             description: "",
             periodType: "Monthly",
             dataElementDecoration: true,
@@ -470,6 +471,7 @@ const expectedMetadataPost = {
         },
         {
             id: "CwUxT9UIX3z",
+            publicAccess: "rwrw----",
             description: "",
             periodType: "Monthly",
             dataElementDecoration: true,
