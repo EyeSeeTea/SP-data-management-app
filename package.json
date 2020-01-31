@@ -63,7 +63,9 @@
         "cy:verify": "cypress verify",
         "cy:e2e:open": "CYPRESS_E2E=true cypress open",
         "cy:e2e:run": "CYPRESS_E2E=true cypress run --browser chrome",
-        "generate-test-fixtures": "TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' ts-node src/models/Config.ts"
+        "ts": "ts-node -O '{\"module\":\"commonjs\"}'",
+        "generate-test-fixtures": "yarn run ts src/models/Config.ts",
+        "create-test-users": "yarn run ts utils/create-users.ts"
     },
     "husky": {
         "hooks": {

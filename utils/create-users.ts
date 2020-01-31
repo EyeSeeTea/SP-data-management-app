@@ -16,8 +16,12 @@ async function createUsers(usersPath: string, baseUrl: string) {
 
 if (require.main === module) {
     const [usersPath, baseUrl] = process.argv.slice(2);
-    if (!usersPath || !baseUrl) throw new Error("Usage: config.ts USERS_TEXT_FILE DHIS2_URL");
-    createUsers(usersPath, baseUrl);
+    if (!usersPath || !baseUrl) {
+        console.error("Usage: config.ts USERS_TEXT_FILE DHIS2_URL");
+        process.exit(1);
+    } else {
+        createUsers(usersPath, baseUrl);
+    }
 }
 
 /* Helpers */

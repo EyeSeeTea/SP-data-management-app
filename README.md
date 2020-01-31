@@ -47,20 +47,21 @@ For cypress tests to work in Travis CI, you will have to create an environment v
 $ yarn build-webapp
 ```
 
-## i18n
+## Utils
 
-### Update an existing language
-
-```
-$ yarn update-po
-# ... add/edit translations in po files ...
-$ yarn localize
-```
-
-### Create a new language
+Create users for testing. Prepare a `users.txt` file with the users info, one field per line:
 
 ```
-$ cp i18n/en.pot i18n/es.po
-# ... add translations to i18n/es.po ...
-$ yarn localize
+Name1
+Email1
+Role1
+Name2
+Email2
+Role2
+```
+
+And now run the script for a specific DHIS2 instance:
+
+```
+yarn create-test-users users.txt 'http://admin:PASSWORD@localhost:8080'
 ```
