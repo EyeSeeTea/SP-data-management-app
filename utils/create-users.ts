@@ -3,15 +3,17 @@ import fs from "fs";
 import { D2ApiDefault, D2User, PartialModel } from "d2-api";
 import { getUid } from "../src/utils/dhis2";
 
+const filterOrgUnits = ["Philippines", "Bahamas"];
+
 async function createUsers(usersPath: string, baseUrl: string) {
     const api = new D2ApiDefault({ baseUrl });
     const usersInfo = getUsersInfo(usersPath);
-    const rootOrgUnit = await getRootOrgUnit(api);
+    const orgUnits = await getOrgUnits(api);
     const userRoles = await getRoles(api);
-    const users = getUsers(usersInfo, userRoles, rootOrgUnit);
+    const users = getUsers(usersInfo, userRoles, orgUnits);
     console.log(`POST ${users.length} users`);
     const response = await api.metadata.post({ users }).getData();
-    console.log(JSON.stringify(response.typeReports, null, 2));
+    console.log("Response", JSON.stringify(response.typeReports, null, 2));
 }
 
 if (require.main === module) {
@@ -29,17 +31,22 @@ if (require.main === module) {
 function getUsers(
     usersInfo: { name: string; email: string; roleName: string }[],
     userRoles: ({ name: string; id: string })[],
-    rootOrgUnit: { id: string }
+    orgUnits: ({ id: string; name: string })[]
 ) {
     const feedbackRole = userRoles.find(ur => ur.name === "PM Feedback");
     if (!feedbackRole) throw new Error("Feedback role not found");
+
+    const organisationUnits = orgUnits
+        .filter(ou => filterOrgUnits && filterOrgUnits.includes(ou.name))
+        .map(ou => ({ id: ou.id }));
+
+    console.log(`User org units: ${organisationUnits.map(ou => ou.id).join(", ")}`);
 
     const users = usersInfo.map(({ name, email, roleName }) => {
         const userRole = userRoles.find(ur => ur.name.includes(roleName));
         const [firstName, surname] = name.split(" ", 2);
         if (!userRole) console.error(`User role not found: ${roleName}`);
         const username = email.split("@")[0];
-        const organisationUnits = [{ id: rootOrgUnit.id }];
         const roles = _.compact([userRole ? { id: userRole.id } : null, { id: feedbackRole.id }]);
         const user: PartialModel<D2User> = {
             id: getUid("user", username),
@@ -71,19 +78,11 @@ async function getRoles(api: D2ApiDefault) {
     return userRoles;
 }
 
-async function getRootOrgUnit(api: D2ApiDefault) {
-    const rootOrgUnit = await api.metadata
-        .get({
-            organisationUnits: {
-                fields: { id: true, name: true },
-                filter: { level: { eq: "1" } },
-            },
-        })
+async function getOrgUnits(api: D2ApiDefault) {
+    return await api.metadata
+        .get({ organisationUnits: { fields: { id: true, name: true } } })
         .getData()
-        .then(({ organisationUnits }) => organisationUnits[0]);
-    if (!rootOrgUnit) throw new Error("Root org unit not found");
-    console.log(`Root orgUnit: ${rootOrgUnit.name}`);
-    return rootOrgUnit;
+        .then(({ organisationUnits }) => organisationUnits);
 }
 
 function getUsersInfo(usersPath: string) {

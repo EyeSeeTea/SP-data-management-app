@@ -63,5 +63,5 @@ Role2
 And now run the script for a specific DHIS2 instance:
 
 ```
-yarn create-test-users users.txt 'http://admin:PASSWORD@localhost:8080'
+yarn create-test-users users.txt 'http://admin:PASSWORD@SERVER:PORT'
 ```
