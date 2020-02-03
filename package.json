@@ -64,8 +64,7 @@
         "cy:e2e:open": "CYPRESS_E2E=true cypress open",
         "cy:e2e:run": "CYPRESS_E2E=true cypress run --browser chrome",
         "ts": "ts-node -O '{\"module\":\"commonjs\"}'",
-        "generate-test-fixtures": "yarn run ts src/models/Config.ts",
-        "create-test-users": "yarn run ts utils/create-users.ts"
+        "generate-test-fixtures": "yarn run ts src/models/Config.ts"
     },
     "husky": {
         "hooks": {
