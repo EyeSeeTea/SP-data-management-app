@@ -8,7 +8,7 @@
         "createIssue": true,
         "sendToDhis2UserGroups": ["Administrators"],
         "issues": {
-            "repository": "tokland/feedback-test",
+            "repository": "EyeSeeTea/SP-project-monitoring-app",
             "title": "[User feedback] {title}",
             "body": "## dhis2\n\nUsername: {username}\n\n{body}"
         },
