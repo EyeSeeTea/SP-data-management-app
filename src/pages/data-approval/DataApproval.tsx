@@ -1,11 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect } from "react";
 import moment from "moment";
 import { useHistory, useRouteMatch } from "react-router";
 import { History } from "history";
 import { makeStyles } from "@material-ui/core/styles";
-import { Paper, Button, LinearProgress } from "@material-ui/core";
-import { useSnackbar, ConfirmationDialog } from "d2-ui-components";
+import { Paper, Button } from "@material-ui/core";
 import Dropdown from "../../components/dropdown/Dropdown";
 import Project, { DataSet, getPeriodsData } from "../../models/Project";
 import { D2Api, Id } from "d2-api";
@@ -15,6 +14,14 @@ import _ from "lodash";
 import { useAppContext } from "../../contexts/api-context";
 import i18n from "../../locales";
 import PageHeader from "../../components/page-header/PageHeader";
+
+declare global {
+    interface Window {
+        jQuery: any;
+    }
+}
+
+const jQuery = window.jQuery || {};
 
 const monthFormat = "YYYYMM";
 
@@ -81,9 +88,8 @@ const DataApproval: React.FC = () => {
     });
     const goToLandingPage = () => goTo(history, "/");
     const { api, config, isDev } = useAppContext();
-    const { data, date, categoryCombo, loading, error } = state;
+    const { data, date, categoryCombo, report, error } = state;
     const translations = getTranslations();
-    const snackbar = useSnackbar();
 
     let periodItems;
     let categoryComboItems;
@@ -110,18 +116,6 @@ const DataApproval: React.FC = () => {
 
     return (
         <React.Fragment>
-            {/* <ConfirmationDialog
-                isOpen={showExitWarning}
-                onSave={goToLandingPage}
-                onCancel={() => showExitWarningSet(false)}
-                title={title}
-                description={i18n.t(
-                    "You are about to exit the report, any changes will be lost. Are you sure you want to proceed?"
-                )}
-                saveText={i18n.t("Yes")}
-                cancelText={i18n.t("No")}
-            /> */}
-
             <PageHeader
                 title={title}
                 help={translations.help}
@@ -147,7 +141,7 @@ const DataApproval: React.FC = () => {
 
             {error && <p>{error}</p>}
 
-            {state.report && (
+            {report && (
                 <Paper style={{ marginBottom: 20, padding: 20 }}>
                     <link
                         rel="stylesheet"
@@ -159,10 +153,16 @@ const DataApproval: React.FC = () => {
                         type="text/css"
                         href={api.baseUrl + "/dhis-web-commons/css/widgets.css"}
                     />
+                    <link
+                        rel="stylesheet"
+                        type="text/css"
+                        href={api.baseUrl + "/dhis-web-commons/css/light_blue/light_blue.css"}
+                    />
 
                     <div
+                        className="page"
                         dangerouslySetInnerHTML={{
-                            __html: state.report,
+                            __html: report,
                         }}
                     ></div>
 
@@ -199,13 +199,6 @@ const useStyles = makeStyles({
     },
 });
 
-// http://dev2.eyeseetea.com:8081/dhis-web-reporting/generateDataSetReport.action?ds=qAox84AQUBS&pe=202012&ou=J0hschZVMBt&dimension=ao%3AlbxlzyXK4zr
-// http://dev2.eyeseetea.com:8081/api/dataApprovals/categoryOptionCombos?ds=qAox84AQUBS&pe=202012&ou=J0hschZVMBt
-
-//Approve / Unapprove (POST)
-//http://dev2.eyeseetea.com:8081/api/dataApprovals/approvals
-//http://dev2.eyeseetea.com:8081/api/dataApprovals/unapprovals
-
 async function approve(
     date: string | undefined,
     categoryCombo: Id | undefined,
@@ -239,10 +232,6 @@ async function approve(
                 }));
             })
             .catch(err =>
-                // snackbar.error(
-                //     i18n.t("Error approving/unapproving report") + ": " + err.message ||
-                //         err.toString()
-                // )
                 setState({
                     error: err.message || err.toString(),
                     loading: false,
@@ -251,9 +240,6 @@ async function approve(
                 })
             );
     } catch (err) {
-        // snackbar.error(
-        //     i18n.t("Error approving/unapproving report") + ": " + err.message || err.toString()
-        // );
         setState({
             error: err.message || err.toString(),
             loading: false,
@@ -316,16 +302,28 @@ function getReport(
                         dimension: "ao:" + categoryCombo,
                     },
                 })
-                .then(report =>
+                .then(report => {
+                    // Parse report
+                    const htmlReport = jQuery(jQuery("<div/>").html(report.data));
+                    htmlReport.find("table.listTable tbody tr:odd").addClass("listAlternateRow");
+                    htmlReport.find("table.listTable tbody tr:even").addClass("listRow");
+                    htmlReport.find("#shareForm").hide();
+                    htmlReport.find("table.listTable tbody tr").mouseover((element: any) => {
+                        jQuery(element).addClass("listHoverRow");
+                    });
+                    htmlReport.find("table.listTable tbody tr").mouseout((element: any) => {
+                        jQuery(element).removeClass("listHoverRow");
+                    });
+
                     setState(state => ({
                         ...state,
                         date: date,
-                        report: report.data,
+                        report: htmlReport.html(),
                         loading: false,
                         showApproveButton: showApproveButton,
                         showUnapproveButton: showUnapproveButton,
-                    }))
-                )
+                    }));
+                })
                 .catch(err =>
                     setState({
                         error: err.message || err.toString(),
