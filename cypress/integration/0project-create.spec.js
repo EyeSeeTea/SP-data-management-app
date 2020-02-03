@@ -68,12 +68,16 @@ describe("Projects - Create", () => {
 
         cy.waitForStep("Selection of Indicators");
 
-        cy.contains("# of agriculture groups receiving support for improved")
+        cy.get(".MuiInput-inputTypeSearch").type("market groups formed");
+        cy.contains("# of market groups formed")
             .parent("td")
             .prev("td")
             .click();
 
         cy.contains("Livelihood").click();
+        cy.get(".MuiInput-inputTypeSearch")
+            .clear()
+            .type("storage equipment provided");
         cy.contains("# of HH-level storage equipment provided")
             .parent("td")
             .prev("td")
@@ -85,7 +89,7 @@ describe("Projects - Create", () => {
 
         cy.waitForStep("Selection of MER Indicators");
 
-        cy.contains("# of people trained on improved agriculture technologies/practices")
+        cy.contains("# of agriculture groups receiving support for improved livelihoods")
             .parent("td")
             .prev("td")
             .click();
@@ -118,9 +122,8 @@ describe("Projects - Create", () => {
         cy.contains("Abaco");
 
         cy.contains("Sectors");
-        cy.contains("# of agriculture groups receiving support for improved");
-        cy.contains("# of people trained on improved agriculture technologies/practices [MER]");
 
+        cy.contains("# of agriculture groups receiving support for improved livelihoods [MER]");
         cy.contains("# of HH-level storage equipment provided [MER]");
 
         cy.get("[data-wizard-contents] button")
