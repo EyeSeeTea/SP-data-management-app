@@ -321,7 +321,7 @@ class MerReport {
             const project = getProjectFromOrgUnit(orgUnit);
             const formatDate = (dateStr: string): string => moment(dateStr).format("MMM YYYY");
             const projectInfo = projectInfoByOrgUnitId[orgUnit.id];
-            const dataElementIds = projectInfo ? projectInfo.merDataElementIds : [];
+            const dataElementIds = _.uniq(projectInfo ? projectInfo.merDataElementIds : []);
             const getDataElementInfo = (deId: Id) => {
                 const dataElement = _(dataElementsById).get(deId, null);
                 if (!dataElement) {

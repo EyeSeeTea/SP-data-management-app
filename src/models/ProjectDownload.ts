@@ -94,7 +94,7 @@ class ProjectDownload {
         const { config } = project;
         const title = [project.name, i18n.t("ACTIVITY MONITORING"), i18n.t("BENEFIT")].join(" - ");
         const periods = project.getPeriods();
-        const dataElements = project.getSelectedDataElements({ peopleOrBenefit: "benefit" });
+        const dataElements = uniq(project.getSelectedDataElements({ peopleOrBenefit: "benefit" }));
         const empty = text("");
 
         const cumulativeRow = formula(
@@ -181,7 +181,7 @@ class ProjectDownload {
         const { project, periods } = this;
         const { config } = project;
         const title = [project.name, i18n.t("ACTIVITY MONITORING"), i18n.t("PEOPLE")].join(" - ");
-        const dataElements = project.getSelectedDataElements({ peopleOrBenefit: "people" });
+        const dataElements = uniq(project.getSelectedDataElements({ peopleOrBenefit: "people" }));
         const empty = text("");
 
         const sumRowFormula = formula(
@@ -426,6 +426,10 @@ function header(s: string, options: ValueBase = {}): Value {
     };
     const allOptions = Object.assign({}, defaultOptions, options);
     return text(s, allOptions);
+}
+
+function uniq<T extends { id: string }>(dataElements: T[]): T[] {
+    return _.uniqBy(dataElements, de => de.id);
 }
 
 export default ProjectDownload;
