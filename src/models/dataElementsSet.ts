@@ -77,12 +77,14 @@ function getSectorAndSeriesKey(
 export default class DataElementsSet {
     dataElementsBy: {
         id: Record<Id, DataElement>;
+        allId: Record<Id, DataElement>;
         code: Record<string, DataElement>;
         sectorAndSeries: Record<string, DataElement[]>;
     };
 
     constructor(private config: Config, private data: DataElementsData) {
         this.dataElementsBy = {
+            allId: _.keyBy(getAllDataElements(data.dataElements), de => de.id),
             id: _.keyBy(data.dataElements, de => de.id),
             code: _.keyBy(data.dataElements, de => de.code),
             sectorAndSeries: _.groupBy(data.dataElements, de => getSectorAndSeriesKey(de)),
@@ -286,16 +288,25 @@ export default class DataElementsSet {
     }
 
     getFullSelection(dataElementIds: string[], sectorId: string, getOptions: GetOptions): string[] {
-        const allDataElements = this.get(getOptions);
-        const previousIdsInSector = allDataElements
+        const prevSelectedDataElements = this.get(getOptions);
+        const keepIds = prevSelectedDataElements.filter(de => !de.selectable).map(de => de.id);
+        const newDataElementIds = _(dataElementIds)
+            .map(deId => this.dataElementsBy.allId[deId])
+            .compact()
+            .filter(de => de.selectable)
+            .map(de => de.id)
+            .value();
+
+        const previousIdsInSector = prevSelectedDataElements
             .filter(de => de.sectorId === sectorId)
             .map(de => de.id);
-        const unselectedIds = new Set(_.difference(previousIdsInSector, dataElementIds));
+        const unselectedIds = new Set(_.difference(previousIdsInSector, newDataElementIds));
 
-        const selectedIdsInOtherSectors = allDataElements
+        const selectedIdsInOtherSectors = prevSelectedDataElements
             .filter(de => de.sectorId !== sectorId && !unselectedIds.has(de.id))
             .map(de => de.id);
-        return _.union(selectedIdsInOtherSectors, dataElementIds);
+
+        return _.uniq(_.union(selectedIdsInOtherSectors, newDataElementIds, keepIds));
     }
 
     getRelated(dataElementIds: Id[]): DataElement[] {
@@ -401,6 +412,13 @@ function getAttrsMap(
             return [key, value];
         })
     );
+}
+
+function getAllDataElements(dataElements: DataElement[]): DataElement[] {
+    return _(dataElements)
+        .flatMap(de => _.compact([de, de.pairedDataElement]))
+        .uniqBy(de => [de.id, de.sectorId].join("-"))
+        .value();
 }
 
 /* Type-safe helpers */
