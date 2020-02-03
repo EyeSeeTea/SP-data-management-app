@@ -343,6 +343,9 @@ msgstr ""
 msgid "Select at least one indicator"
 msgstr ""
 
+msgid "[only for admin users]"
+msgstr ""
+
 msgid ""
 "Please click on the grey arrow next to the chart/table title if you want to "
 "modify the layout."
