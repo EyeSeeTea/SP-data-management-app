@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2020-01-31T08:30:27.021Z\n"
-"PO-Revision-Date: 2020-01-31T08:30:27.021Z\n"
+"POT-Creation-Date: 2020-02-03T20:21:16.945Z\n"
+"PO-Revision-Date: 2020-02-03T20:21:16.945Z\n"
 
 msgid "<No value>"
 msgstr ""
@@ -357,11 +357,6 @@ msgstr ""
 msgid "Data Approval"
 msgstr ""
 
-msgid ""
-"You are about to exit the report, any changes will be lost. Are you sure "
-"you want to proceed?"
-msgstr ""
-
 msgid "Period"
 msgstr ""
 
@@ -372,9 +367,6 @@ msgid "Approve"
 msgstr ""
 
 msgid "Unapprove"
-msgstr ""
-
-msgid "Error approving/unapproving report"
 msgstr ""
 
 msgid "Cannot load category option combo"
