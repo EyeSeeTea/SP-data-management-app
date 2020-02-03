@@ -39,9 +39,6 @@ describe("Projects - Edit", () => {
         cy.contains("Selected country");
         cy.contains("Bahamas");
         cy.contains("Sectors");
-        cy.contains("# of agriculture groups receiving support for improved");
-        cy.contains("# of people trained on improved agriculture technologies/practices [MER]");
-        cy.contains("# of HH-level storage equipment provided [MER]");
 
         cy.get("[data-wizard-contents] button")
             .contains("Save")

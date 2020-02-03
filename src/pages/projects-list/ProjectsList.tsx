@@ -113,6 +113,7 @@ function getComponentConfig(api: D2Api, config: Config, goTo: GoTo, currentUser:
             icon: <Icon>lock_open</Icon>,
             text: i18n.t("Reopen Datasets"),
             multiple: false,
+            onClick: toBeImplemented,
         },
 
         targetValues: {
@@ -144,7 +145,7 @@ function getComponentConfig(api: D2Api, config: Config, goTo: GoTo, currentUser:
             icon: <Icon>delete</Icon>,
             text: i18n.t("Delete"),
             multiple: true,
-            onClick: (_projects: ProjectForList[]) => {},
+            onClick: toBeImplemented,
         },
 
         dataApproval: {
@@ -318,6 +319,10 @@ function columnDate(
 async function download(api: D2Api, config: Config, projectId: string) {
     const project = await Project.get(api, config, projectId);
     downloadFile(await project.download());
+}
+
+function toBeImplemented() {
+    window.alert("Action to be implemented");
 }
 
 export default ProjectsList;
