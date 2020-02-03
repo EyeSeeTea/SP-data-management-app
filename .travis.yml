@@ -14,7 +14,6 @@ before_install:
     - git clone https://github.com/EyeSeeTea/d2-docker.git
     - cd d2-docker/
     - sudo python3 setup.py install
-    - d2-docker --help
     # Hack to not be prompted in the terminal
     - sudo apt-get remove golang-docker-credential-helpers
     # Start docker service
