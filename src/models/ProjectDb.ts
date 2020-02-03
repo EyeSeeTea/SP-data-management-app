@@ -240,11 +240,13 @@ export default class ProjectDb {
             .fromPairs()
             .value();
 
-        const sections = project.sectors.map((sector, index) => {
+        const sections0 = project.sectors.map((sector, index) => {
             const dataElementsForSector = dataElements
                 .filter(de => de.sectorId === sector.id)
                 .filter(de => sectorIdForDataElementId[de.id] === sector.id)
                 .map(de => ({ id: de.id }));
+
+            if (_.isEmpty(dataElementsForSector)) return null;
 
             return {
                 id: getUid("section", project.uid + baseDataSet.code + sector.id),
@@ -256,6 +258,7 @@ export default class ProjectDb {
                 greyedFields: [],
             };
         });
+        const sections = _.compact(sections0);
 
         const dataSet = {
             id: dataSetId,
