@@ -192,7 +192,7 @@ const DataEntry = (props: DataEntryProps) => {
 const styles = {
     iframe: { width: "100%", border: 0, overflow: "hidden" },
     backgroundIframe: { backgroundColor: "white" },
-    selector: { padding: "65px  10px 10px 5px", backgroundColor: "white" },
+    selector: { padding: "35px  10px 10px 5px", backgroundColor: "white" },
 };
 
 function selectOption(select: HTMLSelectElement, value: string) {
