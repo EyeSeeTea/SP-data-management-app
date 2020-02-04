@@ -44,6 +44,6 @@ describe("Projects - Edit", () => {
             .contains("Save")
             .click();
 
-        cy.contains("Project saved");
+        cy.contains("Project saved", { timeout: 20000 });
     });
 });
