@@ -293,7 +293,8 @@ function getReport(
                 catOptComboDataApprovals.permissions.mayUnapprove &&
                 catOptComboDataApprovals.accepted;
 
-            api.baseConnection
+            // TODO: Move request + html parsing to some model
+            return api.baseConnection
                 .get("/dhis-web-reporting/generateDataSetReport.action", {
                     params: {
                         ds: datasetId,
@@ -323,16 +324,16 @@ function getReport(
                         showApproveButton: showApproveButton,
                         showUnapproveButton: showUnapproveButton,
                     }));
-                })
-                .catch(err =>
-                    setState({
-                        error: err.message || err.toString(),
-                        loading: false,
-                        showApproveButton: false,
-                        showUnapproveButton: false,
-                    })
-                );
-        });
+                });
+        })
+        .catch(err =>
+            setState({
+                error: err.message || err.toString(),
+                loading: false,
+                showApproveButton: false,
+                showUnapproveButton: false,
+            })
+        );
 }
 
 function loadData(
