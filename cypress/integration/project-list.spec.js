@@ -68,7 +68,7 @@ describe("Project Configuration - List page", () => {
     });
 
     it("can filter projects by name", () => {
-        cy.get("[placeholder='Search by name']")
+        cy.get("[placeholder='Search by name or code']")
             .clear()
             .type("Non existing name 1234$%&");
 
