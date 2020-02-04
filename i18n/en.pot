@@ -1,0 +1,567 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: i18next-conv\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"POT-Creation-Date: 2020-02-04T08:33:06.134Z\n"
+"PO-Revision-Date: 2020-02-04T08:33:06.134Z\n"
+
+msgid "<No value>"
+msgstr ""
+
+msgid "Help"
+msgstr ""
+
+msgid "This user has no Data output and analytic organisation units assigned"
+msgstr ""
+
+msgid "Back"
+msgstr ""
+
+msgid "Internals"
+msgstr ""
+
+msgid "Indicator Type"
+msgstr ""
+
+msgid "Externals"
+msgstr ""
+
+msgid "Only selected"
+msgstr ""
+
+msgid "Name"
+msgstr ""
+
+msgid "Code"
+msgstr ""
+
+msgid "People / Benefit"
+msgstr ""
+
+msgid "Counting Method"
+msgstr ""
+
+msgid "Paired DE"
+msgstr ""
+
+msgid "Search by name / code"
+msgstr ""
+
+msgid "selected"
+msgstr ""
+
+msgid "unselected"
+msgstr ""
+
+msgid "Field should be a 5-digit number"
+msgstr ""
+
+msgid "Field must be composed by two letter characters"
+msgstr ""
+
+msgid "Field cannot be blank"
+msgstr ""
+
+msgid "Field length is invalid"
+msgstr ""
+
+msgid "Description"
+msgstr ""
+
+msgid "Award Number"
+msgstr ""
+
+msgid "Subsequent Lettering"
+msgstr ""
+
+msgid "Speed Key"
+msgstr ""
+
+msgid "Period dates"
+msgstr ""
+
+msgid "Funders"
+msgstr ""
+
+msgid "Selected country"
+msgstr ""
+
+msgid "Locations"
+msgstr ""
+
+msgid "Sectors"
+msgstr ""
+
+msgid "Cancel"
+msgstr ""
+
+msgid "Save"
+msgstr ""
+
+msgid "MER"
+msgstr ""
+
+msgid "Cancel Project creation?"
+msgstr ""
+
+msgid ""
+"You are about to exit the Project creation wizard. All your changes will be "
+"lost. Are you sure you want to proceed?"
+msgstr ""
+
+msgid "Yes"
+msgstr ""
+
+msgid "No"
+msgstr ""
+
+msgid "National Staff"
+msgstr ""
+
+msgid "IFS"
+msgstr ""
+
+msgid "IFS Dependents"
+msgstr ""
+
+msgid "Regional"
+msgstr ""
+
+msgid "Regional Dependents"
+msgstr ""
+
+msgid "Interns"
+msgstr ""
+
+msgid "Monthly Executive Report"
+msgstr ""
+
+msgid "Country Director"
+msgstr ""
+
+msgid "Prepared by"
+msgstr ""
+
+msgid "Executive Summary"
+msgstr ""
+
+msgid "Ministry Summary"
+msgstr ""
+
+msgid "Staff Summary"
+msgstr ""
+
+msgid "Projected Activities for the Next Month"
+msgstr ""
+
+msgid "Narrative"
+msgstr ""
+
+msgid "Project"
+msgstr ""
+
+msgid "Indicators"
+msgstr ""
+
+msgid "Target"
+msgstr ""
+
+msgid "Actual"
+msgstr ""
+
+msgid "Achieved to date (%)"
+msgstr ""
+
+msgid "Comment"
+msgstr ""
+
+msgid "Activities"
+msgstr ""
+
+msgid "Full-time"
+msgstr ""
+
+msgid "Part-time"
+msgstr ""
+
+msgid "Total"
+msgstr ""
+
+msgid "Id"
+msgstr ""
+
+msgid "Data Elements"
+msgstr ""
+
+msgid "Start Date"
+msgstr ""
+
+msgid "End Date"
+msgstr ""
+
+msgid "Project Locations"
+msgstr ""
+
+msgid "Organisation Unit"
+msgstr ""
+
+msgid "Country"
+msgstr ""
+
+msgid "Data Sets"
+msgstr ""
+
+msgid "Dashboard"
+msgstr ""
+
+msgid "Initial Data"
+msgstr ""
+
+msgid "Award Number should be a number of 5 digits"
+msgstr ""
+
+msgid "Subsequent Lettering must be a string of two letters only"
+msgstr ""
+
+msgid "One Organisation Unit should be selected"
+msgstr ""
+
+msgid "There is a project with the same code '{{code}}' -> {{orgUnit}}"
+msgstr ""
+
+msgid "{{field}} cannot be blank"
+msgstr ""
+
+msgid "Select at least one item for {{field}}"
+msgstr ""
+
+msgid "{{field}} must be greater than or equal to {{value}}"
+msgstr ""
+
+msgid "{{field}} must be less than or equal to {{value}}"
+msgstr ""
+
+msgid "{{field}} does not match pattern {{pattern}}"
+msgstr ""
+
+msgid "PM Target vs Actual - Benefits"
+msgstr ""
+
+msgid "PM Target vs Actual - People"
+msgstr ""
+
+msgid "PM Target vs Actual - Unique People"
+msgstr ""
+
+msgid "PM achieved (%) - Benefits"
+msgstr ""
+
+msgid "PM achieved (%) - People"
+msgstr ""
+
+msgid "PM achieved monthly (%)"
+msgstr ""
+
+msgid "PM achieved (%)"
+msgstr ""
+
+msgid "PM achieved by gender (%)"
+msgstr ""
+
+msgid "PM Benefits Per Person"
+msgstr ""
+
+msgid "ACTIVITY MONITORING"
+msgstr ""
+
+msgid "BENEFIT"
+msgstr ""
+
+msgid "% Achievement to Date"
+msgstr ""
+
+msgid "Target Benefit"
+msgstr ""
+
+msgid "Actual Benefit"
+msgstr ""
+
+msgid "Indicator Code"
+msgstr ""
+
+msgid "Activity Indicator"
+msgstr ""
+
+msgid "Data Type"
+msgstr ""
+
+msgid "Cumulative"
+msgstr ""
+
+msgid "Method of Data Collection"
+msgstr ""
+
+msgid "Person Responsible"
+msgstr ""
+
+msgid "Benefit"
+msgstr ""
+
+msgid "PEOPLE"
+msgstr ""
+
+msgid "Total People Targeted"
+msgstr ""
+
+msgid "New"
+msgstr ""
+
+msgid "Recurring"
+msgstr ""
+
+msgid "Total Actual People"
+msgstr ""
+
+msgid "Male New"
+msgstr ""
+
+msgid "Female New"
+msgstr ""
+
+msgid "Male Recurring"
+msgstr ""
+
+msgid "Female Recurring"
+msgstr ""
+
+msgid "People"
+msgstr ""
+
+msgid "Select at least one indicator"
+msgstr ""
+
+msgid "[only for admin users]"
+msgstr ""
+
+msgid ""
+"Please click on the grey arrow next to the chart/table title if you want to "
+"modify the layout."
+msgstr ""
+
+msgid "Dashboard project to analyse your data..."
+msgstr ""
+
+msgid "Cannot load project relations"
+msgstr ""
+
+msgid "Data Approval"
+msgstr ""
+
+msgid "Period"
+msgstr ""
+
+msgid "Actual/Target"
+msgstr ""
+
+msgid "Approve"
+msgstr ""
+
+msgid "Unapprove"
+msgstr ""
+
+msgid "Cannot load category option combo"
+msgstr ""
+
+msgid "Set Target Values for Project"
+msgstr ""
+
+msgid "Set Actual Values for Project"
+msgstr ""
+
+msgid ""
+"If you have questions regarding target data entry, please refer to the "
+"document located at this link"
+msgstr ""
+
+msgid ""
+"\n"
+"            If you have questions regarding actual data entry, please refer "
+"to the document located at this link"
+msgstr ""
+
+msgid ""
+"Once cells turn into green, all information is saved and you can leave the "
+"Data Entry Section"
+msgstr ""
+
+msgid "Cannot load project"
+msgstr ""
+
+msgid "General info"
+msgstr ""
+
+msgid "Country & Project Locations"
+msgstr ""
+
+msgid "Selection of Indicators"
+msgstr ""
+
+msgid "Selection of MER Indicators"
+msgstr ""
+
+msgid "Summary and Save"
+msgstr ""
+
+msgid ""
+"The setup of your project is complete. Please review the information below "
+"and click the “Save” button once complete."
+msgstr ""
+
+msgid "Edit project"
+msgstr ""
+
+msgid "New project"
+msgstr ""
+
+msgid "Loading..."
+msgstr ""
+
+msgid ""
+"- Starred (*) items are required to be filled out\n"
+"        - Award Number- refers to the first 5 digits of the project’s award "
+"code.  For example, 11111 would be the award number for code 11111AAHQ.\n"
+"        - Subsequent Lettering- refers to the two letters after the award "
+"number in the award code.  For example, AA would be the subsequent "
+"lettering for code 11111AAHQ.\n"
+"        - Speed key- in some instances, there are large projects that are "
+"split into multiple sectors for reporting.  Use the speed key to designate "
+"the different sectors within the project.  For example, if 11111AAHQ has "
+"three separate reporting sectors (11111AAHQ01, 11111AAHQ02, 11111AAHQ03), "
+"use the last two digits (01, 02, 03) in the speed key section.\n"
+"        - Funders- to add funders, ensure you click the funder first and "
+"the orange arrow button second."
+msgstr ""
+
+msgid ""
+"- Locations- to add locations, ensure you click the location first and the "
+"orange arrow button second."
+msgstr ""
+
+msgid "- Remember to add multiple sectors if your project has multiple sectors."
+msgstr ""
+
+msgid ""
+"- MER indicators must be selected in coordination with your Country "
+"Director and Regional Team."
+msgstr ""
+
+msgid ""
+"If you need to correct an item in your project, please click the grey "
+"“Previous” button located on the bottom right side of the screen."
+msgstr ""
+
+msgid "Last Updated"
+msgstr ""
+
+msgid "Created"
+msgstr ""
+
+msgid "Opening Date"
+msgstr ""
+
+msgid "Closed Date"
+msgstr ""
+
+msgid "Created By"
+msgstr ""
+
+msgid "Last Updated By"
+msgstr ""
+
+msgid "API Link"
+msgstr ""
+
+msgid "Details"
+msgstr ""
+
+msgid "Add Actual Values"
+msgstr ""
+
+msgid "Go to Dashboard"
+msgstr ""
+
+msgid "Reopen Datasets"
+msgstr ""
+
+msgid "Add Target Values"
+msgstr ""
+
+msgid "Download Data"
+msgstr ""
+
+msgid "Edit"
+msgstr ""
+
+msgid "Delete"
+msgstr ""
+
+msgid "Search by name or code"
+msgstr ""
+
+msgid "MER Reports"
+msgstr ""
+
+msgid "Create Project"
+msgstr ""
+
+msgid "Countries"
+msgstr ""
+
+msgid "Active"
+msgstr ""
+
+msgid ""
+"Please choose the month of data you wish to extract for the MER report.\n"
+"\n"
+"        Please make sure you choose your country for reporting.\n"
+"        Note- when you click the date and location, the data will "
+"automatically populate.  Please add comments to the data as necessary, and "
+"complete the blank sections of the MER each month.\n"
+"        Download- when you click the “Download” button, the MER will be "
+"downloaded to Excel.\n"
+"\n"
+"        Save- when you click the “Save” button, the MER will [TODO]"
+msgstr ""
+
+msgid "Monthly Executive Reports"
+msgstr ""
+
+msgid "Report saved"
+msgstr ""
+
+msgid "Error saving report"
+msgstr ""
+
+msgid "Any changes will be lost. Are you sure you want to proceed?"
+msgstr ""
+
+msgid "Date"
+msgstr ""
+
+msgid "No open projects in the selected date and organisation unit"
+msgstr ""
+
+msgid "Projected Activities for the next month"
+msgstr ""
+
+msgid "Download"
+msgstr ""
+
+msgid "Target to date"
+msgstr ""
+
+msgid "Actual to date"
+msgstr ""
