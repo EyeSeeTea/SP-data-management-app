@@ -238,7 +238,7 @@ const ProjectsList: React.FC = () => {
 
             {rows && (
                 <ObjectsTable<ProjectForList>
-                    searchBoxLabel={i18n.t("Search by name")}
+                    searchBoxLabel={i18n.t("Search by name or code")}
                     onChangeSearch={setSearch}
                     pagination={pagination}
                     onChange={onStateChange}
