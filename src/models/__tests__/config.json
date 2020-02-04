@@ -1,0 +1,3520 @@
+{
+    "base": {
+        "userRoles": {
+            "feedback": ["PM Feedback"],
+            "dataReviewer": ["Data Reviewer"],
+            "dataViewer": ["Data Viewer"],
+            "admin": ["PM Admin"],
+            "dataEntry": ["Data Entry"]
+        },
+        "dataElementGroupSets": {
+            "sector": "SECTOR",
+            "series": "SERIES",
+            "type1": "TYPE_1",
+            "type2": "TYPE_2",
+            "externals": "EXTERNAL"
+        },
+        "attributes": {
+            "pairedDataElement": "PM_PAIRED_DE",
+            "createdByApp": "PM_CREATED_BY_PROJECT_MONITORING",
+            "orgUnitProject": "PM_ORGUNIT_PROJECT_ID",
+            "projectDashboard": "PM_PROJECT_DASHBOARD_ID",
+            "countingMethod": "PM_COUNTING_METHOD",
+            "mainSector": "PM_MAIN_SECTOR"
+        },
+        "categories": {
+            "targetActual": "ACTUAL_TARGET",
+            "gender": "GENDER",
+            "newRecurring": "NEW_RECURRING"
+        },
+        "categoryCombos": {
+            "targetActual": "ACTUAL_TARGET",
+            "genderNewRecurring": "GENDER_NEW_RECURRING",
+            "default": "default"
+        },
+        "categoryOptions": {
+            "target": "TARGET",
+            "actual": "ACTUAL",
+            "new": "NEW",
+            "recurring": "RECURRING",
+            "male": "MALE",
+            "female": "FEMALE"
+        },
+        "dataElementGroups": {
+            "global": "GLOBAL",
+            "sub": "SUB",
+            "people": "PEOPLE",
+            "benefit": "BENEFIT"
+        },
+        "legendSets": {
+            "achieved": "ACTUAL_TARGET_ACHIEVED"
+        },
+        "organisationUnitGroupSets": {
+            "funder": "FUNDER",
+            "location": "LOCATION"
+        },
+        "indicators": {
+            "actualTargetPrefix": "ACTUAL_TARGET_",
+            "costBenefitPrefix": "COST_BENEFIT_"
+        },
+        "dataApprovalWorkflows": {
+            "project": "PM_PROJECT"
+        }
+    },
+    "currentUser": {
+        "id": "M5zQapPyTZI",
+        "displayName": "admin admin",
+        "userCredentials": {
+            "userRoles": [
+                {
+                    "name": "Superuser"
+                },
+                {
+                    "name": "PM Admin"
+                }
+            ]
+        },
+        "organisationUnits": [
+            {
+                "id": "J0hschZVMBt",
+                "displayName": "IHQ2"
+            }
+        ],
+        "userRoles": [
+            {
+                "name": "Superuser"
+            },
+            {
+                "name": "PM Admin"
+            }
+        ]
+    },
+    "sectors": [
+        {
+            "code": "SECTOR_AGRICULTURE",
+            "id": "mGQ5ckOTU8A",
+            "displayName": "Agriculture",
+            "dataElements": [
+                {
+                    "id": "Wgd2n77F7Gt"
+                },
+                {
+                    "id": "C24wpyjZTGe"
+                },
+                {
+                    "id": "WS8XV4WWPE7"
+                },
+                {
+                    "id": "mog7WefRWEM"
+                },
+                {
+                    "id": "qQy0N1xdwQ1"
+                },
+                {
+                    "id": "SQKAXCQeTyN"
+                },
+                {
+                    "id": "aWmCNZi0Hcq"
+                },
+                {
+                    "id": "KecRLspBj0V"
+                },
+                {
+                    "id": "SeYl64icyGD"
+                },
+                {
+                    "id": "y2uyhyc7kqW"
+                },
+                {
+                    "id": "aOUffyMug7t"
+                },
+                {
+                    "id": "aqCOXJ5URiL"
+                },
+                {
+                    "id": "O2ZoxgfyNbk"
+                },
+                {
+                    "id": "yqiqScaSAPi"
+                },
+                {
+                    "id": "Ou41h46tMcD"
+                },
+                {
+                    "id": "q8C2wnYFK3T"
+                },
+                {
+                    "id": "uG8477tQT0d"
+                },
+                {
+                    "id": "mEY5CsRrI0P"
+                },
+                {
+                    "id": "i0wZ2ZFmfkW"
+                },
+                {
+                    "id": "OIimwtgdcW8"
+                },
+                {
+                    "id": "GYYltkqzWlI"
+                },
+                {
+                    "id": "qCqieUNUMCb"
+                },
+                {
+                    "id": "K6mAC5SiO29"
+                },
+                {
+                    "id": "ik0ICagvIjm"
+                },
+                {
+                    "id": "yKXntYu2GKF"
+                },
+                {
+                    "id": "e87Q0bPAPFJ"
+                },
+                {
+                    "id": "KgETkXKU36b"
+                },
+                {
+                    "id": "yIqYlJnhYyj"
+                },
+                {
+                    "id": "KuMdSyum1NF"
+                },
+                {
+                    "id": "WMAhrqMkpeN"
+                },
+                {
+                    "id": "KSKcmBgYrov"
+                },
+                {
+                    "id": "K4ai530ChFX"
+                },
+                {
+                    "id": "esCSTOzV5CD"
+                },
+                {
+                    "id": "C0QLSs6ymHL"
+                }
+            ]
+        },
+        {
+            "code": "SECTOR_ALL-HH-MEMBERS",
+            "id": "SKczcHwLc68",
+            "displayName": "All HH members",
+            "dataElements": [
+                {
+                    "id": "uk6vjgubPaA"
+                }
+            ]
+        },
+        {
+            "code": "SECTOR_CHP",
+            "id": "OcIDwMJf7VH",
+            "displayName": "CHP",
+            "dataElements": [
+                {
+                    "id": "qS1nbDQmfBF"
+                },
+                {
+                    "id": "i0ayw9a7y7J"
+                },
+                {
+                    "id": "GMW6KDNPTEh"
+                },
+                {
+                    "id": "eeIVMtUFRVp"
+                },
+                {
+                    "id": "qgaoVOkdLWl"
+                },
+                {
+                    "id": "uqQzib8Ybsd"
+                }
+            ]
+        },
+        {
+            "code": "SECTOR_CASH-AND-VOUCHER",
+            "id": "WuI0CSeCdn7",
+            "displayName": "Cash and Voucher",
+            "dataElements": [
+                {
+                    "id": "GAKypUThMRr"
+                },
+                {
+                    "id": "awsNtaiPxBR"
+                },
+                {
+                    "id": "WmauKiAiueX"
+                },
+                {
+                    "id": "m8UnBobumQc"
+                },
+                {
+                    "id": "em64U7iG9nf"
+                },
+                {
+                    "id": "qK4YkTO0rZL"
+                }
+            ]
+        },
+        {
+            "code": "SECTOR_EDUCATION",
+            "id": "eig9M4QOT1S",
+            "displayName": "Education",
+            "dataElements": [
+                {
+                    "id": "GMGoHRuQdCn"
+                },
+                {
+                    "id": "i0wZ2ZFmfkW"
+                },
+                {
+                    "id": "quu6c8OQNMv"
+                },
+                {
+                    "id": "ic8kc26aeDU"
+                },
+                {
+                    "id": "me6ajAPHCXT"
+                },
+                {
+                    "id": "eOATbcUKnJo"
+                },
+                {
+                    "id": "Gyq0FR92NIq"
+                },
+                {
+                    "id": "SyMHJiqHLOf"
+                },
+                {
+                    "id": "em64U7iG9nf"
+                }
+            ]
+        },
+        {
+            "code": "SECTOR_FOOD",
+            "id": "myAvqKoJpiN",
+            "displayName": "Food",
+            "dataElements": [
+                {
+                    "id": "GMGoHRuQdCn"
+                },
+                {
+                    "id": "qcSsqXKZW0U"
+                },
+                {
+                    "id": "quu6c8OQNMv"
+                },
+                {
+                    "id": "ycEfFA0R1zQ"
+                },
+                {
+                    "id": "WQWCLleCplZ"
+                },
+                {
+                    "id": "u8w5jXOxrHt"
+                },
+                {
+                    "id": "uam4rE1aVKS"
+                },
+                {
+                    "id": "KYUWhiUFeUr"
+                },
+                {
+                    "id": "mUXPq3PNjxt"
+                },
+                {
+                    "id": "qeGgLr2I471"
+                },
+                {
+                    "id": "WUCuxbfpPJz"
+                },
+                {
+                    "id": "OoyOMBMIhfd"
+                },
+                {
+                    "id": "mWsf03mYbcc"
+                }
+            ]
+        },
+        {
+            "code": "SECTOR_HEALTH",
+            "id": "m6wRIr4gijM",
+            "displayName": "Health",
+            "dataElements": [
+                {
+                    "id": "GqoFCvfjwIi"
+                },
+                {
+                    "id": "Cy6LP31Z6xH"
+                },
+                {
+                    "id": "yCE8yRRSLao"
+                },
+                {
+                    "id": "KYkxZLiSAhg"
+                },
+                {
+                    "id": "a6SyfkuUcqv"
+                },
+                {
+                    "id": "SMEnhI6A9Rs"
+                },
+                {
+                    "id": "qesC4uvl9Ah"
+                },
+                {
+                    "id": "CMQ1YXVibYU"
+                },
+                {
+                    "id": "SKkfrCzpoxa"
+                },
+                {
+                    "id": "CSwvrBGE0mJ"
+                },
+                {
+                    "id": "mqkX2ladoVS"
+                },
+                {
+                    "id": "KEOuGGbp5K5"
+                },
+                {
+                    "id": "e2I1nMkhhvx"
+                },
+                {
+                    "id": "KYiLxwJhtm2"
+                },
+                {
+                    "id": "CAYv5AjgIl2"
+                },
+                {
+                    "id": "yWqoXCcfNTy"
+                },
+                {
+                    "id": "a4qI98GSL7N"
+                },
+                {
+                    "id": "yeKVjpXOjQI"
+                },
+                {
+                    "id": "qoyCmL8q7xt"
+                },
+                {
+                    "id": "O8uEwgIqfMA"
+                },
+                {
+                    "id": "ya21TqO05jE"
+                },
+                {
+                    "id": "ywrzZ4voCri"
+                },
+                {
+                    "id": "i0WWUhzisEK"
+                },
+                {
+                    "id": "SsghcMY2FnR"
+                },
+                {
+                    "id": "Wq4390xucCa"
+                },
+                {
+                    "id": "GMGkGPLnIlt"
+                },
+                {
+                    "id": "y4ApFxWXBfl"
+                },
+                {
+                    "id": "uEGeiH8uCr8"
+                },
+                {
+                    "id": "qoyUvAUcCDE"
+                },
+                {
+                    "id": "WySskSIZwaM"
+                },
+                {
+                    "id": "eoEtWMiPJ54"
+                },
+                {
+                    "id": "qcSsqXKZW0U"
+                },
+                {
+                    "id": "WSYRjif67DQ"
+                },
+                {
+                    "id": "iiEThnJ5xEb"
+                },
+                {
+                    "id": "aSk1I6wJ9AY"
+                },
+                {
+                    "id": "GQWvqy78j1p"
+                },
+                {
+                    "id": "qGKssff9JwK"
+                },
+                {
+                    "id": "KUKoGeVzFTC"
+                },
+                {
+                    "id": "WUItTX5YzPL"
+                },
+                {
+                    "id": "u80a11AljkK"
+                },
+                {
+                    "id": "CGkvuMeGPGu"
+                },
+                {
+                    "id": "Sqc33nu03uY"
+                },
+                {
+                    "id": "yGIr6ZotIs8"
+                },
+                {
+                    "id": "OKAHBIGz0Ki"
+                },
+                {
+                    "id": "eESSFKKADfq"
+                },
+                {
+                    "id": "S2ua4bjQVBz"
+                },
+                {
+                    "id": "u88V446Yrvb"
+                },
+                {
+                    "id": "iw2nTn0oV5o"
+                },
+                {
+                    "id": "iSUjjR1nolD"
+                },
+                {
+                    "id": "G00cLpvqpvV"
+                },
+                {
+                    "id": "qycHkj19wHq"
+                },
+                {
+                    "id": "CQPwg8Nipro"
+                },
+                {
+                    "id": "CagfF9DPOuL"
+                },
+                {
+                    "id": "Wq0MmYQKeZu"
+                },
+                {
+                    "id": "WYovLaeWDag"
+                },
+                {
+                    "id": "awWOon4mbRk"
+                }
+            ]
+        },
+        {
+            "code": "SECTOR_INDIVIDUAL",
+            "id": "qEYbgliEaNt",
+            "displayName": "Individual",
+            "dataElements": [
+                {
+                    "id": "uk6vjgubPaA"
+                }
+            ]
+        },
+        {
+            "code": "SECTOR_LIVELIHOOD",
+            "id": "GkiSljtLcOI",
+            "displayName": "Livelihood",
+            "dataElements": [
+                {
+                    "id": "iQCoaXYxswJ"
+                },
+                {
+                    "id": "We61YNYyOX0"
+                },
+                {
+                    "id": "WM4XoeIxJ5b"
+                },
+                {
+                    "id": "u24zk6wAgFE"
+                },
+                {
+                    "id": "C4WY1eUmXkX"
+                },
+                {
+                    "id": "CwIfK1Jiui2"
+                },
+                {
+                    "id": "SIeeRXzyAIx"
+                },
+                {
+                    "id": "OKIqOe51jVq"
+                },
+                {
+                    "id": "Wq0oITH2wna"
+                },
+                {
+                    "id": "Wk0ONOEwrQy"
+                },
+                {
+                    "id": "e6wdrrz9ZS6"
+                },
+                {
+                    "id": "yMqK9DKbA3X"
+                },
+                {
+                    "id": "WEkZp4NJC29"
+                },
+                {
+                    "id": "a8izG9FuLzQ"
+                },
+                {
+                    "id": "ua2JqES2mUL"
+                },
+                {
+                    "id": "qMBwrj5lDhd"
+                },
+                {
+                    "id": "GQyudNlGzkI"
+                },
+                {
+                    "id": "i0wZ2ZFmfkW"
+                },
+                {
+                    "id": "imakJ22nlwc"
+                },
+                {
+                    "id": "WwMbFHHKGgW"
+                },
+                {
+                    "id": "GqA7bkJ6GEN"
+                },
+                {
+                    "id": "eGKS3DrQcTd"
+                },
+                {
+                    "id": "CQkzkkkzpRT"
+                },
+                {
+                    "id": "iyAnflVLHS3"
+                },
+                {
+                    "id": "ayoVLBc4lFq"
+                },
+                {
+                    "id": "eeqkGzLMaSD"
+                },
+                {
+                    "id": "yUGuwPFkBrj"
+                },
+                {
+                    "id": "CQPwg8Nipro"
+                },
+                {
+                    "id": "aWaC0807qD4"
+                },
+                {
+                    "id": "W40WQqgOVuV"
+                },
+                {
+                    "id": "iyQBe9Xv7bk"
+                },
+                {
+                    "id": "OWQzKQcWkqp"
+                },
+                {
+                    "id": "io65ueHZUpQ"
+                }
+            ]
+        },
+        {
+            "code": "SECTOR_MINISTRY",
+            "id": "i8qug2Himby",
+            "displayName": "Ministry",
+            "dataElements": [
+                {
+                    "id": "uASwJcZwhJR"
+                },
+                {
+                    "id": "me67rLoG7Ug"
+                },
+                {
+                    "id": "qkyeCTJHU2d"
+                },
+                {
+                    "id": "umkL2sEVSNR"
+                },
+                {
+                    "id": "WUMjtbgofs2"
+                },
+                {
+                    "id": "S20aprHSmoY"
+                },
+                {
+                    "id": "Oo8Ljg8MUlo"
+                },
+                {
+                    "id": "KSIDMpRN98y"
+                },
+                {
+                    "id": "Cg4c5HRdyJt"
+                },
+                {
+                    "id": "a64hlNkGyfj"
+                },
+                {
+                    "id": "SQy5q6kCYI1"
+                },
+                {
+                    "id": "GsKksqhBDzS"
+                },
+                {
+                    "id": "i0ayw9a7y7J"
+                },
+                {
+                    "id": "GeGEm2k6WKy"
+                },
+                {
+                    "id": "CEA1CMayvfm"
+                },
+                {
+                    "id": "OKATOswBVFp"
+                },
+                {
+                    "id": "KIM3IoYEn0Q"
+                },
+                {
+                    "id": "SYEA0uCdMQY"
+                },
+                {
+                    "id": "eAkVLI8mKBa"
+                },
+                {
+                    "id": "qmMfNKlOnYl"
+                },
+                {
+                    "id": "mm8STQA7P0V"
+                },
+                {
+                    "id": "qY6VZUiUqP5"
+                }
+            ]
+        },
+        {
+            "code": "SECTOR_NUTRITION",
+            "id": "mUmeTWQ7qvZ",
+            "displayName": "Nutrition",
+            "dataElements": [
+                {
+                    "id": "aEWqGOerMCR"
+                },
+                {
+                    "id": "iMio9osPejA"
+                },
+                {
+                    "id": "Oocne32yGqU"
+                },
+                {
+                    "id": "q0YJ8y0Cx17"
+                },
+                {
+                    "id": "eacDOvAXM8w"
+                },
+                {
+                    "id": "WGYVTfvRQTp"
+                },
+                {
+                    "id": "aSyPclS5UKs"
+                },
+                {
+                    "id": "G8sNvDftYFf"
+                },
+                {
+                    "id": "WMaSv1ifNYB"
+                },
+                {
+                    "id": "GqglcVtN0jK"
+                },
+                {
+                    "id": "qoyCmL8q7xt"
+                },
+                {
+                    "id": "mKsNDllOoX6"
+                },
+                {
+                    "id": "WM8jnuXBsFM"
+                },
+                {
+                    "id": "uqoHFB0TTNE"
+                },
+                {
+                    "id": "SOgtZvFvRe7"
+                },
+                {
+                    "id": "CQkzkkkzpRT"
+                },
+                {
+                    "id": "OE5jU8FBwjN"
+                },
+                {
+                    "id": "qeGgLr2I471"
+                },
+                {
+                    "id": "WmMjbrn9L5N"
+                },
+                {
+                    "id": "WEgNESq1A7p"
+                },
+                {
+                    "id": "usUXZo8S6ML"
+                },
+                {
+                    "id": "qcSsqXKZW0U"
+                },
+                {
+                    "id": "WIsDaZNKhVY"
+                },
+                {
+                    "id": "eusRdnJsPYS"
+                },
+                {
+                    "id": "uiMFMxYBPQu"
+                },
+                {
+                    "id": "moEnj0e1v1m"
+                },
+                {
+                    "id": "SiIlD6JXwrh"
+                },
+                {
+                    "id": "eQCEGPuzi8U"
+                },
+                {
+                    "id": "umgzhNhZZuG"
+                },
+                {
+                    "id": "em6hBeB1Mgx"
+                },
+                {
+                    "id": "KuAjqeAm3ud"
+                },
+                {
+                    "id": "ei0GG8tgs3O"
+                },
+                {
+                    "id": "mUXPq3PNjxt"
+                },
+                {
+                    "id": "mc7d96pQsmj"
+                },
+                {
+                    "id": "CukJJn0tlAe"
+                },
+                {
+                    "id": "S4gTBFCkNox"
+                },
+                {
+                    "id": "S60gcORJg7s"
+                },
+                {
+                    "id": "me0ILSeLpfv"
+                },
+                {
+                    "id": "igegpsgZJtk"
+                },
+                {
+                    "id": "mSspV1RxrUv"
+                },
+                {
+                    "id": "esCSTOzV5CD"
+                },
+                {
+                    "id": "SiKGyiSSH6D"
+                }
+            ]
+        },
+        {
+            "code": "SECTOR_PROTECTION",
+            "id": "auULQasRbJL",
+            "displayName": "Protection",
+            "dataElements": [
+                {
+                    "id": "eqolMumZszo"
+                },
+                {
+                    "id": "eea0MAkiPCL"
+                },
+                {
+                    "id": "uym0D98bxI5"
+                },
+                {
+                    "id": "Ky6VzmlyzCj"
+                },
+                {
+                    "id": "Wmquc4R3BkI"
+                },
+                {
+                    "id": "iCyWMeyLZSj"
+                },
+                {
+                    "id": "SqW0WwXRcEy"
+                },
+                {
+                    "id": "iiCO3KErryp"
+                },
+                {
+                    "id": "CAoDnDrYQ5S"
+                },
+                {
+                    "id": "Cow5NLd5mLE"
+                },
+                {
+                    "id": "yMUpSkWEOKV"
+                },
+                {
+                    "id": "GCi0yI0lEFt"
+                },
+                {
+                    "id": "m6aMAagwCdT"
+                },
+                {
+                    "id": "uoaCYzmXcE8"
+                },
+                {
+                    "id": "aiisN6lDbcy"
+                },
+                {
+                    "id": "Sss1IQxLzyO"
+                },
+                {
+                    "id": "ywQfPB6FJCu"
+                },
+                {
+                    "id": "qYmi5h7nMi5"
+                },
+                {
+                    "id": "WKWMzV885LL"
+                },
+                {
+                    "id": "mu0Ek4JypBO"
+                },
+                {
+                    "id": "eIGcZfpUnRn"
+                },
+                {
+                    "id": "S62f9sHZt5o"
+                },
+                {
+                    "id": "GMYNd6p9774"
+                },
+                {
+                    "id": "qAM1NbCbS9G"
+                },
+                {
+                    "id": "qcwhkIgx56S"
+                },
+                {
+                    "id": "yIgnPUbwsLS"
+                },
+                {
+                    "id": "Sy02tbklwzs"
+                },
+                {
+                    "id": "i6AroUcNO7Q"
+                },
+                {
+                    "id": "OI42rcjHPWP"
+                },
+                {
+                    "id": "CAa2HJhcMdZ"
+                },
+                {
+                    "id": "OSOCkyUnh9m"
+                },
+                {
+                    "id": "mwITPAhlsIV"
+                },
+                {
+                    "id": "yqmyP1vNJk0"
+                },
+                {
+                    "id": "aMYPyQu0kYd"
+                },
+                {
+                    "id": "iCKxYSFIlcu"
+                },
+                {
+                    "id": "CQEv5mMFQwk"
+                },
+                {
+                    "id": "y6ufXSNhF81"
+                }
+            ]
+        },
+        {
+            "code": "SECTOR_SHELTER",
+            "id": "O2wdK9G0m9f",
+            "displayName": "Shelter",
+            "dataElements": [
+                {
+                    "id": "SGmWjKYWZrQ"
+                },
+                {
+                    "id": "msKkuVQZoOF"
+                },
+                {
+                    "id": "igS2SkaUoc7"
+                },
+                {
+                    "id": "Gy4R57uxJGf"
+                },
+                {
+                    "id": "G8cb0kMg4Z0"
+                },
+                {
+                    "id": "eygHRgjorW0"
+                },
+                {
+                    "id": "OKgFYITeL5k"
+                },
+                {
+                    "id": "uooLz69cpuC"
+                },
+                {
+                    "id": "G6k7yhUhrUU"
+                },
+                {
+                    "id": "GE1BUNc7GTl"
+                },
+                {
+                    "id": "a8Y3J0Dl63j"
+                },
+                {
+                    "id": "eOsnXFHy2vn"
+                },
+                {
+                    "id": "S6oNywvqVL9"
+                },
+                {
+                    "id": "Wq4390xucCa"
+                },
+                {
+                    "id": "uGygVN0ES1o"
+                },
+                {
+                    "id": "OYslNIHtlHg"
+                },
+                {
+                    "id": "KWYbEKBzT3X"
+                },
+                {
+                    "id": "iQoZVOV9ytH"
+                },
+                {
+                    "id": "WswpOsajwWK"
+                },
+                {
+                    "id": "OMJCwbXM9eg"
+                },
+                {
+                    "id": "uASwJcZwhJR"
+                },
+                {
+                    "id": "G6CCgEB6NLt"
+                },
+                {
+                    "id": "iiEThnJ5xEb"
+                },
+                {
+                    "id": "mWu8f1Vxk1k"
+                },
+                {
+                    "id": "SYVRocVMMpi"
+                },
+                {
+                    "id": "C0OISdeJaeD"
+                },
+                {
+                    "id": "KWmKf2Tlg6p"
+                },
+                {
+                    "id": "CEA1CMayvfm"
+                },
+                {
+                    "id": "CQK2WzuEktG"
+                },
+                {
+                    "id": "eWMRYu8Dn8s"
+                },
+                {
+                    "id": "CQPwg8Nipro"
+                },
+                {
+                    "id": "miYneg7nVZR"
+                },
+                {
+                    "id": "GcQ3L0BcNd2"
+                },
+                {
+                    "id": "OYiIfLFNIBU"
+                },
+                {
+                    "id": "eiy8sOqlvgo"
+                },
+                {
+                    "id": "mm8STQA7P0V"
+                },
+                {
+                    "id": "mcPWIzctkij"
+                },
+                {
+                    "id": "SKi4fRAdhk7"
+                },
+                {
+                    "id": "qY6VZUiUqP5"
+                }
+            ]
+        },
+        {
+            "code": "SECTOR_WASH",
+            "id": "Oq4A79YZZ8E",
+            "displayName": "WASH",
+            "dataElements": [
+                {
+                    "id": "iUGimOzXgOL"
+                },
+                {
+                    "id": "eomuFjZVSgu"
+                },
+                {
+                    "id": "uu2HUeQTQ46"
+                },
+                {
+                    "id": "aMArYG9xgYf"
+                },
+                {
+                    "id": "qk61QKV3q0q"
+                },
+                {
+                    "id": "myER4HL7jIC"
+                },
+                {
+                    "id": "a0mutVmldRT"
+                },
+                {
+                    "id": "yCQN7VsFUya"
+                },
+                {
+                    "id": "SMEnhI6A9Rs"
+                },
+                {
+                    "id": "aoaig04eQSL"
+                },
+                {
+                    "id": "uE6ZPpbPz66"
+                },
+                {
+                    "id": "mSks6f7LVkn"
+                },
+                {
+                    "id": "uMeWCCYnx6y"
+                },
+                {
+                    "id": "O2SOwpK60v3"
+                },
+                {
+                    "id": "ecQncxEhoEE"
+                },
+                {
+                    "id": "i8a8inqJcXi"
+                },
+                {
+                    "id": "uUENmyjNVbT"
+                },
+                {
+                    "id": "uEmAYQ6OMAc"
+                },
+                {
+                    "id": "qA8PtX8Yg8C"
+                },
+                {
+                    "id": "i6gH2qYAkuy"
+                },
+                {
+                    "id": "OYkHOXijR2y"
+                },
+                {
+                    "id": "yukjouczkUZ"
+                },
+                {
+                    "id": "qm6HENhtZpz"
+                },
+                {
+                    "id": "a08FKV0iidX"
+                },
+                {
+                    "id": "KgyKmC4waTM"
+                },
+                {
+                    "id": "ycWiYB14jfJ"
+                },
+                {
+                    "id": "OMUvfdhoG7W"
+                },
+                {
+                    "id": "WSgnt7psGh6"
+                },
+                {
+                    "id": "acwDBR7ggHo"
+                },
+                {
+                    "id": "GAd3Dt1Q43e"
+                },
+                {
+                    "id": "W8shJ2IPnKl"
+                },
+                {
+                    "id": "W44mFIxdgyE"
+                },
+                {
+                    "id": "e8PLRnSt0Od"
+                },
+                {
+                    "id": "G8YTyVQiHgD"
+                },
+                {
+                    "id": "ye0Qx76WlzG"
+                },
+                {
+                    "id": "ieMPt2lJ3lp"
+                },
+                {
+                    "id": "egQPupxcfGR"
+                },
+                {
+                    "id": "uyMhgwLwrzi"
+                },
+                {
+                    "id": "SC6PII9boW6"
+                },
+                {
+                    "id": "yAEbna4Lrun"
+                },
+                {
+                    "id": "i4KI6fcLK8i"
+                },
+                {
+                    "id": "ewAjv4vWJAm"
+                },
+                {
+                    "id": "aGqgx6eCXIP"
+                },
+                {
+                    "id": "a2QVTkHYtMr"
+                },
+                {
+                    "id": "WwsJ9Fa1IWy"
+                },
+                {
+                    "id": "aWeogk5FTW7"
+                },
+                {
+                    "id": "mkOo1Ano2Te"
+                },
+                {
+                    "id": "CGkvuMeGPGu"
+                },
+                {
+                    "id": "aIuubwhMJ9J"
+                },
+                {
+                    "id": "CkgxCiq5G8x"
+                },
+                {
+                    "id": "KGEBgSleIAf"
+                },
+                {
+                    "id": "eWMRYu8Dn8s"
+                },
+                {
+                    "id": "WmIVrE9jpWP"
+                },
+                {
+                    "id": "miYneg7nVZR"
+                },
+                {
+                    "id": "CC6Iy1wakVf"
+                },
+                {
+                    "id": "GQ8fnGfxpqL"
+                },
+                {
+                    "id": "K6OYPzO1rVh"
+                },
+                {
+                    "id": "KecvTPeGAHI"
+                },
+                {
+                    "id": "S4cFVOMqzOC"
+                },
+                {
+                    "id": "qe0JpwLEGgh"
+                },
+                {
+                    "id": "ugE5QIKn3l1"
+                }
+            ]
+        }
+    ],
+    "dataElements": [
+        {
+            "id": "We61YNYyOX0",
+            "name": "# of biogas digesters installed",
+            "code": "B020205",
+            "sectorId": "GkiSljtLcOI",
+            "isMainSector": true,
+            "indicatorType": "sub",
+            "peopleOrBenefit": "benefit",
+            "series": "SERIES_LIVELIHOOD_202",
+            "pairedDataElementCode": "P020305",
+            "countingMethod": "",
+            "externals": [],
+            "categoryComboId": "bjDvmb4bfuf",
+            "pairedDataElement": {
+                "id": "WM4XoeIxJ5b",
+                "name": "# of people provided with biogas digesters",
+                "code": "P020305",
+                "sectorId": "GkiSljtLcOI",
+                "isMainSector": true,
+                "indicatorType": "sub",
+                "peopleOrBenefit": "people",
+                "series": "SERIES_LIVELIHOOD_203",
+                "pairedDataElementCode": "",
+                "countingMethod": "",
+                "externals": [],
+                "categoryComboId": "GKWiemQPU5U"
+            },
+            "pairedDataElementName": "# of people provided with biogas digesters"
+        },
+        {
+            "id": "u24zk6wAgFE",
+            "name": "# of HH-level storage equipment provided",
+            "code": "B020209",
+            "sectorId": "GkiSljtLcOI",
+            "isMainSector": true,
+            "indicatorType": "sub",
+            "peopleOrBenefit": "benefit",
+            "series": "SERIES_LIVELIHOOD_202",
+            "pairedDataElementCode": "P020309",
+            "countingMethod": "",
+            "externals": [],
+            "categoryComboId": "bjDvmb4bfuf",
+            "pairedDataElement": {
+                "id": "SIeeRXzyAIx",
+                "name": "# of people provided with HH-level storage equipment",
+                "code": "P020309",
+                "sectorId": "GkiSljtLcOI",
+                "isMainSector": true,
+                "indicatorType": "sub",
+                "peopleOrBenefit": "people",
+                "series": "SERIES_LIVELIHOOD_203",
+                "pairedDataElementCode": "",
+                "countingMethod": "",
+                "externals": [],
+                "categoryComboId": "GKWiemQPU5U"
+            },
+            "pairedDataElementName": "# of people provided with HH-level storage equipment"
+        },
+        {
+            "id": "yMqK9DKbA3X",
+            "name": "# of livelihood inputs/ assets provided",
+            "code": "B020200",
+            "sectorId": "GkiSljtLcOI",
+            "isMainSector": true,
+            "indicatorType": "global",
+            "peopleOrBenefit": "benefit",
+            "series": "SERIES_LIVELIHOOD_202",
+            "pairedDataElementCode": "P020300",
+            "countingMethod": "",
+            "externals": [],
+            "categoryComboId": "bjDvmb4bfuf",
+            "pairedDataElement": {
+                "id": "GQyudNlGzkI",
+                "name": "# of people provided with Livelihood inputs/ assets",
+                "code": "P020300",
+                "sectorId": "GkiSljtLcOI",
+                "isMainSector": true,
+                "indicatorType": "global",
+                "peopleOrBenefit": "people",
+                "series": "SERIES_LIVELIHOOD_203",
+                "pairedDataElementCode": "",
+                "countingMethod": "",
+                "externals": [],
+                "categoryComboId": "GKWiemQPU5U"
+            },
+            "pairedDataElementName": "# of people provided with Livelihood inputs/ assets"
+        },
+        {
+            "id": "yUGuwPFkBrj",
+            "name": "# of energy-saving stoves installed",
+            "code": "B020210",
+            "sectorId": "GkiSljtLcOI",
+            "isMainSector": true,
+            "indicatorType": "sub",
+            "peopleOrBenefit": "benefit",
+            "series": "SERIES_LIVELIHOOD_202",
+            "pairedDataElementCode": "P020310",
+            "countingMethod": "",
+            "externals": [],
+            "categoryComboId": "bjDvmb4bfuf",
+            "pairedDataElement": {
+                "id": "aWaC0807qD4",
+                "name": "# of people provided with energy-saving stoves",
+                "code": "P020310",
+                "sectorId": "GkiSljtLcOI",
+                "isMainSector": true,
+                "indicatorType": "sub",
+                "peopleOrBenefit": "people",
+                "series": "SERIES_LIVELIHOOD_203",
+                "pairedDataElementCode": "",
+                "countingMethod": "",
+                "externals": [],
+                "categoryComboId": "GKWiemQPU5U"
+            },
+            "pairedDataElementName": "# of people provided with energy-saving stoves"
+        },
+        {
+            "id": "iyQBe9Xv7bk",
+            "name": "# of other productive assets (specify) distributed",
+            "code": "B020211",
+            "sectorId": "GkiSljtLcOI",
+            "isMainSector": true,
+            "indicatorType": "sub",
+            "peopleOrBenefit": "benefit",
+            "series": "SERIES_LIVELIHOOD_202",
+            "pairedDataElementCode": "P020311",
+            "countingMethod": "",
+            "externals": [],
+            "categoryComboId": "bjDvmb4bfuf",
+            "pairedDataElement": {
+                "id": "GqA7bkJ6GEN",
+                "name": "# of people provided with other productive assets (specify)",
+                "code": "P020311",
+                "sectorId": "GkiSljtLcOI",
+                "isMainSector": true,
+                "indicatorType": "sub",
+                "peopleOrBenefit": "people",
+                "series": "SERIES_LIVELIHOOD_203",
+                "pairedDataElementCode": "",
+                "countingMethod": "",
+                "externals": [],
+                "categoryComboId": "GKWiemQPU5U"
+            },
+            "pairedDataElementName": "# of people provided with other productive assets (specify)"
+        },
+        {
+            "id": "WS8XV4WWPE7",
+            "name": "# of agriculture groups receiving support for improved livelihoods",
+            "code": "B010200",
+            "sectorId": "mGQ5ckOTU8A",
+            "isMainSector": true,
+            "indicatorType": "global",
+            "peopleOrBenefit": "benefit",
+            "series": "SERIES_AGRICULTURE_102",
+            "pairedDataElementCode": "",
+            "countingMethod": "",
+            "externals": [],
+            "categoryComboId": "bjDvmb4bfuf"
+        },
+        {
+            "id": "qQy0N1xdwQ1",
+            "name": "# of people trained on post-harvest handling",
+            "code": "P010105",
+            "description": "WFP: -",
+            "sectorId": "mGQ5ckOTU8A",
+            "isMainSector": true,
+            "indicatorType": "sub",
+            "peopleOrBenefit": "people",
+            "series": "SERIES_AGRICULTURE_101",
+            "pairedDataElementCode": "",
+            "countingMethod": "",
+            "externals": ["WFP"],
+            "categoryComboId": "GKWiemQPU5U"
+        },
+        {
+            "id": "K6mAC5SiO29",
+            "name": "# of people trained on improved agriculture technologies/practices",
+            "code": "P010100",
+            "description": "OFDA: -\nDFID: -",
+            "sectorId": "mGQ5ckOTU8A",
+            "isMainSector": true,
+            "indicatorType": "global",
+            "peopleOrBenefit": "people",
+            "series": "SERIES_AGRICULTURE_101",
+            "pairedDataElementCode": "",
+            "countingMethod": "",
+            "externals": ["DFID", "OFDA"],
+            "categoryComboId": "GKWiemQPU5U"
+        },
+        {
+            "id": "ik0ICagvIjm",
+            "name": "# of people trained on agronomic practices",
+            "code": "P010101",
+            "description": "GAC: -\nUNHCR: -",
+            "sectorId": "mGQ5ckOTU8A",
+            "isMainSector": true,
+            "indicatorType": "sub",
+            "peopleOrBenefit": "people",
+            "series": "SERIES_AGRICULTURE_101",
+            "pairedDataElementCode": "",
+            "countingMethod": "",
+            "externals": ["GAC", "UNHCR"],
+            "categoryComboId": "GKWiemQPU5U"
+        }
+    ],
+    "funders": [
+        {
+            "id": "OE0KdZRX2FC",
+            "displayName": "2018 World Food Program",
+            "organisationUnits": []
+        },
+        {
+            "id": "WKUXmz4LIUG",
+            "displayName": "ACWME",
+            "organisationUnits": []
+        },
+        {
+            "id": "KqWm4Q0ftG1",
+            "displayName": "AECOM International Sudan",
+            "organisationUnits": []
+        },
+        {
+            "id": "CeApFdQGS5x",
+            "displayName": "AMREF Health Africa",
+            "organisationUnits": []
+        },
+        {
+            "id": "qMyQJENdWHU",
+            "displayName": "Academy for Educational Development",
+            "organisationUnits": []
+        }
+    ],
+    "locations": [
+        {
+            "id": "GG0k0oNhgS7",
+            "displayName": "Abaco",
+            "countries": [
+                {
+                    "id": "eu2XF73JOzl"
+                }
+            ]
+        },
+        {
+            "id": "uKgHpYUmD87",
+            "displayName": "Abyei Administrative region",
+            "countries": [
+                {
+                    "id": "Ww8TTOdRxf7"
+                }
+            ]
+        },
+        {
+            "id": "Ccqq8IlL52P",
+            "displayName": "Addis Ababa (city)",
+            "countries": [
+                {
+                    "id": "Sm8vKiwUPie"
+                }
+            ]
+        },
+        {
+            "id": "qWwPnwlfmQ4",
+            "displayName": "Afar",
+            "countries": [
+                {
+                    "id": "Sm8vKiwUPie"
+                }
+            ]
+        },
+        {
+            "id": "G0qE98RqZdn",
+            "displayName": "Agadez",
+            "countries": [
+                {
+                    "id": "WmczKCGK8FQ"
+                }
+            ]
+        }
+    ],
+    "indicators": [
+        {
+            "code": "ACTUAL_TARGET_B040004",
+            "id": "a6Y6S6AEx2G"
+        },
+        {
+            "code": "ACTUAL_TARGET_P070202",
+            "id": "CAfOw82xb1D"
+        },
+        {
+            "code": "ACTUAL_TARGET_B010200",
+            "id": "eCufXa6RkTm"
+        },
+        {
+            "code": "COST_BENEFIT_B010200",
+            "id": "eoyInzqL7YZ"
+        },
+        {
+            "code": "ACTUAL_TARGET_B010300",
+            "id": "WKMFGFg4RSP"
+        },
+        {
+            "code": "COST_BENEFIT_B010300",
+            "id": "iWBR3Ps7CIM"
+        },
+        {
+            "code": "ACTUAL_TARGET_B010003",
+            "id": "OUWGa7c0Rx9"
+        },
+        {
+            "code": "ACTUAL_TARGET_B060301",
+            "id": "uoqYVclbKhe"
+        },
+        {
+            "code": "COST_BENEFIT_B060301",
+            "id": "yumyhG3pJqN"
+        },
+        {
+            "code": "ACTUAL_TARGET_B100800",
+            "id": "q2wVZPM7OQI"
+        },
+        {
+            "code": "COST_BENEFIT_B100800",
+            "id": "CCqF3k6MAni"
+        },
+        {
+            "code": "ACTUAL_TARGET_B100001",
+            "id": "SsYF3Occ2VR"
+        },
+        {
+            "code": "ACTUAL_TARGET_B040003",
+            "id": "yqaEpfBiMIj"
+        },
+        {
+            "code": "ACTUAL_TARGET_B030007",
+            "id": "qAk5SbFO5Uo"
+        },
+        {
+            "code": "ACTUAL_TARGET_P040209",
+            "id": "eWo57mHVGX5"
+        },
+        {
+            "code": "ACTUAL_TARGET_P040100",
+            "id": "GMaQR7leXWi"
+        },
+        {
+            "code": "ACTUAL_TARGET_P070100",
+            "id": "qmID2wtezxA"
+        },
+        {
+            "code": "ACTUAL_TARGET_P070001",
+            "id": "G2SUAycvSqL"
+        },
+        {
+            "code": "ACTUAL_TARGET_B020205",
+            "id": "CaWKoWg00oo"
+        },
+        {
+            "code": "COST_BENEFIT_B020205",
+            "id": "eOIzu4VfyVF"
+        },
+        {
+            "code": "ACTUAL_TARGET_B080801",
+            "id": "mUWOuJM0LW6"
+        },
+        {
+            "code": "COST_BENEFIT_B080801",
+            "id": "muUmHAAVOu4"
+        },
+        {
+            "code": "ACTUAL_TARGET_B030101",
+            "id": "iQQBPWuhWlQ"
+        },
+        {
+            "code": "COST_BENEFIT_B030101",
+            "id": "GocpDNgftLI"
+        },
+        {
+            "code": "ACTUAL_TARGET_B030102",
+            "id": "Oiiatm3L8V7"
+        },
+        {
+            "code": "COST_BENEFIT_B030102",
+            "id": "SayqcOInFi7"
+        },
+        {
+            "code": "ACTUAL_TARGET_B030702",
+            "id": "SECWpF7S3Cn"
+        },
+        {
+            "code": "COST_BENEFIT_B030702",
+            "id": "ai0eV1yYst8"
+        },
+        {
+            "code": "ACTUAL_TARGET_B060311",
+            "id": "iQ6Tg8KxcPR"
+        },
+        {
+            "code": "COST_BENEFIT_B060311",
+            "id": "qE8rNn6kPY2"
+        },
+        {
+            "code": "ACTUAL_TARGET_B010306",
+            "id": "mUCSn4QJClB"
+        },
+        {
+            "code": "COST_BENEFIT_B010306",
+            "id": "GY0CvxEIqmA"
+        },
+        {
+            "code": "ACTUAL_TARGET_B040002",
+            "id": "ikGbC3BDtBU"
+        },
+        {
+            "code": "ACTUAL_TARGET_P070203",
+            "id": "GiCk8mLTfNs"
+        },
+        {
+            "code": "ACTUAL_TARGET_P040508",
+            "id": "KsMFyWarzrF"
+        },
+        {
+            "code": "ACTUAL_TARGET_P040107",
+            "id": "Wk8BU1Njv3i"
+        },
+        {
+            "code": "ACTUAL_TARGET_P040500",
+            "id": "y2c1IymL74I"
+        },
+        {
+            "code": "ACTUAL_TARGET_P090202",
+            "id": "qiEdUlhBPAY"
+        },
+        {
+            "code": "ACTUAL_TARGET_P070005",
+            "id": "CqURW24bmHJ"
+        },
+        {
+            "code": "ACTUAL_TARGET_P090200",
+            "id": "SY0YeEDCsaw"
+        },
+        {
+            "code": "ACTUAL_TARGET_P090300",
+            "id": "eQuIEZohYOK"
+        },
+        {
+            "code": "ACTUAL_TARGET_P090100",
+            "id": "ukoBkEpje0Q"
+        },
+        {
+            "code": "ACTUAL_TARGET_P040502",
+            "id": "GmGyuzDmiYE"
+        },
+        {
+            "code": "ACTUAL_TARGET_P040501",
+            "id": "W2ATWH4yJrW"
+        },
+        {
+            "code": "ACTUAL_TARGET_P040503",
+            "id": "uSmKvqO8vEf"
+        },
+        {
+            "code": "ACTUAL_TARGET_P040105",
+            "id": "Scmgk9eLnz2"
+        },
+        {
+            "code": "ACTUAL_TARGET_P090201",
+            "id": "eWUd4S3wY3I"
+        },
+        {
+            "code": "ACTUAL_TARGET_P040207",
+            "id": "qM8lEOZ16ze"
+        },
+        {
+            "code": "ACTUAL_TARGET_P040103",
+            "id": "O2Iro23aLgT"
+        },
+        {
+            "code": "ACTUAL_TARGET_P040102",
+            "id": "m4iygkY9goU"
+        },
+        {
+            "code": "ACTUAL_TARGET_P040101",
+            "id": "uE66Kfyemds"
+        },
+        {
+            "code": "ACTUAL_TARGET_B030002",
+            "id": "yauqt2HtHrX"
+        },
+        {
+            "code": "ACTUAL_TARGET_P070201",
+            "id": "KeG8yvix5AW"
+        },
+        {
+            "code": "ACTUAL_TARGET_P070200",
+            "id": "iqeoitajbyG"
+        },
+        {
+            "code": "ACTUAL_TARGET_B070300",
+            "id": "mS8TpfGhbvX"
+        },
+        {
+            "code": "COST_BENEFIT_B070300",
+            "id": "eimcKzLxBAD"
+        },
+        {
+            "code": "ACTUAL_TARGET_B070500",
+            "id": "i6E2L5eCz77"
+        },
+        {
+            "code": "COST_BENEFIT_B070500",
+            "id": "iGMzHbiTc8v"
+        },
+        {
+            "code": "ACTUAL_TARGET_B080804",
+            "id": "SSohQ0DmndD"
+        },
+        {
+            "code": "COST_BENEFIT_B080804",
+            "id": "eEi4woHnKcz"
+        },
+        {
+            "code": "ACTUAL_TARGET_B060305",
+            "id": "qKCKBgWyzUd"
+        },
+        {
+            "code": "COST_BENEFIT_B060305",
+            "id": "mawVsY3Prrm"
+        },
+        {
+            "code": "ACTUAL_TARGET_P010110",
+            "id": "CmamEjf3pfK"
+        },
+        {
+            "code": "ACTUAL_TARGET_B060400",
+            "id": "OKA9SumZy4b"
+        },
+        {
+            "code": "COST_BENEFIT_B060400",
+            "id": "q0moaMKRN13"
+        },
+        {
+            "code": "ACTUAL_TARGET_P040401",
+            "id": "qiiu8QGua19"
+        },
+        {
+            "code": "ACTUAL_TARGET_B030003",
+            "id": "yS6iXBwVs6a"
+        },
+        {
+            "code": "COST_BENEFIT_B030003",
+            "id": "S8sXS2Lp8JY"
+        },
+        {
+            "code": "ACTUAL_TARGET_B081101",
+            "id": "mkwPpcXVxVu"
+        },
+        {
+            "code": "ACTUAL_TARGET_B060308",
+            "id": "SUIdteNqJSB"
+        },
+        {
+            "code": "COST_BENEFIT_B060308",
+            "id": "uWeCfBXwF0U"
+        },
+        {
+            "code": "ACTUAL_TARGET_B060306",
+            "id": "WUvQDIMv1ub"
+        },
+        {
+            "code": "COST_BENEFIT_B060306",
+            "id": "OcKS79LKW5L"
+        },
+        {
+            "code": "ACTUAL_TARGET_B060310",
+            "id": "KEuCF9UB6w4"
+        },
+        {
+            "code": "COST_BENEFIT_B060310",
+            "id": "WScVxR3Se6j"
+        },
+        {
+            "code": "ACTUAL_TARGET_B060307",
+            "id": "yCyi6SaEEPn"
+        },
+        {
+            "code": "COST_BENEFIT_B060307",
+            "id": "WYwbNPLsOZI"
+        },
+        {
+            "code": "ACTUAL_TARGET_B060309",
+            "id": "WokNtolvWM0"
+        },
+        {
+            "code": "COST_BENEFIT_B060309",
+            "id": "KOUrDjUAiBq"
+        },
+        {
+            "code": "ACTUAL_TARGET_B060304",
+            "id": "iSoL3P4KrcZ"
+        },
+        {
+            "code": "COST_BENEFIT_B060304",
+            "id": "CEMNabYiBOC"
+        },
+        {
+            "code": "ACTUAL_TARGET_B060401",
+            "id": "Cg6XSrO5bLy"
+        },
+        {
+            "code": "COST_BENEFIT_B060401",
+            "id": "eWQTOTj2O0D"
+        },
+        {
+            "code": "ACTUAL_TARGET_B040001",
+            "id": "au0pbyfpnT0"
+        },
+        {
+            "code": "ACTUAL_TARGET_B010203",
+            "id": "KEK4JEQkH6D"
+        },
+        {
+            "code": "COST_BENEFIT_B010203",
+            "id": "KwimOrM8ajd"
+        },
+        {
+            "code": "ACTUAL_TARGET_B010303",
+            "id": "WU4mOBBnaVz"
+        },
+        {
+            "code": "COST_BENEFIT_B010303",
+            "id": "KgYZtpuupPi"
+        },
+        {
+            "code": "ACTUAL_TARGET_B100500",
+            "id": "mkPmplZF0rA"
+        },
+        {
+            "code": "COST_BENEFIT_B100500",
+            "id": "q6UT9Z1YzAb"
+        },
+        {
+            "code": "ACTUAL_TARGET_B010001",
+            "id": "uqCevGWx4xa"
+        },
+        {
+            "code": "COST_BENEFIT_B010001",
+            "id": "uwA9Wn59bsL"
+        },
+        {
+            "code": "ACTUAL_TARGET_B070003",
+            "id": "SEqSUyqYCbN"
+        },
+        {
+            "code": "COST_BENEFIT_B070003",
+            "id": "a8ms8DH1cBO"
+        },
+        {
+            "code": "ACTUAL_TARGET_P060101",
+            "id": "Sgum9KhbPCl"
+        },
+        {
+            "code": "ACTUAL_TARGET_B020210",
+            "id": "qcI12aprWyB"
+        },
+        {
+            "code": "COST_BENEFIT_B020210",
+            "id": "iyQFWecX9o4"
+        },
+        {
+            "code": "ACTUAL_TARGET_B060204",
+            "id": "eAvyCTcMVeG"
+        },
+        {
+            "code": "ACTUAL_TARGET_B060202",
+            "id": "eWSM8jre0Q9"
+        },
+        {
+            "code": "ACTUAL_TARGET_B060203",
+            "id": "qUyUVh74C94"
+        },
+        {
+            "code": "ACTUAL_TARGET_B010201",
+            "id": "W4wRa4w6jHq"
+        },
+        {
+            "code": "COST_BENEFIT_B010201",
+            "id": "yS2hEccryRK"
+        },
+        {
+            "code": "ACTUAL_TARGET_B010305",
+            "id": "Wum0h15hqTJ"
+        },
+        {
+            "code": "COST_BENEFIT_B010305",
+            "id": "e0WoLFxejm9"
+        },
+        {
+            "code": "ACTUAL_TARGET_B020202",
+            "id": "eCuocEM1IZw"
+        },
+        {
+            "code": "COST_BENEFIT_B020202",
+            "id": "OOaaKMhG3G3"
+        },
+        {
+            "code": "ACTUAL_TARGET_P100301",
+            "id": "m4s3ebVo0GL"
+        },
+        {
+            "code": "ACTUAL_TARGET_P100106",
+            "id": "CeQRYhSFlQx"
+        },
+        {
+            "code": "ACTUAL_TARGET_B010301",
+            "id": "qOCs7GnfmZJ"
+        },
+        {
+            "code": "COST_BENEFIT_B010301",
+            "id": "CaEJAWmcM6v"
+        },
+        {
+            "code": "ACTUAL_TARGET_B020206",
+            "id": "aKWOKySzegJ"
+        },
+        {
+            "code": "COST_BENEFIT_B020206",
+            "id": "WoATQG6LF3U"
+        },
+        {
+            "code": "ACTUAL_TARGET_B030006",
+            "id": "Guimte9v2V3"
+        },
+        {
+            "code": "ACTUAL_TARGET_P060100",
+            "id": "ye2hcm1bWP0"
+        },
+        {
+            "code": "ACTUAL_TARGET_B060201",
+            "id": "SmemhG2d6Lw"
+        },
+        {
+            "code": "ACTUAL_TARGET_B060200",
+            "id": "u86S5tdSNdv"
+        },
+        {
+            "code": "ACTUAL_TARGET_P040400",
+            "id": "eGUHzkldi7E"
+        },
+        {
+            "code": "ACTUAL_TARGET_P040402",
+            "id": "e4qGgPwjRKy"
+        },
+        {
+            "code": "ACTUAL_TARGET_B020209",
+            "id": "Cik3r5TlbC9"
+        },
+        {
+            "code": "COST_BENEFIT_B020209",
+            "id": "q2kPKe35bPD"
+        },
+        {
+            "code": "ACTUAL_TARGET_B030203",
+            "id": "G8MLFBebol1"
+        },
+        {
+            "code": "COST_BENEFIT_B030203",
+            "id": "GsMtI7ALdoU"
+        },
+        {
+            "code": "ACTUAL_TARGET_B030201",
+            "id": "Sik5UrG06x2"
+        },
+        {
+            "code": "COST_BENEFIT_B030201",
+            "id": "SiAhz4plEau"
+        },
+        {
+            "code": "ACTUAL_TARGET_B030401",
+            "id": "aiExnEtzoos"
+        },
+        {
+            "code": "COST_BENEFIT_B030401",
+            "id": "GSOA57hjSsv"
+        },
+        {
+            "code": "ACTUAL_TARGET_P040202",
+            "id": "qsoLFFsgH1C"
+        },
+        {
+            "code": "ACTUAL_TARGET_B030704",
+            "id": "icwPvtoCGoZ"
+        },
+        {
+            "code": "COST_BENEFIT_B030704",
+            "id": "G225rEGlEwH"
+        },
+        {
+            "code": "ACTUAL_TARGET_B020204",
+            "id": "KkKzTkn0zW3"
+        },
+        {
+            "code": "COST_BENEFIT_B020204",
+            "id": "aCqEtw03KXx"
+        },
+        {
+            "code": "ACTUAL_TARGET_B060600",
+            "id": "Co40g63Xuc6"
+        },
+        {
+            "code": "COST_BENEFIT_B060600",
+            "id": "KO25ReAjCrE"
+        },
+        {
+            "code": "ACTUAL_TARGET_P040108",
+            "id": "Sos5uiNMpLA"
+        },
+        {
+            "code": "ACTUAL_TARGET_B060900",
+            "id": "mCKAsDyCi8B"
+        },
+        {
+            "code": "COST_BENEFIT_B060900",
+            "id": "KiUHwiUxpU8"
+        },
+        {
+            "code": "ACTUAL_TARGET_B030703",
+            "id": "SuWsf6w9DLz"
+        },
+        {
+            "code": "ACTUAL_TARGET_B030402",
+            "id": "u4aaHxpddr4"
+        },
+        {
+            "code": "COST_BENEFIT_B030402",
+            "id": "mA2rJuzbkZI"
+        },
+        {
+            "code": "ACTUAL_TARGET_B030204",
+            "id": "O647TFMZ7IA"
+        },
+        {
+            "code": "COST_BENEFIT_B030204",
+            "id": "yEqiE1KZXCO"
+        },
+        {
+            "code": "ACTUAL_TARGET_B081100",
+            "id": "mW0YgDGj9BW"
+        },
+        {
+            "code": "COST_BENEFIT_B081100",
+            "id": "u6sTPycqReU"
+        },
+        {
+            "code": "ACTUAL_TARGET_B010204",
+            "id": "ewYH6W9w5xR"
+        },
+        {
+            "code": "COST_BENEFIT_B010204",
+            "id": "e2Adv6Sd340"
+        },
+        {
+            "code": "ACTUAL_TARGET_B040300",
+            "id": "mOaAKtZbNhm"
+        },
+        {
+            "code": "ACTUAL_TARGET_B030701",
+            "id": "iOGy7xPpuzl"
+        },
+        {
+            "code": "COST_BENEFIT_B030701",
+            "id": "WseEcbkEqRM"
+        },
+        {
+            "code": "ACTUAL_TARGET_B010004",
+            "id": "yIOkHtPbZlA"
+        },
+        {
+            "code": "ACTUAL_TARGET_B080803",
+            "id": "GmcJrpyuwWz"
+        },
+        {
+            "code": "COST_BENEFIT_B080803",
+            "id": "q6iMJdjKYBR"
+        },
+        {
+            "code": "ACTUAL_TARGET_B030400",
+            "id": "GIeeBJwGIEY"
+        },
+        {
+            "code": "COST_BENEFIT_B030400",
+            "id": "OgiY9Dz3S1N"
+        },
+        {
+            "code": "ACTUAL_TARGET_P060800",
+            "id": "i2gVwUdOuuT"
+        },
+        {
+            "code": "ACTUAL_TARGET_P060106",
+            "id": "uAT61USe7Fj"
+        },
+        {
+            "code": "ACTUAL_TARGET_B030001",
+            "id": "yacJdzgHYxX"
+        },
+        {
+            "code": "ACTUAL_TARGET_B020200",
+            "id": "i01veyO4Cuw"
+        },
+        {
+            "code": "COST_BENEFIT_B020200",
+            "id": "Gob5qHAX60C"
+        },
+        {
+            "code": "ACTUAL_TARGET_B020208",
+            "id": "O4OE3h5q0MC"
+        },
+        {
+            "code": "COST_BENEFIT_B020208",
+            "id": "OAi2pvoZ43u"
+        },
+        {
+            "code": "ACTUAL_TARGET_B010202",
+            "id": "KuQNbQm437w"
+        },
+        {
+            "code": "COST_BENEFIT_B010202",
+            "id": "yqCS3arpz8N"
+        },
+        {
+            "code": "ACTUAL_TARGET_B030005",
+            "id": "G0kHKloW9mx"
+        },
+        {
+            "code": "ACTUAL_TARGET_B030004",
+            "id": "KONpVCT7O8N"
+        },
+        {
+            "code": "ACTUAL_TARGET_B050104",
+            "id": "ugOyBGGcVX2"
+        },
+        {
+            "code": "COST_BENEFIT_B050104",
+            "id": "u8oR6Wgdg5l"
+        },
+        {
+            "code": "ACTUAL_TARGET_B050103",
+            "id": "m8GQ3FLfaec"
+        },
+        {
+            "code": "COST_BENEFIT_B050103",
+            "id": "CO4QgVuqO7i"
+        },
+        {
+            "code": "ACTUAL_TARGET_B050100",
+            "id": "CuaKAC9uTJI"
+        },
+        {
+            "code": "COST_BENEFIT_B050100",
+            "id": "CmgXltxBvHU"
+        },
+        {
+            "code": "ACTUAL_TARGET_B050101",
+            "id": "aqctDZFH1h0"
+        },
+        {
+            "code": "COST_BENEFIT_B050101",
+            "id": "CWaMtiybalJ"
+        },
+        {
+            "code": "ACTUAL_TARGET_B050102",
+            "id": "iE0WFkhyQ0u"
+        },
+        {
+            "code": "COST_BENEFIT_B050102",
+            "id": "eCa408f6rQI"
+        },
+        {
+            "code": "ACTUAL_TARGET_B050105",
+            "id": "iQquw8D0sNR"
+        },
+        {
+            "code": "COST_BENEFIT_B050105",
+            "id": "ayYfMe912SX"
+        },
+        {
+            "code": "ACTUAL_TARGET_P060103",
+            "id": "SUSqZUB5wfU"
+        },
+        {
+            "code": "ACTUAL_TARGET_B100600",
+            "id": "S0UJSkDorkA"
+        },
+        {
+            "code": "COST_BENEFIT_B100600",
+            "id": "KaCmHJD0pnd"
+        },
+        {
+            "code": "ACTUAL_TARGET_P100700",
+            "id": "eKcTcWII8G7"
+        },
+        {
+            "code": "ACTUAL_TARGET_B070700",
+            "id": "OOIDqW7eQqr"
+        },
+        {
+            "code": "ACTUAL_TARGET_B040301",
+            "id": "yyGq1DmJ9NQ"
+        },
+        {
+            "code": "ACTUAL_TARGET_B060303",
+            "id": "akgrmQWNyV5"
+        },
+        {
+            "code": "COST_BENEFIT_B060303",
+            "id": "u2ey62rfWQy"
+        },
+        {
+            "code": "ACTUAL_TARGET_B080800",
+            "id": "mMWuHhqYUuH"
+        },
+        {
+            "code": "COST_BENEFIT_B080800",
+            "id": "qkqyqsbqOOx"
+        },
+        {
+            "code": "ACTUAL_TARGET_P060102",
+            "id": "KiozwqnIWxK"
+        },
+        {
+            "code": "ACTUAL_TARGET_P030502",
+            "id": "qeqQFfb13hy"
+        },
+        {
+            "code": "ACTUAL_TARGET_B100004",
+            "id": "OmGklCpGMfu"
+        },
+        {
+            "code": "ACTUAL_TARGET_B020212",
+            "id": "yMea9jkxwrF"
+        },
+        {
+            "code": "COST_BENEFIT_B020212",
+            "id": "KyETlYbLYg0"
+        },
+        {
+            "code": "ACTUAL_TARGET_B080805",
+            "id": "i4joOObumqN"
+        },
+        {
+            "code": "COST_BENEFIT_B080805",
+            "id": "O8o5BfuOSTB"
+        },
+        {
+            "code": "ACTUAL_TARGET_B010307",
+            "id": "C44AXhfgyge"
+        },
+        {
+            "code": "COST_BENEFIT_B010307",
+            "id": "CoQvG46u5vQ"
+        },
+        {
+            "code": "ACTUAL_TARGET_B030202",
+            "id": "WOQLVPi4yIW"
+        },
+        {
+            "code": "COST_BENEFIT_B030202",
+            "id": "mc4zzJVjmk1"
+        },
+        {
+            "code": "ACTUAL_TARGET_P060105",
+            "id": "KkA3NMjeNGd"
+        },
+        {
+            "code": "ACTUAL_TARGET_B020211",
+            "id": "qgC0pOTJrKR"
+        },
+        {
+            "code": "COST_BENEFIT_B020211",
+            "id": "eG0mt9VL1Aw"
+        },
+        {
+            "code": "ACTUAL_TARGET_B060300",
+            "id": "uYg9TzMPhds"
+        },
+        {
+            "code": "COST_BENEFIT_B060300",
+            "id": "eSIdr6ERa61"
+        },
+        {
+            "code": "ACTUAL_TARGET_P030301",
+            "id": "uGSun3Hs9Fs"
+        },
+        {
+            "code": "ACTUAL_TARGET_P030302",
+            "id": "qKIopIKD8XT"
+        },
+        {
+            "code": "ACTUAL_TARGET_P030312",
+            "id": "OwsJR09UTtR"
+        },
+        {
+            "code": "ACTUAL_TARGET_P030310",
+            "id": "yiOkRERiSnx"
+        },
+        {
+            "code": "ACTUAL_TARGET_P030313",
+            "id": "q0YdrcesNPe"
+        },
+        {
+            "code": "ACTUAL_TARGET_P030311",
+            "id": "mqWagIrMoM1"
+        },
+        {
+            "code": "ACTUAL_TARGET_P030308",
+            "id": "Wy8FcFknctf"
+        },
+        {
+            "code": "ACTUAL_TARGET_P030307",
+            "id": "ycKgOLvyN8U"
+        },
+        {
+            "code": "ACTUAL_TARGET_P030303",
+            "id": "qEUVMlQCSki"
+        },
+        {
+            "code": "ACTUAL_TARGET_P030304",
+            "id": "uqqQzTX0D6w"
+        },
+        {
+            "code": "ACTUAL_TARGET_P030306",
+            "id": "eSABfWGT7Tt"
+        },
+        {
+            "code": "ACTUAL_TARGET_P030305",
+            "id": "ukECIX45rqQ"
+        },
+        {
+            "code": "ACTUAL_TARGET_P030309",
+            "id": "KOZh48R8uoH"
+        },
+        {
+            "code": "ACTUAL_TARGET_P120200",
+            "id": "KSu8HfCr99y"
+        },
+        {
+            "code": "ACTUAL_TARGET_P070004",
+            "id": "iyEpv7Nx6CG"
+        },
+        {
+            "code": "ACTUAL_TARGET_P060810",
+            "id": "uUKEW4pxQ4d"
+        },
+        {
+            "code": "ACTUAL_TARGET_P070400",
+            "id": "KcW2l2uB8S7"
+        },
+        {
+            "code": "ACTUAL_TARGET_P030008",
+            "id": "Kye4ay1rIak"
+        },
+        {
+            "code": "ACTUAL_TARGET_P081200",
+            "id": "uYIF5ZrMOOo"
+        },
+        {
+            "code": "ACTUAL_TARGET_P060808",
+            "id": "qaIXC62YHWY"
+        },
+        {
+            "code": "ACTUAL_TARGET_P030603",
+            "id": "We2r9FZaTNI"
+        },
+        {
+            "code": "ACTUAL_TARGET_P070600",
+            "id": "K6ipXoSOmt2"
+        },
+        {
+            "code": "ACTUAL_TARGET_P010002",
+            "id": "mumOO4Pvvt5"
+        },
+        {
+            "code": "ACTUAL_TARGET_P010111",
+            "id": "awzLbPuvkPg"
+        },
+        {
+            "code": "ACTUAL_TARGET_P020102",
+            "id": "SKKHQBIaMC7"
+        },
+        {
+            "code": "ACTUAL_TARGET_P100105",
+            "id": "C2C26KScq8o"
+        },
+        {
+            "code": "ACTUAL_TARGET_P100203",
+            "id": "GqApF0xM1Lp"
+        },
+        {
+            "code": "ACTUAL_TARGET_P070900",
+            "id": "qgGwMTqEq4d"
+        },
+        {
+            "code": "ACTUAL_TARGET_P070103",
+            "id": "mkSEAPFPvab"
+        },
+        {
+            "code": "ACTUAL_TARGET_P070102",
+            "id": "CO829gIxf1B"
+        },
+        {
+            "code": "ACTUAL_TARGET_P100704",
+            "id": "KaeI2dEPPnQ"
+        },
+        {
+            "code": "ACTUAL_TARGET_P100701",
+            "id": "yoYRjpuh5XD"
+        },
+        {
+            "code": "ACTUAL_TARGET_P081002",
+            "id": "yYO5resUg3t"
+        },
+        {
+            "code": "ACTUAL_TARGET_P080503",
+            "id": "ikIlbn8UX8F"
+        },
+        {
+            "code": "ACTUAL_TARGET_P100702",
+            "id": "KaIhnjSwn4R"
+        },
+        {
+            "code": "ACTUAL_TARGET_P010400",
+            "id": "OoZs4zOZElD"
+        },
+        {
+            "code": "ACTUAL_TARGET_P020305",
+            "id": "qUmOpk9AFo7"
+        },
+        {
+            "code": "ACTUAL_TARGET_P030802",
+            "id": "a0yxmAFB36l"
+        },
+        {
+            "code": "ACTUAL_TARGET_P020306",
+            "id": "GcIphQryA24"
+        },
+        {
+            "code": "ACTUAL_TARGET_P020308",
+            "id": "aou6Q6T3m03"
+        },
+        {
+            "code": "ACTUAL_TARGET_P020307",
+            "id": "qEobhlKDN37"
+        },
+        {
+            "code": "ACTUAL_TARGET_P080505",
+            "id": "eUILy6xBhGb"
+        },
+        {
+            "code": "ACTUAL_TARGET_P080500",
+            "id": "Cus1hL1lCOe"
+        },
+        {
+            "code": "ACTUAL_TARGET_P081000",
+            "id": "qiwjpoHZH7d"
+        },
+        {
+            "code": "ACTUAL_TARGET_P020310",
+            "id": "mG8nxE8wkcs"
+        },
+        {
+            "code": "ACTUAL_TARGET_P050204",
+            "id": "eEcXkpIqBXZ"
+        },
+        {
+            "code": "ACTUAL_TARGET_P050203",
+            "id": "yGemH2hdLCM"
+        },
+        {
+            "code": "ACTUAL_TARGET_P020302",
+            "id": "mIgVmLMHCtj"
+        },
+        {
+            "code": "ACTUAL_TARGET_P050200",
+            "id": "OoKQ0Kc2MKO"
+        },
+        {
+            "code": "ACTUAL_TARGET_P081003",
+            "id": "C2mQuazXShw"
+        },
+        {
+            "code": "ACTUAL_TARGET_P050201",
+            "id": "m4PGZZOl6Os"
+        },
+        {
+            "code": "ACTUAL_TARGET_P020309",
+            "id": "Gs8li5LpXrE"
+        },
+        {
+            "code": "ACTUAL_TARGET_P030804",
+            "id": "my6xLWNouGA"
+        },
+        {
+            "code": "ACTUAL_TARGET_P020304",
+            "id": "um4tjIsTngP"
+        },
+        {
+            "code": "ACTUAL_TARGET_P030803",
+            "id": "u4Axfmi8dt4"
+        },
+        {
+            "code": "ACTUAL_TARGET_P030801",
+            "id": "iAYfqLFUcnR"
+        },
+        {
+            "code": "ACTUAL_TARGET_P020300",
+            "id": "K4sH0aQDdeL"
+        },
+        {
+            "code": "ACTUAL_TARGET_P080900",
+            "id": "yyG0kswH4E5"
+        },
+        {
+            "code": "ACTUAL_TARGET_P050202",
+            "id": "W0AdDg4kKiL"
+        },
+        {
+            "code": "ACTUAL_TARGET_P020312",
+            "id": "Og0e7ViG5yT"
+        },
+        {
+            "code": "ACTUAL_TARGET_P020311",
+            "id": "yYWEdY7XXB8"
+        },
+        {
+            "code": "ACTUAL_TARGET_P080700",
+            "id": "aa2b5rlOoYD"
+        },
+        {
+            "code": "ACTUAL_TARGET_P100703",
+            "id": "GYghyAJ0R9X"
+        },
+        {
+            "code": "ACTUAL_TARGET_P050205",
+            "id": "CQ4qRAYNugB"
+        },
+        {
+            "code": "ACTUAL_TARGET_P081001",
+            "id": "yIWmOFnLJ5m"
+        },
+        {
+            "code": "ACTUAL_TARGET_P080501",
+            "id": "iG2h0x9mrrG"
+        },
+        {
+            "code": "ACTUAL_TARGET_P080504",
+            "id": "ms0t17sYh8t"
+        },
+        {
+            "code": "ACTUAL_TARGET_P080502",
+            "id": "G2kt4n6sYpK"
+        },
+        {
+            "code": "ACTUAL_TARGET_P020301",
+            "id": "C6iQkCIb3SE"
+        },
+        {
+            "code": "ACTUAL_TARGET_P020303",
+            "id": "CoisprDIrV4"
+        },
+        {
+            "code": "ACTUAL_TARGET_P030800",
+            "id": "CwewjwY8kM6"
+        },
+        {
+            "code": "ACTUAL_TARGET_P020105",
+            "id": "GwMFHuy7zzk"
+        },
+        {
+            "code": "ACTUAL_TARGET_P100304",
+            "id": "OkRrxWEmeoC"
+        },
+        {
+            "code": "ACTUAL_TARGET_B100003",
+            "id": "O4ymJIA6h04"
+        },
+        {
+            "code": "ACTUAL_TARGET_P100005",
+            "id": "ikcRRsUIAaN"
+        },
+        {
+            "code": "ACTUAL_TARGET_P100205",
+            "id": "CsobvjbQuNQ"
+        },
+        {
+            "code": "ACTUAL_TARGET_P100107",
+            "id": "CGIZ5iXpFG1"
+        },
+        {
+            "code": "ACTUAL_TARGET_P030602",
+            "id": "KcMFIKF389O"
+        },
+        {
+            "code": "ACTUAL_TARGET_P030601",
+            "id": "iOSiI8fmwvj"
+        },
+        {
+            "code": "ACTUAL_TARGET_P100102",
+            "id": "mUygZGybwKq"
+        },
+        {
+            "code": "ACTUAL_TARGET_P100101",
+            "id": "mgGMopVhxZE"
+        },
+        {
+            "code": "ACTUAL_TARGET_P100402",
+            "id": "uYGoFYHqxUN"
+        },
+        {
+            "code": "ACTUAL_TARGET_P020100",
+            "id": "GC6L6ZDiCLM"
+        },
+        {
+            "code": "ACTUAL_TARGET_P110103",
+            "id": "SYCIGakmpBI"
+        },
+        {
+            "code": "ACTUAL_TARGET_P020107",
+            "id": "C02nPf86Okg"
+        },
+        {
+            "code": "ACTUAL_TARGET_P100403",
+            "id": "WA3xRZDdIRB"
+        },
+        {
+            "code": "ACTUAL_TARGET_P100400",
+            "id": "qW6b6ZRfXA5"
+        },
+        {
+            "code": "ACTUAL_TARGET_P100201",
+            "id": "KiMDCv9gMDv"
+        },
+        {
+            "code": "ACTUAL_TARGET_P030605",
+            "id": "mGMFIofAWHg"
+        },
+        {
+            "code": "ACTUAL_TARGET_P100202",
+            "id": "GWIrYQM8C3K"
+        },
+        {
+            "code": "ACTUAL_TARGET_P010106",
+            "id": "iMCiFXzbIF4"
+        },
+        {
+            "code": "ACTUAL_TARGET_P010101",
+            "id": "u404ICrBKj3"
+        },
+        {
+            "code": "ACTUAL_TARGET_P060807",
+            "id": "mmO08ZfTGUK"
+        },
+        {
+            "code": "ACTUAL_TARGET_P110102",
+            "id": "Sg0aXfzUXJf"
+        },
+        {
+            "code": "ACTUAL_TARGET_P020104",
+            "id": "WkumJlHVj6s"
+        },
+        {
+            "code": "ACTUAL_TARGET_P010102",
+            "id": "GoS43elkg5M"
+        },
+        {
+            "code": "ACTUAL_TARGET_P040206",
+            "id": "OqYV16jdLAT"
+        },
+        {
+            "code": "ACTUAL_TARGET_P060805",
+            "id": "WeC3yUE51bf"
+        },
+        {
+            "code": "ACTUAL_TARGET_P060814",
+            "id": "W0y2RvbR0de"
+        },
+        {
+            "code": "ACTUAL_TARGET_P010107",
+            "id": "u2o1NJTMKUm"
+        },
+        {
+            "code": "ACTUAL_TARGET_P100100",
+            "id": "qG2NEEmdWHz"
+        },
+        {
+            "code": "ACTUAL_TARGET_P060804",
+            "id": "yagFkcydXNT"
+        },
+        {
+            "code": "ACTUAL_TARGET_P040204",
+            "id": "WaAPECAsQP1"
+        },
+        {
+            "code": "ACTUAL_TARGET_P060802",
+            "id": "mcQzOPPWUlD"
+        },
+        {
+            "code": "ACTUAL_TARGET_P010100",
+            "id": "eYmeRzhBFV4"
+        },
+        {
+            "code": "ACTUAL_TARGET_P060806",
+            "id": "qa80vVrCjYN"
+        },
+        {
+            "code": "ACTUAL_TARGET_P010103",
+            "id": "GG2PLLneSzf"
+        },
+        {
+            "code": "ACTUAL_TARGET_P040203",
+            "id": "eUkXqsgk3Nj"
+        },
+        {
+            "code": "ACTUAL_TARGET_P030606",
+            "id": "ym6DyR8eFOL"
+        },
+        {
+            "code": "ACTUAL_TARGET_P020101",
+            "id": "C4oZsMaVKyL"
+        },
+        {
+            "code": "ACTUAL_TARGET_P020103",
+            "id": "uUonzaa3n8d"
+        },
+        {
+            "code": "ACTUAL_TARGET_P040205",
+            "id": "GI0uN5tzlDv"
+        },
+        {
+            "code": "ACTUAL_TARGET_P060803",
+            "id": "qek7QPL2kKz"
+        },
+        {
+            "code": "ACTUAL_TARGET_P040200",
+            "id": "mKoPjOvnDVZ"
+        },
+        {
+            "code": "ACTUAL_TARGET_P060809",
+            "id": "uQKosMfAuW4"
+        },
+        {
+            "code": "ACTUAL_TARGET_P010112",
+            "id": "yGJpNm5qnxI"
+        },
+        {
+            "code": "ACTUAL_TARGET_P060812",
+            "id": "WAGqHvFZfvW"
+        },
+        {
+            "code": "ACTUAL_TARGET_P010104",
+            "id": "iw87EPHXiYP"
+        },
+        {
+            "code": "ACTUAL_TARGET_P010105",
+            "id": "K2Cq9YsANFr"
+        },
+        {
+            "code": "ACTUAL_TARGET_P060811",
+            "id": "uciE35qAArd"
+        },
+        {
+            "code": "ACTUAL_TARGET_P010108",
+            "id": "OSolmXhmkIq"
+        },
+        {
+            "code": "ACTUAL_TARGET_P100104",
+            "id": "G0mAeXucSVd"
+        },
+        {
+            "code": "ACTUAL_TARGET_P100401",
+            "id": "yqGAlgQcMGC"
+        },
+        {
+            "code": "ACTUAL_TARGET_P060801",
+            "id": "yshJuZfN7WJ"
+        },
+        {
+            "code": "ACTUAL_TARGET_P100200",
+            "id": "C4W8uLCwHH2"
+        },
+        {
+            "code": "ACTUAL_TARGET_P020106",
+            "id": "mIagFWuWSt4"
+        },
+        {
+            "code": "ACTUAL_TARGET_P110101",
+            "id": "ikc9w19TG4R"
+        },
+        {
+            "code": "ACTUAL_TARGET_P060813",
+            "id": "qmctJOgcpYf"
+        },
+        {
+            "code": "ACTUAL_TARGET_P030604",
+            "id": "uIsz63cGrRy"
+        },
+        {
+            "code": "ACTUAL_TARGET_P030600",
+            "id": "eIG2B6kGPPN"
+        },
+        {
+            "code": "ACTUAL_TARGET_P100303",
+            "id": "eopak6OTUjA"
+        },
+        {
+            "code": "ACTUAL_TARGET_P100103",
+            "id": "WCi2Z1jW6WF"
+        },
+        {
+            "code": "ACTUAL_TARGET_P070002",
+            "id": "ycO1VRq2dM2"
+        },
+        {
+            "code": "ACTUAL_TARGET_P061100",
+            "id": "uOOm6Bt4NDR"
+        },
+        {
+            "code": "ACTUAL_TARGET_P040208",
+            "id": "q4WElwVi5Nv"
+        },
+        {
+            "code": "ACTUAL_TARGET_P060500",
+            "id": "qI4YvbhzvJy"
+        },
+        {
+            "code": "ACTUAL_TARGET_P060700",
+            "id": "e4OM21zwLT6"
+        },
+        {
+            "code": "ACTUAL_TARGET_P100900",
+            "id": "WmGZ5hmzytY"
+        },
+        {
+            "code": "ACTUAL_TARGET_P030501",
+            "id": "SIKShvxagqm"
+        },
+        {
+            "code": "ACTUAL_TARGET_P030500",
+            "id": "SI2f9IGzARv"
+        },
+        {
+            "code": "ACTUAL_TARGET_P030300",
+            "id": "ygeaI39ahZN"
+        },
+        {
+            "code": "ACTUAL_TARGET_P100300",
+            "id": "K2ADN2EmEmr"
+        },
+        {
+            "code": "ACTUAL_TARGET_P040201",
+            "id": "WI8ViUsugQG"
+        },
+        {
+            "code": "ACTUAL_TARGET_B080600",
+            "id": "GMgtwX65sO0"
+        },
+        {
+            "code": "COST_BENEFIT_B080600",
+            "id": "SqySGdmledP"
+        },
+        {
+            "code": "ACTUAL_TARGET_B010302",
+            "id": "O6esa8Ab7yp"
+        },
+        {
+            "code": "COST_BENEFIT_B010302",
+            "id": "WkWm8Qdq5xO"
+        },
+        {
+            "code": "ACTUAL_TARGET_B030108",
+            "id": "euwHmZYqe2s"
+        },
+        {
+            "code": "COST_BENEFIT_B030108",
+            "id": "eaq2LP7VJCc"
+        },
+        {
+            "code": "ACTUAL_TARGET_P040506",
+            "id": "Sy4EZxKi36p"
+        },
+        {
+            "code": "ACTUAL_TARGET_P040104",
+            "id": "qMOEhRk1DEo"
+        },
+        {
+            "code": "ACTUAL_TARGET_B060302",
+            "id": "yOqQceVypsg"
+        },
+        {
+            "code": "COST_BENEFIT_B060302",
+            "id": "m4Cc50ETeRz"
+        },
+        {
+            "code": "ACTUAL_TARGET_P040106",
+            "id": "ius50xFld06"
+        },
+        {
+            "code": "ACTUAL_TARGET_P060001",
+            "id": "SY8Z4rBR9KG"
+        },
+        {
+            "code": "ACTUAL_TARGET_P040505",
+            "id": "Ks8NwVC7KpQ"
+        },
+        {
+            "code": "ACTUAL_TARGET_P040504",
+            "id": "ueO4ESx6tBX"
+        },
+        {
+            "code": "ACTUAL_TARGET_B020207",
+            "id": "WMcbfM7c4RP"
+        },
+        {
+            "code": "COST_BENEFIT_B020207",
+            "id": "Og0m1YOm2hI"
+        },
+        {
+            "code": "ACTUAL_TARGET_B030107",
+            "id": "aS4cNdggotQ"
+        },
+        {
+            "code": "COST_BENEFIT_B030107",
+            "id": "eMayDGlqotx"
+        },
+        {
+            "code": "ACTUAL_TARGET_B070800",
+            "id": "m68LzR6ho7V"
+        },
+        {
+            "code": "COST_BENEFIT_B070800",
+            "id": "iCAXurJTCDi"
+        },
+        {
+            "code": "ACTUAL_TARGET_B100002",
+            "id": "aGOioMb12gX"
+        },
+        {
+            "code": "ACTUAL_TARGET_B030103",
+            "id": "KwuGf9NquqC"
+        },
+        {
+            "code": "COST_BENEFIT_B030103",
+            "id": "SYWS28VS4M7"
+        },
+        {
+            "code": "ACTUAL_TARGET_B030104",
+            "id": "O6sX9RXVacg"
+        },
+        {
+            "code": "COST_BENEFIT_B030104",
+            "id": "GawJQFMhrQj"
+        },
+        {
+            "code": "ACTUAL_TARGET_B010304",
+            "id": "uMEZxgx5GZZ"
+        },
+        {
+            "code": "COST_BENEFIT_B010304",
+            "id": "SsEPlY2njFe"
+        },
+        {
+            "code": "ACTUAL_TARGET_B080802",
+            "id": "KushWn9p5ZK"
+        },
+        {
+            "code": "COST_BENEFIT_B080802",
+            "id": "C26JQGcgXuz"
+        },
+        {
+            "code": "ACTUAL_TARGET_B010205",
+            "id": "Cyus0WpfqB3"
+        },
+        {
+            "code": "COST_BENEFIT_B010205",
+            "id": "GU0SxhL32qP"
+        },
+        {
+            "code": "ACTUAL_TARGET_B030106",
+            "id": "OskNJCwHjVb"
+        },
+        {
+            "code": "COST_BENEFIT_B030106",
+            "id": "C8srcVE0pPR"
+        },
+        {
+            "code": "ACTUAL_TARGET_B030105",
+            "id": "Okd9tAwbO6t"
+        },
+        {
+            "code": "COST_BENEFIT_B030105",
+            "id": "mUOmMUuE5ab"
+        },
+        {
+            "code": "ACTUAL_TARGET_B061000",
+            "id": "ug0GPFisudW"
+        },
+        {
+            "code": "COST_BENEFIT_B061000",
+            "id": "eEKe9akKXT2"
+        },
+        {
+            "code": "ACTUAL_TARGET_B061001",
+            "id": "SGU9TdCk6FA"
+        },
+        {
+            "code": "ACTUAL_TARGET_B061002",
+            "id": "SiWmmxZKRNL"
+        },
+        {
+            "code": "ACTUAL_TARGET_B080100",
+            "id": "u2qiwf35W2A"
+        },
+        {
+            "code": "COST_BENEFIT_B080100",
+            "id": "KkIxF1AQfqP"
+        },
+        {
+            "code": "ACTUAL_TARGET_B080102",
+            "id": "GIYFDj5kAbV"
+        },
+        {
+            "code": "COST_BENEFIT_B080102",
+            "id": "KwMnt6OB4Pi"
+        },
+        {
+            "code": "ACTUAL_TARGET_B080101",
+            "id": "C6cb6Pgugl3"
+        },
+        {
+            "code": "COST_BENEFIT_B080101",
+            "id": "KcgkSC8DNnp"
+        },
+        {
+            "code": "ACTUAL_TARGET_B080103",
+            "id": "WmsxTf1IarU"
+        },
+        {
+            "code": "COST_BENEFIT_B080103",
+            "id": "qe4J5Foklnc"
+        },
+        {
+            "code": "ACTUAL_TARGET_B080300",
+            "id": "GW2Ju7PNV1R"
+        },
+        {
+            "code": "COST_BENEFIT_B080300",
+            "id": "GaWsRnlCMBD"
+        },
+        {
+            "code": "ACTUAL_TARGET_B080200",
+            "id": "S0hhVChlG1a"
+        },
+        {
+            "code": "COST_BENEFIT_B080200",
+            "id": "aE08TkrEUA8"
+        },
+        {
+            "code": "ACTUAL_TARGET_B020201",
+            "id": "uWIFJJactlQ"
+        },
+        {
+            "code": "COST_BENEFIT_B020201",
+            "id": "KksV0OyZKOq"
+        },
+        {
+            "code": "ACTUAL_TARGET_P100204",
+            "id": "iIcPu09UIAf"
+        },
+        {
+            "code": "ACTUAL_TARGET_P100302",
+            "id": "C4eWnbfGOTe"
+        },
+        {
+            "code": "ACTUAL_TARGET_B080400",
+            "id": "WSajMa9nCGm"
+        },
+        {
+            "code": "COST_BENEFIT_B080400",
+            "id": "m872QeL9U5d"
+        },
+        {
+            "code": "ACTUAL_TARGET_B020203",
+            "id": "aKY3tKyL3Yl"
+        },
+        {
+            "code": "COST_BENEFIT_B020203",
+            "id": "iuUTJtEhbKu"
+        },
+        {
+            "code": "ACTUAL_TARGET_P060104",
+            "id": "G6Al1JqCJWw"
+        },
+        {
+            "code": "ACTUAL_TARGET_B030700",
+            "id": "KGYDGtr9uRP"
+        },
+        {
+            "code": "COST_BENEFIT_B030700",
+            "id": "CY427KiPJZk"
+        },
+        {
+            "code": "ACTUAL_TARGET_B039999",
+            "id": "W47fJMHjmZy"
+        },
+        {
+            "code": "ACTUAL_TARGET_B030100",
+            "id": "q4qyWk9Q1xL"
+        },
+        {
+            "code": "COST_BENEFIT_B030100",
+            "id": "yacni9KfLyl"
+        },
+        {
+            "code": "ACTUAL_TARGET_B030200",
+            "id": "qeorAy157Qo"
+        },
+        {
+            "code": "COST_BENEFIT_B030200",
+            "id": "OAOkX3T2Mvh"
+        },
+        {
+            "code": "ACTUAL_TARGET_B030109",
+            "id": "Ogyw5qF7oXy"
+        },
+        {
+            "code": "COST_BENEFIT_B030109",
+            "id": "SKQdvH2ONiM"
+        },
+        {
+            "code": "ACTUAL_TARGET_P040507",
+            "id": "i629e6Gyepz"
+        },
+        {
+            "code": "ACTUAL_TARGET_P010109",
+            "id": "uowl0RbRykP"
+        },
+        {
+            "code": "ACTUAL_TARGET_P080901",
+            "id": "CgZiKmsjJWg"
+        },
+        {
+            "code": "ACTUAL_TARGET_P080903",
+            "id": "y2srC5MMaM9"
+        },
+        {
+            "code": "ACTUAL_TARGET_P080904",
+            "id": "qWoVIOoqIkm"
+        },
+        {
+            "code": "ACTUAL_TARGET_P080905",
+            "id": "SOaU2NPEne6"
+        },
+        {
+            "code": "ACTUAL_TARGET_P080902",
+            "id": "CcCcW1VEXio"
+        },
+        {
+            "code": "ACTUAL_TARGET_P110100",
+            "id": "akoP7QxVkIr"
+        },
+        {
+            "code": "ACTUAL_TARGET_P070101",
+            "id": "em6G5aK5M7c"
+        },
+        {
+            "code": "ACTUAL_TARGET_B120102",
+            "id": "SkkND1ivYm7"
+        },
+        {
+            "code": "COST_BENEFIT_B120102",
+            "id": "e065isMZfhP"
+        },
+        {
+            "code": "ACTUAL_TARGET_B120104",
+            "id": "CYmI6LdsXgV"
+        },
+        {
+            "code": "COST_BENEFIT_B120104",
+            "id": "uwgfOunxnC2"
+        },
+        {
+            "code": "ACTUAL_TARGET_B120100",
+            "id": "ucwFGDlc4nl"
+        },
+        {
+            "code": "COST_BENEFIT_B120100",
+            "id": "Ci4vUp9RFwn"
+        },
+        {
+            "code": "ACTUAL_TARGET_B120103",
+            "id": "Ge4hLii2Yio"
+        },
+        {
+            "code": "COST_BENEFIT_B120103",
+            "id": "GUIL8ab7vcX"
+        },
+        {
+            "code": "ACTUAL_TARGET_B120101",
+            "id": "eswJoIrFZfj"
+        },
+        {
+            "code": "COST_BENEFIT_B120101",
+            "id": "C4sFP387x0n"
+        },
+        {
+            "code": "ACTUAL_TARGET_B110200",
+            "id": "KI2XxARZ3v6"
+        },
+        {
+            "code": "COST_BENEFIT_B110200",
+            "id": "q8Md4CSI8z6"
+        },
+        {
+            "code": "ACTUAL_TARGET_B019999",
+            "id": "iYazJstuDg6"
+        }
+    ],
+    "attributes": {
+        "countingMethod": {
+            "code": "PM_COUNTING_METHOD",
+            "id": "OOi8Yw1TrmS"
+        },
+        "createdByApp": {
+            "code": "PM_CREATED_BY_PROJECT_MONITORING",
+            "id": "mgCKcJuP5n0"
+        },
+        "mainSector": {
+            "code": "PM_MAIN_SECTOR",
+            "id": "qqqopVltY52"
+        },
+        "orgUnitProject": {
+            "code": "PM_ORGUNIT_PROJECT_ID",
+            "id": "qgSqj6sBF7j"
+        },
+        "pairedDataElement": {
+            "code": "PM_PAIRED_DE",
+            "id": "qeayiIiTONg"
+        },
+        "projectDashboard": {
+            "code": "PM_PROJECT_DASHBOARD_ID",
+            "id": "aywduilEjPQ"
+        }
+    },
+    "categories": {
+        "targetActual": {
+            "code": "ACTUAL_TARGET",
+            "id": "GIIHAr9BzzO",
+            "categoryOptions": [
+                {
+                    "code": "TARGET",
+                    "id": "imyqCWQ229K"
+                },
+                {
+                    "code": "ACTUAL",
+                    "id": "eWeQoOlAcxV"
+                }
+            ]
+        },
+        "gender": {
+            "code": "GENDER",
+            "id": "Kyg1O6YEGa9",
+            "categoryOptions": [
+                {
+                    "code": "MALE",
+                    "id": "qk2FihwV6IL"
+                },
+                {
+                    "code": "FEMALE",
+                    "id": "yW2hYVS3S4u"
+                }
+            ]
+        },
+        "newRecurring": {
+            "code": "NEW_RECURRING",
+            "id": "a0Cy1qwUuZv",
+            "categoryOptions": [
+                {
+                    "code": "NEW",
+                    "id": "S2y8dcmR2kD"
+                },
+                {
+                    "code": "RECURRING",
+                    "id": "CyILz2yY8ey"
+                }
+            ]
+        }
+    },
+    "categoryCombos": {
+        "targetActual": {
+            "code": "ACTUAL_TARGET",
+            "id": "qAgB0mD1wC6",
+            "categoryOptionCombos": [
+                {
+                    "id": "zbHz6DMZukO",
+                    "displayName": "Target"
+                },
+                {
+                    "id": "OYYrw87RnAu",
+                    "displayName": "Actual"
+                }
+            ]
+        },
+        "default": {
+            "code": "default",
+            "id": "bjDvmb4bfuf",
+            "categoryOptionCombos": [
+                {
+                    "id": "HllvX50cXC0",
+                    "displayName": "default"
+                }
+            ]
+        },
+        "genderNewRecurring": {
+            "code": "GENDER_NEW_RECURRING",
+            "id": "GKWiemQPU5U",
+            "categoryOptionCombos": [
+                {
+                    "id": "MWVFqIu6s0C",
+                    "displayName": "Male, Recurring"
+                },
+                {
+                    "id": "mESy6ndYTwW",
+                    "displayName": "Male, New"
+                },
+                {
+                    "id": "Q5IlmX3qedn",
+                    "displayName": "Female, Recurring"
+                },
+                {
+                    "id": "MZyzwIh5xGW",
+                    "displayName": "Female, New"
+                }
+            ]
+        }
+    },
+    "categoryOptions": {
+        "actual": {
+            "code": "ACTUAL",
+            "id": "eWeQoOlAcxV"
+        },
+        "female": {
+            "code": "FEMALE",
+            "id": "yW2hYVS3S4u"
+        },
+        "male": {
+            "code": "MALE",
+            "id": "qk2FihwV6IL"
+        },
+        "new": {
+            "code": "NEW",
+            "id": "S2y8dcmR2kD"
+        },
+        "recurring": {
+            "code": "RECURRING",
+            "id": "CyILz2yY8ey"
+        },
+        "target": {
+            "code": "TARGET",
+            "id": "imyqCWQ229K"
+        }
+    },
+    "legendSets": {
+        "achieved": {
+            "code": "ACTUAL_TARGET_ACHIEVED",
+            "id": "yoAt108kUFm"
+        }
+    },
+    "dataApprovalWorkflows": {
+        "project": {
+            "code": "PM_PROJECT",
+            "id": "CCy0oNyvlV1"
+        }
+    },
+    "countries": [
+        {
+            "id": "eu2XF73JOzl",
+            "displayName": "Bahamas"
+        },
+        {
+            "id": "iiqkef8z9uo",
+            "displayName": "Bolivia"
+        },
+        {
+            "id": "iwiydbbuiUs",
+            "displayName": "Cambodia"
+        },
+        {
+            "id": "aSgRoxyXeX8",
+            "displayName": "Colombia"
+        },
+        {
+            "id": "WOUvEv46NeR",
+            "displayName": "DRC"
+        },
+        {
+            "id": "Sm8vKiwUPie",
+            "displayName": "Ethiopia"
+        },
+        {
+            "id": "ugQ7vNtTtdY",
+            "displayName": "Haiti"
+        },
+        {
+            "id": "OIjEJaV8fWc",
+            "displayName": "Iraq"
+        },
+        {
+            "id": "So8QA5eT1Oy",
+            "displayName": "Kenya"
+        },
+        {
+            "id": "S6mKzbkq02p",
+            "displayName": "Liberia"
+        },
+        {
+            "id": "muOqfsK4cMw",
+            "displayName": "Myanmar"
+        },
+        {
+            "id": "WmczKCGK8FQ",
+            "displayName": "Niger"
+        },
+        {
+            "id": "OKQDUzFwGoC",
+            "displayName": "Philippines"
+        },
+        {
+            "id": "Ww8TTOdRxf7",
+            "displayName": "South Sudan"
+        },
+        {
+            "id": "uAsAoB72yOf",
+            "displayName": "Uganda"
+        },
+        {
+            "id": "aqWKqMN5pUb",
+            "displayName": "Vietnam"
+        }
+    ]
+}
