@@ -276,6 +276,7 @@ export default class ProjectDb {
             sections: sections.map(section => ({ id: section.id, code: section.code })),
             dataSetElements,
             code: `${orgUnit.id}_${baseDataSet.code}`,
+            publicAccess: "rwrw----", // TODO: Add real permissions when defined
         };
 
         return { dataSets: [dataSet], sections };

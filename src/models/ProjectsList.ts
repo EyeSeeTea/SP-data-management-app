@@ -82,9 +82,10 @@ export default class ProjectsList {
             if (!dataSet) {
                 return { ...orgUnit, sectors: [] };
             } else {
-                const sectors = dataSet.sections.map(
-                    section => sectorsByCode[getSectorCodeFromSectionCode(section.code)]
-                );
+                const sectors = _(dataSet.sections)
+                    .map(section => sectorsByCode[getSectorCodeFromSectionCode(section.code)])
+                    .compact()
+                    .value();
                 return { ...orgUnit, sectors };
             }
         });

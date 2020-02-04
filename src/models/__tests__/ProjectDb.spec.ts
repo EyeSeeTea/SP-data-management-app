@@ -324,6 +324,7 @@ const expectedMetadataPost = {
     dataSets: [
         {
             id: "SCS4Dusnfdd",
+            publicAccess: "rwrw----",
             workflow: { id: "CCy0oNyvlV1" },
             description: "",
             periodType: "Monthly",
@@ -471,6 +472,7 @@ const expectedMetadataPost = {
         },
         {
             id: "CwUxT9UIX3z",
+            publicAccess: "rwrw----",
             description: "",
             periodType: "Monthly",
             workflow: { id: "CCy0oNyvlV1" },
@@ -621,6 +623,7 @@ const expectedMetadataPost = {
         {
             id: "WgOMVlwSV2i",
             name: "MyProject",
+            publicAccess: "rw------",
             dashboardItems: [
                 {
                     id: "ys0CVedHirZ",

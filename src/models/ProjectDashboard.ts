@@ -58,6 +58,7 @@ export default class ProjectDashboard {
         ];
         const dashboard: PartialPersistedModel<D2Dashboard> = {
             id: getUid("dashboard", project.uid),
+            publicAccess: "rw------",
             name: project.name,
             dashboardItems: items,
         };

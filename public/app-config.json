@@ -8,7 +8,7 @@
         "createIssue": true,
         "sendToDhis2UserGroups": ["Administrators"],
         "issues": {
-            "repository": "tokland/feedback-test",
+            "repository": "EyeSeeTea/SP-project-monitoring-app",
             "title": "[User feedback] {title}",
             "body": "## dhis2\n\nUsername: {username}\n\n{body}"
         },
@@ -16,6 +16,8 @@
             "repository": "EyeSeeTeaBotTest/snapshots",
             "branch": "master"
         },
-        "feedbackOptions": {}
+        "feedbackOptions": {
+            "descriptionTemplate": "## Summary\n\n## Steps to reproduce\n\n## Actual results\n\n## Expected results\n\n\n---\nNote: Screenshots on sections dashboard and actual/target data entry will not be included, try to provide a detailed description of the problem."
+        }
     }
 }

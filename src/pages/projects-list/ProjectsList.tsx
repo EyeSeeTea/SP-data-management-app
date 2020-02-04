@@ -213,10 +213,11 @@ const ProjectsList: React.FC = () => {
         getProjects(sorting, { page: 1 });
     }, [search, filter]);
 
-    const filterOptions = React.useMemo(
-        () => ({ countries: config.countries, sectors: config.sectors }),
-        [config]
-    );
+    const filterOptions = React.useMemo(() => {
+        const userOrgUnits = currentUser.getOrgUnits();
+        const countriesForUser = _.intersectionBy(config.countries, userOrgUnits, ou => ou.id);
+        return { countries: countriesForUser, sectors: config.sectors };
+    }, [currentUser, config]);
 
     async function getProjects(
         sorting: TableSorting<ProjectForList>,
@@ -254,7 +255,7 @@ const ProjectsList: React.FC = () => {
 
             {rows && (
                 <ObjectsTable<ProjectForList>
-                    searchBoxLabel={i18n.t("Search by name")}
+                    searchBoxLabel={i18n.t("Search by name or code")}
                     onChangeSearch={setSearch}
                     pagination={pagination}
                     onChange={onStateChange}
