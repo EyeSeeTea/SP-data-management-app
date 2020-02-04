@@ -7,6 +7,7 @@ import Dashboard from "../dashboard/Dashboard";
 import { generateUrl } from "../../router";
 import ProjectWizard from "../project-wizard/ProjectWizard";
 import DataValues from "../data-values/DataValues";
+import DataApproval from "../data-approval/DataApproval";
 
 const Root = () => {
     const idParam = { id: ":id" };
@@ -34,6 +35,10 @@ const Root = () => {
                 />
                 <Route path={generateUrl("dashboard", idParam)} render={() => <Dashboard />} />
                 <Route path={generateUrl("dashboards")} render={() => <Dashboard />} />
+                <Route
+                    path={generateUrl("dataApproval", idParam)}
+                    render={() => <DataApproval />}
+                />
                 <Route render={() => <ProjectsList />} />
             </Switch>
         </HashRouter>

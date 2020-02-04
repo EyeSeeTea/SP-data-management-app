@@ -19,7 +19,8 @@ export type Config = {
     categoryOptions: IndexedObjs<"categoryOptions", CategoryOption>;
     legendSets: IndexedObjs<"legendSets", LegendSet>;
     indicators: Indicator[];
-    countries: NamedObject[];
+    countries: Country[];
+    dataApprovalWorkflows: IndexedObjs<"dataApprovalWorkflows", DataApprovalWorkflow>;
 };
 
 const yes = true as const;
@@ -83,6 +84,9 @@ const baseConfig = {
         actualTargetPrefix: "ACTUAL_TARGET_",
         costBenefitPrefix: "COST_BENEFIT_",
     },
+    dataApprovalWorkflows: {
+        project: "PM_PROJECT",
+    },
 };
 
 function getParamsForIndexables(indexedCodes: _.Dictionary<string>) {
@@ -129,10 +133,7 @@ const metadataParams = {
         },
     },
     indicators: {
-        fields: {
-            id: yes,
-            code: yes,
-        },
+        fields: { id: yes, code: yes },
     },
     organisationUnits: {
         fields: { id: yes, displayName: yes },
@@ -154,6 +155,12 @@ const metadataParams = {
                     baseConfig.organisationUnitGroupSets.location,
                 ],
             },
+        },
+    },
+    dataApprovalWorkflows: {
+        fields: { id: yes, code: yes },
+        filter: {
+            code: { in: _.values(baseConfig.dataApprovalWorkflows) },
         },
     },
 };
@@ -180,7 +187,9 @@ type CodedObject = { id: Id; code: string };
 
 export type Sector = NamedObject & CodedObject;
 export type Funder = NamedObject;
+export type Country = NamedObject;
 export type Location = NamedObject & { countries: Ref[] };
+export type DataApprovalWorkflow = CodedObject;
 
 type IndexedObjs<Key extends keyof BaseConfig, ValueType> = Record<
     keyof BaseConfig[Key],
@@ -234,6 +243,7 @@ class ConfigLoader {
             categoryCombos: indexObjects(metadata, "categoryCombos"),
             categoryOptions: indexObjects(metadata, "categoryOptions"),
             legendSets: indexObjects(metadata, "legendSets"),
+            dataApprovalWorkflows: indexObjects(metadata, "dataApprovalWorkflows"),
             countries: _.sortBy(metadata.organisationUnits, ou => ou.displayName),
         };
 
@@ -273,6 +283,7 @@ interface IndexableTypes {
     categoryCombos: CategoryCombo;
     categoryOptions: CategoryOption;
     legendSets: LegendSet;
+    dataApprovalWorkflows: DataApprovalWorkflow;
 }
 
 type IndexableKeys = keyof IndexableTypes;

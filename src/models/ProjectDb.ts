@@ -97,6 +97,7 @@ export default class ProjectDb {
             dataInputPeriods: targetPeriods,
             expiryDays: 0,
             attributeValues: dataSetAttributeValues,
+            workflow: { id: config.dataApprovalWorkflows.project.id },
         });
         const dataSetTarget = _(dataSetTargetMetadata.dataSets).getOrFail(0);
 
@@ -107,6 +108,7 @@ export default class ProjectDb {
             dataInputPeriods: actualPeriods,
             expiryDays: expiryDaysInMonthActual + 1,
             attributeValues: dataSetAttributeValues,
+            workflow: { id: config.dataApprovalWorkflows.project.id },
         });
         const dataSetActual = _(dataSetActualMetadata.dataSets).getOrFail(0);
 

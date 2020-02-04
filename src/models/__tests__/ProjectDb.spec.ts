@@ -325,6 +325,7 @@ const expectedMetadataPost = {
         {
             id: "SCS4Dusnfdd",
             publicAccess: "rwrw----",
+            workflow: { id: "CCy0oNyvlV1" },
             description: "",
             periodType: "Monthly",
             dataElementDecoration: true,
@@ -474,6 +475,7 @@ const expectedMetadataPost = {
             publicAccess: "rwrw----",
             description: "",
             periodType: "Monthly",
+            workflow: { id: "CCy0oNyvlV1" },
             dataElementDecoration: true,
             renderAsTabs: true,
             categoryCombo: {
@@ -1557,12 +1559,6 @@ const expectedMetadataPost = {
                 },
             ],
             dataDimensionItems: [
-                {
-                    dataDimensionItemType: "INDICATOR",
-                    indicator: {
-                        id: "eoyInzqL7YZ",
-                    },
-                },
                 {
                     dataDimensionItemType: "INDICATOR",
                     indicator: {

@@ -357,6 +357,24 @@ msgstr ""
 msgid "Cannot load project relations"
 msgstr ""
 
+msgid "Data Approval"
+msgstr ""
+
+msgid "Period"
+msgstr ""
+
+msgid "Actual/Target"
+msgstr ""
+
+msgid "Approve"
+msgstr ""
+
+msgid "Unapprove"
+msgstr ""
+
+msgid "Cannot load category option combo"
+msgstr ""
+
 msgid "Set Target Values for Project"
 msgstr ""
 
