@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useState, useEffect, useLayoutEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import moment from "moment";
 import { useHistory, useRouteMatch } from "react-router";
 import { History } from "history";
@@ -70,12 +69,6 @@ interface DataInterface {
     categoryCombos: Array<{ id: Id; displayName: string }>;
 }
 
-function getTranslations() {
-    return {
-        help: i18n.t(`Data Approval`),
-    };
-}
-
 const DataApproval: React.FC = () => {
     const match = useRouteMatch<RouterParams>();
     const projectId = match ? match.params.id : null;
@@ -87,14 +80,13 @@ const DataApproval: React.FC = () => {
         showUnapproveButton: false,
     });
     const goToLandingPage = () => goTo(history, "/");
-    const { api, config, isDev } = useAppContext();
+    const { api, config } = useAppContext();
     const { data, date, categoryCombo, report, error } = state;
-    const translations = getTranslations();
 
     let periodItems;
     let categoryComboItems;
     if (data) {
-        const { periodIds, currentPeriodId } = getPeriodsData(data.dataSet);
+        const { periodIds } = getPeriodsData(data.dataSet);
         periodItems = periodIds.map(periodId => ({
             text: moment(periodId, monthFormat).format("MMMM YYYY"),
             value: periodId,
@@ -114,11 +106,15 @@ const DataApproval: React.FC = () => {
         categoryCombo,
     ]);
 
+    const reportHtml = useMemo(() => {
+        return { __html: report || "" };
+    }, [report]);
+
     return (
         <React.Fragment>
             <PageHeader
                 title={title}
-                help={translations.help}
+                help={i18n.t(`Data Approval`)}
                 onBackClick={() => goToLandingPage()}
             />
             <Paper style={{ marginBottom: 20, padding: 20 }}>
@@ -159,12 +155,7 @@ const DataApproval: React.FC = () => {
                         href={api.baseUrl + "/dhis-web-commons/css/light_blue/light_blue.css"}
                     />
 
-                    <div
-                        className="page"
-                        dangerouslySetInnerHTML={{
-                            __html: report,
-                        }}
-                    ></div>
+                    <div className="page" dangerouslySetInnerHTML={reportHtml}></div>
 
                     {state.showApproveButton && (
                         <Button
@@ -260,12 +251,9 @@ function getReport(
 
     const datasetId = data.dataSet.id;
     const orgUnitId = data.orgUnit.id;
+    const params = { ds: datasetId, pe: date, ou: orgUnitId };
 
-    api.get<CategoryOptionCombosDataApprovals>("/dataApprovals/categoryOptionCombos", {
-        ds: datasetId,
-        pe: date,
-        ou: orgUnitId,
-    })
+    api.get<CategoryOptionCombosDataApprovals>("/dataApprovals/categoryOptionCombos", params)
         .getData()
         .then(response => {
             const categoryOptionCombosDataApprovals = _.filter(response, {
@@ -274,7 +262,6 @@ function getReport(
             });
             const catOptComboDataApprovals = _(categoryOptionCombosDataApprovals).get(0, null);
 
-            console.log(catOptComboDataApprovals);
             if (!catOptComboDataApprovals) {
                 setState({
                     error: i18n.t("Cannot load category option combo"),
@@ -354,12 +341,6 @@ function loadData(
                     ? project.config.categoryCombos.targetActual.categoryOptionCombos
                     : null;
 
-            // const categoryComboActual =
-            //     project && project.config
-            //         ? _.filter(project.config.categoryCombos.targetActual.categoryOptionCombos, {
-            //               displayName: "Actual",
-            //           })
-            //         : null;
             if (project && orgUnit && dataSet && categoryCombos) {
                 setState({
                     data: {
