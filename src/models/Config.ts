@@ -68,6 +68,7 @@ const baseConfig = {
     dataElementGroups: {
         global: "GLOBAL",
         sub: "SUB",
+        custom: "CUSTOM",
         people: "PEOPLE",
         benefit: "BENEFIT",
     },
@@ -198,7 +199,6 @@ class ConfigLoader {
 
     async get(): Promise<Config> {
         const metadata: Metadata = await this.api.metadata.get(metadataParams).getData();
-        const dataElementsMetadata = await this.getDataElementsMetadata(metadata);
         const d2CurrentUser = await this.getCurrentUser();
         const ouSetsByCode = _(metadata.organisationUnitGroupSets).keyBy(ougSet => ougSet.code);
 
@@ -219,6 +219,8 @@ class ConfigLoader {
             ...d2CurrentUser,
             userRoles: d2CurrentUser.userCredentials.userRoles,
         };
+
+        const dataElementsMetadata = await this.getDataElementsMetadata(currentUser, metadata);
 
         const config = {
             base: baseConfig,
@@ -251,8 +253,12 @@ class ConfigLoader {
             .getData();
     }
 
-    async getDataElementsMetadata(metadata: Metadata) {
-        const dataElements = await DataElementsSet.getDataElements(baseConfig, metadata);
+    async getDataElementsMetadata(currentUser: CurrentUser, metadata: Metadata) {
+        const dataElements = await DataElementsSet.getDataElements(
+            currentUser,
+            baseConfig,
+            metadata
+        );
         const sectors = _(metadata.dataElementGroupSets)
             .keyBy(degSet => degSet.code)
             .getOrFail(baseConfig.dataElementGroupSets.sector).dataElementGroups;

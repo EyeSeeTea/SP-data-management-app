@@ -29,7 +29,7 @@ export function getDevProject(initialProject: Project, enabled: boolean) {
             "dataElements",
             initialProject.dataElements
                 .updateSelection(["WS8XV4WWPE7", "ik0ICagvIjm", "We61YNYyOX0"])
-                .dataElements.updateMERSelection(["WS8XV4WWPE7", "We61YNYyOX0"])
+                .dataElements.updateMERSelected(["WS8XV4WWPE7", "We61YNYyOX0"])
         )
         .set("name", "0Test1-" + awardNumber)
         .set("description", "Some description")

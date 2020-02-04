@@ -1,10 +1,10 @@
 import _ from "lodash";
 import { Id } from "d2-api";
 
-import { Config, DataElementGroupSet, BaseConfig, Metadata } from "./Config";
+import { Config, DataElementGroupSet, BaseConfig, Metadata, CurrentUser } from "./Config";
 import { Sector } from "./Project";
 import i18n from "../locales";
-import { GetItemType } from "../types/utils";
+import User from "./user";
 
 /*
     Abstract list of Project data element of type DataElement. Usage:
@@ -14,11 +14,11 @@ import { GetItemType } from "../types/utils";
     # [... Array of data elements ...]
 */
 
-export const indicatorTypes = ["global" as const, "sub" as const];
-export const peopleOrBenefit = ["people" as const, "benefit" as const];
+export const indicatorTypes = ["global", "sub", "custom"] as const;
+export const peopleOrBenefitList = ["people", "benefit"] as const;
 
-export type IndicatorType = GetItemType<typeof indicatorTypes>;
-export type PeopleOrBenefit = GetItemType<typeof peopleOrBenefit>;
+export type IndicatorType = typeof indicatorTypes[number];
+export type PeopleOrBenefit = typeof peopleOrBenefitList[number];
 
 export interface DataElementWithCodePairing {
     id: Id;
@@ -34,6 +34,7 @@ export interface DataElementWithCodePairing {
     series: string;
     pairedDataElementCode: string;
     categoryComboId: Id;
+    selectable: boolean;
 }
 
 export interface DataElement extends DataElementWithCodePairing {
@@ -76,12 +77,14 @@ function getSectorAndSeriesKey(
 export default class DataElementsSet {
     dataElementsBy: {
         id: Record<Id, DataElement>;
+        allId: Record<Id, DataElement>;
         code: Record<string, DataElement>;
         sectorAndSeries: Record<string, DataElement[]>;
     };
 
-    constructor(private data: DataElementsData) {
+    constructor(private config: Config, private data: DataElementsData) {
         this.dataElementsBy = {
+            allId: _.keyBy(getAllDataElements(data.dataElements), de => de.id),
             id: _.keyBy(data.dataElements, de => de.id),
             code: _.keyBy(data.dataElements, de => de.code),
             sectorAndSeries: _.groupBy(data.dataElements, de => getSectorAndSeriesKey(de)),
@@ -111,6 +114,7 @@ export default class DataElementsSet {
     }
 
     static async getDataElements(
+        currentUser: CurrentUser,
         baseConfig: BaseConfig,
         metadata: Metadata
     ): Promise<DataElement[]> {
@@ -130,6 +134,7 @@ export default class DataElementsSet {
             .value();
         const degCodes = baseConfig.dataElementGroups;
         const dataElementsById = _(metadata.dataElements).keyBy(de => de.id);
+        const userIsAdmin = new User({ base: baseConfig, currentUser }).hasRole("admin");
 
         return _.flatMap(sectorsSet.dataElementGroups, sectorGroup => {
             const groupCodesByDataElementId = getGroupCodeByDataElementId(dataElementGroupSets);
@@ -149,23 +154,25 @@ export default class DataElementsSet {
                 const attrsMap = getAttrsMap(baseConfig.attributes, d2DataElement.attributeValues);
                 const { pairedDataElement, countingMethod } = attrsMap;
                 const groupCodes = groupCodesByDataElementId[d2DataElement.id] || new Set();
-                const indicatorType = getGroupKey(groupCodes, degCodes, ["global", "sub"]);
-                const peopleOrBenefit = getGroupKey(groupCodes, degCodes, ["people", "benefit"]);
+                const indicatorType = getGroupKey(groupCodes, degCodes, indicatorTypes);
+                const peopleOrBenefit = getGroupKey(groupCodes, degCodes, peopleOrBenefitList);
                 const externals = _(externalsByDataElementId).get(d2DataElement.id, []);
                 const deKey = `${d2DataElement.code}:${sectorGroup.code}`;
+                const isSelectable = indicatorType !== "custom" || userIsAdmin;
+                const name =
+                    d2DataElement.displayName +
+                    (isSelectable ? "" : ` ${i18n.t("[only for admin users]")}`);
 
                 if (!indicatorType) {
-                    console.error(`DataElement ${deKey} has no indicator type 1`);
+                    console.error(`DataElement ${deKey} has no indicator type`);
                 } else if (!peopleOrBenefit) {
-                    console.error(`DataElement ${deKey} has no indicator type 2`);
+                    console.error(`DataElement ${deKey} has no indicator type people/benefit`);
                 } else if (seriesGroups.length > 1) {
-                    console.error(
-                        `DataElement ${deKey} has ${seriesGroups.length} series, using first`
-                    );
+                    console.error(`DataElement ${deKey} has ${seriesGroups.length} series`);
                 } else {
                     const dataElement: DataElementWithCodePairing = {
                         id: d2DataElement.id,
-                        name: d2DataElement.displayName,
+                        name: name,
                         code: d2DataElement.code,
                         description: d2DataElement.description,
                         sectorId: sectorGroup.id,
@@ -177,6 +184,7 @@ export default class DataElementsSet {
                         countingMethod: countingMethod || "",
                         externals,
                         categoryComboId: d2DataElement.categoryCombo.id,
+                        selectable: isSelectable,
                     };
                     return dataElement;
                 }
@@ -187,7 +195,7 @@ export default class DataElementsSet {
     }
 
     static build(config: Config) {
-        return new DataElementsSet({
+        return new DataElementsSet(config, {
             dataElements: config.dataElements,
             selected: [],
             selectedMER: [],
@@ -237,6 +245,13 @@ export default class DataElementsSet {
         return dataElementsFiltered;
     }
 
+    updateSelected(dataElementIds: string[]): DataElementsSet {
+        return new DataElementsSet(this.config, {
+            ...this.data,
+            selected: dataElementIds,
+        });
+    }
+
     updateSelection(
         dataElementIds: string[]
     ): { related: SelectionUpdate; dataElements: DataElementsSet } {
@@ -252,7 +267,7 @@ export default class DataElementsSet {
             .union(related.selected.map(de => de.id))
             .difference(related.unselected.map(de => de.id))
             .value();
-        const dataElementsUpdated = new DataElementsSet({
+        const dataElementsUpdated = new DataElementsSet(this.config, {
             ...this.data,
             selected: finalSelected,
         });
@@ -264,25 +279,34 @@ export default class DataElementsSet {
         return this.data.selectedMER;
     }
 
-    updateMERSelection(dataElementIds: string[]): DataElementsSet {
+    updateMERSelected(dataElementIds: string[]): DataElementsSet {
         const selectedIds = this.get({ onlySelected: true, includePaired: true }).map(de => de.id);
-        return new DataElementsSet({
+        return new DataElementsSet(this.config, {
             ...this.data,
             selectedMER: _.intersection(selectedIds, dataElementIds),
         });
     }
 
     getFullSelection(dataElementIds: string[], sectorId: string, getOptions: GetOptions): string[] {
-        const allDataElements = this.get(getOptions);
-        const previousIdsInSector = allDataElements
+        const prevSelectedDataElements = this.get(getOptions);
+        const keepIds = prevSelectedDataElements.filter(de => !de.selectable).map(de => de.id);
+        const newDataElementIds = _(dataElementIds)
+            .map(deId => this.dataElementsBy.allId[deId])
+            .compact()
+            .filter(de => de.selectable)
+            .map(de => de.id)
+            .value();
+
+        const previousIdsInSector = prevSelectedDataElements
             .filter(de => de.sectorId === sectorId)
             .map(de => de.id);
-        const unselectedIds = new Set(_.difference(previousIdsInSector, dataElementIds));
+        const unselectedIds = new Set(_.difference(previousIdsInSector, newDataElementIds));
 
-        const selectedIdsInOtherSectors = allDataElements
+        const selectedIdsInOtherSectors = prevSelectedDataElements
             .filter(de => de.sectorId !== sectorId && !unselectedIds.has(de.id))
             .map(de => de.id);
-        return _.union(selectedIdsInOtherSectors, dataElementIds);
+
+        return _.uniq(_.union(selectedIdsInOtherSectors, newDataElementIds, keepIds));
     }
 
     getRelated(dataElementIds: Id[]): DataElement[] {
@@ -319,6 +343,7 @@ function getMainDataElements(dataElements: DataElementWithCodePairing[]): DataEl
             .filter(de => de.peopleOrBenefit === "benefit")
             .map(de => de.pairedDataElementCode)
             .uniq()
+            .compact()
             .value()
     );
     const dataElementsByCode = _(dataElements).keyBy(de => de.code);
@@ -354,7 +379,7 @@ function getGroupCodeByDataElementId(
 function getGroupKey<T extends keyof DataElementGroupCodes>(
     groupCodes: Set<string>,
     degCodes: DataElementGroupCodes,
-    keys: (T)[]
+    keys: readonly T[]
 ): T | undefined {
     return keys.find(key => groupCodes.has(degCodes[key]));
 }
@@ -387,6 +412,13 @@ function getAttrsMap(
             return [key, value];
         })
     );
+}
+
+function getAllDataElements(dataElements: DataElement[]): DataElement[] {
+    return _(dataElements)
+        .flatMap(de => _.compact([de, de.pairedDataElement]))
+        .uniqBy(de => [de.id, de.sectorId].join("-"))
+        .value();
 }
 
 /* Type-safe helpers */

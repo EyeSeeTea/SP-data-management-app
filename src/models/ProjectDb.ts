@@ -183,7 +183,8 @@ export default class ProjectDb {
     saveMERData(orgUnitId: Id): D2ApiResponse<void> {
         const dataStore = getDataStore(this.project.api);
         const dataElementsForMER = this.project.dataElements.get({ onlyMERSelected: true });
-        const value: ProjectInfo = { merDataElementIds: dataElementsForMER.map(de => de.id) };
+        const ids = _.uniq(dataElementsForMER.map(de => de.id));
+        const value: ProjectInfo = { merDataElementIds: ids };
         return dataStore.save(getProjectStorageKey({ id: orgUnitId }), value);
     }
 
@@ -225,28 +226,39 @@ export default class ProjectDb {
 
         const dataElementsInSectors = _(dataElements)
             .filter(de => project.sectors.some(sector => sector.id === de.sectorId))
-            .uniqBy(de => de.id)
             .value();
 
-        const dataSetElements = dataElementsInSectors.map(dataElement => ({
+        const dataSetElements = _.uniqBy(dataElementsInSectors, de => de.id).map(dataElement => ({
             dataSet: { id: dataSetId },
             dataElement: { id: dataElement.id },
             categoryCombo: { id: dataElement.categoryComboId },
         }));
 
-        const sections = project.sectors.map((sector, index) => {
+        const sectorIdForDataElementId = _(dataElementsInSectors)
+            .groupBy(de => de.id)
+            .map((des, deId) => [deId, _.sortBy(des, de => (de.isMainSector ? 0 : 1))[0].sectorId])
+            .fromPairs()
+            .value();
+
+        const sections0 = project.sectors.map((sector, index) => {
+            const dataElementsForSector = dataElements
+                .filter(de => de.sectorId === sector.id)
+                .filter(de => sectorIdForDataElementId[de.id] === sector.id)
+                .map(de => ({ id: de.id }));
+
+            if (_.isEmpty(dataElementsForSector)) return null;
+
             return {
                 id: getUid("section", project.uid + baseDataSet.code + sector.id),
                 dataSet: { id: dataSetId },
                 sortOrder: index,
                 name: sector.displayName,
                 code: sector.code + "_" + dataSetId,
-                dataElements: dataElements
-                    .filter(de => de.sectorId === sector.id)
-                    .map(de => ({ id: de.id })),
+                dataElements: dataElementsForSector,
                 greyedFields: [],
             };
         });
+        const sections = _.compact(sections0);
 
         const dataSet = {
             id: dataSetId,
@@ -336,8 +348,8 @@ export default class ProjectDb {
             .value();
         const dataElementsSet = DataElementsSet.build(config);
         const dataElementsSetWithSelections = dataElementsSet
-            .updateSelection(projectDataSets.actual.dataSetElements.map(dse => dse.dataElement.id))
-            .dataElements.updateMERSelection(dataElementIdsForMer);
+            .updateSelected(projectDataSets.actual.dataSetElements.map(dse => dse.dataElement.id))
+            .updateMERSelected(dataElementIdsForMer);
 
         const projectData = {
             id: orgUnit.id,
