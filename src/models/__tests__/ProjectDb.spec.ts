@@ -623,6 +623,7 @@ const expectedMetadataPost = {
         {
             id: "WgOMVlwSV2i",
             name: "MyProject",
+            publicAccess: "rw------",
             dashboardItems: [
                 {
                     id: "ys0CVedHirZ",
