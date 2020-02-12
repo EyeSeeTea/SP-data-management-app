@@ -218,7 +218,7 @@ function setSelectPeriod(
     const iframe = iframeRef.current;
     if (!iframe || !iframe.contentWindow) return;
 
-    const iframeWindow = iframe.contentWindow as (Window & DataEntryWindow);
+    const iframeWindow = iframe.contentWindow as Window & DataEntryWindow;
     const periodSelector = iframeWindow.document.querySelector("#selectedPeriodId");
 
     if (periodSelector && dropdownValue) {

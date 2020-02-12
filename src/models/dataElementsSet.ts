@@ -224,8 +224,9 @@ export default class DataElementsSet {
             : dataElements;
 
         const dataElementsIncluded = includePaired
-            ? _.uniqBy(_.flatMap(mainDEs, de => _.compact([de, de.pairedDataElement])), de =>
-                  [de.id, de.sectorId].join("-")
+            ? _.uniqBy(
+                  _.flatMap(mainDEs, de => _.compact([de, de.pairedDataElement])),
+                  de => [de.id, de.sectorId].join("-")
               )
             : mainDEs;
 

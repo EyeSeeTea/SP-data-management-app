@@ -151,14 +151,16 @@ export default class ProjectDb {
             : null;
 
         const oldSections = dataSets
-            ? (await api.metadata
-                  .get({
-                      sections: {
-                          fields: { id: true },
-                          filter: { "dataSet.id": { in: dataSets.map(ds => ds.id) } },
-                      },
-                  })
-                  .getData()).sections
+            ? (
+                  await api.metadata
+                      .get({
+                          sections: {
+                              fields: { id: true },
+                              filter: { "dataSet.id": { in: dataSets.map(ds => ds.id) } },
+                          },
+                      })
+                      .getData()
+              ).sections
             : [];
 
         // Delete old sections which are not in current sectors

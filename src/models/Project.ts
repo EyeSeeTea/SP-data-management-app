@@ -294,7 +294,7 @@ class Project {
     }
 
     public async validate(
-        validationKeys: (ValidationKey)[] | undefined = undefined
+        validationKeys: ValidationKey[] | undefined = undefined
     ): Promise<Validations> {
         const obj = _(validationKeys || (_.keys(this.validations) as ValidationKey[]))
             .map(key => [key, this.validations[key]])
