@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2020-02-04T08:33:06.134Z\n"
-"PO-Revision-Date: 2020-02-04T08:33:06.134Z\n"
+"POT-Creation-Date: 2020-02-12T13:42:59.780Z\n"
+"PO-Revision-Date: 2020-02-12T13:42:59.780Z\n"
 
 msgid "<No value>"
 msgstr ""
@@ -344,6 +344,9 @@ msgid "Select at least one indicator"
 msgstr ""
 
 msgid "[only for admin users]"
+msgstr ""
+
+msgid "Dashboard for Project"
 msgstr ""
 
 msgid ""
