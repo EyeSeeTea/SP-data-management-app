@@ -117,7 +117,7 @@ const getDataEntryForm = async (
         "dhis2.ou.event.orgUnitSelected",
         async (_event: unknown, organisationUnitIds: string[]) => {
             const options = iframeDocument.querySelectorAll("#selectedDataSetId option");
-            if (organisationUnitIds[0] == orgUnitId && options.length > 1) {
+            if (organisationUnitIds[0] === orgUnitId && options.length > 1) {
                 await setDatasetPeriodAndCategory(iframe, dataSet, attributes, onDone);
             } else {
                 iframeSelection.select(orgUnitId);
