@@ -1,13 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import {
-    ObjectsTable,
-    TableColumn,
-    TableAction,
-    TableSorting,
-    TableState,
-    ConfirmationDialog,
-    useSnackbar,
-} from "d2-ui-components";
+import { ObjectsTable, TableColumn, TableAction, TableSorting, TableState } from "d2-ui-components";
 import { TablePagination } from "d2-ui-components";
 import i18n from "../../locales";
 import _ from "lodash";
@@ -23,7 +15,7 @@ import { D2Api, Id } from "d2-api";
 import { Icon, LinearProgress } from "@material-ui/core";
 import ProjectsListFilters, { Filter } from "./ProjectsListFilters";
 import { ProjectForList, FiltersForList } from "../../models/ProjectsList";
-import { withSnackbarOnError } from "../../components/utils/errors";
+import DeleteDialog from "../../components/delete-dialog/DeleteDialog";
 
 type UserRolesConfig = Config["base"]["userRoles"];
 
@@ -35,7 +27,7 @@ function getComponentConfig(
     api: D2Api,
     config: Config,
     goTo: GoTo,
-    setDeleteConfirmationState: (state: React.SetStateAction<DeleteConfirmationState>) => void,
+    setProjectIdsToDelete: (state: React.SetStateAction<Id[] | undefined>) => void,
     currentUser: CurrentUser
 ) {
     const initialPagination = {
@@ -160,11 +152,7 @@ function getComponentConfig(
             icon: <Icon>delete</Icon>,
             text: i18n.t("Delete"),
             multiple: true,
-            onClick: projects =>
-                setDeleteConfirmationState({
-                    type: "ask",
-                    projectIds: projects.map(project => project.id),
-                }),
+            onClick: projects => setProjectIdsToDelete(projects.map(project => project.id)),
         },
 
         dataApproval: {
@@ -215,19 +203,12 @@ function getComponentConfig(
 
 type ProjectTableSorting = TableSorting<ProjectForList>;
 
-type DeleteConfirmationState =
-    | { type: "closed" }
-    | { type: "ask"; projectIds: Id[] }
-    | { type: "deleting"; projectIds: Id[] };
-
 const ProjectsList: React.FC = () => {
     const goTo = useGoTo();
     const { api, config, currentUser } = useAppContext();
-    const [deleteConfirmationState, setDeleteConfirmationState] = useState<DeleteConfirmationState>(
-        { type: "closed" }
-    );
+    const [projectIdsToDelete, setProjectIdsToDelete] = useState<Id[] | undefined>(undefined);
     const componentConfig = React.useMemo(() => {
-        return getComponentConfig(api, config, goTo, setDeleteConfirmationState, currentUser);
+        return getComponentConfig(api, config, goTo, setProjectIdsToDelete, currentUser);
     }, [api, config, currentUser]);
     const [rows, setRows] = useState<ProjectForList[] | undefined>(undefined);
     const [pagination, setPagination] = useState(componentConfig.initialPagination);
@@ -236,7 +217,6 @@ const ProjectsList: React.FC = () => {
     const [filter, setFilter] = useState<Filter>({});
     const [isLoading, setLoading] = useState(true);
     const [objectsTableKey, objectsTableKeySet] = useState(() => new Date().getTime());
-    const snackbar = useSnackbar();
 
     useEffect(() => {
         getProjects(sorting, { page: 1 });
@@ -273,21 +253,9 @@ const ProjectsList: React.FC = () => {
         getProjects(sorting, pagination);
     }, []);
 
-    const deleteProject = useCallback((projectIds: Id[]) => {
-        withSnackbarOnError(
-            snackbar,
-            async () => {
-                await Project.delete(config, api, projectIds);
-                snackbar.success(i18n.t("{{n}} projects deleted", { n: projectIds.length }));
-                // Update the whole table (including the previous selections)
-                objectsTableKeySet(new Date().getTime());
-            },
-            {
-                onFinally: () => {
-                    setDeleteConfirmationState({ type: "closed" });
-                },
-            }
-        );
+    const closeDeleteDialog = useCallback(() => {
+        setProjectIdsToDelete(undefined);
+        objectsTableKeySet(new Date().getTime()); // force update of objects table
     }, []);
 
     const canAccessReports = currentUser.hasRole("admin") || currentUser.hasRole("dataReviewer");
@@ -299,19 +267,8 @@ const ProjectsList: React.FC = () => {
 
             {!rows && <LinearProgress />}
 
-            {deleteConfirmationState.type === "ask" && (
-                <ConfirmationDialog
-                    isOpen={true}
-                    onSave={() => deleteProject(deleteConfirmationState.projectIds)}
-                    onCancel={() => setDeleteConfirmationState({ type: "closed" })}
-                    title={i18n.t("Delete project")}
-                    description={i18n.t(
-                        "This operation will delete the organisation units, data sets and dashboards associated with the selected projects ({{n}}). This operation cannot be undone. Are you sure you want to proceed?",
-                        { n: deleteConfirmationState.projectIds.length }
-                    )}
-                    saveText={i18n.t("Proceed")}
-                    cancelText={i18n.t("Cancel")}
-                />
+            {projectIdsToDelete && (
+                <DeleteDialog projectIds={projectIdsToDelete} onClose={closeDeleteDialog} />
             )}
 
             {rows && (
