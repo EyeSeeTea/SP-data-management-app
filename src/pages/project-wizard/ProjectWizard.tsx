@@ -243,6 +243,8 @@ async function getValidationMessages(
         .value();
 }
 
+const ProjectWizardImplMemo = React.memo(ProjectWizardImpl);
+
 const ProjectWizard: React.FC<ProjectWizardProps> = props => {
     const snackbar = useSnackbar();
     const history = useHistory();
@@ -251,7 +253,7 @@ const ProjectWizard: React.FC<ProjectWizardProps> = props => {
     const { action } = props;
 
     return (
-        <ProjectWizardImpl
+        <ProjectWizardImplMemo
             snackbar={snackbar}
             api={api}
             config={config}
@@ -269,4 +271,4 @@ const DataElementsSelection: React.FC<StepProps> = props => (
 
 const DataElementsMER: React.FC<StepProps> = props => <DataElementsStep {...props} field="MER" />;
 
-export default ProjectWizard;
+export default React.memo(ProjectWizard);

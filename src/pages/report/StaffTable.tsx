@@ -112,4 +112,4 @@ const StaffField: React.FC<{
     );
 };
 
-export default StaffTable;
+export default React.memo(StaffTable);

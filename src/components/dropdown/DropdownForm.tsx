@@ -63,4 +63,4 @@ const getMaterialTheme = () =>
         },
     });
 
-export default DropdownForm;
+export default React.memo(DropdownForm);

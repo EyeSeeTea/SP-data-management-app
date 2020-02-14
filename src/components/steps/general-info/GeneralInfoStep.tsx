@@ -156,4 +156,4 @@ function getDateField(
     };
 }
 
-export default GeneralInfoStep;
+export default React.memo(GeneralInfoStep);

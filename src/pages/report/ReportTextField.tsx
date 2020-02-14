@@ -33,4 +33,4 @@ const ReportTextField: React.FC<ReportTextFieldProps> = props => {
     );
 };
 
-export default ReportTextField;
+export default React.memo(ReportTextField);
