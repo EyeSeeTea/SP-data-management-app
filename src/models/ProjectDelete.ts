@@ -1,9 +1,11 @@
 import _ from "lodash";
 import { Config } from "./Config";
 import { D2Api, Id, Ref, MetadataPayload } from "d2-api";
-import { getIds, getRefs, postMetadataRequests } from "../utils/dhis2";
+import { getIds, getRefs, postMetadataRequests, getDataStore } from "../utils/dhis2";
 import i18n from "../locales";
 import { getDashboardId } from "./ProjectDb";
+import { getProjectStorageKey } from "./MerReport";
+import { runPromises } from "../utils/promises";
 
 type FavoriteModel = "reportTables" | "chart";
 
@@ -35,12 +37,24 @@ export default class ProjectDelete {
                 },
             ];
 
+            await this.deleteProjectInDataStore(api, organisationUnits);
             const success = await postMetadataRequests(api, requests, { importStrategy: "DELETE" });
 
             if (!success) {
                 throw new Error(i18n.t("Cannot delete projects"));
             }
         }
+    }
+
+    private async deleteProjectInDataStore(api: D2Api, organisationUnits: Ref[]) {
+        const dataStore = getDataStore(api);
+
+        return runPromises(
+            organisationUnits.map(orgUnit => () =>
+                dataStore.delete(getProjectStorageKey(orgUnit)).getData()
+            ),
+            { concurrency: 3 }
+        );
     }
 
     private async getDataValues(
