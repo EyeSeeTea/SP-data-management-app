@@ -74,7 +74,7 @@ describe("Project", () => {
                         "attributeValues[attribute[id],value],closedDate,code,description,displayName,id,name,openingDate,organisationUnitGroups[id],parent[displayName,id,path],path",
                     "organisationUnits:filter": ["id:eq:R3rGhxWbAI9"],
                     "dataSets:fields":
-                        "code,dataInputPeriods[closingDate,openingDate,period],dataSetElements[categoryCombo[id],dataElement[id]],id,sections[code]",
+                        "code,dataInputPeriods[closingDate,openingDate,period],dataSetElements[categoryCombo[id],dataElement[id]],expiryDays,id,openFuturePeriods,sections[code]",
                     "dataSets:filter": ["code:$like:R3rGhxWbAI9"],
                 },
             }).replyOnce(200, metadataForGet);
@@ -322,7 +322,7 @@ describe("Project", () => {
 
         const orgUnitsById = _.keyBy(organisationUnits, ou => ou.id);
 
-        it.only("returns list of organisation units filtered", async () => {
+        it("returns list of organisation units filtered", async () => {
             mock.onGet("/organisationUnits", {
                 params: {
                     paging: false,
