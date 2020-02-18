@@ -37,7 +37,12 @@ export function getDevProject(initialProject: Project, enabled: boolean) {
         .set("awardNumber", awardNumber)
         .set("subsequentLettering", "en")
         .set("speedKey", "key1")
-        .set("startDate", moment().startOf("month"))
+        .set(
+            "startDate",
+            moment()
+                .startOf("month")
+                .subtract(2, "months")
+        )
         .set(
             "endDate",
             moment()
@@ -106,7 +111,7 @@ export async function saveDataValues(api: D2Api, project: Project) {
         });
     });
 
-    await api.dataValues.postSet({}, { dataValues }).getData();
+    await api.dataValues.postSet({ force: true }, { dataValues }).getData();
 
     api.analytics.run();
 }
