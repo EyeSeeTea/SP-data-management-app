@@ -89,7 +89,7 @@ export type Sector = NamedObject & { code: string };
 export type Funder = NamedObject;
 export type Location = NamedObject;
 
-interface DataInputPeriod {
+export interface DataInputPeriod {
     period: { id: string };
     openingDate: string;
     closingDate: string;

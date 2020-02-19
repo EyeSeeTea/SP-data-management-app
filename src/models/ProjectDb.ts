@@ -2,7 +2,11 @@ import _ from "lodash";
 import moment from "moment";
 import { D2DataSet, D2OrganisationUnit, D2ApiResponse, MetadataPayload, Id, D2Api } from "d2-api";
 import { PartialModel, Ref, PartialPersistedModel, MetadataResponse } from "d2-api";
-import Project, { getOrgUnitDatesFromProject, getDatesFromOrgUnit } from "./Project";
+import Project, {
+    getOrgUnitDatesFromProject,
+    getDatesFromOrgUnit,
+    DataInputPeriod,
+} from "./Project";
 import { getMonthsRange, toISOString } from "../utils/date";
 import "../utils/lodash-mixins";
 import ProjectDashboard from "./ProjectDashboard";
@@ -80,7 +84,7 @@ export default class ProjectDb {
             ),
         };
 
-        const orgUnitGroupsToSave = await getOrgUnitGroups(api, project, orgUnit);
+        const orgUnitGroupsToSave = await getOrgUnitGroups(api, project);
 
         const dataSetAttributeValues = addAttributeValue(
             baseAttributeValues,
@@ -220,7 +224,10 @@ export default class ProjectDb {
 
     getDataSetsMetadata<T extends PartialPersistedModel<D2OrganisationUnit>>(
         orgUnit: T,
-        baseDataSet: PartialModel<D2DataSet> & Pick<D2DataSet, "code" | "dataInputPeriods">
+        baseDataSet: PartialModel<Omit<D2DataSet, "code" | "dataInputPeriods">> & {
+            code: string;
+            dataInputPeriods: DataInputPeriod[];
+        }
     ) {
         const { project } = this;
         const dataSetId = getUid("dataSet", project.uid + baseDataSet.code);
@@ -383,18 +390,15 @@ export function getSectorCodeFromSectionCode(code: string | undefined) {
 
 type OrgUnitsMeta = Pick<MetadataPayload, "organisationUnits" | "organisationUnitGroups">;
 
-async function getOrgUnitGroups(
-    api: D2Api,
-    project: Project,
-    orgUnit: PartialPersistedModel<D2OrganisationUnit>
-) {
+async function getOrgUnitGroups(api: D2Api, project: Project) {
     /* The project may have changed funders and locations, so get also the previously related
        groups to clear them if necessary */
+    const orgUnitId = project.id;
     const { organisationUnitGroups: prevOrgUnitGroups } = await api.metadata
         .get({
             organisationUnitGroups: {
                 fields: { $owner: true },
-                filter: { "organisationUnits.id": { eq: project.id } },
+                filter: { "organisationUnits.id": { eq: orgUnitId } },
             },
         })
         .getData();
@@ -410,15 +414,16 @@ async function getOrgUnitGroups(
         })
         .getData();
 
-    const orgUnitsToSave = _(prevOrgUnitGroups)
+    const orgUnitGroupsToSave = _(prevOrgUnitGroups)
         .concat(newOrgUnitGroups)
         .uniqBy(oug => oug.id)
         .value();
 
-    return orgUnitsToSave.map(orgUnitGroup => {
-        const organisationUnits = _(orgUnitGroup.organisationUnits)
-            .filter(ou => ou.id !== project.id)
-            .concat(orgUnitGroupIds.has(orgUnitGroup.id) ? [{ id: orgUnit.id }] : [])
+    return orgUnitGroupsToSave.map(orgUnitGroup => {
+        const organisationUnits = _(orgUnitGroup.organisationUnits || [])
+            .filter(ou => ou.id !== orgUnitId)
+            .map(ou => ({ id: ou.id }))
+            .concat(orgUnitGroupIds.has(orgUnitGroup.id) ? [{ id: orgUnitId }] : [])
             .value();
         return { ...orgUnitGroup, organisationUnits };
     });
