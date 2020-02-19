@@ -72,11 +72,6 @@ function getComponentConfig(api: D2Api, config: Config, goTo: GoTo, currentUser:
                 `${project.lastUpdatedBy ? project.lastUpdatedBy.name : "-"}`,
         },
         {
-            name: "code" as const,
-            text: i18n.t("Code"),
-            getValue: (project: ProjectForList) => `${project.code}`,
-        },
-        {
             name: "href" as const,
             text: i18n.t("API Link"),
             getValue: function getDataSetLink(project: ProjectForList) {
