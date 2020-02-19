@@ -17,6 +17,8 @@ import ProjectsListFilters, { Filter } from "./ProjectsListFilters";
 import { ProjectForList, FiltersForList } from "../../models/ProjectsList";
 import { Action } from "../../models/user";
 
+type ContextualAction = Exclude<Action, "create" | "accessMER"> | "details";
+
 function getComponentConfig(api: D2Api, config: Config, goTo: GoTo, currentUser: CurrentUser) {
     const initialPagination = {
         page: 1,
@@ -75,10 +77,7 @@ function getComponentConfig(api: D2Api, config: Config, goTo: GoTo, currentUser:
         },
     ];
 
-    const allActions: Record<
-        Exclude<Action, "create" | "accessMER"> | "details",
-        TableAction<ProjectForList>
-    > = {
+    const allActions: Record<ContextualAction, TableAction<ProjectForList>> = {
         details: {
             name: "details",
             text: i18n.t("Details"),
@@ -143,7 +142,7 @@ function getComponentConfig(api: D2Api, config: Config, goTo: GoTo, currentUser:
         },
     };
 
-    const actionsByRole = _.compact(_.at(allActions, Array.from(currentUser.actions)));
+    const actionsByRole = _.compact(_.at(allActions, currentUser.actions));
     const actions = [allActions.details, ...actionsByRole];
 
     return { columns, initialSorting, details, actions, initialPagination };

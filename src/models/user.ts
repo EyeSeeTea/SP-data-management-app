@@ -2,9 +2,6 @@ import { GetItemType } from "./../types/utils";
 import _ from "lodash";
 import { Config } from "./Config";
 
-type UserConfig = Pick<Config, "base" | "currentUser">;
-type OrganisationUnit = GetItemType<Config["currentUser"]["organisationUnits"]>;
-
 export type Role = "admin" | "dataReviewer" | "dataViewer" | "dataEntry";
 
 export type Action =
@@ -21,8 +18,8 @@ export type Action =
 const actionsByRole: Record<Role, Action[]> = {
     admin: [
         "create",
-        "actualValues",
         "targetValues",
+        "actualValues",
         "dashboard",
         "downloadData",
         "edit",
@@ -32,8 +29,8 @@ const actionsByRole: Record<Role, Action[]> = {
     ],
     dataReviewer: [
         "create",
-        "actualValues",
         "targetValues",
+        "actualValues",
         "dashboard",
         "downloadData",
         "edit",
@@ -41,12 +38,15 @@ const actionsByRole: Record<Role, Action[]> = {
         "accessMER",
     ],
     dataViewer: ["dashboard", "downloadData"],
-    dataEntry: ["actualValues", "targetValues", "dashboard", "downloadData"],
+    dataEntry: ["targetValues", "actualValues", "dashboard", "downloadData"],
 };
 
+type UserConfig = Pick<Config, "base" | "currentUser">;
+type OrganisationUnit = GetItemType<Config["currentUser"]["organisationUnits"]>;
+
 export default class User {
-    public roles: Set<Role>;
-    public actions: Set<Action>;
+    public roles: Role[];
+    public actions: Action[];
 
     constructor(private config: UserConfig) {
         this.roles = buildRoles(config);
@@ -54,11 +54,11 @@ export default class User {
     }
 
     hasRole(role: Role): boolean {
-        return this.roles.has(role);
+        return this.roles.includes(role);
     }
 
     can(action: Action): boolean {
-        return this.actions.has(action);
+        return this.actions.includes(action);
     }
 
     getOrgUnits(): OrganisationUnit[] {
@@ -75,19 +75,15 @@ function buildRoles(config: UserConfig) {
     const { currentUser } = config;
     const allRoles = Object.keys(actionsByRole) as Role[];
 
-    const userRoles = allRoles.filter(role => {
+    return allRoles.filter(role => {
         const roleNames = config.base.userRoles[role];
         return _.intersection(currentUser.userRoles.map(ur => ur.name), roleNames).length > 0;
     });
-
-    return new Set(userRoles);
 }
 
-function buildActions(roles: Set<Role>) {
-    const actions = _(actionsByRole)
-        .at(Array.from(roles))
+function buildActions(roles: Role[]) {
+    return _(actionsByRole)
+        .at(roles)
         .flatten()
         .value();
-
-    return new Set(actions);
 }
