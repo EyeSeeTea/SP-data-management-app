@@ -12,7 +12,7 @@ import ActionButton from "../../components/action-button/ActionButton";
 import { GetPropertiesByType } from "../../types/utils";
 import { downloadFile } from "../../utils/download";
 import { D2Api } from "d2-api";
-import { Icon, LinearProgress } from "@material-ui/core";
+import { Icon, LinearProgress, CircularProgress } from "@material-ui/core";
 import ProjectsListFilters, { Filter } from "./ProjectsListFilters";
 import { ProjectForList, FiltersForList } from "../../models/ProjectsList";
 
@@ -286,6 +286,8 @@ const ProjectsList: React.FC = () => {
                                     onClick={newProjectPageHandler}
                                 />
                             )}
+
+                            <LoadingSpinner isVisible={isLoading} />
                         </React.Fragment>
                     }
                 />
@@ -326,5 +328,12 @@ async function download(api: D2Api, config: Config, projectId: string) {
 function toBeImplemented() {
     window.alert("Action to be implemented");
 }
+
+const LoadingSpinner: React.FunctionComponent<{ isVisible: boolean }> = ({ isVisible }) => (
+    <React.Fragment>
+        <div style={{ flex: "10 1 auto" }}></div>
+        {isVisible && <CircularProgress />}
+    </React.Fragment>
+);
 
 export default ProjectsList;
