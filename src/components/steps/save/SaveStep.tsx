@@ -149,9 +149,10 @@ function getNames(objects: { displayName: string }[]) {
 
 function getProjectPeriodDateString(project: Project): string {
     const { startDate, endDate } = project;
+    const dateFormat = "MMMM YYYY";
 
     if (startDate && endDate) {
-        return [startDate.format("LL"), "->", endDate.format("LL")].join(" ");
+        return [startDate.format(dateFormat), "->", endDate.format(dateFormat)].join(" ");
     } else {
         return "-";
     }
