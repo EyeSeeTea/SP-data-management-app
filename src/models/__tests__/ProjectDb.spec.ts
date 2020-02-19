@@ -18,7 +18,7 @@ describe("ProjectDb", () => {
             mock.onGet("/metadata", {
                 expected: {
                     "organisationUnits:fields": "displayName",
-                    "organisationUnits:filter": ["code:eq:en12345", "id:ne:WGC0DJ0YSis"],
+                    "organisationUnits:filter": ["code:eq:12345en", "id:ne:WGC0DJ0YSis"],
                 },
             }).replyOnce(200, []);
 
@@ -117,7 +117,7 @@ const expectedOrgUnitPut = {
     name: "MyProject",
     displayName: "MyProject",
     path: "/J0hschZVMBt/eu2XF73JOzl/WGC0DJ0YSis",
-    code: "en12345",
+    code: "12345en",
     shortName: "MyProject",
     description: "",
     parent: {
@@ -231,7 +231,7 @@ const expectedMetadataPost = {
             name: "MyProject",
             displayName: "MyProject",
             path: "/J0hschZVMBt/eu2XF73JOzl/WGC0DJ0YSis",
-            code: "en12345",
+            code: "12345en",
             shortName: "MyProject",
             description: "",
             parent: {

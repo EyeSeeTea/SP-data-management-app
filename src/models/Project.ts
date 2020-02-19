@@ -265,8 +265,8 @@ class Project {
 
     public get code(): string {
         return _([
-            this.subsequentLettering,
             this.awardNumber,
+            this.subsequentLettering,
             this.speedKey ? "-" + this.speedKey : null,
         ])
             .compact()
