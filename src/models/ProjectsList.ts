@@ -137,8 +137,8 @@ export default class ProjectsList {
 
         const d2OrgUnitsFilteredByNameAndCode = search
             ? d2OrgUnits.filter(ou => {
-                  const name = ou.n.toLowerCase();
-                  const code = ou.c.toLowerCase();
+                  const name = (ou.n || "").toLowerCase();
+                  const code = (ou.c || "").toLowerCase();
                   // OR filter, not supported by the API
                   return name.includes(search) || code.includes(search);
               })
