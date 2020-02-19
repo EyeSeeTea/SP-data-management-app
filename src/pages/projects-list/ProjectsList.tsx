@@ -228,6 +228,7 @@ const ProjectsList: React.FC = () => {
             countryIds: filter.countries,
             sectorIds: filter.sectors,
             onlyActive: filter.onlyActive,
+            createdByAppOnly: true,
         };
         const listPagination = { ...pagination, ...paginationOptions };
 
