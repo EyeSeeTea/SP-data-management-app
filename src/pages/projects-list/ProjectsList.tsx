@@ -15,12 +15,7 @@ import { D2Api } from "d2-api";
 import { Icon, LinearProgress, CircularProgress } from "@material-ui/core";
 import ProjectsListFilters, { Filter } from "./ProjectsListFilters";
 import { ProjectForList, FiltersForList } from "../../models/ProjectsList";
-
-type UserRolesConfig = Config["base"]["userRoles"];
-
-type ActionsRoleMapping<Actions> = {
-    [Key in keyof UserRolesConfig]?: Array<keyof Actions>;
-};
+import { Action } from "../../models/user";
 
 function getComponentConfig(api: D2Api, config: Config, goTo: GoTo, currentUser: CurrentUser) {
     const initialPagination = {
@@ -80,7 +75,10 @@ function getComponentConfig(api: D2Api, config: Config, goTo: GoTo, currentUser:
         },
     ];
 
-    const allActions: Record<string, TableAction<ProjectForList>> = {
+    const allActions: Record<
+        Exclude<Action, "create" | "accessMER"> | "details",
+        TableAction<ProjectForList>
+    > = {
         details: {
             name: "details",
             text: i18n.t("Details"),
@@ -145,38 +143,7 @@ function getComponentConfig(api: D2Api, config: Config, goTo: GoTo, currentUser:
         },
     };
 
-    const actionsForUserRoles: ActionsRoleMapping<typeof allActions> = {
-        dataReviewer: [
-            "actualValues",
-            "targetValues",
-            "dashboard",
-            "downloadData",
-            "edit",
-            "dataApproval",
-        ],
-        dataViewer: ["dashboard", "downloadData"],
-        admin: [
-            "actualValues",
-            "targetValues",
-            "dashboard",
-            "downloadData",
-            "reopenDatasets",
-            "edit",
-            "delete",
-            "dataApproval",
-        ],
-        dataEntry: ["actualValues", "targetValues", "dashboard", "downloadData"],
-    };
-
-    const roleKeys = (_.keys(actionsForUserRoles) as unknown) as Array<keyof UserRolesConfig>;
-    const actionsByRole = _(roleKeys)
-        .flatMap(roleKey => {
-            const actionKeys: Array<keyof typeof allActions> = actionsForUserRoles[roleKey] || [];
-            return currentUser.hasRole(roleKey) ? actionKeys.map(key => allActions[key]) : [];
-        })
-        .uniq()
-        .value();
-
+    const actionsByRole = _.compact(_.at(allActions, Array.from(currentUser.actions)));
     const actions = [allActions.details, ...actionsByRole];
 
     return { columns, initialSorting, details, actions, initialPagination };
@@ -233,8 +200,8 @@ const ProjectsList: React.FC = () => {
         getProjects(sorting, pagination);
     }
 
-    const canAccessReports = currentUser.hasRole("admin") || currentUser.hasRole("dataReviewer");
-    const newProjectPageHandler = currentUser.canCreateProject() && (() => goTo("projects.new"));
+    const canAccessReports = currentUser.can("accessMER");
+    const newProjectPageHandler = currentUser.can("create") && (() => goTo("projects.new"));
 
     return (
         <div style={{ marginTop: 25 }}>
