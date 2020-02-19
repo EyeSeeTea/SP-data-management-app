@@ -39,7 +39,7 @@ function getComponentConfig(api: D2Api, config: Config, goTo: GoTo, currentUser:
             sortable: false,
             getValue: (project: ProjectForList) => project.parent.displayName,
         },
-        { name: "code", text: i18n.t("Code"), sortable: true },
+        { name: "code", text: i18n.t("Award Number"), sortable: true },
         {
             name: "sectors",
             text: i18n.t("Sectors"),
@@ -70,11 +70,6 @@ function getComponentConfig(api: D2Api, config: Config, goTo: GoTo, currentUser:
             text: i18n.t("Last Updated By"),
             getValue: (project: ProjectForList) =>
                 `${project.lastUpdatedBy ? project.lastUpdatedBy.name : "-"}`,
-        },
-        {
-            name: "code" as const,
-            text: i18n.t("Code"),
-            getValue: (project: ProjectForList) => `${project.code}`,
         },
         {
             name: "href" as const,
