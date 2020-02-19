@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2020-02-04T08:33:06.134Z\n"
-"PO-Revision-Date: 2020-02-04T08:33:06.134Z\n"
+"POT-Creation-Date: 2020-02-19T12:46:31.026Z\n"
+"PO-Revision-Date: 2020-02-19T12:46:31.026Z\n"
 
 msgid "<No value>"
 msgstr ""
@@ -491,9 +491,6 @@ msgid "Add Actual Values"
 msgstr ""
 
 msgid "Go to Dashboard"
-msgstr ""
-
-msgid "Reopen Datasets"
 msgstr ""
 
 msgid "Add Target Values"
