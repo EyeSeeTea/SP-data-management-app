@@ -103,13 +103,6 @@ function getComponentConfig(api: D2Api, config: Config, goTo: GoTo, currentUser:
             multiple: false,
             onClick: (projects: ProjectForList[]) => goTo("dashboard", { id: projects[0].id }),
         },
-        reopenDatasets: {
-            name: "reopen-datasets",
-            icon: <Icon>lock_open</Icon>,
-            text: i18n.t("Reopen Datasets"),
-            multiple: false,
-            onClick: toBeImplemented,
-        },
 
         targetValues: {
             name: "add-target-values",
