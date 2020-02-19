@@ -1,6 +1,7 @@
 import _ from "lodash";
 import moment from "moment";
 import { D2DataSet, D2OrganisationUnit, D2ApiResponse, MetadataPayload, Id, D2Api } from "d2-api";
+import { SelectedPick, D2OrganisationUnitSchema } from "d2-api";
 import { PartialModel, Ref, PartialPersistedModel, MetadataResponse } from "d2-api";
 import Project, { getOrgUnitDatesFromProject, getDatesFromOrgUnit } from "./Project";
 import { getMonthsRange, toISOString } from "../utils/date";
@@ -319,11 +320,7 @@ export default class ProjectDb {
         const orgUnit = organisationUnits[0];
         if (!orgUnit) throw new Error("Org unit not found");
 
-        const { projectDashboard } = config.attributes;
-        const dashboardId = _(orgUnit.attributeValues)
-            .map(av => (av.attribute.id === projectDashboard.id ? av.value : null))
-            .compact()
-            .first();
+        const dashboardId = getDashboardId(config, orgUnit);
 
         const getDataSet = (type: "actual" | "target") => {
             const dataSet = _(dataSets).find(dataSet => dataSet.code.endsWith(type.toUpperCase()));
@@ -466,6 +463,22 @@ function addAttributeValue<Attribute extends Ref>(
     value: string
 ) {
     return attributeValues.concat([{ value, attribute: { id: attribute.id } }]);
+}
+
+type OrgUnitsWithAttributes = SelectedPick<
+    D2OrganisationUnitSchema,
+    { attributeValues: { attribute: { id: true }; value: true } }
+>;
+
+export function getDashboardId<OrgUnit extends OrgUnitsWithAttributes>(
+    config: Config,
+    orgUnit: OrgUnit
+): Id | undefined {
+    const { projectDashboard } = config.attributes;
+    return _(orgUnit.attributeValues)
+        .map(av => (av.attribute.id === projectDashboard.id ? av.value : null))
+        .compact()
+        .first();
 }
 
 export function flattenPayloads<Model extends keyof MetadataPayload>(
