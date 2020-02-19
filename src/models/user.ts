@@ -1,7 +1,9 @@
+import { GetItemType } from "./../types/utils";
 import _ from "lodash";
 import { Config } from "./Config";
 
 type UserConfig = Pick<Config, "base" | "currentUser">;
+type OrganisationUnit = GetItemType<Config["currentUser"]["organisationUnits"]>;
 
 export type Role = "admin" | "dataReviewer" | "dataViewer" | "dataEntry";
 
@@ -55,12 +57,17 @@ export default class User {
         return this.roles.has(role);
     }
 
-    getOrgUnits(): Config["currentUser"]["organisationUnits"] {
+    can(action: Action): boolean {
+        return this.actions.has(action);
+    }
+
+    getOrgUnits(): OrganisationUnit[] {
         return this.config.currentUser.organisationUnits;
     }
 
-    can(action: Action): boolean {
-        return this.actions.has(action);
+    getCountries(): OrganisationUnit[] {
+        const { orgUnitLevelForCountries } = this.config.base;
+        return this.getOrgUnits().filter(ou => ou.level === orgUnitLevelForCountries);
     }
 }
 
@@ -70,11 +77,7 @@ function buildRoles(config: UserConfig) {
 
     const userRoles = allRoles.filter(role => {
         const roleNames = config.base.userRoles[role];
-        return (
-            _(currentUser.userRoles.map(ur => ur.name))
-                .intersection(roleNames)
-                .size() > 0
-        );
+        return _.intersection(currentUser.userRoles.map(ur => ur.name), roleNames).length > 0;
     });
 
     return new Set(userRoles);

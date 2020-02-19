@@ -169,9 +169,7 @@ const ProjectsList: React.FC = () => {
     }, [search, filter]);
 
     const filterOptions = React.useMemo(() => {
-        const userOrgUnits = currentUser.getOrgUnits();
-        const countriesForUser = _.intersectionBy(config.countries, userOrgUnits, ou => ou.id);
-        return { countries: countriesForUser, sectors: config.sectors };
+        return { countries: currentUser.getCountries(), sectors: config.sectors };
     }, [currentUser, config]);
 
     async function getProjects(
