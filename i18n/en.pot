@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2020-02-18T11:25:33.008Z\n"
-"PO-Revision-Date: 2020-02-18T11:25:33.008Z\n"
+"POT-Creation-Date: 2020-02-20T08:53:24.472Z\n"
+"PO-Revision-Date: 2020-02-20T08:53:24.472Z\n"
 
 msgid "Data Entry"
 msgstr ""
@@ -15,6 +15,27 @@ msgid "Open dataset for the current month"
 msgstr ""
 
 msgid "Reset dataset"
+msgstr ""
+
+msgid "{{n}} projects deleted"
+msgstr ""
+
+msgid "Delete project"
+msgstr ""
+
+msgid ""
+"This operation will delete the organisation units, data sets and dashboards "
+"associated with the selected projects ({{n}}). This operation cannot be "
+"undone. Are you sure you want to proceed?"
+msgstr ""
+
+msgid "Deleting..."
+msgstr ""
+
+msgid "Proceed"
+msgstr ""
+
+msgid "Cancel"
 msgstr ""
 
 msgid "<No value>"
@@ -102,9 +123,6 @@ msgid "Locations"
 msgstr ""
 
 msgid "Sectors"
-msgstr ""
-
-msgid "Cancel"
 msgstr ""
 
 msgid "Save"
@@ -281,6 +299,14 @@ msgid "PM achieved by gender (%)"
 msgstr ""
 
 msgid "PM Benefits Per Person"
+msgstr ""
+
+msgid ""
+"There are data values associated, the delete operation cannot be completed. "
+"Contact the administrators."
+msgstr ""
+
+msgid "Cannot delete projects"
 msgstr ""
 
 msgid "ACTIVITY MONITORING"

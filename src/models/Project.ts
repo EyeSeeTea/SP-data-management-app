@@ -60,6 +60,7 @@ import ProjectDownload from "./ProjectDownload";
 import { TableSorting } from "d2-ui-components";
 import ProjectList, { ProjectForList, FiltersForList } from "./ProjectsList";
 import ProjectDataSet from "./ProjectDataSet";
+import ProjectDelete from "./ProjectDelete";
 
 export interface ProjectData {
     id: Id;
@@ -464,6 +465,10 @@ class Project {
     getProjectDataSet(dataSet: DataSet) {
         const dataSetType: DataSetType = dataSet.code.endsWith("ACTUAL") ? "actual" : "target";
         return this.dataSetsByType[dataSetType];
+    }
+
+    static async delete(config: Config, api: D2Api, ids: Id[]): Promise<void> {
+        return new ProjectDelete(config, api).delete(ids);
     }
 }
 
