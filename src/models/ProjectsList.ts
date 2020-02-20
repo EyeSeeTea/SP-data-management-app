@@ -13,6 +13,7 @@ export type FiltersForList = Partial<{
     sectorIds: string[];
     onlyActive: boolean;
     createdByAppOnly: boolean;
+    inUserOrgUnitsOnly: boolean;
 }>;
 
 type Pagination = { page: number; pageSize: number };
@@ -96,7 +97,8 @@ export default class ProjectsList {
     }
 
     async getBaseOrgUnitIds(api: D2Api, config: Config, filters: FiltersForList, order: string) {
-        const userId = config.currentUser.id;
+        const { currentUser } = config;
+        const userId = currentUser.id;
         const createByAppAttrId = config.attributes.createdByApp.id;
         const filterCountryIds = _.isEmpty(filters.countryIds) ? undefined : filters.countryIds;
         const createdByAppFilter = { "attributeValues.attribute.id": { eq: createByAppAttrId } };
@@ -113,7 +115,7 @@ export default class ProjectsList {
                 },
                 order,
                 filter: {
-                    level: { eq: "3" },
+                    level: { eq: config.base.orgUnits.levelForProjects.toString() },
                     ...getDateFilter(filters),
                     ...(filters.createdByAppOnly ? createdByAppFilter : {}),
                     ...(filters.createdByCurrentUser ? { "user.id": { eq: userId } } : {}),

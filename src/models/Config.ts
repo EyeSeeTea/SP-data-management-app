@@ -26,7 +26,10 @@ export type Config = {
 const yes = true as const;
 
 const baseConfig = {
-    orgUnitLevelForCountries: 2,
+    orgUnits: {
+        levelForCountries: 2,
+        levelForProjects: 3,
+    },
     userRoles: {
         feedback: ["PM Feedback"],
         dataReviewer: ["Data Reviewer"],
@@ -138,7 +141,7 @@ const metadataParams = {
     },
     organisationUnits: {
         fields: { id: yes, displayName: yes },
-        filter: { level: { eq: baseConfig.orgUnitLevelForCountries.toString() } },
+        filter: { level: { eq: baseConfig.orgUnits.levelForCountries.toString() } },
     },
     organisationUnitGroupSets: {
         fields: {

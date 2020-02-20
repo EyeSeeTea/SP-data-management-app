@@ -66,8 +66,8 @@ export default class User {
     }
 
     getCountries(): OrganisationUnit[] {
-        const { orgUnitLevelForCountries } = this.config.base;
-        return this.getOrgUnits().filter(ou => ou.level === orgUnitLevelForCountries);
+        const { levelForCountries } = this.config.base.orgUnits;
+        return this.getOrgUnits().filter(ou => ou.level === levelForCountries);
     }
 }
 
