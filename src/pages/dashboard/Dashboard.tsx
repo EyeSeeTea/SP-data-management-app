@@ -161,4 +161,4 @@ function loadData(
     }
 }
 
-export default Dashboard;
+export default React.memo(Dashboard);

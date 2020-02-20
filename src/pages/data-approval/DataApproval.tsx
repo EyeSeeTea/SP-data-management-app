@@ -372,4 +372,4 @@ function loadData(
         );
 }
 
-export default DataApproval;
+export default React.memo(DataApproval);

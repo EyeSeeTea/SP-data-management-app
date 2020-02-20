@@ -36,4 +36,4 @@ const MultipleDropdown: React.FC<MultipleDropdownProps> = props => {
     );
 };
 
-export default MultipleDropdown;
+export default React.memo(MultipleDropdown);

@@ -230,4 +230,4 @@ function setSelectPeriod(
     }
 }
 
-export default DataEntry;
+export default React.memo(DataEntry);

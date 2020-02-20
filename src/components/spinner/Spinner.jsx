@@ -17,4 +17,4 @@ const style = {
     marginLeft: "48%",
 };
 
-export default Spinner;
+export default React.memo(Spinner);

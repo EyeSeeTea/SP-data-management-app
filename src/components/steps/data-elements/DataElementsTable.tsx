@@ -209,4 +209,4 @@ function withDefault(key: keyof DataElement, defaultValue: string) {
     };
 }
 
-export default DataElementsTable;
+export default React.memo(DataElementsTable);

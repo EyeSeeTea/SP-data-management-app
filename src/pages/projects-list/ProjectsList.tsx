@@ -345,4 +345,4 @@ function toBeImplemented() {
     window.alert("Action to be implemented");
 }
 
-export default ProjectsList;
+export default React.memo(ProjectsList);
