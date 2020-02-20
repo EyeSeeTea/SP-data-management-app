@@ -47,8 +47,8 @@ export default class ProjectsList {
     ): Promise<{ objects: ProjectForList[]; pager: Partial<TablePagination> }> {
         const { api, config } = this;
         const order = `${sorting.field}:i${sorting.order}`;
-        const allOrgUnitIds = await this.getOrgUnitListData(api, config, filters, order);
-        const { pager, objects: orgUnitIds } = paginate(allOrgUnitIds, pagination);
+        const baseOrgUnitIds = await this.getBaseOrgUnitIds(api, config, filters, order);
+        const { pager, objects: orgUnitIds } = paginate(baseOrgUnitIds, pagination);
 
         const { objects: d2OrgUnits } =
             orgUnitIds.length === 0
@@ -95,22 +95,11 @@ export default class ProjectsList {
         return { pager: pager, objects: projectsWithSectors };
     }
 
-    async getOrgUnitListData(api: D2Api, config: Config, filters: FiltersForList, order: string) {
+    async getBaseOrgUnitIds(api: D2Api, config: Config, filters: FiltersForList, order: string) {
         const userId = config.currentUser.id;
+        const createByAppAttrId = config.attributes.createdByApp.id;
         const filterCountryIds = _.isEmpty(filters.countryIds) ? undefined : filters.countryIds;
-        const now = moment();
-        const { openingDate, closedDate } = getOrgUnitDatesFromProject(now, now);
-
-        const dateFilter = filters.onlyActive
-            ? {
-                  openingDate: { le: moment(openingDate).format("YYYY-MM-DD") },
-                  closedDate: { ge: moment(closedDate).format("YYYY-MM-DD") },
-              }
-            : {};
-
-        const createdByAppFilter = {
-            "attributeValues.attribute.id": { eq: config.attributes.createdByApp.id },
-        };
+        const createdByAppFilter = { "attributeValues.attribute.id": { eq: createByAppAttrId } };
 
         const { objects: d2OrgUnits } = await api.models.organisationUnits
             .get({
@@ -125,7 +114,7 @@ export default class ProjectsList {
                 order,
                 filter: {
                     level: { eq: "3" },
-                    ...dateFilter,
+                    ...getDateFilter(filters),
                     ...(filters.createdByAppOnly ? createdByAppFilter : {}),
                     ...(filters.createdByCurrentUser ? { "user.id": { eq: userId } } : {}),
                     ...(filterCountryIds ? { "parent.id": { in: filterCountryIds } } : {}),
@@ -213,4 +202,19 @@ function paginate<Obj>(objects: Obj[], pagination: Pagination) {
         .value();
 
     return { pager, objects: paginatedObjects };
+}
+
+function getDateFilter(filters: FiltersForList) {
+    const now = moment();
+    const dateFormat = "YYYY-MM-DD";
+    const { openingDate, closedDate } = getOrgUnitDatesFromProject(now, now);
+
+    if (filters.onlyActive) {
+        return {
+            openingDate: { le: moment(openingDate).format(dateFormat) },
+            closedDate: { ge: moment(closedDate).format(dateFormat) },
+        };
+    } else {
+        return {};
+    }
 }
