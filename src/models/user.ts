@@ -45,10 +45,12 @@ type UserConfig = Pick<Config, "base" | "currentUser">;
 type OrganisationUnit = GetItemType<Config["currentUser"]["organisationUnits"]>;
 
 export default class User {
+    data: Config["currentUser"];
     public roles: Role[];
     public actions: Action[];
 
     constructor(private config: UserConfig) {
+        this.data = config.currentUser;
         this.roles = buildRoles(config);
         this.actions = buildActions(this.roles);
     }

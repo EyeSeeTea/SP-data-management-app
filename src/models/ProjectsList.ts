@@ -5,6 +5,8 @@ import { Config } from "./Config";
 import moment from "moment";
 import { Sector, getOrgUnitDatesFromProject, getProjectFromOrgUnit } from "./Project";
 import { getSectorCodeFromSectionCode } from "./ProjectDb";
+import User from "./user";
+import { getIds } from "../utils/dhis2";
 
 export type FiltersForList = Partial<{
     search: string;
@@ -13,7 +15,7 @@ export type FiltersForList = Partial<{
     sectorIds: string[];
     onlyActive: boolean;
     createdByAppOnly: boolean;
-    inUserOrgUnitsOnly: boolean;
+    userCountriesOnly: boolean;
 }>;
 
 type Pagination = { page: number; pageSize: number };
@@ -39,7 +41,11 @@ export type ProjectForList = SelectedPick<D2OrganisationUnitSchema, typeof orgUn
 };
 
 export default class ProjectsList {
-    constructor(private api: D2Api, private config: Config) {}
+    currentUser: User;
+
+    constructor(private api: D2Api, private config: Config) {
+        this.currentUser = new User(config);
+    }
 
     async get(
         filters: FiltersForList,
@@ -97,10 +103,9 @@ export default class ProjectsList {
     }
 
     async getBaseOrgUnitIds(api: D2Api, config: Config, filters: FiltersForList, order: string) {
-        const { currentUser } = config;
-        const userId = currentUser.id;
+        const { currentUser } = this;
+        const userId = currentUser.data.id;
         const createByAppAttrId = config.attributes.createdByApp.id;
-        const filterCountryIds = _.isEmpty(filters.countryIds) ? undefined : filters.countryIds;
         const createdByAppFilter = { "attributeValues.attribute.id": { eq: createByAppAttrId } };
 
         const { objects: d2OrgUnits } = await api.models.organisationUnits
@@ -117,9 +122,9 @@ export default class ProjectsList {
                 filter: {
                     level: { eq: config.base.orgUnits.levelForProjects.toString() },
                     ...getDateFilter(filters),
+                    ...getOrgUnitsFilter(filters, currentUser),
                     ...(filters.createdByAppOnly ? createdByAppFilter : {}),
                     ...(filters.createdByCurrentUser ? { "user.id": { eq: userId } } : {}),
-                    ...(filterCountryIds ? { "parent.id": { in: filterCountryIds } } : {}),
                 },
             })
             .getData();
@@ -219,4 +224,12 @@ function getDateFilter(filters: FiltersForList) {
     } else {
         return {};
     }
+}
+
+function getOrgUnitsFilter(filters: FiltersForList, currentUser: User) {
+    const userCountryIds = filters.userCountriesOnly ? getIds(currentUser.getCountries()) : null;
+    const filterCountryIds = !_(filters.countryIds).isEmpty()
+        ? _.intersection(..._.compact([userCountryIds, filters.countryIds]))
+        : userCountryIds;
+    return filterCountryIds ? { "parent.id": { in: filterCountryIds } } : {};
 }
