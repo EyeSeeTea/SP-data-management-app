@@ -59,6 +59,7 @@ import { generateUid } from "d2/uid";
 import ProjectDownload from "./ProjectDownload";
 import { TableSorting } from "d2-ui-components";
 import ProjectList, { ProjectForList, FiltersForList } from "./ProjectsList";
+import ProjectDelete from "./ProjectDelete";
 
 export interface ProjectData {
     id: Id;
@@ -443,6 +444,10 @@ class Project {
         dataElements: Array<{ code: string }>
     ): Array<SelectedPick<D2IndicatorSchema, { id: true; code: true }>> {
         return this.getIndicators(dataElements, this.config.base.indicators.costBenefitPrefix);
+    }
+
+    static async delete(config: Config, api: D2Api, ids: Id[]): Promise<void> {
+        return new ProjectDelete(config, api).delete(ids);
     }
 }
 

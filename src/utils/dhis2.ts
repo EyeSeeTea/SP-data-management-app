@@ -1,9 +1,15 @@
 import _ from "lodash";
 import md5 from "md5";
-import { D2Api, Ref, Id } from "d2-api";
+import { D2Api, Ref, Id, MetadataPayload } from "d2-api";
+import { PostOptions } from "d2-api/api/metadata";
+import { runPromises } from "./promises";
 
 export function getIds<T extends Ref>(objs: T[]): Id[] {
     return objs.map(obj => obj.id);
+}
+
+export function getRefs<T extends Ref>(objs: T[]): Ref[] {
+    return objs.map(obj => ({ id: obj.id }));
 }
 
 export function getIOrgUnitLevel<OrgUnit extends { path: string }>(orgUnit: OrgUnit): number {
@@ -17,6 +23,19 @@ export function getIdFromOrgUnit<OrgUnit extends { path: string }>(orgUnit: OrgU
     } else {
         throw new Error(`Invalid path: ${orgUnit.path}`);
     }
+}
+
+export async function postMetadataRequests(
+    api: D2Api,
+    requests: Array<Partial<MetadataPayload>>,
+    options: Partial<PostOptions>
+): Promise<boolean> {
+    const responses = await runPromises(
+        requests.map(request => () => api.metadata.post(request, options).getData()),
+        { concurrency: 1 }
+    );
+
+    return _.every(responses, response => response.status === "OK");
 }
 
 export function getDataStore(api: D2Api) {
