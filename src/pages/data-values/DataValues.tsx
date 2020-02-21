@@ -101,13 +101,16 @@ function getTranslations(type: Type, projectName: string | undefined) {
         : i18n.t("Set Actual Values for Project");
     const baseHelp = isTarget
         ? i18n.t(
-              `If you have questions regarding target data entry, please refer to the document located at this link`
+              `If you have questions regarding target data entry, please refer to resources located at this link`
           )
-        : i18n.t(`
-            If you have questions regarding actual data entry, please refer to the document located at this link`);
+        : i18n.t(
+              `If you have questions regarding “actual” data entry, please refer to resources located at this link`
+          );
     const help = (
         <p>
-            {baseHelp}:&nbsp;{link("http://todo.com")}
+            {baseHelp}:
+            <br />
+            {link("https://sp.box.com/s/xcod7gqube2gqhjir2ymom5waoc0wvtm")}
         </p>
     );
     return {

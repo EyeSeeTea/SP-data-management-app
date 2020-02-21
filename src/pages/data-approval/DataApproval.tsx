@@ -112,11 +112,7 @@ const DataApproval: React.FC = () => {
 
     return (
         <React.Fragment>
-            <PageHeader
-                title={title}
-                help={i18n.t(`Data Approval`)}
-                onBackClick={() => goToLandingPage()}
-            />
+            <PageHeader title={title} help={getHelp()} onBackClick={() => goToLandingPage()} />
             <Paper style={{ marginBottom: 20, padding: 20 }}>
                 <Dropdown
                     items={periodItems ? periodItems : []}
@@ -370,6 +366,12 @@ function loadData(
                 showUnapproveButton: false,
             })
         );
+}
+
+function getHelp(): string {
+    return i18n.t(`Please choose the month and type of data (target or actual) you wish to approve.
+
+    Once you approve the data, scroll down to the bottom of the screen and click the blue "Approve" button.`);
 }
 
 export default DataApproval;
