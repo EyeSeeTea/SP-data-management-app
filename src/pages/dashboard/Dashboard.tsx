@@ -19,7 +19,7 @@ function goTo(history: History, url: string) {
 
 function getTranslations(projectName: string | undefined) {
     return {
-        title: i18n.t("Dashboard for Project" + ": " + (projectName || "...")),
+        title: i18n.t("Dashboard for Project") + ": " + (projectName || "..."),
         help: i18n.t(
             `Please click on the grey arrow next to the chart/table title if you want to modify the layout.`
         ),
@@ -161,4 +161,4 @@ function loadData(
     }
 }
 
-export default Dashboard;
+export default React.memo(Dashboard);

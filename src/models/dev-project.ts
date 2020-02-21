@@ -1,9 +1,10 @@
 import md5 from "md5";
-import { D2Api } from "d2-api";
+import { D2Api, DataValueSetsPostRequest } from "d2-api";
 import _ from "lodash";
 import Project from "./Project";
 import moment from "moment";
-import { runPromises } from "../utils/promises";
+
+type DataValue = DataValueSetsPostRequest["dataValues"][number];
 
 function getRandomInt(min: number, max: number): number {
     min = Math.ceil(min);
@@ -29,14 +30,19 @@ export function getDevProject(initialProject: Project, enabled: boolean) {
             "dataElements",
             initialProject.dataElements
                 .updateSelection(["WS8XV4WWPE7", "ik0ICagvIjm", "We61YNYyOX0"])
-                .dataElements.updateMERSelected(["WS8XV4WWPE7", "We61YNYyOX0"])
+                .dataElements.updateMERSelected(["ik0ICagvIjm", "We61YNYyOX0"])
         )
         .set("name", "0Test1-" + awardNumber)
         .set("description", "Some description")
         .set("awardNumber", awardNumber)
         .set("subsequentLettering", "en")
         .set("speedKey", "key1")
-        .set("startDate", moment().startOf("month"))
+        .set(
+            "startDate",
+            moment()
+                .startOf("month")
+                .subtract(1, "month")
+        )
         .set(
             "endDate",
             moment()
@@ -52,7 +58,7 @@ export function getDevProject(initialProject: Project, enabled: boolean) {
 
 export function getDevMerReport() {
     return {
-        date: moment("2020-03-01"),
+        date: moment(),
         orgUnit: {
             path: "/J0hschZVMBt/eu2XF73JOzl",
             id: "eu2XF73JOzl",
@@ -77,41 +83,35 @@ export async function saveDataValues(api: D2Api, project: Project) {
         { dataSet: dataSets.actual, attrCoc: targetActualByName.getOrFail("Actual") },
     ];
 
-    const postValues$ = _.flatMap(dataSetsInfo, info => {
-        const ds = info.dataSet;
+    const dataValues = _.flatMap(dataSetsInfo, info => {
         const orgUnit = project.orgUnit;
-        if (!ds || !orgUnit) return [];
+        if (!orgUnit) return [];
 
-        return project.getPeriods().map(period => {
-            return () =>
-                api.dataValues
-                    .postSet({
-                        dataSet: ds.id,
+        return _.flatMap(project.getPeriods(), period => {
+            return _.flatMap(dataElements, de => {
+                const cocs = categoryCombosById.getOrFail(de.categoryComboId).categoryOptionCombos;
+
+                return cocs.map(coc => {
+                    const key = [de.id, coc.id, info.attrCoc, period.id].join("-");
+                    const md5hash = md5(key);
+                    const value = (parseInt(md5hash.slice(0, 8), 16) % 9) + 1;
+
+                    const dataValue: DataValue = {
+                        dataElement: de.id,
+                        value: value.toString(),
+                        categoryOptionCombo: coc.id,
                         orgUnit: orgUnit.id,
                         period: period.id,
                         attributeOptionCombo: info.attrCoc,
-                        dataValues: _.flatMap(dataElements, de => {
-                            const cocs = categoryCombosById.getOrFail(de.categoryComboId)
-                                .categoryOptionCombos;
+                    };
 
-                            return cocs.map(coc => {
-                                const key = [de.id, coc.id, info.attrCoc, period.id].join("-");
-                                const md5hash = md5(key);
-                                const value = (parseInt(md5hash.slice(0, 8), 16) % 10) + 1;
-
-                                return {
-                                    dataElement: de.id,
-                                    categoryOptionCombo: coc.id,
-                                    value: value.toString(),
-                                };
-                            });
-                        }),
-                    })
-                    .getData();
+                    return dataValue;
+                });
+            });
         });
     });
 
-    await runPromises(postValues$, { concurrency: 3 });
+    await api.dataValues.postSet({ force: true }, { dataValues }).getData();
 
     api.analytics.run();
 }

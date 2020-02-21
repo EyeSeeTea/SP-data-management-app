@@ -81,7 +81,7 @@ export function mockApiForMerReportWithData(mock: MockAdapter) {
             dimension: [
                 "ou:uWuM0QT2pVl;SKuiiu7Vbwv",
                 "pe:201910;201911;201912",
-                "GIIHAr9BzzO:eWeQoOlAcxV;imyqCWQ229K",
+                "GIIHAr9BzzO",
                 "dx:WS8XV4WWPE7;We61YNYyOX0;yUGuwPFkBrj",
             ],
         },

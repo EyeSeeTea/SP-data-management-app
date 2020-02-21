@@ -165,10 +165,13 @@ export default class DataElementsSet {
 
                 if (!indicatorType) {
                     console.error(`DataElement ${deKey} has no indicator type`);
+                    return null;
                 } else if (!peopleOrBenefit) {
                     console.error(`DataElement ${deKey} has no indicator type people/benefit`);
+                    return null;
                 } else if (seriesGroups.length > 1) {
                     console.error(`DataElement ${deKey} has ${seriesGroups.length} series`);
+                    return null;
                 } else {
                     const dataElement: DataElementWithCodePairing = {
                         id: d2DataElement.id,
@@ -224,8 +227,9 @@ export default class DataElementsSet {
             : dataElements;
 
         const dataElementsIncluded = includePaired
-            ? _.uniqBy(_.flatMap(mainDEs, de => _.compact([de, de.pairedDataElement])), de =>
-                  [de.id, de.sectorId].join("-")
+            ? _.uniqBy(
+                  _.flatMap(mainDEs, de => _.compact([de, de.pairedDataElement])),
+                  de => [de.id, de.sectorId].join("-")
               )
             : mainDEs;
 
@@ -318,7 +322,7 @@ export default class DataElementsSet {
         const relatedGlobalBySeries = _(dataElements)
             .map(dataElement => {
                 const related =
-                    dataElement.indicatorType == "sub"
+                    dataElement.indicatorType === "sub"
                         ? _(this.dataElementsBy.sectorAndSeries).get(
                               getSectorAndSeriesKey(dataElement, { indicatorType: "global" }),
                               []

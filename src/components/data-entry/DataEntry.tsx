@@ -117,7 +117,7 @@ const getDataEntryForm = async (
         "dhis2.ou.event.orgUnitSelected",
         async (_event: unknown, organisationUnitIds: string[]) => {
             const options = iframeDocument.querySelectorAll("#selectedDataSetId option");
-            if (organisationUnitIds[0] == orgUnitId && options.length > 1) {
+            if (organisationUnitIds[0] === orgUnitId && options.length > 1) {
                 await setDatasetPeriodAndCategory(iframe, dataSet, attributes, onDone);
             } else {
                 iframeSelection.select(orgUnitId);
@@ -218,7 +218,7 @@ function setSelectPeriod(
     const iframe = iframeRef.current;
     if (!iframe || !iframe.contentWindow) return;
 
-    const iframeWindow = iframe.contentWindow as (Window & DataEntryWindow);
+    const iframeWindow = iframe.contentWindow as Window & DataEntryWindow;
     const periodSelector = iframeWindow.document.querySelector("#selectedPeriodId");
 
     if (periodSelector && dropdownValue) {
@@ -230,4 +230,4 @@ function setSelectPeriod(
     }
 }
 
-export default DataEntry;
+export default React.memo(DataEntry);

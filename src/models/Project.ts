@@ -59,6 +59,7 @@ import { generateUid } from "d2/uid";
 import ProjectDownload from "./ProjectDownload";
 import { TableSorting } from "d2-ui-components";
 import ProjectList, { ProjectForList, FiltersForList } from "./ProjectsList";
+import ProjectDelete from "./ProjectDelete";
 
 export interface ProjectData {
     id: Id;
@@ -294,7 +295,7 @@ class Project {
     }
 
     public async validate(
-        validationKeys: (ValidationKey)[] | undefined = undefined
+        validationKeys: ValidationKey[] | undefined = undefined
     ): Promise<Validations> {
         const obj = _(validationKeys || (_.keys(this.validations) as ValidationKey[]))
             .map(key => [key, this.validations[key]])
@@ -308,7 +309,8 @@ class Project {
 
     static getSelectableLocations(config: Config, country: Ref | undefined) {
         return config.locations.filter(
-            location => country && _.some(location.countries, country_ => country_.id == country.id)
+            location =>
+                country && _.some(location.countries, country_ => country_.id === country.id)
         );
     }
 
@@ -443,6 +445,10 @@ class Project {
     ): Array<SelectedPick<D2IndicatorSchema, { id: true; code: true }>> {
         return this.getIndicators(dataElements, this.config.base.indicators.costBenefitPrefix);
     }
+
+    static async delete(config: Config, api: D2Api, ids: Id[]): Promise<void> {
+        return new ProjectDelete(config, api).delete(ids);
+    }
 }
 
 interface Project extends ProjectData {}
@@ -492,7 +498,7 @@ function validatePresence(value: any, field: string): ValidationError {
 }
 
 function validateNonEmpty(value: any[], field: string): ValidationError {
-    return value.length == 0 ? [i18n.t("Select at least one item for {{field}}", { field })] : [];
+    return value.length === 0 ? [i18n.t("Select at least one item for {{field}}", { field })] : [];
 }
 
 /* eslint-disable @typescript-eslint/no-unused-vars */

@@ -127,4 +127,4 @@ function getAttributes(config: Config, type: Type) {
     return { [category.id]: categoryOption.id };
 }
 
-export default DataValues;
+export default React.memo(DataValues);
