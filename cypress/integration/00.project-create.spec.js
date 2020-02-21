@@ -35,7 +35,7 @@ describe("Projects - Create", () => {
         // Funders
 
         cy.contains("Funders");
-        selectInMultiSelector("funders", "ACWME");
+        selectInMultiSelector("funders", "ACWME - ACWME");
 
         cy.contains("Next").click();
 
@@ -130,7 +130,7 @@ describe("Projects - Create", () => {
             .contains("Save")
             .click();
 
-        cy.contains("Project saved", { timeout: 20000 });
+        cy.contains("Project saved", { timeout: 30000 });
     });
 });
 
