@@ -319,7 +319,10 @@ function getFundersAndLocations(metadata: Metadata) {
 
     const fundersSet = ouSetsByCode.getOrFail(baseConfig.organisationUnitGroupSets.funder);
     const funders = _(fundersSet.organisationUnitGroups)
-        .map(funder => ({ ...funder, displayName: `${funder.shortName} - ${funder.displayName}` }))
+        .map(funder => ({
+            ...funder,
+            displayName: _.compact([funder.shortName, funder.displayName]).join(" - "),
+        }))
         .orderBy(
             [funder => funder.shortName === "IHQ", funder => funder.displayName],
             ["desc" as const, "asc" as const]
