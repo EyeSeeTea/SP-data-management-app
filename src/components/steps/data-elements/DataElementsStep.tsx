@@ -37,4 +37,4 @@ const DataElementsStep: React.FC<DataElementsStepProps> = ({ onChange, project, 
     );
 };
 
-export default DataElementsStep;
+export default React.memo(DataElementsStep);

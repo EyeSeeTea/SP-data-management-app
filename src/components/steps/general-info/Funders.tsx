@@ -19,6 +19,7 @@ interface FundersProps {
     project: Project;
     onChange: (project: Project) => void;
 }
+
 type ModelCollectionField = "funders";
 type Option = { value: string; text: string };
 
@@ -62,4 +63,4 @@ const Funders: React.FC<FundersProps> = ({ project, onChange }) => {
     );
 };
 
-export default Funders;
+export default React.memo(Funders);

@@ -30,7 +30,7 @@ export function getDevProject(initialProject: Project, enabled: boolean) {
             "dataElements",
             initialProject.dataElements
                 .updateSelection(["WS8XV4WWPE7", "ik0ICagvIjm", "We61YNYyOX0"])
-                .dataElements.updateMERSelected(["WS8XV4WWPE7", "We61YNYyOX0"])
+                .dataElements.updateMERSelected(["ik0ICagvIjm", "We61YNYyOX0"])
         )
         .set("name", "0Test1-" + awardNumber)
         .set("description", "Some description")
@@ -41,7 +41,7 @@ export function getDevProject(initialProject: Project, enabled: boolean) {
             "startDate",
             moment()
                 .startOf("month")
-                .subtract(2, "months")
+                .subtract(1, "month")
         )
         .set(
             "endDate",
@@ -94,7 +94,7 @@ export async function saveDataValues(api: D2Api, project: Project) {
                 return cocs.map(coc => {
                     const key = [de.id, coc.id, info.attrCoc, period.id].join("-");
                     const md5hash = md5(key);
-                    const value = (parseInt(md5hash.slice(0, 8), 16) % 10) + 1;
+                    const value = (parseInt(md5hash.slice(0, 8), 16) % 9) + 1;
 
                     const dataValue: DataValue = {
                         dataElement: de.id,
