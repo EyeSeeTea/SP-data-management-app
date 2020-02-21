@@ -79,7 +79,12 @@ function buildRoles(config: UserConfig) {
 
     return allRoles.filter(role => {
         const roleNames = config.base.userRoles[role];
-        return _.intersection(currentUser.userRoles.map(ur => ur.name), roleNames).length > 0;
+        return (
+            _.intersection(
+                currentUser.userRoles.map(ur => ur.name),
+                roleNames
+            ).length > 0
+        );
     });
 }
 
