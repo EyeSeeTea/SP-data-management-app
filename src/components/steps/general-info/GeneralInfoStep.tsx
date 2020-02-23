@@ -96,7 +96,7 @@ const validators = {
                 ": " +
                 _.compact([min && `min=${min}`, max && `max=${max}`]).join(", "),
         validator: (s: string) =>
-            (min === undefined || s.length >= min) && (max == undefined || s.length <= max),
+            (min === undefined || s.length >= min) && (max === undefined || s.length <= max),
     }),
     regexp: (regexp: RegExp, message: string) => ({
         message,
@@ -156,4 +156,4 @@ function getDateField(
     };
 }
 
-export default GeneralInfoStep;
+export default React.memo(GeneralInfoStep);

@@ -24,6 +24,7 @@ type RouterParams = { id: string };
 type GetState<Data> = { loading: boolean; data?: Data; error?: string };
 
 type State = GetState<{
+    project: Project;
     name: string;
     orgUnit: { id: string; displayName: string };
     dataSet: DataSet;
@@ -52,6 +53,7 @@ const DataValues: React.FC<DataValuesProps> = ({ type }) => {
             {loading && <LinearProgress />}
             {data && (
                 <DataEntry
+                    project={data.project}
                     orgUnitId={data.orgUnit.id}
                     dataSet={data.dataSet}
                     attributes={attributes}
@@ -84,7 +86,7 @@ function loadData(
             const dataSet = project && project.dataSets ? project.dataSets[type] : null;
             if (project && orgUnit && dataSet) {
                 setState({
-                    data: { name: project.name, orgUnit, dataSet },
+                    data: { project, name: project.name, orgUnit, dataSet },
                     loading: false,
                 });
             } else {
@@ -127,4 +129,4 @@ function getAttributes(config: Config, type: Type) {
     return { [category.id]: categoryOption.id };
 }
 
-export default DataValues;
+export default React.memo(DataValues);

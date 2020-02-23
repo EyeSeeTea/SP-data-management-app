@@ -96,4 +96,4 @@ const useStyles = makeStyles({
     wrapper: { width: 900 },
 });
 
-export default UserOrgUnits;
+export default React.memo(UserOrgUnits);

@@ -64,4 +64,4 @@ const useStyles = makeStyles({
     checkbox: { marginLeft: 5 },
 });
 
-export default DataElementsFilters;
+export default React.memo(DataElementsFilters);

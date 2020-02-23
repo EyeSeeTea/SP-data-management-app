@@ -158,4 +158,4 @@ function getProjectPeriodDateString(project: Project): string {
     }
 }
 
-export default SaveStep;
+export default React.memo(SaveStep);

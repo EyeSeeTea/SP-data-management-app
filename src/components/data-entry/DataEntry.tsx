@@ -5,14 +5,16 @@ import Spinner from "../spinner/Spinner";
 //@ts-ignore
 import { useConfig } from "@dhis2/app-runtime";
 import Dropdown from "../../components/dropdown/Dropdown";
-import { DataSet, getPeriodsData } from "../../models/Project";
-
-const monthFormat = "YYYYMM";
+import Project, { DataSet, monthFormat, getPeriodsData } from "../../models/Project";
+import DataSetStateButton from "./DataSetStateButton";
+import { useAppContext } from "../../contexts/api-context";
+import i18n from "../../locales";
 
 type Attributes = Record<string, string>;
 
 interface DataEntryProps {
     orgUnitId: string;
+    project: Project;
     dataSet: DataSet;
     attributes: Attributes;
 }
@@ -117,7 +119,7 @@ const getDataEntryForm = async (
         "dhis2.ou.event.orgUnitSelected",
         async (_event: unknown, organisationUnitIds: string[]) => {
             const options = iframeDocument.querySelectorAll("#selectedDataSetId option");
-            if (organisationUnitIds[0] == orgUnitId && options.length > 1) {
+            if (organisationUnitIds[0] === orgUnitId && options.length > 1) {
                 await setDatasetPeriodAndCategory(iframe, dataSet, attributes, onDone);
             } else {
                 iframeSelection.select(orgUnitId);
@@ -129,7 +131,14 @@ const getDataEntryForm = async (
 
 const DataEntry = (props: DataEntryProps) => {
     const { orgUnitId, dataSet, attributes } = props;
-    const { periodIds, currentPeriodId } = getPeriodsData(dataSet);
+    const { api, config } = useAppContext();
+    const [project, setProject] = useState<Project>(props.project);
+    const [iframeKey, setIframeKey] = useState(new Date());
+    const [isDataSetOpen, setDataSetOpen] = useState<boolean | undefined>(undefined);
+    const { periodIds, currentPeriodId } = React.useMemo(() => getPeriodsData(dataSet), [dataSet]);
+    const { baseUrl } = useConfig();
+    const iframeRef = React.useRef<HTMLIFrameElement>(null);
+    const iFrameSrc = `${baseUrl}/dhis-web-dataentry/index.action`;
 
     const [state, setState] = useState({
         loading: false,
@@ -137,16 +146,22 @@ const DataEntry = (props: DataEntryProps) => {
         dropdownValue: currentPeriodId,
     });
 
-    useEffect(() => setSelectPeriod(iframeRef, state.dropdownValue), [state]);
+    function reloadIframe() {
+        setState(state => ({ ...state, loading: true }));
+        setIframeKey(new Date());
+        Project.get(api, config, orgUnitId).then(setProject);
+    }
 
-    const { baseUrl } = useConfig();
-    const iFrameSrc = `${baseUrl}/dhis-web-dataentry/index.action`;
-    const iframeRef: React.RefObject<HTMLIFrameElement> = React.createRef();
+    useEffect(() => {
+        if (state.dropdownValue) {
+            setDataSetOpen(setSelectPeriod(iframeRef, state.dropdownValue));
+        }
+    }, [state, project]);
 
     useEffect(() => {
         const iframe = iframeRef.current;
 
-        if (iframe !== null && !state.loading) {
+        if (iframe) {
             iframe.style.display = "none";
             setState({ ...state, loading: true });
             iframe.addEventListener("load", () => {
@@ -155,35 +170,56 @@ const DataEntry = (props: DataEntryProps) => {
                 );
             });
         }
-        if (iframe !== null && state.dropdownHasValues) {
+    }, [iframeKey]);
+
+    useEffect(() => {
+        const iframe = iframeRef.current;
+
+        if (iframe && state.dropdownHasValues) {
             iframe.style.display = "";
         }
-    }, [iframeRef, state]);
+    }, [state]);
 
-    const periodItems = periodIds.map(periodId => ({
-        text: moment(periodId, monthFormat).format("MMMM YYYY"),
-        value: periodId,
-    }));
+    const periodItems = React.useMemo(() => {
+        return periodIds.map(periodId => ({
+            text: moment(periodId, monthFormat).format("MMMM YYYY"),
+            value: periodId,
+        }));
+    }, [periodIds]);
 
     return (
         <React.Fragment>
             <div style={styles.selector}>
                 {!state.dropdownHasValues && <Spinner isLoading={state.loading} />}
                 {state.dropdownHasValues && (
-                    <Dropdown
-                        items={periodItems}
-                        value={state.dropdownValue}
-                        onChange={value => setState({ ...state, dropdownValue: value })}
-                        label="Period"
-                        hideEmpty={true}
-                    />
-                )}{" "}
+                    <div style={styles.dropdown}>
+                        <Dropdown
+                            items={periodItems}
+                            value={state.dropdownValue}
+                            onChange={value => setState({ ...state, dropdownValue: value })}
+                            label="Period"
+                            hideEmpty={true}
+                        />
+                    </div>
+                )}
+
+                {state.dropdownHasValues && state.dropdownValue && (
+                    <div style={styles.buttons}>
+                        <DataSetStateButton
+                            project={project}
+                            dataSet={dataSet}
+                            period={state.dropdownValue}
+                            onChange={reloadIframe}
+                        />
+                    </div>
+                )}
             </div>
             <iframe
+                key={iframeKey.getTime()}
                 ref={iframeRef}
                 src={iFrameSrc}
-                style={styles.iframe}
-                title={"Target Value"}
+                style={isDataSetOpen ? styles.iframe : styles.iframeHidden}
+                title={i18n.t("Data Entry")}
             ></iframe>
         </React.Fragment>
     );
@@ -191,9 +227,18 @@ const DataEntry = (props: DataEntryProps) => {
 
 const styles = {
     iframe: { width: "100%", border: 0, overflow: "hidden" },
+    iframeHidden: { maxHeight: 0, border: 0 },
     backgroundIframe: { backgroundColor: "white" },
     selector: { padding: "35px  10px 10px 5px", backgroundColor: "white" },
+    buttons: { display: "inline", marginLeft: 20 },
+    dropdown: { display: "inline" },
 };
+
+function isOptionInSelect(select: HTMLSelectElement, value: string): boolean {
+    return Array.from(select.options)
+        .map(opt => opt.value)
+        .includes(value);
+}
 
 function selectOption(select: HTMLSelectElement, value: string) {
     const stubEvent = new Event("stub");
@@ -213,21 +258,32 @@ interface DataEntryWindow {
 
 function setSelectPeriod(
     iframeRef: React.RefObject<HTMLIFrameElement>,
-    dropdownValue: string | undefined
-) {
+    periodKey: string | undefined
+): boolean {
     const iframe = iframeRef.current;
-    if (!iframe || !iframe.contentWindow) return;
+    if (!iframe || !iframe.contentWindow) return false;
 
-    const iframeWindow = iframe.contentWindow as (Window & DataEntryWindow);
-    const periodSelector = iframeWindow.document.querySelector("#selectedPeriodId");
+    const iframeWindow = iframe.contentWindow as Window & DataEntryWindow;
+    const periodSelector = iframeWindow.document.querySelector<HTMLSelectElement>(
+        "#selectedPeriodId"
+    );
 
-    if (periodSelector && dropdownValue) {
+    if (periodSelector && periodKey) {
         const now = moment();
-        const selectedDate = moment(dropdownValue, monthFormat);
+        const selectedDate = moment(periodKey, monthFormat);
         iframeWindow.dhis2.de.currentPeriodOffset = selectedDate.year() - now.year();
         iframeWindow.displayPeriods();
-        selectOption(periodSelector as HTMLSelectElement, dropdownValue);
+
+        if (isOptionInSelect(periodSelector, periodKey)) {
+            selectOption(periodSelector, periodKey);
+            return true;
+        } else {
+            console.error("Period is not selectable", periodKey);
+            return false;
+        }
+    } else {
+        return false;
     }
 }
 
-export default DataEntry;
+export default React.memo(DataEntry);

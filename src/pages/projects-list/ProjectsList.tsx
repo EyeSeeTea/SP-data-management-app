@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { ObjectsTable, TableColumn, TableAction, TableSorting, TableState } from "d2-ui-components";
 import { TablePagination } from "d2-ui-components";
 import i18n from "../../locales";
@@ -11,18 +11,22 @@ import { formatDateShort, formatDateLong } from "../../utils/date";
 import ActionButton from "../../components/action-button/ActionButton";
 import { GetPropertiesByType } from "../../types/utils";
 import { downloadFile } from "../../utils/download";
-import { D2Api } from "d2-api";
-import { Icon, LinearProgress } from "@material-ui/core";
+import { D2Api, Id } from "d2-api";
+import { Icon, LinearProgress, CircularProgress } from "@material-ui/core";
 import ProjectsListFilters, { Filter } from "./ProjectsListFilters";
 import { ProjectForList, FiltersForList } from "../../models/ProjectsList";
+import DeleteDialog from "../../components/delete-dialog/DeleteDialog";
+import { Action } from "../../models/user";
 
-type UserRolesConfig = Config["base"]["userRoles"];
+type ContextualAction = Exclude<Action, "create" | "accessMER"> | "details";
 
-type ActionsRoleMapping<Actions> = {
-    [Key in keyof UserRolesConfig]?: Array<keyof Actions>;
-};
-
-function getComponentConfig(api: D2Api, config: Config, goTo: GoTo, currentUser: CurrentUser) {
+function getComponentConfig(
+    api: D2Api,
+    config: Config,
+    goTo: GoTo,
+    setProjectIdsToDelete: (state: React.SetStateAction<Id[] | undefined>) => void,
+    currentUser: CurrentUser
+) {
     const initialPagination = {
         page: 1,
         pageSize: 20,
@@ -80,7 +84,7 @@ function getComponentConfig(api: D2Api, config: Config, goTo: GoTo, currentUser:
         },
     ];
 
-    const allActions: Record<string, TableAction<ProjectForList>> = {
+    const allActions: Record<ContextualAction, TableAction<ProjectForList>> = {
         details: {
             name: "details",
             text: i18n.t("Details"),
@@ -102,13 +106,6 @@ function getComponentConfig(api: D2Api, config: Config, goTo: GoTo, currentUser:
             text: i18n.t("Go to Dashboard"),
             multiple: false,
             onClick: (projects: ProjectForList[]) => goTo("dashboard", { id: projects[0].id }),
-        },
-        reopenDatasets: {
-            name: "reopen-datasets",
-            icon: <Icon>lock_open</Icon>,
-            text: i18n.t("Reopen Datasets"),
-            multiple: false,
-            onClick: toBeImplemented,
         },
 
         targetValues: {
@@ -140,7 +137,7 @@ function getComponentConfig(api: D2Api, config: Config, goTo: GoTo, currentUser:
             icon: <Icon>delete</Icon>,
             text: i18n.t("Delete"),
             multiple: true,
-            onClick: toBeImplemented,
+            onClick: projects => setProjectIdsToDelete(projects.map(project => project.id)),
         },
 
         dataApproval: {
@@ -152,38 +149,7 @@ function getComponentConfig(api: D2Api, config: Config, goTo: GoTo, currentUser:
         },
     };
 
-    const actionsForUserRoles: ActionsRoleMapping<typeof allActions> = {
-        dataReviewer: [
-            "actualValues",
-            "targetValues",
-            "dashboard",
-            "downloadData",
-            "edit",
-            "dataApproval",
-        ],
-        dataViewer: ["dashboard", "downloadData"],
-        admin: [
-            "actualValues",
-            "targetValues",
-            "dashboard",
-            "downloadData",
-            "reopenDatasets",
-            "edit",
-            "delete",
-            "dataApproval",
-        ],
-        dataEntry: ["actualValues", "targetValues", "dashboard", "downloadData"],
-    };
-
-    const roleKeys = (_.keys(actionsForUserRoles) as unknown) as Array<keyof UserRolesConfig>;
-    const actionsByRole = _(roleKeys)
-        .flatMap(roleKey => {
-            const actionKeys: Array<keyof typeof allActions> = actionsForUserRoles[roleKey] || [];
-            return currentUser.hasRole(roleKey) ? actionKeys.map(key => allActions[key]) : [];
-        })
-        .uniq()
-        .value();
-
+    const actionsByRole = _.compact(_.at(allActions, currentUser.actions));
     const actions = [allActions.details, ...actionsByRole];
 
     return { columns, initialSorting, details, actions, initialPagination };
@@ -194,8 +160,9 @@ type ProjectTableSorting = TableSorting<ProjectForList>;
 const ProjectsList: React.FC = () => {
     const goTo = useGoTo();
     const { api, config, currentUser } = useAppContext();
+    const [projectIdsToDelete, setProjectIdsToDelete] = useState<Id[] | undefined>(undefined);
     const componentConfig = React.useMemo(() => {
-        return getComponentConfig(api, config, goTo, currentUser);
+        return getComponentConfig(api, config, goTo, setProjectIdsToDelete, currentUser);
     }, [api, config, currentUser]);
     const [rows, setRows] = useState<ProjectForList[] | undefined>(undefined);
     const [pagination, setPagination] = useState(componentConfig.initialPagination);
@@ -203,15 +170,14 @@ const ProjectsList: React.FC = () => {
     const [search, setSearch] = useState("");
     const [filter, setFilter] = useState<Filter>({});
     const [isLoading, setLoading] = useState(true);
+    const [objectsTableKey, objectsTableKeySet] = useState(() => new Date().getTime());
 
     useEffect(() => {
         getProjects(sorting, { page: 1 });
-    }, [search, filter]);
+    }, [search, filter, objectsTableKey]);
 
     const filterOptions = React.useMemo(() => {
-        const userOrgUnits = currentUser.getOrgUnits();
-        const countriesForUser = _.intersectionBy(config.countries, userOrgUnits, ou => ou.id);
-        return { countries: countriesForUser, sectors: config.sectors };
+        return { countries: currentUser.getCountries(), sectors: config.sectors };
     }, [currentUser, config]);
 
     async function getProjects(
@@ -223,6 +189,8 @@ const ProjectsList: React.FC = () => {
             countryIds: filter.countries,
             sectorIds: filter.sectors,
             onlyActive: filter.onlyActive,
+            createdByAppOnly: true,
+            userCountriesOnly: true,
         };
         const listPagination = { ...pagination, ...paginationOptions };
 
@@ -234,13 +202,18 @@ const ProjectsList: React.FC = () => {
         setLoading(false);
     }
 
-    function onStateChange(newState: TableState<ProjectForList>) {
+    const onStateChange = useCallback((newState: TableState<ProjectForList>) => {
         const { pagination, sorting } = newState;
         getProjects(sorting, pagination);
-    }
+    }, []);
 
-    const canAccessReports = currentUser.hasRole("admin") || currentUser.hasRole("dataReviewer");
-    const newProjectPageHandler = currentUser.canCreateProject() && (() => goTo("projects.new"));
+    const closeDeleteDialog = useCallback(() => {
+        setProjectIdsToDelete(undefined);
+        objectsTableKeySet(new Date().getTime()); // force update of objects table
+    }, []);
+
+    const canAccessReports = currentUser.can("accessMER");
+    const newProjectPageHandler = currentUser.can("create") && (() => goTo("projects.new"));
 
     return (
         <div style={{ marginTop: 25 }}>
@@ -248,8 +221,13 @@ const ProjectsList: React.FC = () => {
 
             {!rows && <LinearProgress />}
 
+            {projectIdsToDelete && (
+                <DeleteDialog projectIds={projectIdsToDelete} onClose={closeDeleteDialog} />
+            )}
+
             {rows && (
                 <ObjectsTable<ProjectForList>
+                    key={objectsTableKey}
                     searchBoxLabel={i18n.t("Search by name or code")}
                     onChangeSearch={setSearch}
                     pagination={pagination}
@@ -280,6 +258,8 @@ const ProjectsList: React.FC = () => {
                                     onClick={newProjectPageHandler}
                                 />
                             )}
+
+                            <LoadingSpinner isVisible={isLoading} />
                         </React.Fragment>
                     }
                 />
@@ -317,8 +297,11 @@ async function download(api: D2Api, config: Config, projectId: string) {
     downloadFile(await project.download());
 }
 
-function toBeImplemented() {
-    window.alert("Action to be implemented");
-}
+const LoadingSpinner: React.FunctionComponent<{ isVisible: boolean }> = ({ isVisible }) => (
+    <React.Fragment>
+        <div style={{ flex: "10 1 auto" }}></div>
+        {isVisible && <CircularProgress />}
+    </React.Fragment>
+);
 
-export default ProjectsList;
+export default React.memo(ProjectsList);

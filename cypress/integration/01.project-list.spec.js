@@ -33,7 +33,6 @@ describe("Project Configuration - List page", () => {
         cy.contains("Details");
         cy.contains("Add Actual Values");
         cy.contains("Go to Dashboard");
-        cy.contains("Reopen Datasets");
         cy.contains("Add Target Values");
         cy.contains("Download Data");
         cy.contains("Edit");

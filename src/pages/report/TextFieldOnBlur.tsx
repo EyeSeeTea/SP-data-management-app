@@ -18,4 +18,4 @@ const TextFieldOnBlur: React.FC<TextFieldOnBlurProps> = props => {
     );
 };
 
-export default TextFieldOnBlur;
+export default React.memo(TextFieldOnBlur);

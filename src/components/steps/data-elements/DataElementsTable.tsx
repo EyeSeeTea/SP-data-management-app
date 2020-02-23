@@ -29,7 +29,6 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
     const { isDev } = useAppContext();
     const snackbar = useSnackbar();
     const [filter, setFilter] = useState<Filter>({});
-    if (!sectorId) return null;
 
     useEffect(() => setFilter({}), [sectorId]);
 
@@ -97,6 +96,8 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
                   "pairedDataElementCode" as const,
               ]
             : ["name" as const, "code" as const];
+
+    if (!sectorId) return null;
 
     return (
         <ObjectsTable<DataElement>
@@ -208,4 +209,4 @@ function withDefault(key: keyof DataElement, defaultValue: string) {
     };
 }
 
-export default DataElementsTable;
+export default React.memo(DataElementsTable);
