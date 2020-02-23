@@ -59,6 +59,7 @@ import { generateUid } from "d2/uid";
 import ProjectDownload from "./ProjectDownload";
 import { TableSorting } from "d2-ui-components";
 import ProjectList, { ProjectForList, FiltersForList } from "./ProjectsList";
+import ProjectDataSet from "./ProjectDataSet";
 import ProjectDelete from "./ProjectDelete";
 
 export interface ProjectData {
@@ -96,12 +97,16 @@ interface DataInputPeriod {
     closingDate: string;
 }
 
+export type DataSetType = "actual" | "target";
+
 export interface DataSet {
     id: string;
     code: string;
     dataSetElements: Array<{ dataElement: Ref; categoryCombo: Ref }>;
-    dataInputPeriods: DataInputPeriod[];
     sections: Array<{ code: string }>;
+    dataInputPeriods: DataInputPeriod[];
+    openFuturePeriods: number;
+    expiryDays: number;
 }
 
 interface OrganisationUnit {
@@ -110,7 +115,7 @@ interface OrganisationUnit {
     displayName: string;
 }
 
-const monthFormat = "YYYYMM";
+export const monthFormat = "YYYYMM";
 
 const defaultProjectData = {
     id: undefined,
@@ -148,6 +153,7 @@ type Validations = { [K in ValidationKey]?: Validation };
 
 class Project {
     data: ProjectData;
+    dataSetsByType: Record<DataSetType, ProjectDataSet>;
 
     static lengths = {
         awardNumber: 5,
@@ -235,6 +241,10 @@ class Project {
     constructor(public api: D2Api, public config: Config, rawData: ProjectData) {
         this.data = Project.processInitialData(config, rawData);
         defineGetters(this.data, this);
+        this.dataSetsByType = {
+            actual: new ProjectDataSet(this, "actual"),
+            target: new ProjectDataSet(this, "target"),
+        };
     }
 
     static processInitialData(config: Config, data: ProjectData) {
@@ -411,6 +421,12 @@ class Project {
         }));
     }
 
+    getDates(): { startDate: Moment; endDate: Moment } {
+        const { startDate, endDate } = this;
+        if (!startDate || !endDate) throw new Error("No project dates");
+        return { startDate, endDate };
+    }
+
     private getIndicators(
         dataElements: Array<{ code: string }>,
         codePrefix: string
@@ -444,6 +460,11 @@ class Project {
         dataElements: Array<{ code: string }>
     ): Array<SelectedPick<D2IndicatorSchema, { id: true; code: true }>> {
         return this.getIndicators(dataElements, this.config.base.indicators.costBenefitPrefix);
+    }
+
+    getProjectDataSet(dataSet: DataSet) {
+        const dataSetType: DataSetType = dataSet.code.endsWith("ACTUAL") ? "actual" : "target";
+        return this.dataSetsByType[dataSetType];
     }
 
     static async delete(config: Config, api: D2Api, ids: Id[]): Promise<void> {
@@ -536,14 +557,7 @@ function validateRegexp(
 }
 
 function getPeriodIds(dataSet: DataSet): string[] {
-    const now = moment();
-    const isPeriodInPastOrOpen = (dip: DataInputPeriod) => {
-        const periodStart = moment(dip.period.id, monthFormat).startOf("month");
-        return periodStart.isBefore(now) || now.isBetween(dip.openingDate, dip.closingDate);
-    };
-
     return _(dataSet.dataInputPeriods)
-        .filter(isPeriodInPastOrOpen)
         .map(dip => dip.period.id)
         .sortBy()
         .value();

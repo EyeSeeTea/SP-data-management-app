@@ -10,6 +10,10 @@ export default class User {
         return this.hasRole("admin") || this.hasRole("dataReviewer");
     }
 
+    canReopenProjects(): boolean {
+        return this.hasRole("admin") || this.hasRole("dataReviewer");
+    }
+
     hasRole(roleKey: keyof Config["base"]["userRoles"]): boolean {
         const { currentUser } = this.config;
         const { userRoles } = this.config.base;
