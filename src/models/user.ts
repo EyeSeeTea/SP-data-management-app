@@ -13,7 +13,8 @@ export type Action =
     | "downloadData"
     | "edit"
     | "dataApproval"
-    | "delete";
+    | "delete"
+    | "reopenProjects";
 
 const actionsByRole: Record<Role, Action[]> = {
     admin: [
@@ -26,6 +27,7 @@ const actionsByRole: Record<Role, Action[]> = {
         "delete",
         "dataApproval",
         "accessMER",
+        "reopenProjects",
     ],
     dataReviewer: [
         "create",
@@ -36,6 +38,7 @@ const actionsByRole: Record<Role, Action[]> = {
         "edit",
         "dataApproval",
         "accessMER",
+        "reopenProjects",
     ],
     dataViewer: ["dashboard", "downloadData"],
     dataEntry: ["targetValues", "actualValues", "dashboard", "downloadData"],
