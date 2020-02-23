@@ -1,5 +1,9 @@
 {
     "base": {
+        "orgUnits": {
+            "levelForCountries": 2,
+            "levelForProjects": 3
+        },
         "userRoles": {
             "feedback": ["PM Feedback"],
             "dataReviewer": ["Data Reviewer"],

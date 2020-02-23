@@ -24,7 +24,7 @@ export type GetPropertiesByType<T, FieldType> = {
 }[keyof T];
 
 /* Get inner type of array */
-export type GetItemType<T> = T extends (infer U)[] ? U : never;
+export type GetItemType<T extends any[]> = T[number];
 
 export type RequiredProps<T> = {
     [P in keyof T]-?: NonNullable<T[P]>;

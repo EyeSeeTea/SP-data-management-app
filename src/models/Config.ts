@@ -26,6 +26,10 @@ export type Config = {
 const yes = true as const;
 
 const baseConfig = {
+    orgUnits: {
+        levelForCountries: 2,
+        levelForProjects: 3,
+    },
     userRoles: {
         feedback: ["PM Feedback"],
         dataReviewer: ["Data Reviewer"],
@@ -137,7 +141,7 @@ const metadataParams = {
     },
     organisationUnits: {
         fields: { id: yes, displayName: yes },
-        filter: { level: { eq: "2" } }, // Only countries
+        filter: { level: { eq: baseConfig.orgUnits.levelForCountries.toString() } },
     },
     organisationUnitGroupSets: {
         fields: {
@@ -178,6 +182,7 @@ export type CurrentUser = {
 export interface OrganisationUnit {
     id: Id;
     displayName: string;
+    level: number;
 }
 
 export type DataElementGroupSet = GetItemType<Metadata["dataElementGroupSets"]>;
@@ -257,7 +262,7 @@ class ConfigLoader {
                     id: true,
                     displayName: true,
                     userCredentials: { userRoles: { name: true } },
-                    organisationUnits: { id: true, displayName: true },
+                    organisationUnits: { id: true, displayName: true, level: true },
                 },
             })
             .getData();
