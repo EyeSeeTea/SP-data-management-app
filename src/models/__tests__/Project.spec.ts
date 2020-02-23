@@ -139,13 +139,13 @@ describe("Project", () => {
                 awardNumber: "12345",
                 speedKey: "somekey",
             });
-            expect(project2.code).toEqual("es12345-somekey");
+            expect(project2.code).toEqual("12345es-somekey");
         });
 
         it("joins {subsequentLettering}{this.awardNumber} if speedKey not set", async () => {
             const project = await getProject();
             const project2 = project.set("subsequentLettering", "es").set("awardNumber", "12345");
-            expect(project2.code).toEqual("es12345");
+            expect(project2.code).toEqual("12345es");
         });
     });
 
@@ -247,13 +247,13 @@ describe("Project", () => {
             mock.onGet("/metadata", {
                 params: {
                     "organisationUnits:fields": "displayName",
-                    "organisationUnits:filter": ["code:eq:au19234-key", "id:ne:BvNo8zQaol8"],
+                    "organisationUnits:filter": ["code:eq:19234au-key", "id:ne:BvNo8zQaol8"],
                 },
             }).replyOnce(200, { organisationUnits: [{ displayName: "Asia" }] });
 
             const errors = await project.validate(["code"]);
             expect(errors.code).toEqual([
-                "There is a project with the same code 'au19234-key' -> Asia",
+                "There is a project with the same code '19234au-key' -> Asia",
             ]);
         });
 
@@ -394,7 +394,7 @@ describe("Project", () => {
 const metadataForGet = {
     organisationUnits: [
         {
-            code: "fr34549",
+            code: "34549fr",
             name: "0Test1-13726c",
             id: "R3rGhxWbAI9",
             path: "/J0hschZVMBt/eu2XF73JOzl/R3rGhxWbAI9",

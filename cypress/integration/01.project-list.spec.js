@@ -16,7 +16,7 @@ describe("Project Configuration - List page", () => {
         cy.contains(projectName).click();
 
         cy.contains("Name");
-        cy.contains("Code");
+        cy.contains("Award Number");
         cy.contains("Description");
         cy.contains("Last Updated");
         cy.contains("Last Updated By");

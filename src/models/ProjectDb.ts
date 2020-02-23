@@ -82,7 +82,7 @@ export default class ProjectDb {
             ),
         };
 
-        const orgUnitGroupsToSave = await getOrgUnitGroups(api, project, orgUnit);
+        const orgUnitGroupsToSave = await getOrgUnitGroups(api, project);
 
         const dataSetAttributeValues = addAttributeValue(
             baseAttributeValues,
@@ -410,8 +410,8 @@ export default class ProjectDb {
             id: orgUnit.id,
             name: orgUnit.name,
             description: orgUnit.description,
-            awardNumber: code.slice(2, 2 + 5),
-            subsequentLettering: code.slice(0, 2),
+            awardNumber: code.slice(0, 5),
+            subsequentLettering: code.slice(5, 5 + 2),
             speedKey: code.slice(8),
             startDate: startDate,
             endDate: endDate,
@@ -445,18 +445,15 @@ export function getSectorCodeFromSectionCode(code: string | undefined) {
 
 type OrgUnitsMeta = Pick<MetadataPayload, "organisationUnits" | "organisationUnitGroups">;
 
-async function getOrgUnitGroups(
-    api: D2Api,
-    project: Project,
-    orgUnit: PartialPersistedModel<D2OrganisationUnit>
-) {
+async function getOrgUnitGroups(api: D2Api, project: Project) {
     /* The project may have changed funders and locations, so get also the previously related
        groups to clear them if necessary */
+    const orgUnitId = project.id;
     const { organisationUnitGroups: prevOrgUnitGroups } = await api.metadata
         .get({
             organisationUnitGroups: {
                 fields: { $owner: true },
-                filter: { "organisationUnits.id": { eq: project.id } },
+                filter: { "organisationUnits.id": { eq: orgUnitId } },
             },
         })
         .getData();
@@ -472,15 +469,16 @@ async function getOrgUnitGroups(
         })
         .getData();
 
-    const orgUnitsToSave = _(prevOrgUnitGroups)
+    const orgUnitGroupsToSave = _(prevOrgUnitGroups)
         .concat(newOrgUnitGroups)
         .uniqBy(oug => oug.id)
         .value();
 
-    return orgUnitsToSave.map(orgUnitGroup => {
-        const organisationUnits = _(orgUnitGroup.organisationUnits)
-            .filter(ou => ou.id !== project.id)
-            .concat(orgUnitGroupIds.has(orgUnitGroup.id) ? [{ id: orgUnit.id }] : [])
+    return orgUnitGroupsToSave.map(orgUnitGroup => {
+        const organisationUnits = _(orgUnitGroup.organisationUnits || [])
+            .filter(ou => ou.id !== orgUnitId)
+            .map(ou => ({ id: ou.id }))
+            .concat(orgUnitGroupIds.has(orgUnitGroup.id) ? [{ id: orgUnitId }] : [])
             .value();
         return { ...orgUnitGroup, organisationUnits };
     });

@@ -43,7 +43,7 @@ function getComponentConfig(
             sortable: false,
             getValue: (project: ProjectForList) => project.parent.displayName,
         },
-        { name: "code", text: i18n.t("Code"), sortable: true },
+        { name: "code", text: i18n.t("Award Number"), sortable: true },
         {
             name: "sectors",
             text: i18n.t("Sectors"),

@@ -83,7 +83,7 @@ export default class ProjectsList {
                   })
                   .getData();
 
-        const dataSetByOrgUnitId = _.keyBy(dataSets, dataSet => dataSet.code.split("_")[0]);
+        const dataSetByOrgUnitId = _.keyBy(dataSets, dataSet => (dataSet.code || "").split("_")[0]);
         const sectorsByCode = _.keyBy(config.sectors, sector => sector.code);
 
         const projectsWithSectors = projects.map(orgUnit => {
@@ -91,7 +91,7 @@ export default class ProjectsList {
             if (!dataSet) {
                 return { ...orgUnit, sectors: [] };
             } else {
-                const sectors = _(dataSet.sections)
+                const sectors = _(dataSet.sections || [])
                     .map(section => sectorsByCode[getSectorCodeFromSectionCode(section.code)])
                     .compact()
                     .value();
@@ -135,8 +135,9 @@ export default class ProjectsList {
         const search = filters.search ? filters.search.toLowerCase() : undefined;
         const d2OrgUnitsFilteredByNameAndCode = search
             ? d2OrgUnits.filter(ou => {
-                  const name = ou.n.toLowerCase();
-                  const code = ou.c.toLowerCase();
+                  const name = (ou.n || "").toLowerCase();
+                  const code = (ou.c || "").toLowerCase();
+                  // OR filter, not supported by the API
                   return name.includes(search) || code.includes(search);
               })
             : d2OrgUnits;
@@ -185,7 +186,7 @@ export default class ProjectsList {
 
         const orgUnitIdsWithinSections = new Set(
             _(sections)
-                .map(section => section.dataSet.code.split("_")[0] || "")
+                .map(section => (section.dataSet.code || "").split("_")[0] || "")
                 .compact()
                 .value()
         );

@@ -274,31 +274,31 @@ msgstr ""
 msgid "{{field}} does not match pattern {{pattern}}"
 msgstr ""
 
-msgid "PM Target vs Actual - Benefits"
+msgid "Target vs Actual - Benefits"
 msgstr ""
 
-msgid "PM Target vs Actual - People"
+msgid "Target vs Actual - People"
 msgstr ""
 
-msgid "PM Target vs Actual - Unique People"
+msgid "Target vs Actual - Unique People"
 msgstr ""
 
-msgid "PM achieved (%) - Benefits"
+msgid "Achieved (%) - Benefits"
 msgstr ""
 
-msgid "PM achieved (%) - People"
+msgid "Achieved (%) - People"
 msgstr ""
 
-msgid "PM achieved monthly (%)"
+msgid "Achieved monthly (%)"
 msgstr ""
 
-msgid "PM achieved (%)"
+msgid "Achieved (%)"
 msgstr ""
 
-msgid "PM achieved by gender (%)"
+msgid "Achieved by gender (%)"
 msgstr ""
 
-msgid "PM Benefits Per Person"
+msgid "Benefits Per Person"
 msgstr ""
 
 msgid ""

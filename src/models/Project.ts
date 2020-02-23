@@ -91,7 +91,7 @@ export type Sector = NamedObject & { code: string };
 export type Funder = NamedObject;
 export type Location = NamedObject;
 
-interface DataInputPeriod {
+export interface DataInputPeriod {
     period: { id: string };
     openingDate: string;
     closingDate: string;
@@ -276,8 +276,8 @@ class Project {
 
     public get code(): string {
         return _([
-            this.subsequentLettering,
             this.awardNumber,
+            this.subsequentLettering,
             this.speedKey ? "-" + this.speedKey : null,
         ])
             .compact()
