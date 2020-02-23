@@ -31,7 +31,7 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
         projectDataSet.reset().then(onChange);
     }, [projectDataSet, onChange]);
 
-    if (!currentUser.can("reopenProjects")) return null;
+    if (!currentUser.canReopenProjects()) return null;
 
     return (
         <React.Fragment>
