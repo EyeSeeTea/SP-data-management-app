@@ -36,7 +36,7 @@ export function getMockConfig(api: D2Api, mock: MockAdapter): Promise<Config> {
             "dataElementGroupSets:filter": ["code:in:[SECTOR,SERIES,TYPE_1,TYPE_2,EXTERNAL]"],
             "indicators:fields": "code,id",
             "organisationUnitGroupSets:fields":
-                "code,organisationUnitGroups[displayName,id,organisationUnits[id,level]]",
+                "code,organisationUnitGroups[displayName,id,organisationUnits[id,level],shortName]",
             "organisationUnitGroupSets:filter": ["code:in:[FUNDER,LOCATION]"],
             "organisationUnits:fields": "displayName,id",
             "organisationUnits:filter": ["level:eq:2"],

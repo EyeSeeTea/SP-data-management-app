@@ -8,13 +8,6 @@ import { CSSProperties } from "@material-ui/core/styles/withStyles";
 import Project from "../../../models/Project";
 import { getProjectFieldName } from "../../../utils/form";
 
-const defaultTitleStyle = { fontSize: "1.1em", color: "grey" };
-
-const Title: React.FC<{ style?: CSSProperties }> = ({ style, children }) => {
-    const finalStyle = style ? { ...defaultTitleStyle, ...style } : defaultTitleStyle;
-    return <div style={finalStyle}>{children}</div>;
-};
-
 interface FundersProps {
     project: Project;
     onChange: (project: Project) => void;
@@ -61,6 +54,13 @@ const Funders: React.FC<FundersProps> = ({ project, onChange }) => {
             </div>
         </CardContent>
     );
+};
+
+const defaultTitleStyle = { fontSize: "1.1em", color: "grey" };
+
+const Title: React.FC<{ style?: CSSProperties }> = ({ style, children }) => {
+    const finalStyle = style ? { ...defaultTitleStyle, ...style } : defaultTitleStyle;
+    return <div style={finalStyle}>{children}</div>;
 };
 
 export default React.memo(Funders);

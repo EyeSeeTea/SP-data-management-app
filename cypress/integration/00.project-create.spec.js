@@ -35,7 +35,7 @@ describe("Projects - Create", () => {
         // Funders
 
         cy.contains("Funders");
-        selectInMultiSelector("funders", "ACWME");
+        selectInMultiSelector("funders", "ACWME - ACWME");
 
         cy.contains("Next").click();
 

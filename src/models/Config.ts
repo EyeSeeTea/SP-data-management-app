@@ -148,6 +148,7 @@ const metadataParams = {
             code: yes,
             organisationUnitGroups: {
                 id: yes,
+                shortName: yes,
                 displayName: yes,
                 organisationUnits: { id: yes, level: yes },
             },
@@ -214,34 +215,17 @@ class ConfigLoader {
     async get(): Promise<Config> {
         const metadata: Metadata = await this.api.metadata.get(metadataParams).getData();
         const d2CurrentUser = await this.getCurrentUser();
-        const ouSetsByCode = _(metadata.organisationUnitGroupSets).keyBy(ougSet => ougSet.code);
-
-        const funders = ouSetsByCode.getOrFail(baseConfig.organisationUnitGroupSets.funder)
-            .organisationUnitGroups;
-
-        const locations = ouSetsByCode
-            .getOrFail(baseConfig.organisationUnitGroupSets.location)
-            .organisationUnitGroups.map(oug => ({
-                id: oug.id,
-                displayName: oug.displayName,
-                countries: oug.organisationUnits
-                    .filter(ou => ou.level === 2)
-                    .map(ou => ({ id: ou.id })),
-            }));
-
-        const currentUser = {
-            ...d2CurrentUser,
-            userRoles: d2CurrentUser.userCredentials.userRoles,
-        };
-
+        const { funders, locations } = getFundersAndLocations(metadata);
+        const { userRoles } = d2CurrentUser.userCredentials;
+        const currentUser = { ...d2CurrentUser, userRoles };
         const dataElementsMetadata = await this.getDataElementsMetadata(currentUser, metadata);
 
-        const config = {
+        return {
             base: baseConfig,
-            currentUser: currentUser,
+            currentUser,
             ...dataElementsMetadata,
-            funders: _.sortBy(funders, funder => funder.displayName),
-            locations: _.sortBy(locations, location => location.displayName),
+            funders,
+            locations,
             indicators: metadata.indicators,
             attributes: indexObjects(metadata, "attributes"),
             categories: indexObjects(metadata, "categories"),
@@ -251,8 +235,6 @@ class ConfigLoader {
             dataApprovalWorkflows: indexObjects(metadata, "dataApprovalWorkflows"),
             countries: _.sortBy(metadata.organisationUnits, ou => ou.displayName),
         };
-
-        return config;
     }
 
     async getCurrentUser() {
@@ -335,6 +317,36 @@ async function getFromApp(baseUrl: string) {
     const jsonPath = path.join(__dirname, "__tests__", "config.json");
     fs.writeFileSync(jsonPath, JSON.stringify(config, null, 4) + "\n");
     console.info(`Written: ${jsonPath}`);
+}
+
+function getFundersAndLocations(metadata: Metadata) {
+    const ouSetsByCode = _(metadata.organisationUnitGroupSets).keyBy(ougSet => ougSet.code);
+
+    const fundersSet = ouSetsByCode.getOrFail(baseConfig.organisationUnitGroupSets.funder);
+    const funders = _(fundersSet.organisationUnitGroups)
+        .map(funder => ({
+            ...funder,
+            displayName: _.compact([funder.displayName, funder.shortName]).join(" - "),
+        }))
+        .orderBy(
+            [funder => funder.shortName === "IHQ", funder => funder.displayName],
+            ["desc" as const, "asc" as const]
+        )
+        .value();
+
+    const locationsSet = ouSetsByCode.getOrFail(baseConfig.organisationUnitGroupSets.location);
+    const locations = _(locationsSet.organisationUnitGroups)
+        .map(oug => ({
+            id: oug.id,
+            displayName: oug.displayName,
+            countries: oug.organisationUnits
+                .filter(ou => ou.level === 2)
+                .map(ou => ({ id: ou.id })),
+        }))
+        .sortBy(location => location.displayName)
+        .value();
+
+    return { funders, locations };
 }
 
 if (require.main === module) {
