@@ -374,4 +374,4 @@ function getHelp(): string {
     Once you approve the data, scroll down to the bottom of the screen and click the blue "Approve" button.`);
 }
 
-export default DataApproval;
+export default React.memo(DataApproval);

@@ -26,4 +26,4 @@ const ActionButton: React.FC<ActionButtonProps> = props => {
     );
 };
 
-export default ActionButton;
+export default React.memo(ActionButton);

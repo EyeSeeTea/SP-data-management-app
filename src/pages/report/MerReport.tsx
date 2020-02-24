@@ -225,4 +225,4 @@ const useStyles = makeStyles({
     },
 });
 
-export default MerReportComponent;
+export default React.memo(MerReportComponent);

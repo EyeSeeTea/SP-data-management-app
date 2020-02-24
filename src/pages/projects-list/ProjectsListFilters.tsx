@@ -72,4 +72,4 @@ function useMemoOptions(options: Option[]) {
     }, [options]);
 }
 
-export default ProjectsListFilters;
+export default React.memo(ProjectsListFilters);

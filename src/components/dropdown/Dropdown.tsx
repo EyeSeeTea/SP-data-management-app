@@ -39,4 +39,4 @@ const Dropdown: React.FC<DropdownProps> = props => {
     );
 };
 
-export default Dropdown;
+export default React.memo(Dropdown);

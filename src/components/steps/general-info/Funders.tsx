@@ -12,6 +12,7 @@ interface FundersProps {
     project: Project;
     onChange: (project: Project) => void;
 }
+
 type ModelCollectionField = "funders";
 type Option = { value: string; text: string };
 
@@ -62,4 +63,4 @@ const Title: React.FC<{ style?: CSSProperties }> = ({ style, children }) => {
     return <div style={finalStyle}>{children}</div>;
 };
 
-export default Funders;
+export default React.memo(Funders);

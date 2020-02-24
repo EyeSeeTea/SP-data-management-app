@@ -48,7 +48,7 @@ export function getMockConfig(api: D2Api, mock: MockAdapter): Promise<Config> {
     mock.onGet("/me", {
         params: {
             fields:
-                "displayName,id,organisationUnits[displayName,id],userCredentials[userRoles[name]]",
+                "displayName,id,organisationUnits[displayName,id,level],userCredentials[userRoles[name]]",
         },
     }).replyOnce(200, user);
 

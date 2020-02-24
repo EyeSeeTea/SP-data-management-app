@@ -141,4 +141,4 @@ class Share extends React.Component {
     }
 }
 
-export default Share;
+export default React.memo(Share);

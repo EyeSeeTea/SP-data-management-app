@@ -5,8 +5,17 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2020-02-21T08:18:45.945Z\n"
-"PO-Revision-Date: 2020-02-21T08:18:45.945Z\n"
+"POT-Creation-Date: 2020-02-20T08:53:24.472Z\n"
+"PO-Revision-Date: 2020-02-20T08:53:24.472Z\n"
+
+msgid "Data Entry"
+msgstr ""
+
+msgid "Open dataset for the current month"
+msgstr ""
+
+msgid "Reset dataset"
+msgstr ""
 
 msgid "{{n}} projects deleted"
 msgstr ""
@@ -265,31 +274,31 @@ msgstr ""
 msgid "{{field}} does not match pattern {{pattern}}"
 msgstr ""
 
-msgid "PM Target vs Actual - Benefits"
+msgid "Target vs Actual - Benefits"
 msgstr ""
 
-msgid "PM Target vs Actual - People"
+msgid "Target vs Actual - People"
 msgstr ""
 
-msgid "PM Target vs Actual - Unique People"
+msgid "Target vs Actual - Unique People"
 msgstr ""
 
-msgid "PM achieved (%) - Benefits"
+msgid "Achieved (%) - Benefits"
 msgstr ""
 
-msgid "PM achieved (%) - People"
+msgid "Achieved (%) - People"
 msgstr ""
 
-msgid "PM achieved monthly (%)"
+msgid "Achieved monthly (%)"
 msgstr ""
 
-msgid "PM achieved (%)"
+msgid "Achieved (%)"
 msgstr ""
 
-msgid "PM achieved by gender (%)"
+msgid "Achieved by gender (%)"
 msgstr ""
 
-msgid "PM Benefits Per Person"
+msgid "Benefits Per Person"
 msgstr ""
 
 msgid ""
@@ -532,9 +541,6 @@ msgid "Add Actual Values"
 msgstr ""
 
 msgid "Go to Dashboard"
-msgstr ""
-
-msgid "Reopen Datasets"
 msgstr ""
 
 msgid "Add Target Values"

@@ -36,4 +36,4 @@ class HelpButton extends React.Component<HelpProps> {
     }
 }
 
-export default HelpButton;
+export default React.memo(HelpButton);
