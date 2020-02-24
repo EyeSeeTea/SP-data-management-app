@@ -13,6 +13,7 @@ export type Action =
     | "downloadData"
     | "edit"
     | "dataApproval"
+    | "reopen"
     | "delete";
 
 const actionsByRole: Record<Role, Action[]> = {
@@ -26,6 +27,7 @@ const actionsByRole: Record<Role, Action[]> = {
         "delete",
         "dataApproval",
         "accessMER",
+        "reopen",
     ],
     dataReviewer: [
         "create",
@@ -36,6 +38,7 @@ const actionsByRole: Record<Role, Action[]> = {
         "edit",
         "dataApproval",
         "accessMER",
+        "reopen",
     ],
     dataViewer: ["dashboard", "downloadData"],
     dataEntry: ["targetValues", "actualValues", "dashboard", "downloadData"],
@@ -61,10 +64,6 @@ export default class User {
 
     can(action: Action): boolean {
         return this.actions.includes(action);
-    }
-
-    canReopenProjects(): boolean {
-        return this.hasRole("admin") || this.hasRole("dataReviewer");
     }
 
     getOrgUnits(): OrganisationUnit[] {

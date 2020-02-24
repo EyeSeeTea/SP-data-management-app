@@ -18,7 +18,7 @@ import { ProjectForList, FiltersForList } from "../../models/ProjectsList";
 import DeleteDialog from "../../components/delete-dialog/DeleteDialog";
 import { Action } from "../../models/user";
 
-type ContextualAction = Exclude<Action, "create" | "accessMER"> | "details";
+type ContextualAction = Exclude<Action, "create" | "accessMER" | "reopen"> | "details";
 
 function getComponentConfig(
     api: D2Api,
