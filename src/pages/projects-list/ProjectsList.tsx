@@ -12,16 +12,13 @@ import ActionButton from "../../components/action-button/ActionButton";
 import { GetPropertiesByType } from "../../types/utils";
 import { downloadFile } from "../../utils/download";
 import { D2Api, Id } from "d2-api";
-import { Icon, LinearProgress } from "@material-ui/core";
+import { Icon, LinearProgress, CircularProgress } from "@material-ui/core";
 import ProjectsListFilters, { Filter } from "./ProjectsListFilters";
 import { ProjectForList, FiltersForList } from "../../models/ProjectsList";
 import DeleteDialog from "../../components/delete-dialog/DeleteDialog";
+import { Action } from "../../models/user";
 
-type UserRolesConfig = Config["base"]["userRoles"];
-
-type ActionsRoleMapping<Actions> = {
-    [Key in keyof UserRolesConfig]?: Array<keyof Actions>;
-};
+type ContextualAction = Exclude<Action, "create" | "accessMER"> | "details";
 
 function getComponentConfig(
     api: D2Api,
@@ -46,7 +43,7 @@ function getComponentConfig(
             sortable: false,
             getValue: (project: ProjectForList) => project.parent.displayName,
         },
-        { name: "code", text: i18n.t("Code"), sortable: true },
+        { name: "code", text: i18n.t("Award Number"), sortable: true },
         {
             name: "sectors",
             text: i18n.t("Sectors"),
@@ -79,11 +76,6 @@ function getComponentConfig(
                 `${project.lastUpdatedBy ? project.lastUpdatedBy.name : "-"}`,
         },
         {
-            name: "code" as const,
-            text: i18n.t("Code"),
-            getValue: (project: ProjectForList) => `${project.code}`,
-        },
-        {
             name: "href" as const,
             text: i18n.t("API Link"),
             getValue: function getDataSetLink(project: ProjectForList) {
@@ -92,7 +84,7 @@ function getComponentConfig(
         },
     ];
 
-    const allActions: Record<string, TableAction<ProjectForList>> = {
+    const allActions: Record<ContextualAction, TableAction<ProjectForList>> = {
         details: {
             name: "details",
             text: i18n.t("Details"),
@@ -114,13 +106,6 @@ function getComponentConfig(
             text: i18n.t("Go to Dashboard"),
             multiple: false,
             onClick: (projects: ProjectForList[]) => goTo("dashboard", { id: projects[0].id }),
-        },
-        reopenDatasets: {
-            name: "reopen-datasets",
-            icon: <Icon>lock_open</Icon>,
-            text: i18n.t("Reopen Datasets"),
-            multiple: false,
-            onClick: toBeImplemented,
         },
 
         targetValues: {
@@ -164,38 +149,7 @@ function getComponentConfig(
         },
     };
 
-    const actionsForUserRoles: ActionsRoleMapping<typeof allActions> = {
-        dataReviewer: [
-            "actualValues",
-            "targetValues",
-            "dashboard",
-            "downloadData",
-            "edit",
-            "dataApproval",
-        ],
-        dataViewer: ["dashboard", "downloadData"],
-        admin: [
-            "actualValues",
-            "targetValues",
-            "dashboard",
-            "downloadData",
-            "reopenDatasets",
-            "edit",
-            "delete",
-            "dataApproval",
-        ],
-        dataEntry: ["actualValues", "targetValues", "dashboard", "downloadData"],
-    };
-
-    const roleKeys = (_.keys(actionsForUserRoles) as unknown) as Array<keyof UserRolesConfig>;
-    const actionsByRole = _(roleKeys)
-        .flatMap(roleKey => {
-            const actionKeys: Array<keyof typeof allActions> = actionsForUserRoles[roleKey] || [];
-            return currentUser.hasRole(roleKey) ? actionKeys.map(key => allActions[key]) : [];
-        })
-        .uniq()
-        .value();
-
+    const actionsByRole = _.compact(_.at(allActions, currentUser.actions));
     const actions = [allActions.details, ...actionsByRole];
 
     return { columns, initialSorting, details, actions, initialPagination };
@@ -223,9 +177,7 @@ const ProjectsList: React.FC = () => {
     }, [search, filter, objectsTableKey]);
 
     const filterOptions = React.useMemo(() => {
-        const userOrgUnits = currentUser.getOrgUnits();
-        const countriesForUser = _.intersectionBy(config.countries, userOrgUnits, ou => ou.id);
-        return { countries: countriesForUser, sectors: config.sectors };
+        return { countries: currentUser.getCountries(), sectors: config.sectors };
     }, [currentUser, config]);
 
     async function getProjects(
@@ -237,6 +189,8 @@ const ProjectsList: React.FC = () => {
             countryIds: filter.countries,
             sectorIds: filter.sectors,
             onlyActive: filter.onlyActive,
+            createdByAppOnly: true,
+            userCountriesOnly: true,
         };
         const listPagination = { ...pagination, ...paginationOptions };
 
@@ -258,8 +212,8 @@ const ProjectsList: React.FC = () => {
         objectsTableKeySet(new Date().getTime()); // force update of objects table
     }, []);
 
-    const canAccessReports = currentUser.hasRole("admin") || currentUser.hasRole("dataReviewer");
-    const newProjectPageHandler = currentUser.canCreateProject() && (() => goTo("projects.new"));
+    const canAccessReports = currentUser.can("accessMER");
+    const newProjectPageHandler = currentUser.can("create") && (() => goTo("projects.new"));
 
     return (
         <div style={{ marginTop: 25 }}>
@@ -304,6 +258,8 @@ const ProjectsList: React.FC = () => {
                                     onClick={newProjectPageHandler}
                                 />
                             )}
+
+                            <LoadingSpinner isVisible={isLoading} />
                         </React.Fragment>
                     }
                 />
@@ -341,8 +297,11 @@ async function download(api: D2Api, config: Config, projectId: string) {
     downloadFile(await project.download());
 }
 
-function toBeImplemented() {
-    window.alert("Action to be implemented");
-}
+const LoadingSpinner: React.FunctionComponent<{ isVisible: boolean }> = ({ isVisible }) => (
+    <React.Fragment>
+        <div style={{ flex: "10 1 auto" }}></div>
+        {isVisible && <CircularProgress />}
+    </React.Fragment>
+);
 
 export default React.memo(ProjectsList);

@@ -111,7 +111,7 @@ describe("Projects - Create", () => {
         cy.contains("00Cypress Project");
 
         cy.contains("Period dates");
-        cy.contains(`February 1, ${projectYear} -> June 30, ${projectYear}`);
+        cy.contains(`February ${projectYear} -> June ${projectYear}`);
 
         cy.contains("Description");
 
@@ -130,7 +130,7 @@ describe("Projects - Create", () => {
             .contains("Save")
             .click();
 
-        cy.contains("Project saved", { timeout: 20000 });
+        cy.contains("Project saved", { timeout: 30000 });
     });
 });
 

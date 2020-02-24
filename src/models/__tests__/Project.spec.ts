@@ -74,7 +74,7 @@ describe("Project", () => {
                         "attributeValues[attribute[id],value],closedDate,code,description,displayName,id,name,openingDate,organisationUnitGroups[id],parent[displayName,id,path],path",
                     "organisationUnits:filter": ["id:eq:R3rGhxWbAI9"],
                     "dataSets:fields":
-                        "code,dataInputPeriods[closingDate,openingDate,period],dataSetElements[categoryCombo[id],dataElement[id]],id,sections[code]",
+                        "code,dataInputPeriods[closingDate,openingDate,period],dataSetElements[categoryCombo[id],dataElement[id]],expiryDays,id,openFuturePeriods,sections[code]",
                     "dataSets:filter": ["code:$like:R3rGhxWbAI9"],
                 },
             }).replyOnce(200, metadataForGet);
@@ -139,13 +139,13 @@ describe("Project", () => {
                 awardNumber: "12345",
                 speedKey: "somekey",
             });
-            expect(project2.code).toEqual("es12345-somekey");
+            expect(project2.code).toEqual("12345es-somekey");
         });
 
         it("joins {subsequentLettering}{this.awardNumber} if speedKey not set", async () => {
             const project = await getProject();
             const project2 = project.set("subsequentLettering", "es").set("awardNumber", "12345");
-            expect(project2.code).toEqual("es12345");
+            expect(project2.code).toEqual("12345es");
         });
     });
 
@@ -247,13 +247,13 @@ describe("Project", () => {
             mock.onGet("/metadata", {
                 params: {
                     "organisationUnits:fields": "displayName",
-                    "organisationUnits:filter": ["code:eq:au19234-key", "id:ne:BvNo8zQaol8"],
+                    "organisationUnits:filter": ["code:eq:19234au-key", "id:ne:BvNo8zQaol8"],
                 },
             }).replyOnce(200, { organisationUnits: [{ displayName: "Asia" }] });
 
             const errors = await project.validate(["code"]);
             expect(errors.code).toEqual([
-                "There is a project with the same code 'au19234-key' -> Asia",
+                "There is a project with the same code '19234au-key' -> Asia",
             ]);
         });
 
@@ -304,12 +304,14 @@ describe("Project", () => {
     });
 
     describe("getList", () => {
+        const createdByApp = { attribute: { id: "mgCKcJuP5n0" }, value: "true" };
         const organisationUnitsUnpaginated = [
-            { i: "1", c: "code1", n: "name1" },
-            { i: "2", c: "other2", n: "other2" },
-            { i: "3", c: "CODE3", n: "name3" },
-            { i: "4", c: "other4", n: "other4" },
-            { i: "5", c: "code5", n: "NAME5" },
+            { i: "1", c: "code1", n: "name1", attributeValues: [createdByApp] },
+            { i: "2", c: "other2", n: "other2", attributeValues: [createdByApp] },
+            { i: "3", c: "CODE3", n: "name3", attributeValues: [createdByApp] },
+            { i: "4", c: "other4", n: "other4", attributeValues: [createdByApp] },
+            { i: "5", c: "code5", n: "NAME5", attributeValues: [createdByApp] },
+            { i: "6", c: "code6", n: "NAME6", attributeValues: [] },
         ];
 
         const organisationUnits = [
@@ -318,17 +320,24 @@ describe("Project", () => {
             { id: "3", code: "CODE3", displayName: "name3" },
             { id: "4", code: "other4", displayName: "other4" },
             { id: "5", code: "code5", displayName: "NAME5" },
+            { id: "6", code: "code6", displayName: "NAME6" },
         ];
 
         const orgUnitsById = _.keyBy(organisationUnits, ou => ou.id);
 
-        it.only("returns list of organisation units filtered", async () => {
+        it("returns list of organisation units filtered", async () => {
             mock.onGet("/organisationUnits", {
                 params: {
                     paging: false,
-                    fields: "code~rename(c),displayName~rename(n),id~rename(i)",
+                    fields:
+                        "attributeValues[attribute[id],value],code~rename(c),displayName~rename(n),id~rename(i)",
                     order: "displayName:idesc",
-                    filter: ["level:eq:3", "parent.id:in:[parent1]", "user.id:eq:M5zQapPyTZI"],
+                    filter: [
+                        "attributeValues.attribute.id:eq:mgCKcJuP5n0",
+                        "level:eq:3",
+                        "parent.id:in:[parent1]",
+                        "user.id:eq:M5zQapPyTZI",
+                    ],
                 },
             }).replyOnce(200, { organisationUnits: _.reverse(organisationUnitsUnpaginated) });
 
@@ -356,7 +365,12 @@ describe("Project", () => {
             const { objects, pager: pagination } = await Project.getList(
                 api,
                 config,
-                { search: "name", createdByCurrentUser: true, countryIds: ["parent1"] },
+                {
+                    search: "name",
+                    createdByCurrentUser: true,
+                    countryIds: ["parent1"],
+                    createdByAppOnly: true,
+                },
                 { field: "displayName", order: "desc" },
                 { page: 1, pageSize: 2 }
             );
@@ -380,7 +394,7 @@ describe("Project", () => {
 const metadataForGet = {
     organisationUnits: [
         {
-            code: "fr34549",
+            code: "34549fr",
             name: "0Test1-13726c",
             id: "R3rGhxWbAI9",
             path: "/J0hschZVMBt/eu2XF73JOzl/R3rGhxWbAI9",

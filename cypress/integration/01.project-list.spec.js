@@ -16,7 +16,7 @@ describe("Project Configuration - List page", () => {
         cy.contains(projectName).click();
 
         cy.contains("Name");
-        cy.contains("Code");
+        cy.contains("Award Number");
         cy.contains("Description");
         cy.contains("Last Updated");
         cy.contains("Last Updated By");
@@ -33,7 +33,6 @@ describe("Project Configuration - List page", () => {
         cy.contains("Details");
         cy.contains("Add Actual Values");
         cy.contains("Go to Dashboard");
-        cy.contains("Reopen Datasets");
         cy.contains("Add Target Values");
         cy.contains("Download Data");
         cy.contains("Edit");

@@ -18,7 +18,7 @@ describe("ProjectDb", () => {
             mock.onGet("/metadata", {
                 expected: {
                     "organisationUnits:fields": "displayName",
-                    "organisationUnits:filter": ["code:eq:en12345", "id:ne:WGC0DJ0YSis"],
+                    "organisationUnits:filter": ["code:eq:12345en", "id:ne:WGC0DJ0YSis"],
                 },
             }).replyOnce(200, []);
 
@@ -117,7 +117,7 @@ const expectedOrgUnitPut = {
     name: "MyProject",
     displayName: "MyProject",
     path: "/J0hschZVMBt/eu2XF73JOzl/WGC0DJ0YSis",
-    code: "en12345",
+    code: "12345en",
     shortName: "MyProject",
     description: "",
     parent: {
@@ -231,7 +231,7 @@ const expectedMetadataPost = {
             name: "MyProject",
             displayName: "MyProject",
             path: "/J0hschZVMBt/eu2XF73JOzl/WGC0DJ0YSis",
-            code: "en12345",
+            code: "12345en",
             shortName: "MyProject",
             description: "",
             parent: {
@@ -694,7 +694,7 @@ const expectedMetadataPost = {
     reportTables: [
         {
             id: "i07AWJAND8a",
-            name: "MyProject - PM Target vs Actual - Benefits",
+            name: "MyProject - Target vs Actual - Benefits",
             numberType: "VALUE",
             publicAccess: "rw------",
             legendDisplayStyle: "FILL",
@@ -793,7 +793,7 @@ const expectedMetadataPost = {
         },
         {
             id: "iqqgnCj9DQj",
-            name: "MyProject - PM Target vs Actual - People",
+            name: "MyProject - Target vs Actual - People",
             numberType: "VALUE",
             publicAccess: "rw------",
             legendDisplayStyle: "FILL",
@@ -952,7 +952,7 @@ const expectedMetadataPost = {
         },
         {
             id: "GycLEG8dPPO",
-            name: "MyProject - PM Target vs Actual - Unique People",
+            name: "MyProject - Target vs Actual - Unique People",
             numberType: "VALUE",
             publicAccess: "rw------",
             legendDisplayStyle: "FILL",
@@ -1103,7 +1103,7 @@ const expectedMetadataPost = {
         },
         {
             id: "aeGIpbJkZAX",
-            name: "MyProject - PM achieved (%) - Benefits",
+            name: "MyProject - Achieved (%) - Benefits",
             numberType: "VALUE",
             publicAccess: "rw------",
             legendDisplayStyle: "FILL",
@@ -1178,7 +1178,7 @@ const expectedMetadataPost = {
         },
         {
             id: "GM6SxObVwI3",
-            name: "MyProject - PM achieved (%) - People",
+            name: "MyProject - Achieved (%) - People",
             numberType: "VALUE",
             publicAccess: "rw------",
             legendDisplayStyle: "FILL",
@@ -1261,7 +1261,7 @@ const expectedMetadataPost = {
     charts: [
         {
             id: "uG9C9z46CNK",
-            name: "MyProject - PM achieved monthly (%)",
+            name: "MyProject - Achieved monthly (%)",
             publicAccess: "rw------",
             type: "COLUMN",
             aggregationType: "DEFAULT",
@@ -1345,7 +1345,7 @@ const expectedMetadataPost = {
         },
         {
             id: "qmsj4FqnVPX",
-            name: "MyProject - PM achieved (%)",
+            name: "MyProject - Achieved (%)",
             publicAccess: "rw------",
             type: "COLUMN",
             aggregationType: "DEFAULT",
@@ -1429,7 +1429,7 @@ const expectedMetadataPost = {
         },
         {
             id: "u6Sin4Fy1Wt",
-            name: "MyProject - PM achieved by gender (%)",
+            name: "MyProject - Achieved by gender (%)",
             publicAccess: "rw------",
             type: "COLUMN",
             aggregationType: "DEFAULT",
@@ -1548,7 +1548,7 @@ const expectedMetadataPost = {
         },
         {
             id: "ukewRkZsyCI",
-            name: "MyProject - PM Benefits Per Person",
+            name: "MyProject - Benefits Per Person",
             publicAccess: "rw------",
             type: "COLUMN",
             aggregationType: "DEFAULT",

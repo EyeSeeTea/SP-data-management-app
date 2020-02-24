@@ -23,6 +23,8 @@ export const projectData = {
         path: "/J0hschZVMBt/eu2XF73JOzl/WGC0DJ0YSis",
         id: "WGC0DJ0YSis",
         displayName: "MyProject",
+        openingDate: "2018-09-01T00:00:00",
+        closedDate: "2019-04-30T23:59:59",
     },
     funders: config.funders.slice(0, 2),
     locations: config.locations.filter(location =>

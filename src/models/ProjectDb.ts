@@ -3,7 +3,7 @@ import moment from "moment";
 import { D2DataSet, D2OrganisationUnit, D2ApiResponse, MetadataPayload, Id, D2Api } from "d2-api";
 import { SelectedPick, D2OrganisationUnitSchema } from "d2-api";
 import { PartialModel, Ref, PartialPersistedModel, MetadataResponse } from "d2-api";
-import Project, { getOrgUnitDatesFromProject, getDatesFromOrgUnit } from "./Project";
+import Project, { getOrgUnitDatesFromProject, getDatesFromOrgUnit, DataSetType } from "./Project";
 import { getMonthsRange, toISOString } from "../utils/date";
 import "../utils/lodash-mixins";
 import ProjectDashboard from "./ProjectDashboard";
@@ -14,6 +14,9 @@ import DataElementsSet from "./dataElementsSet";
 import { ProjectInfo, getProjectStorageKey } from "./MerReport";
 
 const expiryDaysInMonthActual = 10;
+
+type OpenProperties = "dataInputPeriods" | "openFuturePeriods" | "expiryDays";
+export type DataSetOpenAttributes = Pick<D2DataSet, OpenProperties>;
 
 export default class ProjectDb {
     api: D2Api;
@@ -65,9 +68,7 @@ export default class ProjectDb {
             attributeValues: baseAttributeValues,
         };
 
-        const projectOrgUnit = _.pick(orgUnit, ["id", "path", "displayName"]);
-        const projectWithOrgUnit = project.set("orgUnit", projectOrgUnit);
-
+        const projectWithOrgUnit = project.set("orgUnit", orgUnit);
         const dashboardsMetadata = new ProjectDashboard(projectWithOrgUnit).generate();
         const dashboard = dashboardsMetadata.dashboards[0];
         if (!dashboard) throw new Error("No dashboard defined");
@@ -81,7 +82,7 @@ export default class ProjectDb {
             ),
         };
 
-        const orgUnitGroupsToSave = await getOrgUnitGroups(api, project, orgUnit);
+        const orgUnitGroupsToSave = await getOrgUnitGroups(api, project);
 
         const dataSetAttributeValues = addAttributeValue(
             baseAttributeValues,
@@ -89,27 +90,21 @@ export default class ProjectDb {
             orgUnit.id
         );
 
-        const { targetPeriods, actualPeriods } = getDataSetPeriods(startDate, endDate);
-
-        const dataSetTargetMetadata = this.getDataSetsMetadata(orgUnit, {
+        const dataSetTargetMetadata = this.getDataSetMetadata(orgUnit, {
             name: `${project.name} Target`,
             code: "TARGET",
-            openFuturePeriods: Math.max(endDate.diff(moment(), "month") + 1, 0),
-            dataInputPeriods: targetPeriods,
-            expiryDays: 0,
             attributeValues: dataSetAttributeValues,
             workflow: { id: config.dataApprovalWorkflows.project.id },
+            ...this.getDataSetOpenAttributes("target"),
         });
         const dataSetTarget = _(dataSetTargetMetadata.dataSets).getOrFail(0);
 
-        const dataSetActualMetadata = this.getDataSetsMetadata(orgUnit, {
+        const dataSetActualMetadata = this.getDataSetMetadata(orgUnit, {
             name: `${project.name} Actual`,
             code: "ACTUAL",
-            openFuturePeriods: 1,
-            dataInputPeriods: actualPeriods,
-            expiryDays: expiryDaysInMonthActual + 1,
             attributeValues: dataSetAttributeValues,
             workflow: { id: config.dataApprovalWorkflows.project.id },
+            ...this.getDataSetOpenAttributes("actual"),
         });
         const dataSetActual = _(dataSetActualMetadata.dataSets).getOrFail(0);
 
@@ -133,13 +128,75 @@ export default class ProjectDb {
             response && response.status === "OK"
                 ? this.project.setObj({
                       id: orgUnit.id,
-                      orgUnit: _.pick(orgUnit, ["id", "path", "displayName"]),
+                      orgUnit: orgUnit,
                       dashboard: { id: dashboard.id },
                       dataSets: { actual: dataSetActual, target: dataSetTarget },
                   })
                 : this.project;
 
         return { orgUnit: orgUnitToSave, payload, response, project: savedProject };
+    }
+
+    async updateDataSet(dataSet: Ref, attrs: PartialModel<D2DataSet>) {
+        const { dataSets } = await this.api.metadata
+            .get({
+                dataSets: {
+                    fields: { $owner: true },
+                    filter: { id: { eq: dataSet.id } },
+                },
+            })
+            .getData();
+        const dbDataSet = _(dataSets).get(0, null);
+
+        if (dbDataSet) {
+            const res = await this.api.models.dataSets.put({ ...dbDataSet, ...attrs }).getData();
+
+            if (res.status !== "OK") throw new Error("Error saving data set");
+        }
+    }
+
+    getDataSetOpenAttributes(dataSetType: DataSetType): DataSetOpenAttributes {
+        const { startDate, endDate } = this.project.getDates();
+        const projectOpeningDate = startDate;
+        const projectClosingDate = startDate
+            .clone()
+            .add(1, "month")
+            .endOf("month");
+
+        switch (dataSetType) {
+            case "target": {
+                const targetPeriods = getMonthsRange(startDate, endDate).map(date => ({
+                    period: { id: date.format("YYYYMM") },
+                    openingDate: toISOString(projectOpeningDate),
+                    closingDate: toISOString(projectClosingDate),
+                }));
+
+                return {
+                    dataInputPeriods: targetPeriods,
+                    openFuturePeriods: Math.max(endDate.diff(moment(), "month") + 1, 0),
+                    expiryDays: 0,
+                };
+            }
+            case "actual": {
+                const actualPeriods = getMonthsRange(startDate, endDate).map(date => ({
+                    period: { id: date.format("YYYYMM") },
+                    openingDate: toISOString(projectOpeningDate),
+                    closingDate: toISOString(
+                        date
+                            .clone()
+                            .startOf("month")
+                            .add(1, "month")
+                            .date(expiryDaysInMonthActual)
+                    ),
+                }));
+
+                return {
+                    dataInputPeriods: actualPeriods,
+                    openFuturePeriods: 1,
+                    expiryDays: expiryDaysInMonthActual + 1,
+                };
+            }
+        }
     }
 
     async postPayload(payload: Partial<MetadataPayload> & Pick<MetadataPayload, "sections">) {
@@ -221,9 +278,9 @@ export default class ProjectDb {
         }
     }
 
-    getDataSetsMetadata<T extends PartialPersistedModel<D2OrganisationUnit>>(
+    getDataSetMetadata<T extends PartialPersistedModel<D2OrganisationUnit>>(
         orgUnit: T,
-        baseDataSet: PartialModel<D2DataSet> & Pick<D2DataSet, "code" | "dataInputPeriods">
+        baseDataSet: PartialModel<D2DataSet> & Pick<D2DataSet, "code" | OpenProperties>
     ) {
         const { project } = this;
         const dataSetId = getUid("dataSet", project.uid + baseDataSet.code);
@@ -311,6 +368,8 @@ export default class ProjectDb {
                         dataSetElements: { dataElement: { id: true }, categoryCombo: { id: true } },
                         dataInputPeriods: { period: true, openingDate: true, closingDate: true },
                         sections: { code: true },
+                        openFuturePeriods: true,
+                        expiryDays: true,
                     },
                     filter: { code: { $like: id } },
                 },
@@ -322,7 +381,7 @@ export default class ProjectDb {
 
         const dashboardId = getDashboardId(config, orgUnit);
 
-        const getDataSet = (type: "actual" | "target") => {
+        const getDataSet = (type: DataSetType) => {
             const dataSet = _(dataSets).find(dataSet => dataSet.code.endsWith(type.toUpperCase()));
             if (!dataSet) throw new Error(`Cannot find dataset: ${type}`);
             return dataSet;
@@ -330,12 +389,7 @@ export default class ProjectDb {
 
         const projectDataSets = { actual: getDataSet("actual"), target: getDataSet("target") };
 
-        const dataStore = getDataStore(api);
-        const value = await dataStore
-            .get<ProjectInfo | undefined>(getProjectStorageKey({ id }))
-            .getData();
-        if (!value) console.error("Cannot get MER selections");
-        const dataElementIdsForMer = value ? value.merDataElementIds : [];
+        const dataElementIdsForMer = await getDataElementIdsForMer(api, id);
 
         const code = orgUnit.code || "";
         const { startDate, endDate } = getDatesFromOrgUnit(orgUnit);
@@ -356,8 +410,8 @@ export default class ProjectDb {
             id: orgUnit.id,
             name: orgUnit.name,
             description: orgUnit.description,
-            awardNumber: code.slice(2, 2 + 5),
-            subsequentLettering: code.slice(0, 2),
+            awardNumber: code.slice(0, 5),
+            subsequentLettering: code.slice(5, 5 + 2),
             speedKey: code.slice(8),
             startDate: startDate,
             endDate: endDate,
@@ -376,24 +430,30 @@ export default class ProjectDb {
     }
 }
 
+async function getDataElementIdsForMer(api: D2Api, id: string) {
+    const dataStore = getDataStore(api);
+    const value = await dataStore
+        .get<ProjectInfo | undefined>(getProjectStorageKey({ id }))
+        .getData();
+    if (!value) console.error("Cannot get MER selections");
+    return value ? value.merDataElementIds : [];
+}
+
 export function getSectorCodeFromSectionCode(code: string | undefined) {
     return _.initial((code || "").split("_")).join("_");
 }
 
 type OrgUnitsMeta = Pick<MetadataPayload, "organisationUnits" | "organisationUnitGroups">;
 
-async function getOrgUnitGroups(
-    api: D2Api,
-    project: Project,
-    orgUnit: PartialPersistedModel<D2OrganisationUnit>
-) {
+async function getOrgUnitGroups(api: D2Api, project: Project) {
     /* The project may have changed funders and locations, so get also the previously related
        groups to clear them if necessary */
+    const orgUnitId = project.id;
     const { organisationUnitGroups: prevOrgUnitGroups } = await api.metadata
         .get({
             organisationUnitGroups: {
                 fields: { $owner: true },
-                filter: { "organisationUnits.id": { eq: project.id } },
+                filter: { "organisationUnits.id": { eq: orgUnitId } },
             },
         })
         .getData();
@@ -409,46 +469,19 @@ async function getOrgUnitGroups(
         })
         .getData();
 
-    const orgUnitsToSave = _(prevOrgUnitGroups)
+    const orgUnitGroupsToSave = _(prevOrgUnitGroups)
         .concat(newOrgUnitGroups)
         .uniqBy(oug => oug.id)
         .value();
 
-    return orgUnitsToSave.map(orgUnitGroup => {
-        const organisationUnits = _(orgUnitGroup.organisationUnits)
-            .filter(ou => ou.id !== project.id)
-            .concat(orgUnitGroupIds.has(orgUnitGroup.id) ? [{ id: orgUnit.id }] : [])
+    return orgUnitGroupsToSave.map(orgUnitGroup => {
+        const organisationUnits = _(orgUnitGroup.organisationUnits || [])
+            .filter(ou => ou.id !== orgUnitId)
+            .map(ou => ({ id: ou.id }))
+            .concat(orgUnitGroupIds.has(orgUnitGroup.id) ? [{ id: orgUnitId }] : [])
             .value();
         return { ...orgUnitGroup, organisationUnits };
     });
-}
-
-function getDataSetPeriods(startDate: moment.Moment, endDate: moment.Moment) {
-    const projectOpeningDate = startDate;
-    const projectClosingDate = startDate
-        .clone()
-        .add(1, "month")
-        .endOf("month");
-
-    const targetPeriods = getMonthsRange(startDate, endDate).map(date => ({
-        period: { id: date.format("YYYYMM") },
-        openingDate: toISOString(projectOpeningDate),
-        closingDate: toISOString(projectClosingDate),
-    }));
-
-    const actualPeriods = getMonthsRange(startDate, endDate).map(date => ({
-        period: { id: date.format("YYYYMM") },
-        openingDate: toISOString(projectOpeningDate),
-        closingDate: toISOString(
-            date
-                .clone()
-                .startOf("month")
-                .add(1, "month")
-                .date(expiryDaysInMonthActual)
-        ),
-    }));
-
-    return { targetPeriods, actualPeriods };
 }
 
 function getOrgUnitId(orgUnit: { path: string }): string {
