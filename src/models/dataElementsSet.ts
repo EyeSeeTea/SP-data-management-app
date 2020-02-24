@@ -119,14 +119,10 @@ export default class DataElementsSet {
         metadata: Metadata
     ): Promise<DataElement[]> {
         const { dataElementGroupSets } = metadata;
-        const {
-            sector: sectorsCode,
-            externals: externalsCode,
-            series: seriesCode,
-        } = baseConfig.dataElementGroupSets;
-        const sectorsSet = getBy(dataElementGroupSets, "code", sectorsCode);
-        const seriesSet = getBy(dataElementGroupSets, "code", seriesCode);
-        const externalsSet = getBy(dataElementGroupSets, "code", externalsCode);
+        const degsCodes = baseConfig.dataElementGroupSets;
+        const sectorsSet = getBy(dataElementGroupSets, "code", degsCodes.sector);
+        const seriesSet = getBy(dataElementGroupSets, "code", degsCodes.series);
+        const externalsSet = getBy(dataElementGroupSets, "code", degsCodes.externals);
         const externalsByDataElementId = _(externalsSet.dataElementGroups)
             .flatMap(deg => deg.dataElements.map(de => ({ deId: de.id, name: deg.displayName })))
             .groupBy(data => data.deId)
