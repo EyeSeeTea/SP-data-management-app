@@ -2,14 +2,14 @@ import _ from "lodash";
 import { D2ApiDefault, D2Api, Id, Ref, MetadataPick } from "d2-api";
 import fs from "fs";
 import path from "path";
-import DataElementsSet, { DataElement } from "./dataElementsSet";
+import DataElementsSet, { DataElementBase } from "./dataElementsSet";
 import { GetItemType } from "../types/utils";
 import "../utils/lodash-mixins";
 
 export type Config = {
     base: typeof baseConfig;
     currentUser: CurrentUser;
-    dataElements: DataElement[];
+    dataElements: DataElementBase[];
     sectors: Sector[];
     funders: Funder[];
     locations: Location[];
@@ -314,23 +314,26 @@ export async function getConfig(api: D2Api): Promise<Config> {
 async function getFromApp(baseUrl: string) {
     const api = new D2ApiDefault({ baseUrl });
     const allConfig = await getConfig(api);
-    const dataElementIds = [
-        "WS8XV4WWPE7",
-        "ik0ICagvIjm",
-        "K6mAC5SiO29",
-        "We61YNYyOX0",
-        "yMqK9DKbA3X",
-        "qQy0N1xdwQ1",
-        "iyQBe9Xv7bk",
-        "u24zk6wAgFE",
-        "WS8XV4WWPE7",
-        "yUGuwPFkBrj",
-    ];
+    // Protect names for funders, locations and data elements.
     const config: Config = {
         ...allConfig,
-        funders: allConfig.funders.slice(0, 5),
-        locations: allConfig.locations.slice(0, 5),
-        dataElements: allConfig.dataElements.filter(de => dataElementIds.includes(de.id)),
+        funders: allConfig.funders.map(funder => ({
+            ...funder,
+            displayName: `funder-${funder.id}`,
+        })),
+        locations: allConfig.locations.map(location => ({
+            ...location,
+            displayName: `loc-${location.id}`,
+        })),
+        dataElements: allConfig.dataElements.map(de => ({
+            ...de,
+            name: `de-${de.code}`,
+            description: `de-description-${de.code}`,
+            pairedDataElements: de.pairedDataElements.map(pde => ({
+                ...pde,
+                name: `pde-${pde.code}`,
+            })),
+        })),
     };
     const jsonPath = path.join(__dirname, "__tests__", "config.json");
     fs.writeFileSync(jsonPath, JSON.stringify(config, null, 4) + "\n");

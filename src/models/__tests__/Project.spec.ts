@@ -60,7 +60,7 @@ describe("Project", () => {
         });
 
         it("has data element sets", () => {
-            expect(project.dataElements.get().length).toBeGreaterThan(0);
+            expect(project.dataElementsSelection.get().length).toBeGreaterThan(0);
         });
     });
 
@@ -74,7 +74,7 @@ describe("Project", () => {
                         "attributeValues[attribute[id],value],closedDate,code,description,displayName,id,name,openingDate,organisationUnitGroups[id],parent[displayName,id,path],path",
                     "organisationUnits:filter": ["id:eq:R3rGhxWbAI9"],
                     "dataSets:fields":
-                        "code,dataInputPeriods[closingDate,openingDate,period],dataSetElements[categoryCombo[id],dataElement[id]],expiryDays,id,openFuturePeriods,sections[code]",
+                        "code,dataInputPeriods[closingDate,openingDate,period],dataSetElements[categoryCombo[id],dataElement[id]],expiryDays,id,openFuturePeriods,sections[code,dataElements[id]]",
                     "dataSets:filter": ["code:$like:R3rGhxWbAI9"],
                 },
             }).replyOnce(200, metadataForGet);
@@ -101,10 +101,12 @@ describe("Project", () => {
             );
             expect(project.sectors.map(sector => sector.code)).toEqual(["SECTOR_LIVELIHOOD"]);
             expect(project.funders.map(funder => funder.displayName)).toEqual([
-                "2018 World Food Program",
-                "ACWME",
+                "funder-OE0KdZRX2FC",
+                "funder-WKUXmz4LIUG",
             ]);
-            expect(project.locations.map(location => location.displayName)).toEqual(["Abaco"]);
+            expect(project.locations.map(location => location.displayName)).toEqual([
+                "loc-GG0k0oNhgS7",
+            ]);
             expect(project.orgUnit && project.orgUnit.id).toEqual("R3rGhxWbAI9");
             expect(project.parentOrgUnit && project.parentOrgUnit.id).toEqual("eu2XF73JOzl");
             expect(project.dataSets && project.dataSets.actual.code).toEqual("R3rGhxWbAI9_ACTUAL");
@@ -116,11 +118,10 @@ describe("Project", () => {
         });
 
         it("has data element sets", () => {
-            expect(project.dataElements.get({ onlySelected: true }).map(de => de.id)).toEqual([
-                "u24zk6wAgFE",
-                "yMqK9DKbA3X",
-            ]);
-            expect(project.dataElements.get({ onlyMERSelected: true }).map(de => de.id)).toEqual([
+            expect(
+                project.dataElementsSelection.get({ onlySelected: true }).map(de => de.id)
+            ).toEqual(["u24zk6wAgFE", "yMqK9DKbA3X"]);
+            expect(project.dataElementsMER.get({ onlySelected: true }).map(de => de.id)).toEqual([
                 "u24zk6wAgFE",
             ]);
         });
@@ -264,23 +265,24 @@ describe("Project", () => {
                     { id: "GkiSljtLcOI", displayName: "Livelihood", code: "SECTOR_LIVELIHOOD" },
                 ],
             });
-            const errors = await project.validate(["dataElements"]);
-            expect(errors.dataElements).toEqual([
+            const errors = await project.validate(["dataElementsSelection"]);
+            expect(errors.dataElementsSelection).toEqual([
                 "The following sectors have no indicators selected: Agriculture, Livelihood",
             ]);
 
-            const { project: project2 } = project.updateDataElementsSelection(["qQy0N1xdwQ1"]);
-            const errors2 = await project2.validate(["dataElements"]);
-            expect(errors2.dataElements).toEqual([
+            const { project: project2 } = project.updateDataElementsSelection("mGQ5ckOTU8A", [
+                "qQy0N1xdwQ1",
+            ]);
+            const errors2 = await project2.validate(["dataElementsSelection"]);
+            expect(errors2.dataElementsSelection).toEqual([
                 "The following sectors have no indicators selected: Livelihood",
             ]);
 
-            const { project: project3 } = project2.updateDataElementsSelection([
-                "qQy0N1xdwQ1",
-                "iyQBe9Xv7bk",
-            ]);
-            const errors3 = await project3.validate(["dataElements"]);
-            expect(errors3.dataElements).toEqual([]);
+            const { project: project3 } = project2
+                .updateDataElementsSelection("mGQ5ckOTU8A", ["qQy0N1xdwQ1"])
+                .project.updateDataElementsSelection("GkiSljtLcOI", ["iyQBe9Xv7bk"]);
+            const errors3 = await project3.validate(["dataElementsSelection"]);
+            expect(errors3.dataElementsSelection).toEqual([]);
         });
 
         it("without keys, it runs all validations", async () => {
@@ -297,7 +299,8 @@ describe("Project", () => {
                     "sectors",
                     "funders",
                     "parentOrgUnit",
-                    "dataElements",
+                    "dataElementsSelection",
+                    "dataElementsMER",
                 ])
             );
         });
@@ -482,6 +485,7 @@ const metadataForGet = {
             sections: [
                 {
                     code: "SECTOR_LIVELIHOOD_imYbEtdoQZx",
+                    dataElements: [{ id: "u24zk6wAgFE" }, { id: "yMqK9DKbA3X" }],
                 },
             ],
         },
@@ -532,6 +536,7 @@ const metadataForGet = {
             sections: [
                 {
                     code: "SECTOR_LIVELIHOOD_KC6gi00Jm6H",
+                    dataElements: [{ id: "5678" }],
                 },
             ],
         },

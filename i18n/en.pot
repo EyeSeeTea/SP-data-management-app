@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2020-02-20T08:53:24.472Z\n"
-"PO-Revision-Date: 2020-02-20T08:53:24.472Z\n"
+"POT-Creation-Date: 2020-02-26T08:56:56.515Z\n"
+"PO-Revision-Date: 2020-02-26T08:56:56.515Z\n"
 
 msgid "Data Entry"
 msgstr ""
@@ -74,16 +74,10 @@ msgstr ""
 msgid "Counting Method"
 msgstr ""
 
-msgid "Paired DE"
-msgstr ""
-
 msgid "Search by name / code"
 msgstr ""
 
 msgid "selected"
-msgstr ""
-
-msgid "unselected"
 msgstr ""
 
 msgid "Field should be a 5-digit number"
@@ -220,7 +214,10 @@ msgstr ""
 msgid "Id"
 msgstr ""
 
-msgid "Data Elements"
+msgid "Data Elements Selection"
+msgstr ""
+
+msgid "Data Elements MER"
 msgstr ""
 
 msgid "Start Date"
@@ -379,6 +376,9 @@ msgid "Select at least one indicator"
 msgstr ""
 
 msgid "[only for admin users]"
+msgstr ""
+
+msgid "Global data elements with selected subs cannot be unselected"
 msgstr ""
 
 msgid "Dashboard for Project"

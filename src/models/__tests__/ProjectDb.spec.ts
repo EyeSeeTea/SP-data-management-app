@@ -156,10 +156,10 @@ const expectedSectionsMetadataPost = {
                     id: "WS8XV4WWPE7",
                 },
                 {
-                    id: "ik0ICagvIjm",
+                    id: "K6mAC5SiO29",
                 },
                 {
-                    id: "K6mAC5SiO29",
+                    id: "ik0ICagvIjm",
                 },
             ],
             greyedFields: [],
@@ -195,10 +195,10 @@ const expectedSectionsMetadataPost = {
                     id: "WS8XV4WWPE7",
                 },
                 {
-                    id: "ik0ICagvIjm",
+                    id: "K6mAC5SiO29",
                 },
                 {
-                    id: "K6mAC5SiO29",
+                    id: "ik0ICagvIjm",
                 },
             ],
             greyedFields: [],
@@ -324,8 +324,6 @@ const expectedMetadataPost = {
     dataSets: [
         {
             id: "SCS4Dusnfdd",
-            publicAccess: "rwrw----",
-            workflow: { id: "CCy0oNyvlV1" },
             description: "",
             periodType: "Monthly",
             dataElementDecoration: true,
@@ -342,7 +340,23 @@ const expectedMetadataPost = {
             formType: "DEFAULT",
             name: "MyProject Target",
             code: "WGC0DJ0YSis_TARGET",
-            openFuturePeriods: 0,
+            attributeValues: [
+                {
+                    value: "true",
+                    attribute: {
+                        id: "mgCKcJuP5n0",
+                    },
+                },
+                {
+                    value: "WGC0DJ0YSis",
+                    attribute: {
+                        id: "qgSqj6sBF7j",
+                    },
+                },
+            ],
+            workflow: {
+                id: "CCy0oNyvlV1",
+            },
             dataInputPeriods: [
                 {
                     period: {
@@ -387,21 +401,8 @@ const expectedMetadataPost = {
                     closingDate: "2018-11-30T23:59:59",
                 },
             ],
+            openFuturePeriods: 0,
             expiryDays: 0,
-            attributeValues: [
-                {
-                    value: "true",
-                    attribute: {
-                        id: "mgCKcJuP5n0",
-                    },
-                },
-                {
-                    value: "WGC0DJ0YSis",
-                    attribute: {
-                        id: "qgSqj6sBF7j",
-                    },
-                },
-            ],
             sections: [
                 {
                     id: "qQopuH2XmFM",
@@ -429,7 +430,7 @@ const expectedMetadataPost = {
                         id: "SCS4Dusnfdd",
                     },
                     dataElement: {
-                        id: "ik0ICagvIjm",
+                        id: "K6mAC5SiO29",
                     },
                     categoryCombo: {
                         id: "GKWiemQPU5U",
@@ -440,7 +441,7 @@ const expectedMetadataPost = {
                         id: "SCS4Dusnfdd",
                     },
                     dataElement: {
-                        id: "K6mAC5SiO29",
+                        id: "ik0ICagvIjm",
                     },
                     categoryCombo: {
                         id: "GKWiemQPU5U",
@@ -469,13 +470,12 @@ const expectedMetadataPost = {
                     },
                 },
             ],
+            publicAccess: "rwrw----",
         },
         {
             id: "CwUxT9UIX3z",
-            publicAccess: "rwrw----",
             description: "",
             periodType: "Monthly",
-            workflow: { id: "CCy0oNyvlV1" },
             dataElementDecoration: true,
             renderAsTabs: true,
             categoryCombo: {
@@ -490,7 +490,23 @@ const expectedMetadataPost = {
             formType: "DEFAULT",
             name: "MyProject Actual",
             code: "WGC0DJ0YSis_ACTUAL",
-            openFuturePeriods: 1,
+            attributeValues: [
+                {
+                    value: "true",
+                    attribute: {
+                        id: "mgCKcJuP5n0",
+                    },
+                },
+                {
+                    value: "WGC0DJ0YSis",
+                    attribute: {
+                        id: "qgSqj6sBF7j",
+                    },
+                },
+            ],
+            workflow: {
+                id: "CCy0oNyvlV1",
+            },
             dataInputPeriods: [
                 {
                     period: {
@@ -535,21 +551,8 @@ const expectedMetadataPost = {
                     closingDate: "2019-04-10T00:00:00",
                 },
             ],
+            openFuturePeriods: 1,
             expiryDays: 11,
-            attributeValues: [
-                {
-                    value: "true",
-                    attribute: {
-                        id: "mgCKcJuP5n0",
-                    },
-                },
-                {
-                    value: "WGC0DJ0YSis",
-                    attribute: {
-                        id: "qgSqj6sBF7j",
-                    },
-                },
-            ],
             sections: [
                 {
                     id: "Kg4EmzighjA",
@@ -577,7 +580,7 @@ const expectedMetadataPost = {
                         id: "CwUxT9UIX3z",
                     },
                     dataElement: {
-                        id: "ik0ICagvIjm",
+                        id: "K6mAC5SiO29",
                     },
                     categoryCombo: {
                         id: "GKWiemQPU5U",
@@ -588,7 +591,7 @@ const expectedMetadataPost = {
                         id: "CwUxT9UIX3z",
                     },
                     dataElement: {
-                        id: "K6mAC5SiO29",
+                        id: "ik0ICagvIjm",
                     },
                     categoryCombo: {
                         id: "GKWiemQPU5U",
@@ -617,13 +620,14 @@ const expectedMetadataPost = {
                     },
                 },
             ],
+            publicAccess: "rwrw----",
         },
     ],
     dashboards: [
         {
             id: "WgOMVlwSV2i",
-            name: "MyProject",
             publicAccess: "rw------",
+            name: "MyProject",
             dashboardItems: [
                 {
                     id: "ys0CVedHirZ",
@@ -807,13 +811,13 @@ const expectedMetadataPost = {
                 {
                     dataDimensionItemType: "DATA_ELEMENT",
                     dataElement: {
-                        id: "ik0ICagvIjm",
+                        id: "K6mAC5SiO29",
                     },
                 },
                 {
                     dataDimensionItemType: "DATA_ELEMENT",
                     dataElement: {
-                        id: "K6mAC5SiO29",
+                        id: "ik0ICagvIjm",
                     },
                 },
                 {
@@ -966,13 +970,13 @@ const expectedMetadataPost = {
                 {
                     dataDimensionItemType: "DATA_ELEMENT",
                     dataElement: {
-                        id: "ik0ICagvIjm",
+                        id: "K6mAC5SiO29",
                     },
                 },
                 {
                     dataDimensionItemType: "DATA_ELEMENT",
                     dataElement: {
-                        id: "K6mAC5SiO29",
+                        id: "ik0ICagvIjm",
                     },
                 },
                 {
@@ -1192,13 +1196,13 @@ const expectedMetadataPost = {
                 {
                     dataDimensionItemType: "INDICATOR",
                     indicator: {
-                        id: "u404ICrBKj3",
+                        id: "eYmeRzhBFV4",
                     },
                 },
                 {
                     dataDimensionItemType: "INDICATOR",
                     indicator: {
-                        id: "eYmeRzhBFV4",
+                        id: "u404ICrBKj3",
                     },
                 },
                 {
@@ -1282,13 +1286,13 @@ const expectedMetadataPost = {
                 {
                     dataDimensionItemType: "INDICATOR",
                     indicator: {
-                        id: "u404ICrBKj3",
+                        id: "eYmeRzhBFV4",
                     },
                 },
                 {
                     dataDimensionItemType: "INDICATOR",
                     indicator: {
-                        id: "eYmeRzhBFV4",
+                        id: "u404ICrBKj3",
                     },
                 },
                 {
@@ -1366,13 +1370,13 @@ const expectedMetadataPost = {
                 {
                     dataDimensionItemType: "INDICATOR",
                     indicator: {
-                        id: "u404ICrBKj3",
+                        id: "eYmeRzhBFV4",
                     },
                 },
                 {
                     dataDimensionItemType: "INDICATOR",
                     indicator: {
-                        id: "eYmeRzhBFV4",
+                        id: "u404ICrBKj3",
                     },
                 },
                 {
@@ -1444,13 +1448,13 @@ const expectedMetadataPost = {
                 {
                     dataDimensionItemType: "INDICATOR",
                     indicator: {
-                        id: "u404ICrBKj3",
+                        id: "eYmeRzhBFV4",
                     },
                 },
                 {
                     dataDimensionItemType: "INDICATOR",
                     indicator: {
-                        id: "eYmeRzhBFV4",
+                        id: "u404ICrBKj3",
                     },
                 },
                 {
