@@ -8,14 +8,14 @@ describe("Projects - Indicators", () => {
         cy.contains("Edit").click();
     });
 
-    it("selects indicators", () => {
+    it("selects indicators with dependencies", () => {
         cy.contains("Selection of Indicators").click();
 
         new IndicatorsPage(cy)
             .selectSector("Agriculture")
             // De-select initial indicator
-            .assertExactSelected(["P020105"])
-            .unselect("P020105")
+            .assertExactSelected(["B010200"])
+            .unselect("B010200")
             .assertExactSelected([])
 
             // Select an unpaired benefit sub -> automatic selection of its global in series

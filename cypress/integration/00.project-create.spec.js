@@ -68,7 +68,7 @@ describe("Projects - Create", () => {
 
         cy.waitForStep("Selection of Indicators");
 
-        cy.contains("# of people receiving vocational training")
+        cy.contains("# of agriculture groups receiving support for improved livelihoods")
             .parent("td")
             .prev("td")
             .click();
@@ -116,8 +116,8 @@ describe("Projects - Create", () => {
         cy.contains("Agriculture");
         cy.contains("Livelihood");
 
-        cy.contains("# of people receiving vocational training");
-        cy.contains("# of people trained in livelihood topics [MER]");
+        cy.contains("# of agriculture groups receiving support for improved livelihoods - B010200");
+        cy.contains("# of people trained in livelihood topics - P020100 [MER]");
 
         cy.get("[data-wizard-contents] button")
             .contains("Save")
