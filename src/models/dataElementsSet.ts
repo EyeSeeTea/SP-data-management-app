@@ -90,8 +90,9 @@ export default class DataElementsSet {
         return _.isEmpty(missingSectors) ? [] : [msg];
     }
 
-    validatetOneItemTotal() {
-        const selected = this.get({ onlySelected: true });
+    validatetOneItemTotal(sectors: Sector[]) {
+        const sectorIds = new Set(sectors.map(sector => sector.id));
+        const selected = this.get({ onlySelected: true }).filter(de => sectorIds.has(de.sector.id));
         return _.isEmpty(selected) ? [i18n.t("Select at least one indicator")] : [];
     }
 

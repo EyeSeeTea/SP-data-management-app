@@ -226,7 +226,7 @@ class Project {
             this.parentOrgUnit ? [] : [i18n.t("One Organisation Unit should be selected")],
         dataElementsSelection: () =>
             this.dataElementsSelection.validateAtLeastOneItemPerSector(this.sectors),
-        dataElementsMER: () => this.dataElementsMER.validatetOneItemTotal(),
+        dataElementsMER: () => this.dataElementsMER.validatetOneItemTotal(this.sectors),
     };
 
     static requiredFields: Set<ProjectField> = new Set([
