@@ -2,7 +2,7 @@ import _ from "lodash";
 import { Id, Ref } from "d2-api";
 
 import { Config, DataElementGroupSet, BaseConfig, Metadata, CurrentUser } from "./Config";
-import { Sector } from "./Project";
+import { Sector } from "./Config";
 import i18n from "../locales";
 import User from "./user";
 

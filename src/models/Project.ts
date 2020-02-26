@@ -1,6 +1,3 @@
-import { Config } from "./Config";
-import moment, { Moment } from "moment";
-
 /*
 Project model.
 
@@ -49,18 +46,31 @@ Project model.
     )
 */
 
+import { Config, Sector as SectorC, Funder as FunderC, Location as LocationC } from "./Config";
+import moment, { Moment } from "moment";
 import _ from "lodash";
 import { D2Api, SelectedPick, Id, Ref, D2OrganisationUnit, D2IndicatorSchema } from "d2-api";
+import { generateUid } from "d2/uid";
+import { TableSorting } from "d2-ui-components";
+
 import i18n from "../locales";
 import DataElementsSet, { PeopleOrBenefit, DataElement } from "./dataElementsSet";
 import ProjectDb from "./ProjectDb";
 import { toISOString, getMonthsRange } from "../utils/date";
-import { generateUid } from "d2/uid";
 import ProjectDownload from "./ProjectDownload";
-import { TableSorting } from "d2-ui-components";
 import ProjectList, { ProjectForList, FiltersForList } from "./ProjectsList";
 import ProjectDataSet from "./ProjectDataSet";
 import ProjectDelete from "./ProjectDelete";
+import {
+    validatePresence,
+    validateRegexp,
+    validateNumber,
+    validateNonEmpty,
+} from "../utils/validations";
+
+export type Sector = SectorC;
+export type Funder = FunderC;
+export type Location = Omit<LocationC, "countries">;
 
 export interface ProjectData {
     id: Id;
@@ -82,15 +92,6 @@ export interface ProjectData {
     dashboard: Ref | undefined;
     initialData: Omit<ProjectData, "initialData"> | undefined;
 }
-
-interface NamedObject {
-    id: Id;
-    displayName: string;
-}
-
-export type Sector = NamedObject & { code: string };
-export type Funder = NamedObject;
-export type Location = NamedObject;
 
 export interface DataInputPeriod {
     period: { id: string };
@@ -444,10 +445,8 @@ class Project {
                 if (indicator) {
                     return indicator;
                 } else {
-                    console.error(
-                        `Data element (${de.code}) has no associated indicator with code=${indicatorCode}`
-                    );
-                    return null;
+                    const msg = `Indicator ${indicatorCode} not found for data element ${de.code}`;
+                    console.error(msg);
                 }
             })
             .compact()
@@ -511,53 +510,6 @@ export function getOrgUnitDatesFromProject(startDate: Moment, endDate: Moment): 
                 .endOf("month")
         ),
     };
-}
-
-function validatePresence(value: any, field: string): ValidationError {
-    const isBlank =
-        !value ||
-        (value.length !== undefined && value.length === 0) ||
-        (value.strip !== undefined && !value.strip());
-
-    return isBlank ? [i18n.t("{{field}} cannot be blank", { field })] : [];
-}
-
-function validateNonEmpty(value: any[], field: string): ValidationError {
-    return value.length === 0 ? [i18n.t("Select at least one item for {{field}}", { field })] : [];
-}
-
-/* eslint-disable @typescript-eslint/no-unused-vars */
-function validateNumber(
-    value: number,
-    field: string,
-    { min, max }: { min?: number; max?: number } = {}
-): ValidationError {
-    if (min && value < min) {
-        return [
-            i18n.t("{{field}} must be greater than or equal to {{value}}", { field, value: min }),
-        ];
-    } else if (max && value > max) {
-        return [i18n.t("{{field}} must be less than or equal to {{value}}", { field, value: max })];
-    } else {
-        return [];
-    }
-}
-
-function validateRegexp(
-    value: string,
-    field: string,
-    regexp: RegExp,
-    customMsg: string
-): ValidationError {
-    return regexp.test(value)
-        ? []
-        : [
-              customMsg ||
-                  i18n.t("{{field}} does not match pattern {{pattern}}", {
-                      field,
-                      pattern: regexp.source,
-                  }),
-          ];
 }
 
 function getPeriodIds(dataSet: DataSet): string[] {

@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2020-02-26T08:56:56.515Z\n"
-"PO-Revision-Date: 2020-02-26T08:56:56.515Z\n"
+"POT-Creation-Date: 2020-02-26T11:51:42.184Z\n"
+"PO-Revision-Date: 2020-02-26T11:51:42.184Z\n"
 
 msgid "Data Entry"
 msgstr ""
@@ -254,21 +254,6 @@ msgid "One Organisation Unit should be selected"
 msgstr ""
 
 msgid "There is a project with the same code '{{code}}' -> {{orgUnit}}"
-msgstr ""
-
-msgid "{{field}} cannot be blank"
-msgstr ""
-
-msgid "Select at least one item for {{field}}"
-msgstr ""
-
-msgid "{{field}} must be greater than or equal to {{value}}"
-msgstr ""
-
-msgid "{{field}} must be less than or equal to {{value}}"
-msgstr ""
-
-msgid "{{field}} does not match pattern {{pattern}}"
 msgstr ""
 
 msgid "Target vs Actual - Benefits"
@@ -599,4 +584,19 @@ msgid "Target to date"
 msgstr ""
 
 msgid "Actual to date"
+msgstr ""
+
+msgid "{{field}} cannot be blank"
+msgstr ""
+
+msgid "Select at least one item for {{field}}"
+msgstr ""
+
+msgid "{{field}} must be greater than or equal to {{value}}"
+msgstr ""
+
+msgid "{{field}} must be less than or equal to {{value}}"
+msgstr ""
+
+msgid "{{field}} does not match pattern {{pattern}}"
 msgstr ""
