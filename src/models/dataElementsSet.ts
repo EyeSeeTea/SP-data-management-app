@@ -254,7 +254,6 @@ export default class DataElementsSet {
 
     getRelated(sectorId: Id, dataElementIds: Id[]): DataElement[] {
         const { dataElementsAllBySector } = this.data;
-
         const allDataElements = dataElementsAllBySector[sectorId] || [];
         const allDataElementsByKey = _.keyBy(allDataElements, de =>
             [de.indicatorType, de.series].join(".")
@@ -262,6 +261,8 @@ export default class DataElementsSet {
         const selectedDataElements = _(allDataElements)
             .keyBy(de => de.id)
             .at(dataElementIds)
+            .flatMap(de => [de, ...de.pairedDataElements])
+            .uniqBy(de => de.id)
             .compact()
             .value();
 

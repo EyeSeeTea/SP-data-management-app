@@ -1,4 +1,5 @@
 import IndicatorsPage from "../support/pages/indicators-page";
+import { selectInMultiSelector } from "../support/utils";
 
 describe("Projects - Indicators", () => {
     before(() => {
@@ -9,7 +10,9 @@ describe("Projects - Indicators", () => {
     });
 
     it("selects indicators with dependencies", () => {
-        cy.contains("Selection of Indicators").click();
+        cy.contains("Sectors").click();
+        selectInMultiSelector("sectors", "Protection");
+        cy.contains("Next").click();
 
         new IndicatorsPage(cy)
             .selectSector("Agriculture")
@@ -51,7 +54,12 @@ describe("Projects - Indicators", () => {
             .selectSector("Agriculture")
             // A global with subs cannot be unselected
             .unselect("B010200")
-            .expectSnackbar("Global data elements with selected subs cannot be unselected");
+            .expectSnackbar("Global data elements with selected subs cannot be unselected")
+
+            .selectSector("Protection")
+            // Select an indicator which has a paired sub indicator, its global should be also selected
+            .select("B100500")
+            .assertExactSelected(["B100500", "P100701", "P100700"]);
 
         // MER Indicators
         cy.contains("Selection of MER Indicators").click();
