@@ -1374,7 +1374,25 @@
     "@types/yargs" "^15.0.0"
     chalk "^3.0.0"
 
-"@material-ui/core@^4.6.0", "@material-ui/core@^4.9.2":
+"@material-ui/core@^4.6.0":
+  version "4.9.4"
+  resolved "https://registry.npmjs.org/@material-ui/core/-/core-4.9.4.tgz#796515b12845dc6ea7e21872888cfc4c0c1c1efe"
+  integrity sha512-1wqm3jBC8mGpVHu0wVOYBX7LUzkPsWxkkTtKSn0Hz66T6TDJkke72mkSIL7akNdjnxy+bRc2Vi6NiJ4YutkDcw==
+  dependencies:
+    "@babel/runtime" "^7.4.4"
+    "@material-ui/styles" "^4.9.0"
+    "@material-ui/system" "^4.9.3"
+    "@material-ui/types" "^5.0.0"
+    "@material-ui/utils" "^4.7.1"
+    "@types/react-transition-group" "^4.2.0"
+    clsx "^1.0.2"
+    hoist-non-react-statics "^3.3.2"
+    popper.js "^1.14.1"
+    prop-types "^15.7.2"
+    react-is "^16.8.0"
+    react-transition-group "^4.3.0"
+
+"@material-ui/core@^4.9.2":
   version "4.9.2"
   resolved "https://registry.npmjs.org/@material-ui/core/-/core-4.9.2.tgz#23c9a697af15d8daf56ffad1955b24209ef48106"
   integrity sha512-fSf/yBuE5GR7dA+FiQAAGY7HrCN/8RaYApi9tx3IKMiJIJkRCHk+E2lktgJZ+QRsaqCACLo2lwhU2CW5aeO0UQ==
@@ -1439,6 +1457,15 @@
   version "4.9.1"
   resolved "https://registry.npmjs.org/@material-ui/system/-/system-4.9.1.tgz#beb6595e1b164317340bdc5a629a6798fc35f82d"
   integrity sha512-CLrJK2aKNWNwruGVTRf+rLz96P4jmozpY2UaCE6hBTa1oGsQ396YXOQQABQ4c0igawmdyf5iQb0zs9j5zsAf1w==
+  dependencies:
+    "@babel/runtime" "^7.4.4"
+    "@material-ui/utils" "^4.7.1"
+    prop-types "^15.7.2"
+
+"@material-ui/system@^4.9.3":
+  version "4.9.3"
+  resolved "https://registry.npmjs.org/@material-ui/system/-/system-4.9.3.tgz#ee48990d7941237fdaf21b7b399981d614bb0875"
+  integrity sha512-DBGsTKYrLlFpHG8BUp0X6ZpvaOzef+GhSwn/8DwVTXUdHitphaPQoL9xucrI8X9MTBo//El+7nylko7lo7eJIw==
   dependencies:
     "@babel/runtime" "^7.4.4"
     "@material-ui/utils" "^4.7.1"
