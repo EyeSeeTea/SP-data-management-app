@@ -105,90 +105,46 @@ export default class DataElementsSet {
         const sectorsSet = getBy(dataElementGroupSets, "code", degsCodes.sector);
         const seriesSet = getBy(dataElementGroupSets, "code", degsCodes.series);
         const externalsSet = getBy(dataElementGroupSets, "code", degsCodes.externals);
-        const externalsByDataElementId = _(externalsSet.dataElementGroups)
-            .flatMap(deg => deg.dataElements.map(de => ({ deId: de.id, name: deg.displayName })))
-            .groupBy(data => data.deId)
-            .mapValues(dataList => _.sortBy(dataList.map(data => data.name)))
-            .value();
         const degCodes = baseConfig.dataElementGroups;
-        const dataElementsById = _.keyBy(metadata.dataElements, de => de.id);
         const dataElementsByCode = _.keyBy(metadata.dataElements, de => de.code);
         const userIsAdmin = new User({ base: baseConfig, currentUser }).hasRole("admin");
         const sectorsByCode = _.keyBy(sectorsSet.dataElementGroups, deg => deg.code);
-
-        const d2DataElements = _(sectorsSet.dataElementGroups)
-            .flatMap(deg => deg.dataElements.map(deRef => dataElementsById[deRef.id]))
-            .compact()
-            .uniqBy(de => de.id)
-            .value();
-
-        const sectorsByDataElementId = _(sectorsSet.dataElementGroups)
-            .flatMap(deg => deg.dataElements.map(deRef => ({ deId: deRef.id, deg })))
-            .groupBy(item => item.deId)
-            .mapValues(items => items.map(item => item.deg))
-            .value();
-
-        // TOIMPL: DRY
-        const seriesByDataElementId = _(seriesSet.dataElementGroups)
-            .flatMap(deg => deg.dataElements.map(deRef => ({ deId: deRef.id, deg })))
-            .groupBy(item => item.deId)
-            .mapValues(items => items.map(item => item.deg))
-            .value();
-
+        const d2DataElements = getDataElementsFromSet(metadata, sectorsSet);
+        const externalsByDataElementId = getGroupsByDataElementId(externalsSet);
+        const sectorsByDataElementId = getGroupsByDataElementId(sectorsSet);
+        const seriesByDataElementId = getGroupsByDataElementId(seriesSet);
         const groupCodesByDataElementId = getGroupCodeByDataElementId(dataElementGroupSets);
 
         const dataElements = d2DataElements.map(d2DataElement => {
             const deId = d2DataElement.id;
-            const sectorsGroups = _(sectorsByDataElementId).get(deId) || [];
-            const seriesGroups = _(seriesByDataElementId).get(deId, undefined);
-            const sectors: SectorInfo[] = sectorsGroups.map(sectorGroup => {
-                const seriesGroupForSector = seriesGroups
-                    ? seriesGroups.find(seriesGroup => {
-                          // series.code = SERIES_${sectorCode}_${number}. Example: SERIES_FOOD_5002
-                          const [, sectorCode, series] = seriesGroup.code.split("_");
-                          return sectorGroup.code.split("_")[1] === sectorCode ? series : null;
-                      })
-                    : undefined;
-                return {
-                    id: sectorGroup.id,
-                    series: seriesGroupForSector
-                        ? _.last(seriesGroupForSector.code.split("_"))
-                        : undefined,
-                };
-            });
-
+            const sectorsInfo = getSectorsInfo(deId, sectorsByDataElementId, seriesByDataElementId);
             const attrsMap = getAttrsMap(baseConfig.attributes, d2DataElement.attributeValues);
-            const { mainSector, countingMethod } = attrsMap;
+            const { mainSector, countingMethod, pairedDataElement } = attrsMap;
             const groupCodes = groupCodesByDataElementId[deId] || new Set();
             const indicatorType = getGroupKey(groupCodes, degCodes, indicatorTypes);
             const peopleOrBenefit = getGroupKey(groupCodes, degCodes, peopleOrBenefitList);
-            const externals = _(externalsByDataElementId).get(d2DataElement.id, []);
+            const externalGroups = externalsByDataElementId[d2DataElement.id] || [];
+            const externals = _.sortBy(externalGroups.map(group => group.displayName));
             const deCode = d2DataElement.code;
             const isSelectable = indicatorType !== "custom" || userIsAdmin;
             const name =
                 d2DataElement.displayName +
                 (isSelectable ? "" : ` ${i18n.t("[only for admin users]")}`);
-            const pairedDataElements = getPairedDataElements(
-                attrsMap.pairedDataElement,
-                dataElementsByCode
-            );
+            const pairedDataElements = getPairedDataElements(pairedDataElement, dataElementsByCode);
 
             if (!indicatorType) {
                 console.error(`DataElement ${deCode} has no indicator type`);
-                return null;
             } else if (!peopleOrBenefit) {
                 console.error(`DataElement ${deCode} has no indicator type people/benefit`);
-                return null;
             } else if (!mainSector) {
                 console.error(`DataElement ${deCode} has no main sector`);
-                return null;
             } else {
                 const dataElement: DataElementBase = {
                     id: d2DataElement.id,
                     name: name,
                     code: d2DataElement.code,
                     description: d2DataElement.description,
-                    sectorsInfo: sectors,
+                    sectorsInfo: sectorsInfo,
                     mainSector: { id: _(sectorsByCode).getOrFail(mainSector).id },
                     indicatorType,
                     peopleOrBenefit,
@@ -314,14 +270,52 @@ export default class DataElementsSet {
                 if (de.indicatorType === "sub") {
                     const key = ["global", de.series].join(".");
                     return _(allDataElementsByKey).get(key, null);
-                } else {
-                    return null;
                 }
             })
         );
 
         return _.uniqBy(relatedDataElements, de => de.id);
     }
+}
+
+type GroupByDataElement = Record<Id, Array<{ dataElements: Ref[] } & { id: string; code: string }>>;
+
+function getSectorsInfo(
+    dataElementId: Id,
+    sectorsByDataElementId: GroupByDataElement,
+    seriesByDataElementId: GroupByDataElement
+): SectorInfo[] {
+    const sectorsGroups = sectorsByDataElementId[dataElementId] || [];
+    const seriesGroups = seriesByDataElementId[dataElementId] || null;
+
+    // series.code = SERIES_${sectorCode}_${number}. Example: SERIES_FOOD_5002
+    return sectorsGroups.map(sectorGroup => {
+        const seriesGroupForSector = seriesGroups
+            ? seriesGroups.find(seriesGroup => {
+                  const [, sectorCode, series] = seriesGroup.code.split("_");
+                  return sectorGroup.code.split("_")[1] === sectorCode ? series : null;
+              })
+            : undefined;
+
+        const sectorInfo: SectorInfo = {
+            id: sectorGroup.id,
+            series: seriesGroupForSector ? _.last(seriesGroupForSector.code.split("_")) : undefined,
+        };
+
+        return sectorInfo;
+    });
+}
+
+function getDataElementsFromSet(
+    metadata: Metadata,
+    sectorsSet: { dataElementGroups: Array<{ dataElements: Ref[] }> }
+) {
+    const dataElementsById = _.keyBy(metadata.dataElements, de => de.id);
+    return _(sectorsSet.dataElementGroups)
+        .flatMap(deg => deg.dataElements.map(deRef => dataElementsById[deRef.id]))
+        .compact()
+        .uniqBy(de => de.id)
+        .value();
 }
 
 function getPairedDataElements(
@@ -452,6 +446,17 @@ function getDataElementsBySectorInSet(
               )
               .value()
         : dataElementsAllBySector;
+}
+
+function getGroupsByDataElementId<Group extends { dataElements: Array<Ref> }>(degSet: {
+    dataElementGroups: Group[];
+}): Record<Id, Group[]> {
+    const res = _(degSet.dataElementGroups)
+        .flatMap(deg => deg.dataElements.map(deRef => ({ deId: deRef.id, deg })))
+        .groupBy(item => item.deId)
+        .mapValues(items => items.map(item => item.deg))
+        .value();
+    return res;
 }
 
 /* Type-safe helpers */

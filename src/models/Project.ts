@@ -52,12 +52,7 @@ Project model.
 import _ from "lodash";
 import { D2Api, SelectedPick, Id, Ref, D2OrganisationUnit, D2IndicatorSchema } from "d2-api";
 import i18n from "../locales";
-import DataElementsSet, {
-    DataElementBase,
-    PeopleOrBenefit,
-    SelectionInfo,
-    DataElement,
-} from "./dataElementsSet";
+import DataElementsSet, { PeopleOrBenefit, DataElement } from "./dataElementsSet";
 import ProjectDb from "./ProjectDb";
 import { toISOString, getMonthsRange } from "../utils/date";
 import { generateUid } from "d2/uid";
@@ -383,11 +378,9 @@ class Project {
         const { dataElementsSelection, dataElementsMER } = this.data;
         const result = dataElementsSelection.updateSelectedWithRelations(sectorId, dataElementIds);
         const { dataElements: dataElementsUpdate, selectionInfo } = result;
-
-        const dataElementsMERUpdated = dataElementsMER.updateSuperSet(dataElementsUpdate);
         const newProject = this.setObj({
             dataElementsSelection: dataElementsUpdate,
-            dataElementsMER: dataElementsMERUpdated,
+            dataElementsMER: dataElementsMER.updateSuperSet(dataElementsUpdate),
         });
         return { selectionInfo, project: newProject };
     }
