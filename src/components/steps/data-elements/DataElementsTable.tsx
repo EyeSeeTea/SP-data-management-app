@@ -4,11 +4,7 @@ import { useSnackbar } from "d2-ui-components";
 import _ from "lodash";
 import DataElementsFilters, { Filter } from "./DataElementsFilters";
 import i18n from "../../../locales";
-import DataElementsSet, {
-    SelectionInfo,
-    DataElement,
-    DataElementBase,
-} from "../../../models/dataElementsSet";
+import DataElementsSet, { SelectionInfo, DataElement } from "../../../models/dataElementsSet";
 import { Id } from "d2-api";
 
 export interface DataElementsTableProps {
@@ -133,19 +129,13 @@ function withPaired<Field extends keyof DataElement>(
     mapper?: (val: DataElement[Field]) => string
 ) {
     const mapper_ = mapper || _.identity;
-    return function(dataElement: DataElement, _value: ReactNode) {
+    const render = function(dataElement: DataElement, _value: ReactNode) {
         const values = [dataElement, ...dataElement.pairedDataElements].map(de =>
             mapper_(de[field])
         );
         return <React.Fragment key={dataElement.name}>{renderJoin(values, <br />)}</React.Fragment>;
     };
-}
-
-function getExternals(dataElement: DataElement, _value: ReactNode) {
-    const values = [dataElement, ...dataElement.pairedDataElements].map(de =>
-        de.externals.join(", ")
-    );
-    return <React.Fragment key={dataElement.name}>{renderJoin(values, <br />)}</React.Fragment>;
+    return render;
 }
 
 function getSelectionMessage(dataElements: DataElement[], action: string): string | null {
