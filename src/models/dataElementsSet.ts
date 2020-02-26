@@ -38,7 +38,6 @@ export interface DataElementBase {
     selectable: boolean;
 }
 
-// Add separate field so we can filter in objects table: TOIMP
 export interface DataElement extends Omit<DataElementBase, "sectors" | "mainSector"> {
     base: DataElementBase;
     sector: Ref;
