@@ -79,13 +79,6 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
         return dataElementsSet.get({ onlySelected: true, sectorId }).map(de => ({ id: de.id }));
     }, [dataElementsSet, sectorId]);
 
-    const searchBoxColumns = [
-        "name" as const,
-        "code" as const,
-        //"pairedDataElementName" as const, // TODO
-        //"pairedDataElementCode" as const,
-    ];
-
     if (!sectorId) return null;
 
     return (
@@ -97,7 +90,7 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
             columns={columns}
             searchBoxLabel={i18n.t("Search by name / code")}
             onChange={state => onTableChange(onSelectionChange, snackbar, state)}
-            searchBoxColumns={searchBoxColumns}
+            searchBoxColumns={["name", "code", "search"]}
             resetKey={JSON.stringify(fullFilter)}
             filterComponents={
                 <DataElementsFilters

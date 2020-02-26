@@ -45,6 +45,7 @@ export interface DataElement extends Omit<DataElementBase, "sectors" | "mainSect
     isMainSector: boolean;
     series?: string;
     pairedDataElements: DataElement[];
+    search: string; // For text search (include searchable fields of paired data elements)
 }
 
 type SectorId = Id;
@@ -402,6 +403,7 @@ function getDataElementsBySector(
             base: dataElement,
             isMainSector: sectorInfo.id === dataElement.mainSector.id,
             series: sectorInfo.series,
+            search: "",
         }))
     );
 
@@ -413,21 +415,22 @@ function getDataElementsBySector(
         de => de.id
     );
 
+    // Finally, add paired DataElement[] to main data elements
     const dataElementsWithPaired = mainDataElements.map(dataElement => {
-        const pairedDataElementsInSameSector: DataElement[] = !groupPaired
-            ? []
-            : _.compact(
-                  _(dataElement.pairedDataElements)
-                      .map(de => {
-                          const pairedDe = dataElementsById[de.id];
-                          return pairedDe && pairedDe.sector.id === dataElement.sector.id
-                              ? { ..._(dataElementsById).getOrFail(de.id), pairedDataElements: [] }
-                              : null;
-                      })
-                      .compact()
-                      .value()
-              );
-        return { ...dataElement, pairedDataElements: pairedDataElementsInSameSector };
+        const paired: DataElement[] = _(groupPaired ? dataElement.pairedDataElements : [])
+            .map(({ id }) => {
+                const pairedDe = dataElementsById[id];
+                const isPairedOfSameSector = pairedDe.sector.id === dataElement.sector.id;
+                return pairedDe && isPairedOfSameSector
+                    ? { ...pairedDe, pairedDataElements: [] }
+                    : null;
+            })
+            .compact()
+            .value();
+
+        // Add name/code of the paired elements so we can search on the table
+        const search = paired.map(de => [de.name, de.code].join("\n")).join("\n");
+        return { ...dataElement, pairedDataElements: paired, search };
     });
 
     return _.groupBy(dataElementsWithPaired, de => de.sector.id);
