@@ -27,10 +27,15 @@ export function getDevProject(initialProject: Project, enabled: boolean) {
             { id: "GkiSljtLcOI", displayName: "Livelihood", code: "SECTOR_LIVELIHOOD" },
         ])
         .set(
-            "dataElements",
-            initialProject.dataElements
-                .updateSelection(["WS8XV4WWPE7", "ik0ICagvIjm", "We61YNYyOX0"])
-                .dataElements.updateMERSelected(["ik0ICagvIjm", "We61YNYyOX0"])
+            "dataElementsSelection",
+            initialProject.dataElementsSelection
+                .updateSelectedWithRelations("mGQ5ckOTU8A", ["WS8XV4WWPE7", "ik0ICagvIjm"])
+                .dataElements.updateSelectedWithRelations("GkiSljtLcOI", ["We61YNYyOX0"])
+                .dataElements
+        )
+        .set(
+            "dataElementsMER",
+            initialProject.dataElementsMER.updateSelected({ mGQ5ckOTU8A: ["ik0ICagvIjm"] })
         )
         .set("name", "0Test1-" + awardNumber)
         .set("description", "Some description")
@@ -71,7 +76,7 @@ export async function saveDataValues(api: D2Api, project: Project) {
     const { dataSets } = project;
     if (!dataSets) return;
 
-    const dataElements = project.dataElements.get({ onlySelected: true, includePaired: true });
+    const dataElements = project.getSelectedDataElements();
     const categoryCombosById = _(project.config.categoryCombos.default)
         .concat(project.config.categoryCombos.genderNewRecurring)
         .keyBy(cc => cc.id);
@@ -89,7 +94,7 @@ export async function saveDataValues(api: D2Api, project: Project) {
 
         return _.flatMap(project.getPeriods(), period => {
             return _.flatMap(dataElements, de => {
-                const cocs = categoryCombosById.getOrFail(de.categoryComboId).categoryOptionCombos;
+                const cocs = categoryCombosById.getOrFail(de.categoryCombo.id).categoryOptionCombos;
 
                 return cocs.map(coc => {
                     const key = [de.id, coc.id, info.attrCoc, period.id].join("-");

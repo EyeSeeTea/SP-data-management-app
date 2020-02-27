@@ -276,7 +276,7 @@ function getReport(
                 catOptComboDataApprovals.permissions.mayUnapprove &&
                 catOptComboDataApprovals.accepted;
 
-            // TODO: Move request + html parsing to some model
+            // REFACTOR: Move request + html parsing to some model
             return api.baseConnection
                 .get("/dhis-web-reporting/generateDataSetReport.action", {
                     params: {

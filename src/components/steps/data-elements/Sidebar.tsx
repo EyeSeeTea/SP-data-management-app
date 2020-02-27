@@ -54,7 +54,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
     return (
         <Grid container spacing={2}>
-            <Grid item className={classes.sidebar}>
+            <Grid item className={classes.sidebar} data-test-sidebar>
                 <List className={classes.list}>
                     {menuItems.map(item => (
                         <ListItem

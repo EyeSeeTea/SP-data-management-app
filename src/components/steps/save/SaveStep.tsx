@@ -115,23 +115,25 @@ const LiEntry = ({ label, value }: { label: string; value?: React.ReactNode }) =
 };
 
 function getSectorsInfo(project: Project): ReactNode {
+    const { sectors, dataElementsSelection, dataElementsMER } = project;
+    const selectedMER = new Set(dataElementsMER.get({ onlySelected: true }).map(de => de.id));
+
     return (
         <ul>
-            {project.sectors.map(sector => {
+            {sectors.map(sector => {
                 const dataElements = _.sortBy(
-                    project.dataElements.get({
+                    dataElementsSelection.get({
                         onlySelected: true,
-                        sectorId: sector.id,
                         includePaired: true,
+                        sectorId: sector.id,
                     }),
                     de => de.name
                 );
-                const selectedMER = new Set(project.dataElements.selectedMER);
                 const value = (
                     <ul>
                         {dataElements.map(de => (
                             <li key={de.id}>
-                                {de.name}
+                                {de.name} - {de.code}
                                 {selectedMER.has(de.id) ? ` [${i18n.t("MER")}]` : ""}
                             </li>
                         ))}
