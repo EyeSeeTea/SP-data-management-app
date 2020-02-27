@@ -1,6 +1,6 @@
 import * as React from "react";
 import moment from "moment";
-import { Button } from "@material-ui/core";
+import { Button, LinearProgress } from "@material-ui/core";
 import i18n from "../../locales";
 import Project, { DataSet, monthFormat } from "../../models/Project";
 import { useAppContext } from "../../contexts/api-context";
@@ -14,6 +14,7 @@ interface DataSetStateButtonProps {
 }
 
 const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = props => {
+    const [isActive, setActive] = React.useState(false);
     const { currentUser } = useAppContext();
     const { period, dataSet, project, onChange } = props;
     const classes = useStyles();
@@ -23,12 +24,19 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
         return projectDataSet.getOpenInfo(moment(period, monthFormat));
     }, [projectDataSet, period]);
 
+    function notifyOnChange() {
+        setActive(false);
+        onChange();
+    }
+
     const reopen = React.useCallback(() => {
-        projectDataSet.reopen(period).then(onChange);
+        setActive(true);
+        projectDataSet.reopen().then(notifyOnChange);
     }, [projectDataSet, onChange]);
 
     const reset = React.useCallback(() => {
-        projectDataSet.reset().then(onChange);
+        setActive(true);
+        projectDataSet.reset().then(notifyOnChange);
     }, [projectDataSet, onChange]);
 
     if (!currentUser.can("reopen")) return null;
@@ -36,16 +44,28 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
     return (
         <React.Fragment>
             {!dataSetInfo.isPeriodOpen && (
-                <Button className={classes.button} onClick={reopen} variant="contained">
-                    {i18n.t("Open dataset for the current month")}
+                <Button
+                    disabled={isActive}
+                    className={classes.button}
+                    onClick={reopen}
+                    variant="contained"
+                >
+                    {i18n.t("Open dataset")}
                 </Button>
             )}
 
             {dataSetInfo.isDataSetReopened && (
-                <Button className={classes.button} onClick={reset} variant="contained">
-                    {i18n.t("Reset dataset")}
+                <Button
+                    disabled={isActive}
+                    className={classes.button}
+                    onClick={reset}
+                    variant="contained"
+                >
+                    {i18n.t("Set default entry periods")}
                 </Button>
             )}
+
+            {isActive && <LinearProgress style={{ marginTop: 20 }} />}
         </React.Fragment>
     );
 };

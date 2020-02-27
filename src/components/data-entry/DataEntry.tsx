@@ -64,42 +64,18 @@ function waitForOption(el: HTMLSelectElement, predicate: (option: HTMLOptionElem
     });
 }
 
-const setDatasetPeriodAndCategory = async (
-    iframe: HTMLIFrameElement,
-    dataSet: DataSet,
-    attributes: Attributes,
-    onDone: () => void
-) => {
+async function setDataset(iframe: HTMLIFrameElement, dataSet: DataSet, onDone: () => void) {
     if (!iframe.contentWindow) return;
+
     const iframeDocument = iframe.contentWindow.document;
-
-    //get the form that we want
     const dataSetSelector = iframeDocument.querySelector<HTMLSelectElement>("#selectedDataSetId");
-    const periodSelector = iframeDocument.querySelector<HTMLSelectElement>("#selectedPeriodId");
-    if (!dataSetSelector || !periodSelector) return;
+    if (!dataSetSelector) return;
 
-    // getting datasets options and select it
     await waitForOption(dataSetSelector, option => option.value === dataSet.id);
     selectOption(dataSetSelector, dataSet.id);
 
-    // getting periodSelector options and select it
-    await waitForOption(periodSelector, option => !!option.value);
-    const options = periodSelector.querySelectorAll("option");
-    const firstPeriodOption = options[1];
-    if (firstPeriodOption) selectOption(periodSelector, firstPeriodOption.value);
-
-    _(attributes).each((categoryOptionId, categoryId) => {
-        const selector = iframeDocument.querySelector<HTMLSelectElement>("#category-" + categoryId);
-        if (!selector) {
-            console.error(`Cannot find attribute selector with categoryId=${categoryId}`);
-            return;
-        } else {
-            selectOption(selector, categoryOptionId);
-        }
-    });
-
     onDone();
-};
+}
 
 const getDataEntryForm = async (
     iframe: HTMLIFrameElement,
@@ -120,7 +96,7 @@ const getDataEntryForm = async (
         async (_event: unknown, organisationUnitIds: string[]) => {
             const options = iframeDocument.querySelectorAll("#selectedDataSetId option");
             if (organisationUnitIds[0] === orgUnitId && options.length > 1) {
-                await setDatasetPeriodAndCategory(iframe, dataSet, attributes, onDone);
+                await setDataset(iframe, dataSet, onDone);
             } else {
                 iframeSelection.select(orgUnitId);
             }
@@ -154,9 +130,9 @@ const DataEntry = (props: DataEntryProps) => {
 
     useEffect(() => {
         if (state.dropdownValue) {
-            setDataSetOpen(setSelectPeriod(iframeRef, state.dropdownValue));
+            setDataSetOpen(setSelectPeriod(iframeRef.current, state.dropdownValue, attributes));
         }
-    }, [state, project]);
+    }, [state, project, iframeKey]);
 
     useEffect(() => {
         const iframe = iframeRef.current;
@@ -257,10 +233,10 @@ interface DataEntryWindow {
 }
 
 function setSelectPeriod(
-    iframeRef: React.RefObject<HTMLIFrameElement>,
-    periodKey: string | undefined
+    iframe: HTMLIFrameElement | null,
+    periodKey: string | undefined,
+    attributes: Attributes
 ): boolean {
-    const iframe = iframeRef.current;
     if (!iframe || !iframe.contentWindow) return false;
 
     const iframeWindow = iframe.contentWindow as Window & DataEntryWindow;
@@ -271,14 +247,29 @@ function setSelectPeriod(
     if (periodSelector && periodKey) {
         const now = moment();
         const selectedDate = moment(periodKey, monthFormat);
+        const iframeDocument = iframe.contentWindow.document;
         iframeWindow.dhis2.de.currentPeriodOffset = selectedDate.year() - now.year();
-        iframeWindow.displayPeriods();
+        try {
+            iframeWindow.displayPeriods();
+        } catch (err) {
+            console.log("setSelectPeriod", err);
+        }
 
         if (isOptionInSelect(periodSelector, periodKey)) {
             selectOption(periodSelector, periodKey);
+
+            _(attributes).each((categoryOptionId, categoryId) => {
+                const selector = iframeDocument.querySelector("#category-" + categoryId);
+                if (!selector) {
+                    console.error(`Cannot find attribute selector with categoryId=${categoryId}`);
+                } else {
+                    selectOption(selector as HTMLSelectElement, categoryOptionId);
+                }
+            });
+
             return true;
         } else {
-            console.error("Period is not selectable", periodKey);
+            console.log("Period is not selectable", periodKey);
             return false;
         }
     } else {
