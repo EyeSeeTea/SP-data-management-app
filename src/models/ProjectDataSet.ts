@@ -30,15 +30,13 @@ export default class ProjectDataSet {
         return this.dataSet;
     }
 
-    async reopen(periodId: string): Promise<Project> {
+    async reopen(): Promise<Project> {
         const dataSet = this.getDataSet();
         const { startDate, endDate } = this.project.getDates();
         const projectDb = new ProjectDb(this.project);
         const normalAttributes = this.getDefaultOpenAttributes();
         const openAttributes: DataSetOpenAttributes = {
-            dataInputPeriods: normalAttributes.dataInputPeriods.map(dip =>
-                expandDataInputPeriod(dip, periodId)
-            ),
+            dataInputPeriods: normalAttributes.dataInputPeriods.map(expandDataInputPeriod),
             openFuturePeriods: Math.max(endDate.diff(startDate, "month") + 1, 0),
             expiryDays: 0,
         };
@@ -115,10 +113,7 @@ export default class ProjectDataSet {
     }
 }
 
-function expandDataInputPeriod(dip: D2DataInputPeriod, periodId: string) {
-    const isOutsideDate = dip.period.id !== periodId;
-    if (isOutsideDate) return dip;
-
+function expandDataInputPeriod(dip: D2DataInputPeriod) {
     const openingDate = moment(dip.openingDate);
     const closingDate = moment(dip.closingDate);
     const now = moment();

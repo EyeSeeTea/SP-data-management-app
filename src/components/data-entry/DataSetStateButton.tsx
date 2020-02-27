@@ -31,7 +31,7 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
 
     const reopen = React.useCallback(() => {
         setActive(true);
-        projectDataSet.reopen(period).then(notifyOnChange);
+        projectDataSet.reopen().then(notifyOnChange);
     }, [projectDataSet, onChange]);
 
     const reset = React.useCallback(() => {
