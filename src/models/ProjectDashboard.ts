@@ -182,7 +182,9 @@ export default class ProjectDashboard {
 
     costBenefit(): MaybeD2Chart {
         const { project, dataElements } = this;
-        const pairedDataElements = dataElements.benefit.filter(de => de.pairedDataElement);
+        const pairedDataElements = dataElements.benefit.filter(
+            de => de.pairedDataElements.length > 0
+        );
 
         return getChart(project, {
             key: "cost-benefit",
