@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { ObjectsTable, TableColumn, TableAction, TableSorting, TableState } from "d2-ui-components";
+import { MouseActionsMapping } from "d2-ui-components";
 import { TablePagination } from "d2-ui-components";
 import i18n from "../../locales";
 import _ from "lodash";
@@ -19,6 +20,11 @@ import DeleteDialog from "../../components/delete-dialog/DeleteDialog";
 import { Action } from "../../models/user";
 
 type ContextualAction = Exclude<Action, "create" | "accessMER" | "reopen"> | "details";
+
+const mouseActionsMapping: MouseActionsMapping = {
+    left: { type: "contextual" },
+    right: { type: "contextual" },
+};
 
 function getComponentConfig(
     api: D2Api,
@@ -235,6 +241,7 @@ const ProjectsList: React.FC = () => {
                     columns={componentConfig.columns}
                     details={componentConfig.details}
                     actions={componentConfig.actions}
+                    mouseActionsMapping={mouseActionsMapping}
                     rows={rows}
                     filterComponents={
                         <React.Fragment key="filters">
