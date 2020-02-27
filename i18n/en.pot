@@ -5,16 +5,16 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2020-02-26T11:51:42.184Z\n"
-"PO-Revision-Date: 2020-02-26T11:51:42.184Z\n"
+"POT-Creation-Date: 2020-02-27T09:15:19.453Z\n"
+"PO-Revision-Date: 2020-02-27T09:15:19.453Z\n"
 
 msgid "Data Entry"
 msgstr ""
 
-msgid "Open dataset for the current month"
+msgid "Open dataset"
 msgstr ""
 
-msgid "Reset dataset"
+msgid "Set default entry periods"
 msgstr ""
 
 msgid "{{n}} projects deleted"
