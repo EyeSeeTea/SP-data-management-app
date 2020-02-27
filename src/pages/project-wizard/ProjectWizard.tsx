@@ -126,7 +126,7 @@ class ProjectWizardImpl extends React.Component<Props, State> {
                 key: "indicators",
                 label: i18n.t("Selection of Indicators"),
                 component: DataElementsSelection,
-                validationKeys: ["dataElements"],
+                validationKeys: ["dataElementsSelection"],
                 help: helpTexts.indicators,
             },
             {
@@ -266,9 +266,11 @@ const ProjectWizard: React.FC<ProjectWizardProps> = props => {
 };
 
 const DataElementsSelection: React.FC<StepProps> = props => (
-    <DataElementsStep {...props} field="selection" />
+    <DataElementsStep {...props} type="mainSelection" />
 );
 
-const DataElementsMER: React.FC<StepProps> = props => <DataElementsStep {...props} field="MER" />;
+const DataElementsMER: React.FC<StepProps> = props => (
+    <DataElementsStep {...props} type="merSelection" />
+);
 
 export default React.memo(ProjectWizard);

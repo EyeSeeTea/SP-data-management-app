@@ -9,7 +9,7 @@ import { runPromises } from "../utils/promises";
 import { getProjectFromOrgUnit, getOrgUnitDatesFromProject } from "./Project";
 import { toISOString, getMonthsRange } from "../utils/date";
 import i18n from "../locales";
-import { DataElement } from "./dataElementsSet";
+import { DataElementBase } from "./dataElementsSet";
 
 export const staffKeys = [
     "nationalStaff" as const,
@@ -386,7 +386,7 @@ async function getAnalyticRows(
     api: D2Api,
     organisationUnits: Ref[],
     periods: string[],
-    merDataElements: DataElement[]
+    merDataElements: DataElementBase[]
 ) {
     const { categories, categoryOptions } = config;
     const dataElementsById = getDataElementsById(config);
@@ -536,7 +536,6 @@ function sumRows<T extends { value: number }>(rows: T[], filterPredicate: (row: 
 
 function getDataElementsById(config: Config) {
     const allDataElements = _(config.dataElements)
-        .flatMap(de => _.compact([de, de.pairedDataElement]))
         .uniqBy(de => de.id)
         .value();
     return _.keyBy(allDataElements, "id");

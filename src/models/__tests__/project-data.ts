@@ -26,10 +26,14 @@ export const projectData = {
         openingDate: "2018-09-01T00:00:00",
         closedDate: "2019-04-30T23:59:59",
     },
-    funders: config.funders.slice(0, 2),
-    locations: config.locations.filter(location =>
-        _.isEqual(location.countries[0], { id: "eu2XF73JOzl" })
-    ),
+    funders: _(config.funders)
+        .keyBy(funder => funder.id)
+        .at(["OE0KdZRX2FC", "WKUXmz4LIUG"])
+        .value(),
+    locations: _(config.locations)
+        .keyBy(location => location.id)
+        .at(["GG0k0oNhgS7"])
+        .value(),
     awardNumber: "12345",
     subsequentLettering: "en",
     sectors: _(config.sectors)
@@ -44,6 +48,8 @@ export function getProject<K extends keyof ProjectData>(
 ): Project {
     return Project.create(api, config)
         .setObj(Object.assign({}, projectData, partialProjectData || {}))
-        .updateDataElementsSelection(["WS8XV4WWPE7", "ik0ICagvIjm", "yMqK9DKbA3X"])
-        .project.updateDataElementsMERSelection(["WS8XV4WWPE7", "yMqK9DKbA3X"]);
+        .updateDataElementsSelection("mGQ5ckOTU8A", ["WS8XV4WWPE7", "ik0ICagvIjm"])
+        .project.updateDataElementsSelection("GkiSljtLcOI", ["yMqK9DKbA3X"])
+        .project.updateDataElementsMERSelection("mGQ5ckOTU8A", ["WS8XV4WWPE7"])
+        .project.updateDataElementsMERSelection("GkiSljtLcOI", ["yMqK9DKbA3X"]).project;
 }

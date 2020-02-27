@@ -1,4 +1,4 @@
-describe("Projects - Edit", () => {
+describe("Projects - Delete", () => {
     before(() => {
         cy.login("admin");
         cy.loadPage();
