@@ -135,10 +135,13 @@ export default class DataElementsSet {
 
             if (!indicatorType) {
                 console.error(`DataElement ${deCode} has no indicator type`);
+                return null;
             } else if (!peopleOrBenefit) {
                 console.error(`DataElement ${deCode} has no indicator type people/benefit`);
+                return null;
             } else if (!mainSector) {
                 console.error(`DataElement ${deCode} has no main sector`);
+                return null;
             } else {
                 const dataElement: DataElementBase = {
                     id: d2DataElement.id,
@@ -272,6 +275,8 @@ export default class DataElementsSet {
                 if (de.indicatorType === "sub") {
                     const key = ["global", de.series].join(".");
                     return _(allDataElementsByKey).get(key, null);
+                } else {
+                    return null;
                 }
             })
         );
