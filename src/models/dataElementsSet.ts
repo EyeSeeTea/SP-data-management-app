@@ -388,51 +388,46 @@ function getDataElementsBySector(
     config: Config,
     options: { groupPaired: boolean }
 ): BySector<DataElement[]> {
-    const { dataElements } = config;
     const { groupPaired } = options;
 
-    const nonMainDataElementIds = groupPaired
-        ? _.flatMap(dataElements, de => de.pairedDataElements)
-        : [];
-
-    const dataElementsWithoutPaired = _.flatMap(dataElements, dataElement =>
-        dataElement.sectorsInfo.map(sectorInfo => ({
-            ...dataElement,
-            sector: { id: sectorInfo.id },
-            base: dataElement,
-            isMainSector: sectorInfo.id === dataElement.mainSector.id,
-            series: sectorInfo.series,
-            search: "",
-        }))
-    );
-
-    const dataElementsById = _.keyBy(dataElementsWithoutPaired, de => de.id);
-
-    const mainDataElements = _.differenceBy(
-        dataElementsWithoutPaired,
-        nonMainDataElementIds,
-        de => de.id
-    );
-
-    // Finally, add paired DataElement[] to main data elements
-    const dataElementsWithPaired = mainDataElements.map(dataElement => {
-        const paired: DataElement[] = _(groupPaired ? dataElement.pairedDataElements : [])
-            .map(({ id }) => {
-                const pairedDe = dataElementsById[id];
-                const isPairedOfSameSector = pairedDe.sector.id === dataElement.sector.id;
-                return pairedDe && isPairedOfSameSector
-                    ? { ...pairedDe, pairedDataElements: [] }
-                    : null;
+    const pairs = config.sectors.map(sector => {
+        const allDes = _.compact(
+            config.dataElements.map(dataElement => {
+                const sectorInfo = dataElement.sectorsInfo.find(info => info.id === sector.id);
+                if (!sectorInfo) return null;
+                else
+                    return {
+                        ...dataElement,
+                        sector: { id: sector.id },
+                        base: dataElement,
+                        isMainSector: sectorInfo.id === dataElement.mainSector.id,
+                        series: sectorInfo.series,
+                        search: "",
+                    };
             })
-            .compact()
-            .value();
+        );
+        const pairedDes = groupPaired ? _.flatMap(allDes, de => de.pairedDataElements) : [];
+        const dataElementsById = _.keyBy(allDes, de => de.id);
+        const mainDataElements = _.differenceBy(allDes, pairedDes, de => de.id);
 
-        // Add name/code of the paired elements so we can search on the table
-        const search = paired.map(de => [de.name, de.code].join("\n")).join("\n");
-        return { ...dataElement, pairedDataElements: paired, search };
+        // Finally, add paired DataElement[] to main data elements
+        const dataElements: DataElement[] = mainDataElements.map(dataElement => {
+            const pairedDataElements = _(groupPaired ? dataElement.pairedDataElements : [])
+                .map(de => dataElementsById[de.id])
+                .compact()
+                .map(pairedDe => ({ ...pairedDe, pairedDataElements: [] }))
+                .value();
+
+            // Add name/code in search field of the paired elements so we can search on the table
+            const search = pairedDataElements.map(de => [de.name, de.code].join("\n")).join("\n");
+
+            return { ...dataElement, pairedDataElements, search };
+        });
+
+        return [sector.id, dataElements];
     });
 
-    return _.groupBy(dataElementsWithPaired, de => de.sector.id);
+    return _.fromPairs(pairs);
 }
 
 function getDataElementsBySectorInSet(
