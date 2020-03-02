@@ -5,6 +5,7 @@ import i18n from "../../locales";
 import Project, { DataSet, monthFormat } from "../../models/Project";
 import { useAppContext } from "../../contexts/api-context";
 import { makeStyles } from "@material-ui/styles";
+import { useMemoAsync } from "../../utils/hooks";
 
 interface DataSetStateButtonProps {
     project: Project;
@@ -20,7 +21,7 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
     const classes = useStyles();
     const projectDataSet = project.getProjectDataSet(dataSet);
 
-    const dataSetInfo = React.useMemo(() => {
+    const dataSetInfo = useMemoAsync(() => {
         return projectDataSet.getOpenInfo(moment(period, monthFormat));
     }, [projectDataSet, period]);
 
@@ -31,7 +32,7 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
 
     const reopen = React.useCallback(() => {
         setActive(true);
-        projectDataSet.reopen().then(notifyOnChange);
+        projectDataSet.reopen(period).then(notifyOnChange);
     }, [projectDataSet, onChange]);
 
     const reset = React.useCallback(() => {
@@ -40,6 +41,7 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
     }, [projectDataSet, onChange]);
 
     if (!currentUser.can("reopen")) return null;
+    if (!dataSetInfo) return <LinearProgress />;
 
     return (
         <React.Fragment>
@@ -74,4 +76,4 @@ const useStyles = makeStyles({
     button: { marginLeft: 10, marginRight: 10 },
 });
 
-export default DataSetStateButton;
+export default React.memo(DataSetStateButton);

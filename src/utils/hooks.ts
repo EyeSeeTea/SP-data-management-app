@@ -23,3 +23,11 @@ export function useBoolean(initialValue: boolean): UseBooleanReturn {
         toggle: () => setValue(value => !value),
     };
 }
+
+export function useMemoAsync<T>(getter: () => Promise<T>, dependencies: any[]) {
+    const [data, setData] = React.useState<T | undefined>(undefined);
+    React.useEffect(() => {
+        getter().then(setData);
+    }, dependencies);
+    return data;
+}

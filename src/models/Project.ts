@@ -111,7 +111,7 @@ export interface DataSet {
     expiryDays: number;
 }
 
-interface OrganisationUnit {
+export interface OrganisationUnit {
     id: string;
     path: string;
     displayName: string;

@@ -1,8 +1,8 @@
 import moment, { Moment } from "moment";
 import _ from "lodash";
-import { D2Api, D2DataInputPeriod } from "d2-api";
+import { Id, D2Api, D2DataInputPeriod } from "d2-api";
 import { Config } from "./Config";
-import Project, { DataSet, DataSetType } from "./Project";
+import Project, { OrganisationUnit, DataSet, DataSetType } from "./Project";
 import ProjectDb, { DataSetOpenAttributes } from "./ProjectDb";
 import { toISOString } from "../utils/date";
 
@@ -11,6 +11,31 @@ const monthFormat = "YYYYMM";
 interface DataSetOpenInfo {
     isPeriodOpen: boolean;
     isDataSetReopened: boolean;
+}
+
+type DataApprovalCategoryOptionCombosParams = {
+    ds: Id;
+    pe: string;
+    ou: Id;
+};
+
+type Level = {} | { level: string; id: string };
+
+type DataApprovalCategoryOptionCombosResponse = CategoryOptionComboDataApproval[];
+
+interface CategoryOptionComboDataApproval {
+    level: Level;
+    ou: string;
+    permissions: {
+        mayApprove: boolean;
+        mayUnapprove: boolean;
+        mayAccept: boolean;
+        mayUnaccept: boolean;
+        mayReadData: boolean;
+    };
+    accepted: boolean;
+    id: string;
+    ouName: string;
 }
 
 export default class ProjectDataSet {
@@ -30,7 +55,12 @@ export default class ProjectDataSet {
         return this.dataSet;
     }
 
-    async reopen(): Promise<Project> {
+    getOrgUnit(): OrganisationUnit {
+        if (!this.project.orgUnit) throw new Error("No org unit");
+        return this.project.orgUnit;
+    }
+
+    async reopen(period: string): Promise<Project> {
         const dataSet = this.getDataSet();
         const { startDate, endDate } = this.project.getDates();
         const projectDb = new ProjectDb(this.project);
@@ -40,7 +70,9 @@ export default class ProjectDataSet {
             openFuturePeriods: Math.max(endDate.diff(startDate, "month") + 1, 0),
             expiryDays: 0,
         };
+        // Open all dataSet periods but only unapprove the specified
         await projectDb.updateDataSet(dataSet, openAttributes);
+        await this.setApprovalState(period, false);
         return Project.get(this.api, this.config, this.project.id);
     }
 
@@ -49,22 +81,63 @@ export default class ProjectDataSet {
         const projectDb = new ProjectDb(this.project);
         const normalAttributes = this.getDefaultOpenAttributes();
         await projectDb.updateDataSet(dataSet, normalAttributes);
+        // We don't know if the dataset was previously approved for some of the periods, so
+        // we just keep the approval info untouched.
         return Project.get(this.api, this.config, this.project.id);
     }
 
-    getOpenInfo(date: Moment): DataSetOpenInfo {
+    async setApprovalState(period: string, isApproved: boolean): Promise<void> {
+        const url = "/dataApprovals/" + (isApproved ? "approvals" : "unapprovals");
+        const dataSetId = this.getDataSet().id;
+        const orgUnitId = this.getOrgUnit().id;
+        const aoc = this.getAttributeOptionCombo();
+
+        const params = {
+            ds: [dataSetId],
+            pe: [period],
+            approvals: [{ ou: orgUnitId, aoc: aoc.id }],
+        };
+
+        await this.api.post(url, {}, params).getData();
+    }
+
+    async getOpenInfo(date: Moment): Promise<DataSetOpenInfo> {
         const defaultOpenAttributes = this.getDefaultOpenAttributes();
-        const isPeriodOpen = this.isOpen(date);
+        const isPeriodOpen = await this.isOpen(date);
         const isDataSetReopened = !this.areOpenAttributesEquivalent(defaultOpenAttributes);
         return { isPeriodOpen, isDataSetReopened };
     }
 
-    isOpen(date: Moment): boolean {
+    async isOpen(date: Moment): Promise<boolean> {
         return (
             this.arePeriodsOpen(date) &&
             this.isFuturePeriodsOpen(date) &&
-            this.isExpiryDaysOpen(date)
+            this.isExpiryDaysOpen(date) &&
+            !(await this.hasApprovedData(date))
         );
+    }
+
+    private getAttributeOptionCombo() {
+        const categoryOption = this.config.categoryOptions[this.dataSetType];
+        const aoc = categoryOption.categoryOptionCombos[0];
+        if (!aoc) throw new Error("Cannot get attribute option combo");
+        return aoc;
+    }
+
+    private async hasApprovedData(date: Moment): Promise<boolean> {
+        const period = date.format(monthFormat);
+        const aoc = this.getAttributeOptionCombo();
+        const orgUnit = this.getOrgUnit();
+        const params = { ds: this.getDataSet().id, pe: period, ou: this.project.id };
+        const dataApprovalsAll = await this.getDataApprovals(params);
+        const dataApproval = dataApprovalsAll.find(da => da.ou === orgUnit.id && da.id === aoc.id);
+
+        return !dataApproval ? false : dataApproval.accepted;
+    }
+
+    private async getDataApprovals(params: DataApprovalCategoryOptionCombosParams) {
+        const path = "/dataApprovals/categoryOptionCombos";
+        return this.api.get<DataApprovalCategoryOptionCombosResponse>(path, params).getData();
     }
 
     private areOpenAttributesEquivalent(dataSet: DataSetOpenAttributes): boolean {
