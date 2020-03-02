@@ -117,6 +117,27 @@ export default class ProjectDataSet {
         );
     }
 
+    async getDataApproval(period: string) {
+        const dataSet = this.getDataSet();
+        const orgUnit = this.getOrgUnit();
+        const aoc = this.getAttributeOptionCombo();
+        const path = "/dataApprovals/categoryOptionCombos";
+        const params = { ds: dataSet.id, pe: period, ou: orgUnit.id };
+        const dataApprovalsAll = await this.api
+            .get<DataApprovalCategoryOptionCombosResponse>(path, params)
+            .getData();
+        return dataApprovalsAll.find(da => da.ou === orgUnit.id && da.id === aoc.id);
+    }
+
+    getApprovalForm(period: string) {
+        const orgUnit = this.getOrgUnit();
+        const aoc = this.getAttributeOptionCombo();
+        const dataSet = this.getDataSet();
+        const params = { ds: dataSet.id, pe: period, ou: orgUnit.id, dimension: "ao:" + aoc.id };
+        const path = "/dhis-web-reporting/generateDataSetReport.action";
+        return this.api.baseConnection.get(path, { params });
+    }
+
     private getAttributeOptionCombo() {
         const categoryOption = this.config.categoryOptions[this.dataSetType];
         const aoc = categoryOption.categoryOptionCombos[0];
@@ -126,18 +147,8 @@ export default class ProjectDataSet {
 
     private async hasApprovedData(date: Moment): Promise<boolean> {
         const period = date.format(monthFormat);
-        const aoc = this.getAttributeOptionCombo();
-        const orgUnit = this.getOrgUnit();
-        const params = { ds: this.getDataSet().id, pe: period, ou: this.project.id };
-        const dataApprovalsAll = await this.getDataApprovals(params);
-        const dataApproval = dataApprovalsAll.find(da => da.ou === orgUnit.id && da.id === aoc.id);
-
+        const dataApproval = await this.getDataApproval(period);
         return !dataApproval ? false : dataApproval.accepted;
-    }
-
-    private async getDataApprovals(params: DataApprovalCategoryOptionCombosParams) {
-        const path = "/dataApprovals/categoryOptionCombos";
-        return this.api.get<DataApprovalCategoryOptionCombosResponse>(path, params).getData();
     }
 
     private areOpenAttributesEquivalent(dataSet: DataSetOpenAttributes): boolean {

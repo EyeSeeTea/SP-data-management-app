@@ -99,7 +99,8 @@ export interface DataInputPeriod {
     closingDate: string;
 }
 
-export type DataSetType = "actual" | "target";
+export const dataSetTypes = ["actual", "target"] as const;
+export type DataSetType = typeof dataSetTypes[number];
 
 export interface DataSet {
     id: string;
