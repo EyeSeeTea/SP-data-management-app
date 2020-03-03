@@ -9,8 +9,10 @@ import { toISOString } from "../utils/date";
 const monthFormat = "YYYYMM";
 
 interface DataSetOpenInfo {
-    isPeriodOpen: boolean;
-    isDataSetReopened: boolean;
+    isOpen: boolean;
+    isReopened: boolean;
+    isOpenByDates: boolean;
+    isOpenByData: boolean;
 }
 
 type DataApprovalCategoryOptionCombosParams = {
@@ -60,7 +62,8 @@ export default class ProjectDataSet {
         return this.project.orgUnit;
     }
 
-    async reopen(period: string): Promise<Project> {
+    async reopen(options: { unapprovePeriod?: string } = {}): Promise<Project> {
+        const { unapprovePeriod } = options;
         const dataSet = this.getDataSet();
         const { startDate, endDate } = this.project.getDates();
         const projectDb = new ProjectDb(this.project);
@@ -70,9 +73,9 @@ export default class ProjectDataSet {
             openFuturePeriods: Math.max(endDate.diff(startDate, "month") + 1, 0),
             expiryDays: 0,
         };
-        // Open all dataSet periods but only unapprove the specified
+        // Open all dataSet periods but only unapprove the given period
         await projectDb.updateDataSet(dataSet, openAttributes);
-        await this.setApprovalState(period, false);
+        if (unapprovePeriod) await this.setApprovalState(unapprovePeriod, false);
         return Project.get(this.api, this.config, this.project.id);
     }
 
@@ -103,17 +106,23 @@ export default class ProjectDataSet {
 
     async getOpenInfo(date: Moment): Promise<DataSetOpenInfo> {
         const defaultOpenAttributes = this.getDefaultOpenAttributes();
-        const isPeriodOpen = await this.isOpen(date);
+        const isPeriodOpenByDates = await this.isOpenByDates(date);
+        const isPeriodOpenByData = !(await this.hasApprovedData(date));
+        const isPeriodOpen = isPeriodOpenByDates && isPeriodOpenByData;
         const isDataSetReopened = !this.areOpenAttributesEquivalent(defaultOpenAttributes);
-        return { isPeriodOpen, isDataSetReopened };
+        return {
+            isOpen: isPeriodOpen,
+            isOpenByDates: isPeriodOpenByDates,
+            isOpenByData: isPeriodOpenByData,
+            isReopened: isDataSetReopened,
+        };
     }
 
-    async isOpen(date: Moment): Promise<boolean> {
+    async isOpenByDates(date: Moment): Promise<boolean> {
         return (
             this.arePeriodsOpen(date) &&
             this.isFuturePeriodsOpen(date) &&
-            this.isExpiryDaysOpen(date) &&
-            !(await this.hasApprovedData(date))
+            this.isExpiryDaysOpen(date)
         );
     }
 

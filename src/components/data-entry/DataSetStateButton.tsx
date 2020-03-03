@@ -5,7 +5,7 @@ import i18n from "../../locales";
 import Project, { DataSet, monthFormat } from "../../models/Project";
 import { useAppContext } from "../../contexts/api-context";
 import { makeStyles } from "@material-ui/styles";
-import { useMemoAsync } from "../../utils/hooks";
+import { useMemoAsync, useConfirmation, useSnackbarOnError } from "../../utils/hooks";
 
 interface DataSetStateButtonProps {
     project: Project;
@@ -20,6 +20,7 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
     const { period, dataSet, project, onChange } = props;
     const classes = useStyles();
     const projectDataSet = project.getProjectDataSet(dataSet);
+    const showErrorAndSetInactive = useSnackbarOnError(() => setActive(false));
 
     const dataSetInfo = useMemoAsync(() => {
         return projectDataSet.getOpenInfo(moment(period, monthFormat));
@@ -32,31 +33,48 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
 
     const reopen = React.useCallback(() => {
         setActive(true);
-        projectDataSet.reopen(period).then(notifyOnChange);
-    }, [projectDataSet, onChange]);
+        const unapprovePeriod = dataSetInfo && !dataSetInfo.isOpenByData ? period : undefined;
+        projectDataSet
+            .reopen({ unapprovePeriod })
+            .then(notifyOnChange)
+            .catch(showErrorAndSetInactive);
+    }, [projectDataSet, period, onChange, dataSetInfo]);
 
     const reset = React.useCallback(() => {
         setActive(true);
-        projectDataSet.reset().then(notifyOnChange);
+        projectDataSet
+            .reset()
+            .then(notifyOnChange)
+            .catch(showErrorAndSetInactive);
     }, [projectDataSet, onChange]);
+
+    const reopenConfirmation = useConfirmation({
+        title: i18n.t("Reopen data set"),
+        text: i18n.t(
+            "This data set has been approved. We need to unapprove it to open the data set. You will have to approve the data again on the Data Approval section. Do you want to proceed?"
+        ),
+        onConfirm: reopen,
+    });
 
     if (!currentUser.can("reopen")) return null;
     if (!dataSetInfo) return <LinearProgress />;
 
     return (
         <React.Fragment>
-            {!dataSetInfo.isPeriodOpen && (
+            {reopenConfirmation.render()}
+
+            {!dataSetInfo.isOpen && (
                 <Button
                     disabled={isActive}
                     className={classes.button}
-                    onClick={reopen}
+                    onClick={dataSetInfo.isOpenByData ? reopen : reopenConfirmation.open}
                     variant="contained"
                 >
                     {i18n.t("Open dataset")}
                 </Button>
             )}
 
-            {dataSetInfo.isPeriodOpen && dataSetInfo.isDataSetReopened && (
+            {dataSetInfo.isOpen && dataSetInfo.isReopened && (
                 <Button
                     disabled={isActive}
                     className={classes.button}
