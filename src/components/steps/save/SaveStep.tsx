@@ -1,5 +1,4 @@
 import React, { useState, ReactNode } from "react";
-import _ from "lodash";
 import { Button, LinearProgress } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -115,26 +114,19 @@ const LiEntry = ({ label, value }: { label: string; value?: React.ReactNode }) =
 };
 
 function getSectorsInfo(project: Project): ReactNode {
-    const { sectors, dataElementsSelection, dataElementsMER } = project;
-    const selectedMER = new Set(dataElementsMER.get({ onlySelected: true }).map(de => de.id));
+    const sectorsInfo = project.getSectorsInfo();
+    const hiddenMsg = i18n.t("Hidden in data entry as it is selected in multiple sectors!");
 
     return (
         <ul>
-            {sectors.map(sector => {
-                const dataElements = _.sortBy(
-                    dataElementsSelection.get({
-                        onlySelected: true,
-                        includePaired: true,
-                        sectorId: sector.id,
-                    }),
-                    de => de.name
-                );
+            {sectorsInfo.map(({ sector, dataElementsInfo }) => {
                 const value = (
                     <ul>
-                        {dataElements.map(de => (
-                            <li key={de.id}>
-                                {de.name} - {de.code}
-                                {selectedMER.has(de.id) ? ` [${i18n.t("MER")}]` : ""}
+                        {dataElementsInfo.map(({ dataElement, isMER, usedInDataSetSection }) => (
+                            <li key={dataElement.id}>
+                                {dataElement.name} - {dataElement.code}
+                                {isMER ? ` [${i18n.t("MER")}]` : ""}
+                                {usedInDataSetSection ? "" : <i> - {hiddenMsg}</i>}
                             </li>
                         ))}
                     </ul>

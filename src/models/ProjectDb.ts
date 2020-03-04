@@ -7,7 +7,7 @@ import Project, { getOrgUnitDatesFromProject, getDatesFromOrgUnit, DataSetType }
 import { getMonthsRange, toISOString } from "../utils/date";
 import "../utils/lodash-mixins";
 import ProjectDashboard from "./ProjectDashboard";
-import { getUid, getDataStore, getIds } from "../utils/dhis2";
+import { getUid, getDataStore, getIds, getRefs } from "../utils/dhis2";
 import { Config } from "./Config";
 import { runPromises } from "../utils/promises";
 import DataElementsSet from "./dataElementsSet";
@@ -278,38 +278,51 @@ export default class ProjectDb {
         }
     }
 
+    getDataElementsBySector() {
+        const { project } = this;
+        const sectorIdForDataElementId = this.getDataElementsBySectorMapping();
+
+        return project.sectors.map(sector => {
+            const dataElements = project.dataElementsSelection
+                .get({ sectorId: sector.id, onlySelected: true, includePaired: true })
+                .filter(de => sectorIdForDataElementId[de.id] === sector.id);
+            return { sector, dataElements };
+        });
+    }
+
+    getDataElementsBySectorMapping() {
+        const { project } = this;
+        const selectedDataElements = project.getSelectedDataElements();
+
+        // A data element can only be in one form section, add it in the main sector
+        const sectorIdForDataElementId = _(selectedDataElements)
+            .groupBy(de => de.id)
+            .map((des, deId) => {
+                const sortedSectors = _.sortBy(des, de => (de.isMainSector ? 0 : 1));
+                return [deId, sortedSectors[0].sector.id] as [Id, Id];
+            })
+            .fromPairs()
+            .value();
+
+        return sectorIdForDataElementId;
+    }
+
     getDataSetMetadata<T extends PartialPersistedModel<D2OrganisationUnit>>(
         orgUnit: T,
         baseDataSet: PartialModel<D2DataSet> & Pick<D2DataSet, "code" | OpenProperties>
     ) {
         const { project } = this;
         const dataSetId = getUid("dataSet", project.uid + baseDataSet.code);
-        const dataElements = project.getSelectedDataElements();
+        const selectedDataElements = project.getSelectedDataElements();
 
-        const dataElementsInSectors = _(dataElements)
-            .filter(de => project.sectors.some(sector => sector.id === de.sector.id))
-            .value();
-
-        const dataSetElements = _.uniqBy(dataElementsInSectors, de => de.id).map(dataElement => ({
+        const dataSetElements = _.uniqBy(selectedDataElements, de => de.id).map(dataElement => ({
             dataSet: { id: dataSetId },
             dataElement: { id: dataElement.id },
             categoryCombo: { id: dataElement.categoryCombo.id },
         }));
 
-        // A data element can only be in one form section, use it in the main sector preferently
-        const sectorIdForDataElementId = _(dataElementsInSectors)
-            .groupBy(de => de.id)
-            .map((des, deId) => [deId, _.sortBy(des, de => (de.isMainSector ? 0 : 1))[0].sector.id])
-            .fromPairs()
-            .value();
-
-        const sections0 = project.sectors.map((sector, index) => {
-            const dataElementsForSector = project.dataElementsSelection
-                .get({ sectorId: sector.id, onlySelected: true, includePaired: true })
-                .filter(de => sectorIdForDataElementId[de.id] === sector.id)
-                .map(de => ({ id: de.id }));
-
-            if (_.isEmpty(dataElementsForSector)) return null;
+        const sections0 = this.getDataElementsBySector().map(({ sector, dataElements }, index) => {
+            if (_.isEmpty(dataElements)) return null;
 
             return {
                 id: getUid("section", project.uid + baseDataSet.code + sector.id),
@@ -317,7 +330,7 @@ export default class ProjectDb {
                 sortOrder: index,
                 name: sector.displayName,
                 code: sector.code + "_" + dataSetId,
-                dataElements: dataElementsForSector,
+                dataElements: getRefs(dataElements),
                 greyedFields: [],
             };
         });
