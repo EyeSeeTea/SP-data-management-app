@@ -54,7 +54,7 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
                 </Button>
             )}
 
-            {dataSetInfo.isDataSetReopened && (
+            {dataSetInfo.isPeriodOpen && dataSetInfo.isDataSetReopened && (
                 <Button
                     disabled={isActive}
                     className={classes.button}
