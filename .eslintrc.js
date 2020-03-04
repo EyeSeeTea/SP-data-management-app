@@ -23,7 +23,6 @@ module.exports = {
         "@typescript-eslint/ban-ts-ignore": "off",
         "@typescript-eslint/no-empty-function": "off",
         "react-hooks/exhaustive-deps": "off",
-        "array-callback-return": "off",
     },
     plugins: ["cypress"],
     env: { "cypress/globals": true },

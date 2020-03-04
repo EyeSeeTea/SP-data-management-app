@@ -29,3 +29,7 @@ export type GetItemType<T extends any[]> = T[number];
 export type RequiredProps<T> = {
     [P in keyof T]-?: NonNullable<T[P]>;
 };
+
+export function isValueInUnionType<S, T extends S>(value: S, values: readonly T[]): value is T {
+    return (values as readonly S[]).indexOf(value) >= 0;
+}
