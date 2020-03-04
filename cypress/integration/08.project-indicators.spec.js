@@ -12,6 +12,8 @@ describe("Projects - Indicators", () => {
     it("selects indicators with dependencies", () => {
         cy.contains("Sectors").click();
         selectInMultiSelector("sectors", "Protection");
+        selectInMultiSelector("sectors", "Food");
+        selectInMultiSelector("sectors", "Nutrition");
         cy.contains("Next").click();
 
         new IndicatorsPage(cy)
@@ -59,7 +61,17 @@ describe("Projects - Indicators", () => {
             .selectSector("Protection")
             // Select an indicator which has a paired sub indicator, its global should be also selected
             .select("B100500")
-            .assertExactSelected(["B100500", "P100701", "P100700"]);
+            .assertExactSelected(["B100500", "P100701", "P100700"])
+
+            .selectSector("Nutrition")
+            // Select a cross-sectorial indicator which has paired sub indicators in other sectors (Food)
+            .select("B050102")
+            .assertExactSelected(["B050102", "P050202", "P040100"])
+
+            .selectSector("Food")
+            // Now check the same cross-sectorial indicator in the other sector
+            .select("B050102")
+            .assertExactSelected(["B050102", "P050202", "B050100", "P050200"]);
 
         // MER Indicators
         cy.contains("Selection of MER Indicators").click();

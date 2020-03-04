@@ -245,7 +245,7 @@ export default class ProjectDb {
     saveMERData(orgUnitId: Id): D2ApiResponse<void> {
         const dataStore = getDataStore(this.project.api);
         const dataElementsForMER = this.project.dataElementsMER.get({ onlySelected: true });
-        const ids = _.uniq(dataElementsForMER.map(de => de.id));
+        const ids = _.sortBy(_.uniq(dataElementsForMER.map(de => de.id)));
         const value: ProjectInfo = { merDataElementIds: ids };
         return dataStore.save(getProjectStorageKey({ id: orgUnitId }), value);
     }

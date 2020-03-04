@@ -109,7 +109,7 @@ const orgUnitsMetadata = {
 };
 
 const expectedDataStoreMer = {
-    merDataElementIds: ["yMqK9DKbA3X", "WS8XV4WWPE7"],
+    merDataElementIds: ["WS8XV4WWPE7", "yMqK9DKbA3X"],
 };
 
 const expectedOrgUnitPut = {
@@ -630,39 +630,15 @@ const expectedMetadataPost = {
             name: "MyProject",
             dashboardItems: [
                 {
-                    id: "ys0CVedHirZ",
-                    type: "CHART",
-                    chart: {
-                        id: "uG9C9z46CNK",
-                    },
-                },
-                {
-                    id: "KI0C90Ol10x",
-                    type: "CHART",
-                    chart: {
-                        id: "qmsj4FqnVPX",
-                    },
-                },
-                {
-                    id: "qUqsDmtiBLF",
-                    type: "CHART",
-                    chart: {
-                        id: "u6Sin4Fy1Wt",
-                    },
-                },
-                {
-                    id: "mwMpIdPdu8H",
-                    type: "CHART",
-                    chart: {
-                        id: "ukewRkZsyCI",
-                    },
-                },
-                {
                     id: "Ka4yijY2Vhl",
                     type: "REPORT_TABLE",
                     reportTable: {
                         id: "i07AWJAND8a",
                     },
+                    x: 0,
+                    y: 0,
+                    width: 29,
+                    height: 20,
                 },
                 {
                     id: "yWGKgz9vaOh",
@@ -670,6 +646,10 @@ const expectedMetadataPost = {
                     reportTable: {
                         id: "iqqgnCj9DQj",
                     },
+                    x: 29,
+                    y: 0,
+                    width: 29,
+                    height: 20,
                 },
                 {
                     id: "y2G8oh7xQBm",
@@ -677,6 +657,10 @@ const expectedMetadataPost = {
                     reportTable: {
                         id: "GycLEG8dPPO",
                     },
+                    x: 0,
+                    y: 20,
+                    width: 29,
+                    height: 20,
                 },
                 {
                     id: "qMSWdZHPjyN",
@@ -684,6 +668,10 @@ const expectedMetadataPost = {
                     reportTable: {
                         id: "aeGIpbJkZAX",
                     },
+                    x: 29,
+                    y: 20,
+                    width: 29,
+                    height: 20,
                 },
                 {
                     id: "uyoJujQVRjE",
@@ -691,6 +679,54 @@ const expectedMetadataPost = {
                     reportTable: {
                         id: "GM6SxObVwI3",
                     },
+                    x: 0,
+                    y: 40,
+                    width: 29,
+                    height: 20,
+                },
+                {
+                    id: "ys0CVedHirZ",
+                    type: "CHART",
+                    chart: {
+                        id: "uG9C9z46CNK",
+                    },
+                    x: 0,
+                    y: 60,
+                    width: 58,
+                    height: 20,
+                },
+                {
+                    id: "KI0C90Ol10x",
+                    type: "CHART",
+                    chart: {
+                        id: "qmsj4FqnVPX",
+                    },
+                    x: 0,
+                    y: 80,
+                    width: 29,
+                    height: 20,
+                },
+                {
+                    id: "qUqsDmtiBLF",
+                    type: "CHART",
+                    chart: {
+                        id: "u6Sin4Fy1Wt",
+                    },
+                    x: 29,
+                    y: 80,
+                    width: 29,
+                    height: 20,
+                },
+                {
+                    id: "mwMpIdPdu8H",
+                    type: "CHART",
+                    chart: {
+                        id: "ukewRkZsyCI",
+                    },
+                    x: 0,
+                    y: 100,
+                    width: 29,
+                    height: 20,
                 },
             ],
         },
