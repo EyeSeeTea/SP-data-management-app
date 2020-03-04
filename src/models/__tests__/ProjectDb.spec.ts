@@ -692,7 +692,7 @@ const expectedMetadataPost = {
                     },
                     x: 0,
                     y: 60,
-                    width: 59,
+                    width: 58,
                     height: 20,
                 },
                 {

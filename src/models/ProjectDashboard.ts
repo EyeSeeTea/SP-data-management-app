@@ -360,14 +360,14 @@ type Pos = { x: number; y: number };
 type Item = PartialModel<D2DashboardItem>;
 
 function toItemWidth(percentWidth: number) {
-    // 59  units = 100% of screen width
-    return (percentWidth * 59) / 100;
+    // 58 units = 100% of screen width (60 is too wide, it overflows)
+    return (percentWidth * 58) / 100;
 }
 
 const positionItemsConfig = {
     maxWidth: toItemWidth(100),
-    defaultWidth: 29,
-    defaultHeight: 20, // 20 units ~ 50% of screen height
+    defaultWidth: toItemWidth(50),
+    defaultHeight: 20, // 20 vertical units ~ 50% of viewport height
 };
 
 /* Set attributes x, y, width and height for an array of dashboard items */
