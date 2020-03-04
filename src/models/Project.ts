@@ -448,6 +448,7 @@ class Project {
                 } else {
                     const msg = `Indicator ${indicatorCode} not found for data element ${de.code}`;
                     console.error(msg);
+                    return null;
                 }
             })
             .compact()
