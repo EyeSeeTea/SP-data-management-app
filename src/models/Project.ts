@@ -312,6 +312,31 @@ class Project {
         return selectedDataElementsSorted;
     }
 
+    public getSectorsInfo(): Array<{
+        sector: Sector;
+        dataElementsInfo: Array<{
+            dataElement: DataElement;
+            isMER: boolean;
+            usedInDataSetSection: boolean;
+        }>;
+    }> {
+        const { dataElementsSelection, dataElementsMER, sectors } = this;
+        const dataElementsBySectorMapping = new ProjectDb(this).getDataElementsBySectorMapping();
+        const selectedMER = new Set(dataElementsMER.get({ onlySelected: true }).map(de => de.id));
+
+        return sectors.map(sector => {
+            const getOptions = { onlySelected: true, includePaired: true, sectorId: sector.id };
+            const dataElements = _.sortBy(dataElementsSelection.get(getOptions), de => de.name);
+            const dataElementsInfo = dataElements.map(dataElement => ({
+                dataElement,
+                isMER: selectedMER.has(dataElement.id),
+                usedInDataSetSection: dataElementsBySectorMapping[dataElement.id] === sector.id,
+            }));
+
+            return { sector, dataElementsInfo };
+        });
+    }
+
     public async validate(
         validationKeys: ValidationKey[] | undefined = undefined
     ): Promise<Validations> {
