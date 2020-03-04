@@ -6,7 +6,7 @@ import i18n from "../locales";
 import { getUid } from "../utils/dhis2";
 import { DataElement } from "./dataElementsSet";
 
-type Maybe<T> = T | null;
+type Maybe<T> = T | null | undefined;
 
 export default class ProjectDashboard {
     dataElements: Record<"all" | "people" | "benefit", DataElement[]>;
@@ -29,6 +29,7 @@ export default class ProjectDashboard {
 
     generate() {
         const { project } = this;
+
         const reportTables: Array<PartialPersistedModel<D2ReportTable>> = _.compact([
             // General Data View
             this.targetVsActualBenefits(),
@@ -38,32 +39,30 @@ export default class ProjectDashboard {
             this.achievedBenefitsTable(),
             this.achievedPeopleTable(),
         ]);
+
         const charts: Array<PartialPersistedModel<D2Chart>> = _.compact([
-            this.achievedMonthlyChart(),
             this.achievedChart(),
             this.genderChart(),
             this.costBenefit(),
         ]);
-        const items: Array<PartialModel<D2DashboardItem>> = [
-            ...charts.map(chart => ({
-                id: getUid("dashboardItem", chart.id),
-                type: "CHART" as const,
-                chart: { id: chart.id },
-            })),
-            ...reportTables.map(reportTable => ({
-                id: getUid("dashboardItem", reportTable.id),
-                type: "REPORT_TABLE" as const,
-                reportTable: { id: reportTable.id },
-            })),
-        ];
+
+        const achievedMonthlyChart_ = this.achievedMonthlyChart();
+        const favorites = { reportTables, charts: _.compact([achievedMonthlyChart_, ...charts]) };
+
+        const items: Array<PartialModel<D2DashboardItem>> = _.compact([
+            ...reportTables.map(reportTable => getReportTableItem(reportTable)),
+            getChartItem(achievedMonthlyChart_, { width: toItemWidth(100) }),
+            ...charts.map(chart => getChartItem(chart)),
+        ]);
+
         const dashboard: PartialPersistedModel<D2Dashboard> = {
             id: getUid("dashboard", project.uid),
             publicAccess: "rw------",
             name: project.name,
-            dashboardItems: items,
+            dashboardItems: positionItems(items),
         };
 
-        return { dashboards: [dashboard], reportTables, charts };
+        return { dashboards: [dashboard], ...favorites };
     }
 
     targetVsActualBenefits(): MaybeD2Table {
@@ -329,4 +328,61 @@ function getChart(project: Project, chart: Chart): MaybeD2Chart {
     };
 
     return _.merge({}, baseChart, chart.extra || {});
+}
+
+function getReportTableItem(
+    reportTable: Maybe<PartialPersistedModel<D2ReportTable>>,
+    dashboardItemAttributes?: PartialModel<D2DashboardItem>
+) {
+    if (!reportTable) return null;
+    return {
+        id: getUid("dashboardItem", reportTable.id),
+        type: "REPORT_TABLE" as const,
+        reportTable: { id: reportTable.id },
+        ...(dashboardItemAttributes || {}),
+    };
+}
+
+function getChartItem(
+    chart: Maybe<PartialPersistedModel<D2Chart>>,
+    dashboardItemAttributes?: PartialModel<D2DashboardItem>
+) {
+    if (!chart) return null;
+    return {
+        id: getUid("dashboardItem", chart.id),
+        type: "CHART" as const,
+        chart: { id: chart.id },
+        ...(dashboardItemAttributes || {}),
+    };
+}
+
+type Pos = { x: number; y: number };
+type Item = PartialModel<D2DashboardItem>;
+
+function toItemWidth(percentWidth: number) {
+    // 59  units = 100% of screen width
+    return (percentWidth * 59) / 100;
+}
+
+const positionItemsConfig = {
+    maxWidth: toItemWidth(100),
+    defaultWidth: 29,
+    defaultHeight: 20, // 20 units ~ 50% of screen height
+};
+
+/* Set attributes x, y, width and height for an array of dashboard items */
+function positionItems(items: Array<Item>) {
+    const { maxWidth, defaultWidth, defaultHeight } = positionItemsConfig;
+    const initialPos = { x: 0, y: 0 };
+
+    return items.reduce<{ pos: Pos; outputItems: Item[] }>(
+        ({ pos, outputItems }, item) => {
+            const width = Math.min(item.width || defaultWidth, maxWidth);
+            const itemPos = pos.x + width > maxWidth ? { x: 0, y: pos.y + defaultHeight } : pos;
+            const newItem = { ...item, width, height: defaultHeight, ...itemPos };
+            const newPos = { x: itemPos.x + newItem.width, y: itemPos.y };
+            return { pos: newPos, outputItems: [...outputItems, newItem] };
+        },
+        { pos: initialPos, outputItems: [] }
+    ).outputItems;
 }
