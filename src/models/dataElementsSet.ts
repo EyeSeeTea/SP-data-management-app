@@ -84,9 +84,8 @@ export default class DataElementsSet {
             .differenceBy(sectorsWithSel, sector => sector.id)
             .map(sector => sector.displayName)
             .value();
-        const msg = i18n.t(
-            "The following sectors have no indicators selected:" + " " + missingSectors.join(", ")
-        );
+        const baseMsg = i18n.t("The following sectors have no indicators selected");
+        const msg = `${baseMsg} : ${missingSectors.join(", ")}`;
 
         return _.isEmpty(missingSectors) ? [] : [msg];
     }
