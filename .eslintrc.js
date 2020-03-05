@@ -17,6 +17,8 @@ module.exports = {
         "react/prop-types": "off",
         "no-unused-expressions": "off",
         "no-useless-concat": "off",
+        "no-useless-constructor": "off",
+        "default-case": "off",
         "@typescript-eslint/no-use-before-define": "off",
         "@typescript-eslint/no-explicit-any": "off",
         "@typescript-eslint/no-empty-interface": "off",
