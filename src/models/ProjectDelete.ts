@@ -57,12 +57,9 @@ export default class ProjectDelete {
         );
     }
 
-    private async getDataValues(
-        organisationUnits: ({
-            attributeValues: ({ attribute: { id: string } } & { value: string })[];
-        } & { id: string })[],
-        dataSets: ({ sections: { id: string }[] } & { id: string })[]
-    ) {
+    private async getDataValues(organisationUnits: Ref[], dataSets: Ref[]) {
+        if (_(organisationUnits).isEmpty() || _(dataSets).isEmpty()) return [];
+
         const { dataValues } = await this.api.dataValues
             .getSet({
                 orgUnit: getIds(organisationUnits),
