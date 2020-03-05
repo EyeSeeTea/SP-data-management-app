@@ -85,7 +85,7 @@ export default class DataElementsSet {
             .map(sector => sector.displayName)
             .value();
         const baseMsg = i18n.t("The following sectors have no indicators selected");
-        const msg = `${baseMsg} : ${missingSectors.join(", ")}`;
+        const msg = `${baseMsg}: ${missingSectors.join(", ")}`;
 
         return _.isEmpty(missingSectors) ? [] : [msg];
     }

@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2020-03-04T12:20:29.793Z\n"
-"PO-Revision-Date: 2020-03-04T12:20:29.793Z\n"
+"POT-Creation-Date: 2020-03-05T10:12:47.205Z\n"
+"PO-Revision-Date: 2020-03-05T10:12:47.205Z\n"
 
 msgid "Data Entry"
 msgstr ""
@@ -367,6 +367,9 @@ msgid "Female Recurring"
 msgstr ""
 
 msgid "People"
+msgstr ""
+
+msgid "The following sectors have no indicators selected"
 msgstr ""
 
 msgid "Select at least one indicator"

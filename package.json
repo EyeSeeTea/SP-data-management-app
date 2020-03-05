@@ -34,11 +34,10 @@
         "md5": "^2.2.1",
         "postcss-rtl": "^1.3.2",
         "prop-types": "^15",
-        "react": "^16.6.0",
-        "react-dom": "^16.6.0",
-        "react-router-dom": "^5.0.1",
-        "react-scripts": "2.0.6-next.c662dfb0",
-        "react-test-renderer": "^16.8.3",
+        "react": "^16.12.0",
+        "react-dom": "^16.12.0",
+        "react-router-dom": "^5.1.2",
+        "react-scripts": "^3.3.1",
         "styled-jsx": "^3.2.4"
     },
     "scripts": {
@@ -107,6 +106,14 @@
         "ts-jest": "^25.2.0",
         "typescript": "^3.7.5",
         "wait-on": "^4.0.0"
+    },
+    "eslintConfig": {
+        "extends": "react-app",
+        "rules": {
+            "react-hooks/exhaustive-deps": "off",
+            "no-useless-constructor": "off",
+            "default-case": "off"
+        }
     },
     "manifest.webapp": {
         "name": "Project Monitoring App",
