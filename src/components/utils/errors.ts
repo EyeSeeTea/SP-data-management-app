@@ -1,4 +1,5 @@
 import { SnackbarState } from "d2-ui-components/snackbar/types";
+import _ from "lodash";
 
 interface Options {
     onFinally?(): void;
@@ -10,9 +11,13 @@ export async function withSnackbarOnError(snackbar: SnackbarState, fn: Function,
     try {
         await fn();
     } catch (err) {
+        const bodyMessage = err.response && err.response.data && err.response.data.message;
         console.error(err);
         if (onCatch) onCatch();
-        snackbar.error(err.message || err.toString());
+        const message = _([err.message || err.toString(), bodyMessage])
+            .compact()
+            .join(" - ");
+        snackbar.error(message);
     } finally {
         if (onFinally) onFinally();
     }
