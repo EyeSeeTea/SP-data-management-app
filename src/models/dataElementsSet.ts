@@ -5,6 +5,7 @@ import { Config, DataElementGroupSet, BaseConfig, Metadata, CurrentUser } from "
 import { Sector } from "./Config";
 import i18n from "../locales";
 import User from "./user";
+import { fromPairs, getKeys } from "../types/utils";
 
 /*
     Abstract list of Project data element of type DataElement. Usage:
@@ -461,15 +462,4 @@ function getGroupsByDataElementId<Group extends { dataElements: Array<Ref> }>(de
         .mapValues(items => items.map(item => item.deg))
         .value();
     return res;
-}
-
-/* Type-safe helpers */
-
-function fromPairs<Key extends string, Value>(pairs: Array<[Key, Value]>): Record<Key, Value> {
-    const empty = {} as Record<Key, Value>;
-    return pairs.reduce((acc, [key, value]) => ({ ...acc, [key]: value }), empty);
-}
-
-function getKeys<T>(obj: T): Array<keyof T> {
-    return Object.keys(obj) as Array<keyof T>;
 }
