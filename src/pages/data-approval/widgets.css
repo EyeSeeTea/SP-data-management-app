@@ -1,0 +1,27 @@
+/*----------------------------------------------------------------------------*/
+/* Data entry forms                                                           */
+/*----------------------------------------------------------------------------*/
+
+.alt {
+    background-color: #f3f3f3;
+    padding-right: 50px;
+}
+
+.reg {
+    padding-right: 50px;
+}
+
+.cent {
+    text-align: center;
+}
+
+.formSection {
+    border: 1px solid #cacaca;
+    padding: 10px;
+    border-radius: 3px;
+}
+
+.formInputField {
+    border: 1px solid #aaa;
+    padding: 4px 1px;
+}

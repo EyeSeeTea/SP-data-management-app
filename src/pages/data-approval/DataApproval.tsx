@@ -14,6 +14,7 @@ import i18n from "../../locales";
 import PageHeader from "../../components/page-header/PageHeader";
 import ProjectDataSet from "../../models/ProjectDataSet";
 import { isValueInUnionType } from "../../types/utils";
+import "./widgets.css";
 
 declare global {
     interface Window {
@@ -123,11 +124,6 @@ const DataApproval: React.FC = () => {
                         rel="stylesheet"
                         type="text/css"
                         href={api.baseUrl + "/dhis-web-reporting/style/dhis-web-reporting.css"}
-                    />
-                    <link
-                        rel="stylesheet"
-                        type="text/css"
-                        href={api.baseUrl + "/dhis-web-commons/css/widgets.css"}
                     />
                     <link
                         rel="stylesheet"
