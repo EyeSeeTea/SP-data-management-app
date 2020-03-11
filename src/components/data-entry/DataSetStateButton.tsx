@@ -70,7 +70,7 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
                     onClick={dataSetInfo.isOpenByData ? reopen : reopenConfirmation.open}
                     variant="contained"
                 >
-                    {i18n.t("Open dataset")}
+                    {i18n.t("Edit Data")}
                 </Button>
             )}
 
@@ -81,7 +81,7 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
                     onClick={reset}
                     variant="contained"
                 >
-                    {i18n.t("Set default entry periods")}
+                    {i18n.t("Editing Complete")}
                 </Button>
             )}
 
