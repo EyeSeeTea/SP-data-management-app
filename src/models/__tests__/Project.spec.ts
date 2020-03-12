@@ -1,6 +1,6 @@
 import { getMockApi } from "d2-api";
 import _ from "lodash";
-import { ProjectData } from "./../Project";
+import { ValidationKey } from "./../Project";
 import Project from "../Project";
 import { Config } from "../Config";
 import configJson from "./config.json";
@@ -13,7 +13,7 @@ function getProject() {
     return Project.create(api, config).set("id", "BvNo8zQaol8");
 }
 
-async function expectFieldPresence(field: keyof ProjectData) {
+async function expectFieldPresence(field: ValidationKey) {
     const project = await getProject();
     const errors = await project.validate([field]);
     expect(errors[field] !== undefined && (errors[field] || []).length > 0).toBeTruthy();

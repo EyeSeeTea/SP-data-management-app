@@ -40,7 +40,7 @@ const SaveStep: React.FC<StepProps> = ({ project, onCancel }) => {
             if (response && response.status === "OK") {
                 history.push(generateUrl("projects"));
                 if (isDev) saveDataValues(api, projectSaved);
-                snackbar.success(i18n.t("Project saved:" + " " + projectSaved.name));
+                snackbar.success(`${i18n.t("Project saved:")} ${projectSaved.name}`);
             } else {
                 setErrorMessage(JSON.stringify({ response, payload }, null, 2));
             }

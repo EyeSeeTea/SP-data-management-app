@@ -1,3 +1,26 @@
+import { Config, Sector as SectorC, Funder as FunderC, Location as LocationC } from "./Config";
+import moment, { Moment } from "moment";
+import _ from "lodash";
+import { D2Api, SelectedPick, Id, Ref, D2OrganisationUnit, D2IndicatorSchema } from "d2-api";
+import { generateUid } from "d2/uid";
+import { TableSorting } from "d2-ui-components";
+
+import i18n from "../locales";
+import DataElementsSet, { PeopleOrBenefit, DataElement } from "./dataElementsSet";
+import ProjectDb from "./ProjectDb";
+import { toISOString, getMonthsRange } from "../utils/date";
+import ProjectDownload from "./ProjectDownload";
+import ProjectList, { ProjectForList, FiltersForList } from "./ProjectsList";
+import ProjectDataSet from "./ProjectDataSet";
+import ProjectDelete from "./ProjectDelete";
+import {
+    validatePresence,
+    validateRegexp,
+    validateNumber,
+    validateNonEmpty,
+} from "../utils/validations";
+import { getKeys, Maybe } from "../types/utils";
+
 /*
 Project model.
 
@@ -45,28 +68,6 @@ Project model.
         { page: 2, pageSize: 10 }
     )
 */
-
-import { Config, Sector as SectorC, Funder as FunderC, Location as LocationC } from "./Config";
-import moment, { Moment } from "moment";
-import _ from "lodash";
-import { D2Api, SelectedPick, Id, Ref, D2OrganisationUnit, D2IndicatorSchema } from "d2-api";
-import { generateUid } from "d2/uid";
-import { TableSorting } from "d2-ui-components";
-
-import i18n from "../locales";
-import DataElementsSet, { PeopleOrBenefit, DataElement } from "./dataElementsSet";
-import ProjectDb from "./ProjectDb";
-import { toISOString, getMonthsRange } from "../utils/date";
-import ProjectDownload from "./ProjectDownload";
-import ProjectList, { ProjectForList, FiltersForList } from "./ProjectsList";
-import ProjectDataSet from "./ProjectDataSet";
-import ProjectDelete from "./ProjectDelete";
-import {
-    validatePresence,
-    validateRegexp,
-    validateNumber,
-    validateNonEmpty,
-} from "../utils/validations";
 
 export type Sector = SectorC;
 export type Funder = FunderC;
@@ -148,8 +149,15 @@ function defineGetters(sourceObject: any, targetObject: any) {
     });
 }
 
+const validationKeys = [
+    ...getKeys(defaultProjectData),
+    "code" as const,
+    "dataElementsSelection" as const,
+    "dataElementsMER" as const,
+];
+
 export type ProjectField = keyof ProjectData;
-export type ValidationKey = keyof ProjectData | "code" | "dataElementsMER";
+export type ValidationKey = typeof validationKeys[number];
 type Validation = () => ValidationError | Promise<ValidationError>;
 type ValidationError = string[];
 type Validations = { [K in ValidationKey]?: Validation };
@@ -339,16 +347,18 @@ class Project {
     }
 
     public async validate(
-        validationKeys: ValidationKey[] | undefined = undefined
-    ): Promise<Validations> {
-        const obj = _(validationKeys || (_.keys(this.validations) as ValidationKey[]))
-            .map(key => [key, this.validations[key]])
-            .fromPairs()
-            .mapValues(validationFn => (validationFn ? validationFn.call(this) : []))
-            .value();
-        const [keys, promises] = _.unzip(_.toPairs(obj));
-        const values = await Promise.all(promises);
-        return _.fromPairs(_.zip(keys, values)) as Validations;
+        keysToValidate: Maybe<ValidationKey[]> = undefined
+    ): Promise<Record<ValidationKey, string[]>> {
+        const errors = {} as Record<ValidationKey, string[]>;
+        const keys = keysToValidate || validationKeys;
+        for (const key of keys) {
+            const fn = this.validations[key];
+            if (fn) {
+                const fnErrors = await fn();
+                errors[key] = fnErrors;
+            }
+        }
+        return errors;
     }
 
     static getSelectableLocations(config: Config, country: Ref | undefined) {
