@@ -81,7 +81,7 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
                     onClick={reset}
                     variant="contained"
                 >
-                    {i18n.t("Set default entry periods")}
+                    {i18n.t("Return to current month")}
                 </Button>
             )}
 

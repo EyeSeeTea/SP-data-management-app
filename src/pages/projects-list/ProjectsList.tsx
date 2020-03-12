@@ -103,7 +103,7 @@ function getComponentConfig(
             icon: <Icon>library_books</Icon>,
             text: i18n.t("Add Actual Values"),
             multiple: false,
-            onClick: (projects: ProjectForList[]) => goTo("actualValues", { id: projects[0].id }),
+            onClick: (ids: Id[]) => onFirst(ids, id => goTo("actualValues", { id })),
         },
 
         dashboard: {
@@ -111,7 +111,7 @@ function getComponentConfig(
             icon: <Icon>dashboard</Icon>,
             text: i18n.t("Go to Dashboard"),
             multiple: false,
-            onClick: (projects: ProjectForList[]) => goTo("dashboard", { id: projects[0].id }),
+            onClick: (ids: Id[]) => onFirst(ids, id => goTo("dashboard", { id })),
         },
 
         targetValues: {
@@ -119,7 +119,7 @@ function getComponentConfig(
             icon: <Icon>assignment</Icon>,
             text: i18n.t("Add Target Values"),
             multiple: false,
-            onClick: (projects: ProjectForList[]) => goTo("targetValues", { id: projects[0].id }),
+            onClick: (ids: Id[]) => onFirst(ids, id => goTo("targetValues", { id })),
         },
 
         downloadData: {
@@ -127,7 +127,7 @@ function getComponentConfig(
             icon: <Icon>cloud_download</Icon>,
             text: i18n.t("Download Data"),
             multiple: false,
-            onClick: (projects: ProjectForList[]) => download(api, config, projects[0].id),
+            onClick: (ids: Id[]) => onFirst(ids, id => download(api, config, id)),
         },
 
         edit: {
@@ -135,7 +135,7 @@ function getComponentConfig(
             icon: <Icon>edit</Icon>,
             text: i18n.t("Edit"),
             multiple: false,
-            onClick: (projects: ProjectForList[]) => goTo("projects.edit", { id: projects[0].id }),
+            onClick: (ids: Id[]) => onFirst(ids, id => goTo("projects.edit", { id })),
         },
 
         delete: {
@@ -143,7 +143,7 @@ function getComponentConfig(
             icon: <Icon>delete</Icon>,
             text: i18n.t("Delete"),
             multiple: true,
-            onClick: projects => setProjectIdsToDelete(projects.map(project => project.id)),
+            onClick: setProjectIdsToDelete,
         },
 
         dataApproval: {
@@ -151,7 +151,7 @@ function getComponentConfig(
             icon: <Icon>playlist_add_check</Icon>,
             text: i18n.t("Data Approval"),
             multiple: false,
-            onClick: (projects: ProjectForList[]) => goTo("dataApproval", { id: projects[0].id }),
+            onClick: (ids: Id[]) => onFirst(ids, id => goTo("dataApproval", { id })),
         },
     };
 
@@ -310,5 +310,10 @@ const LoadingSpinner: React.FunctionComponent<{ isVisible: boolean }> = ({ isVis
         {isVisible && <CircularProgress />}
     </React.Fragment>
 );
+
+function onFirst<T>(objs: T[], fn: (obj: T) => void): void {
+    const obj = _.first(objs);
+    if (obj) fn(obj);
+}
 
 export default React.memo(ProjectsList);

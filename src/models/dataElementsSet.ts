@@ -5,6 +5,7 @@ import { Config, DataElementGroupSet, BaseConfig, Metadata, CurrentUser } from "
 import { Sector } from "./Config";
 import i18n from "../locales";
 import User from "./user";
+import { fromPairs, getKeys } from "../types/utils";
 
 /*
     Abstract list of Project data element of type DataElement. Usage:
@@ -83,9 +84,8 @@ export default class DataElementsSet {
             .differenceBy(sectorsWithSel, sector => sector.id)
             .map(sector => sector.displayName)
             .value();
-        const msg = i18n.t(
-            "The following sectors have no indicators selected:" + " " + missingSectors.join(", ")
-        );
+        const baseMsg = i18n.t("The following sectors have no indicators selected");
+        const msg = `${baseMsg}: ${missingSectors.join(", ")}`;
 
         return _.isEmpty(missingSectors) ? [] : [msg];
     }
@@ -461,15 +461,4 @@ function getGroupsByDataElementId<Group extends { dataElements: Array<Ref> }>(de
         .mapValues(items => items.map(item => item.deg))
         .value();
     return res;
-}
-
-/* Type-safe helpers */
-
-function fromPairs<Key extends string, Value>(pairs: Array<[Key, Value]>): Record<Key, Value> {
-    const empty = {} as Record<Key, Value>;
-    return pairs.reduce((acc, [key, value]) => ({ ...acc, [key]: value }), empty);
-}
-
-function getKeys<T>(obj: T): Array<keyof T> {
-    return Object.keys(obj) as Array<keyof T>;
 }
