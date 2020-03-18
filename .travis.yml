@@ -27,10 +27,7 @@ install:
     - yarn install --frozen-lockfile
     - yarn cy:verify
     - yarn build-webapp
-    - pwd
-    - ls -al project-monitoring-app.zip || true
-    - curl -u "$CYPRESS_DHIS2_AUTH" "http://localhost:8080/api/me.json" || true
-    - curl -v -F file=@project-monitoring-app.zip -X POST -u "$CYPRESS_DHIS2_AUTH" "http://localhost:8080/api/apps"
+    - curl -F file=@project-monitoring-app.zip -X POST -u "$CYPRESS_DHIS2_AUTH" "http://localhost:8080/api/apps"
 script:
     - PORT=8081 REACT_APP_DHIS2_BASE_URL=http://localhost:8080 REACT_APP_CYPRESS=true yarn start &
     - yarn wait-on http-get://localhost:8080
