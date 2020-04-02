@@ -79,12 +79,17 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
         return dataElementsSet.get({ onlySelected: true, sectorId }).map(de => ({ id: de.id }));
     }, [dataElementsSet, sectorId]);
 
+    const rowConfig = React.useCallback((de: DataElement) => ({ selectable: de.selectable }), [
+        dataElements,
+    ]);
+
     if (!sectorId) return null;
 
     return (
         <ObjectsTable<DataElement>
             selection={selection}
             rows={dataElements}
+            rowConfig={rowConfig}
             forceSelectionColumn={true}
             initialState={{ pagination: initialPagination }}
             columns={columns}
