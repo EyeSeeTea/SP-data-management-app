@@ -1,10 +1,11 @@
 import _ from "lodash";
-import { Id } from "d2-api";
+import { Id, Ref } from "d2-api";
 
 import { Config, DataElementGroupSet, BaseConfig, Metadata, CurrentUser } from "./Config";
-import { Sector } from "./Project";
+import { Sector } from "./Config";
 import i18n from "../locales";
 import User from "./user";
+import { fromPairs, getKeys } from "../types/utils";
 
 /*
     Abstract list of Project data element of type DataElement. Usage:
@@ -20,37 +21,46 @@ export const peopleOrBenefitList = ["people", "benefit"] as const;
 export type IndicatorType = typeof indicatorTypes[number];
 export type PeopleOrBenefit = typeof peopleOrBenefitList[number];
 
-export interface DataElementWithCodePairing {
+type SectorInfo = { id: Id; series?: string };
+
+export interface DataElementBase {
     id: Id;
     name: string;
     code: string;
     description: string;
-    sectorId: Id;
-    isMainSector: boolean;
+    sectorsInfo: SectorInfo[];
+    mainSector: Ref;
     indicatorType: IndicatorType;
     peopleOrBenefit: PeopleOrBenefit;
     countingMethod: string;
-    externals: string[]; // an empty string means internals
-    series: string;
-    pairedDataElementCode: string;
-    categoryComboId: Id;
+    externals: string[];
+    pairedDataElements: Array<{ id: Id; name: string; code: string }>;
+    categoryCombo: Ref;
     selectable: boolean;
 }
 
-export interface DataElement extends DataElementWithCodePairing {
-    pairedDataElement: DataElement | undefined;
-    pairedDataElementName: string | undefined; // Add separate field so we can filter in objects table
+export interface DataElement extends Omit<DataElementBase, "sectors" | "mainSector"> {
+    base: DataElementBase;
+    sector: Ref;
+    isMainSector: boolean;
+    series?: string;
+    pairedDataElements: DataElement[];
+    search: string; // For text search (include searchable fields of paired data elements)
 }
+
+type SectorId = Id;
+type BySector<T> = Record<SectorId, T>;
 
 interface DataElementsData {
-    dataElements: DataElement[];
-    selected: string[]; // TODO: {dataElementId: Id, sectorId: Id}
-    selectedMER: string[];
+    dataElementsBase: DataElementBase[];
+    dataElementsAllBySector: BySector<DataElement[]>;
+    dataElementsBySector: BySector<DataElement[]>;
+    selected: BySector<Id[]>;
 }
 
-export interface SelectionUpdate {
-    selected: DataElement[];
-    unselected: DataElement[];
+export interface SelectionInfo {
+    selected?: DataElement[];
+    messages?: string[];
 }
 
 type GetOptions = Partial<{
@@ -58,311 +68,276 @@ type GetOptions = Partial<{
     series: string;
     indicatorType: IndicatorType;
     peopleOrBenefit: PeopleOrBenefit;
-    onlySelected: boolean;
-    onlyMERSelected: boolean;
     includePaired: boolean;
+    onlySelected: boolean;
     externals: string[];
 }>;
 
 type DataElementGroupCodes = Config["base"]["dataElementGroups"];
 
-function getSectorAndSeriesKey(
-    dataElement: DataElement,
-    dataElementOverride: Partial<DataElement> = {}
-): string {
-    const de = _.merge({}, dataElement, dataElementOverride);
-    return [de.sectorId, de.series, de.indicatorType].join("-");
-}
-
 export default class DataElementsSet {
-    dataElementsBy: {
-        id: Record<Id, DataElement>;
-        allId: Record<Id, DataElement>;
-        code: Record<string, DataElement>;
-        sectorAndSeries: Record<string, DataElement[]>;
-    };
+    constructor(private config: Config, public data: DataElementsData) {}
 
-    constructor(private config: Config, private data: DataElementsData) {
-        this.dataElementsBy = {
-            allId: _.keyBy(getAllDataElements(data.dataElements), de => de.id),
-            id: _.keyBy(data.dataElements, de => de.id),
-            code: _.keyBy(data.dataElements, de => de.code),
-            sectorAndSeries: _.groupBy(data.dataElements, de => getSectorAndSeriesKey(de)),
-        };
-    }
-
-    validateSelection(sectors: Sector[]) {
-        const sectorsWithSel = this.get({ onlySelected: true }).map(de => ({ id: de.sectorId }));
+    validateAtLeastOneItemPerSector(sectors: Sector[]) {
+        const sectorsWithSel = this.get({ onlySelected: true }).map(de => ({ id: de.sector.id }));
         const missingSectors = _(sectors)
             .differenceBy(sectorsWithSel, sector => sector.id)
             .map(sector => sector.displayName)
             .value();
-        const msg = i18n.t(
-            "The following sectors have no indicators selected:" + " " + missingSectors.join(", ")
-        );
+        const baseMsg = i18n.t("The following sectors have no indicators selected");
+        const msg = `${baseMsg}: ${missingSectors.join(", ")}`;
 
         return _.isEmpty(missingSectors) ? [] : [msg];
     }
 
-    validateMER(_sectors: Sector[]) {
-        const selectedMER = this.get({ onlyMERSelected: true });
-        return _.isEmpty(selectedMER) ? [i18n.t("Select at least one indicator")] : [];
-    }
-
-    get selected(): string[] {
-        return this.data.selected;
+    validatetOneItemTotal(sectors: Sector[]) {
+        const sectorIds = new Set(sectors.map(sector => sector.id));
+        const selected = this.get({ onlySelected: true }).filter(de => sectorIds.has(de.sector.id));
+        return _.isEmpty(selected) ? [i18n.t("Select at least one indicator")] : [];
     }
 
     static async getDataElements(
         currentUser: CurrentUser,
         baseConfig: BaseConfig,
         metadata: Metadata
-    ): Promise<DataElement[]> {
+    ): Promise<DataElementBase[]> {
         const { dataElementGroupSets } = metadata;
-        const {
-            sector: sectorsCode,
-            externals: externalsCode,
-            series: seriesCode,
-        } = baseConfig.dataElementGroupSets;
-        const sectorsSet = getBy(dataElementGroupSets, "code", sectorsCode);
-        const seriesSet = getBy(dataElementGroupSets, "code", seriesCode);
-        const externalsSet = getBy(dataElementGroupSets, "code", externalsCode);
-        const externalsByDataElementId = _(externalsSet.dataElementGroups)
-            .flatMap(deg => deg.dataElements.map(de => ({ deId: de.id, name: deg.displayName })))
-            .groupBy(data => data.deId)
-            .mapValues(dataList => _.sortBy(dataList.map(data => data.name)))
-            .value();
+        const degsCodes = baseConfig.dataElementGroupSets;
+        const sectorsSet = getBy(dataElementGroupSets, "code", degsCodes.sector);
+        const seriesSet = getBy(dataElementGroupSets, "code", degsCodes.series);
+        const externalsSet = getBy(dataElementGroupSets, "code", degsCodes.externals);
         const degCodes = baseConfig.dataElementGroups;
-        const dataElementsById = _(metadata.dataElements).keyBy(de => de.id);
+        const dataElementsByCode = _.keyBy(metadata.dataElements, de => de.code);
         const userIsAdmin = new User({ base: baseConfig, currentUser }).hasRole("admin");
+        const sectorsByCode = _.keyBy(sectorsSet.dataElementGroups, deg => deg.code);
+        const d2DataElements = getDataElementsFromSet(metadata, sectorsSet);
+        const externalsByDataElementId = getGroupsByDataElementId(externalsSet);
+        const sectorsByDataElementId = getGroupsByDataElementId(sectorsSet);
+        const seriesByDataElementId = getGroupsByDataElementId(seriesSet);
+        const groupCodesByDataElementId = getGroupCodeByDataElementId(dataElementGroupSets);
 
-        return _.flatMap(sectorsSet.dataElementGroups, sectorGroup => {
-            const groupCodesByDataElementId = getGroupCodeByDataElementId(dataElementGroupSets);
-            const seriesGroups = _.uniqBy(seriesSet.dataElementGroups, deg => deg.id);
-            const seriesGroupsForSector = seriesGroups.filter(deg => {
-                // series code = SERIES_PROTECTION_1002
-                const [, sectorCode, series] = deg.code.split("_");
-                return sectorGroup.code.split("_")[1] === sectorCode ? series : null;
-            });
-            const dataElements = sectorGroup.dataElements.map(dataElementRef => {
-                const deId = dataElementRef.id;
-                const seriesGroups = seriesGroupsForSector.filter(seriesGroup =>
-                    seriesGroup.dataElements.map(de => de.id).includes(deId)
-                );
+        const dataElements = d2DataElements.map(d2DataElement => {
+            const deId = d2DataElement.id;
+            const sectorsInfo = getSectorsInfo(deId, sectorsByDataElementId, seriesByDataElementId);
+            const attrsMap = getAttrsMap(baseConfig.attributes, d2DataElement.attributeValues);
+            const { mainSector, countingMethod, pairedDataElement } = attrsMap;
+            const groupCodes = groupCodesByDataElementId[deId] || new Set();
+            const indicatorType = getGroupKey(groupCodes, degCodes, indicatorTypes);
+            const peopleOrBenefit = getGroupKey(groupCodes, degCodes, peopleOrBenefitList);
+            const externalGroups = externalsByDataElementId[d2DataElement.id] || [];
+            const externals = _.sortBy(externalGroups.map(group => group.displayName));
+            const deCode = d2DataElement.code;
+            const isSelectable = indicatorType !== "custom" || userIsAdmin;
+            const name =
+                d2DataElement.displayName +
+                (isSelectable ? "" : ` ${i18n.t("[only for admin users]")}`);
+            const pairedDataElements = getPairedDataElements(pairedDataElement, dataElementsByCode);
 
-                const d2DataElement = dataElementsById.getOrFail(dataElementRef.id);
-                const attrsMap = getAttrsMap(baseConfig.attributes, d2DataElement.attributeValues);
-                const { pairedDataElement, countingMethod } = attrsMap;
-                const groupCodes = groupCodesByDataElementId[d2DataElement.id] || new Set();
-                const indicatorType = getGroupKey(groupCodes, degCodes, indicatorTypes);
-                const peopleOrBenefit = getGroupKey(groupCodes, degCodes, peopleOrBenefitList);
-                const externals = _(externalsByDataElementId).get(d2DataElement.id, []);
-                const deKey = `${d2DataElement.code}:${sectorGroup.code}`;
-                const isSelectable = indicatorType !== "custom" || userIsAdmin;
-                const name =
-                    d2DataElement.displayName +
-                    (isSelectable ? "" : ` ${i18n.t("[only for admin users]")}`);
+            if (!indicatorType) {
+                console.error(`DataElement ${deCode} has no indicator type`);
+                return null;
+            } else if (!peopleOrBenefit) {
+                console.error(`DataElement ${deCode} has no indicator type people/benefit`);
+                return null;
+            } else if (!mainSector) {
+                console.error(`DataElement ${deCode} has no main sector`);
+                return null;
+            } else {
+                const dataElement: DataElementBase = {
+                    id: d2DataElement.id,
+                    name: name,
+                    code: d2DataElement.code,
+                    description: d2DataElement.description,
+                    sectorsInfo: sectorsInfo,
+                    mainSector: { id: _(sectorsByCode).getOrFail(mainSector).id },
+                    indicatorType,
+                    peopleOrBenefit,
+                    pairedDataElements,
+                    countingMethod: countingMethod || "",
+                    externals,
+                    categoryCombo: { id: d2DataElement.categoryCombo.id },
+                    selectable: isSelectable,
+                };
+                return dataElement;
+            }
+        });
 
-                if (!indicatorType) {
-                    console.error(`DataElement ${deKey} has no indicator type`);
-                } else if (!peopleOrBenefit) {
-                    console.error(`DataElement ${deKey} has no indicator type people/benefit`);
-                } else if (seriesGroups.length > 1) {
-                    console.error(`DataElement ${deKey} has ${seriesGroups.length} series`);
-                } else {
-                    const dataElement: DataElementWithCodePairing = {
-                        id: d2DataElement.id,
-                        name: name,
-                        code: d2DataElement.code,
-                        description: d2DataElement.description,
-                        sectorId: sectorGroup.id,
-                        isMainSector: attrsMap.mainSector === sectorGroup.code,
-                        indicatorType,
-                        peopleOrBenefit,
-                        series: seriesGroups.length > 0 ? seriesGroups[0].code : "",
-                        pairedDataElementCode: pairedDataElement || "",
-                        countingMethod: countingMethod || "",
-                        externals,
-                        categoryComboId: d2DataElement.categoryCombo.id,
-                        selectable: isSelectable,
-                    };
-                    return dataElement;
-                }
-            });
+        return _.compact(dataElements);
+    }
 
-            return getMainDataElements(_.compact(dataElements));
+    static build(config: Config, options: { superSet?: DataElementsSet; groupPaired: boolean }) {
+        const { superSet, groupPaired } = options;
+        const dataElementsBase = config.dataElements;
+        const dataElementsAllBySector = getDataElementsBySector(config, { groupPaired });
+        const desBySector = getDataElementsBySectorInSet(dataElementsAllBySector, superSet);
+
+        return new DataElementsSet(config, {
+            dataElementsBase,
+            dataElementsAllBySector,
+            dataElementsBySector: desBySector,
+            selected: {},
         });
     }
 
-    static build(config: Config) {
-        return new DataElementsSet(config, {
-            dataElements: config.dataElements,
-            selected: [],
-            selectedMER: [],
+    updateSuperSet(superSet: DataElementsSet): DataElementsSet {
+        return new DataElementsSet(this.config, {
+            ...this.data,
+            dataElementsBySector: getDataElementsBySectorInSet(
+                this.data.dataElementsAllBySector,
+                superSet
+            ),
         });
     }
 
     get(options: GetOptions = {}): DataElement[] {
-        if (_.isEqual(options, {})) return this.data.dataElements;
+        const { sectorId, series, onlySelected, includePaired } = options;
+        const { indicatorType, peopleOrBenefit, externals } = options;
+        const dataElementsBySector = this.data.dataElementsBySector;
+        const sectorsIds = sectorId ? [sectorId] : _.keys(dataElementsBySector);
 
-        const {
-            sectorId,
-            series,
-            indicatorType,
-            onlySelected,
-            onlyMERSelected,
-            peopleOrBenefit,
-            externals,
-        } = options;
-        const { dataElements } = this.data;
-        const selected = onlySelected ? new Set(this.data.selected) : new Set();
-        const selectedMER = onlyMERSelected ? new Set(this.data.selectedMER) : new Set();
-        const includePaired = onlyMERSelected ? true : options.includePaired;
+        return _.flatMap(sectorsIds, sectorId => {
+            const dataElements1 = _(dataElementsBySector).get(sectorId, [] as DataElement[]);
+            if (_.isEqual(options, {})) return dataElements1;
 
-        const mainDEs = onlySelected
-            ? dataElements.filter(dataElement => selected.has(dataElement.id))
-            : dataElements;
+            const selectedIds = new Set(this.data.selected[sectorId] || []);
 
-        const dataElementsIncluded = includePaired
-            ? _.uniqBy(_.flatMap(mainDEs, de => _.compact([de, de.pairedDataElement])), de =>
-                  [de.id, de.sectorId].join("-")
-              )
-            : mainDEs;
+            const dataElements2 = onlySelected
+                ? dataElements1.filter(de => selectedIds.has(de.id))
+                : dataElements1;
 
-        const dataElementsFiltered = dataElementsIncluded.filter(
-            dataElement =>
-                (!sectorId || dataElement.sectorId === sectorId) &&
-                (!series || dataElement.series === series) &&
-                (!indicatorType || dataElement.indicatorType === indicatorType) &&
-                (!peopleOrBenefit || dataElement.peopleOrBenefit === peopleOrBenefit) &&
-                (!onlyMERSelected || selectedMER.has(dataElement.id)) &&
-                (!externals ||
-                    _.isEmpty(externals) ||
-                    _.intersection(dataElement.externals, externals).length > 0 ||
-                    (_.includes(externals, "") && _.isEmpty(dataElement.externals)))
-        );
+            const dataElements3 = includePaired
+                ? _(dataElements2)
+                      .flatMap(de => [de, ...de.pairedDataElements])
+                      .uniqBy(de => de.id)
+                      .value()
+                : dataElements2;
 
-        return dataElementsFiltered;
-    }
-
-    updateSelected(dataElementIds: string[]): DataElementsSet {
-        return new DataElementsSet(this.config, {
-            ...this.data,
-            selected: dataElementIds,
+            return dataElements3.filter(
+                dataElement =>
+                    (!series || dataElement.series === series) &&
+                    (!indicatorType || dataElement.indicatorType === indicatorType) &&
+                    (!peopleOrBenefit || dataElement.peopleOrBenefit === peopleOrBenefit) &&
+                    (!externals ||
+                        _.isEmpty(externals) ||
+                        _.intersection(dataElement.externals, externals).length > 0 ||
+                        (_.includes(externals, "") && _.isEmpty(dataElement.externals)))
+            );
         });
     }
 
-    updateSelection(
+    updateSelected(dataElementsBySectorId: Record<Id, Id[]>): DataElementsSet {
+        return new DataElementsSet(this.config, {
+            ...this.data,
+            selected: { ...this.data.selected, ...dataElementsBySectorId },
+        });
+    }
+
+    updateSelectedWithRelations(
+        sectorId: Id,
         dataElementIds: string[]
-    ): { related: SelectionUpdate; dataElements: DataElementsSet } {
-        const { selected } = this.data;
-        const newSelected = _.difference(dataElementIds, selected);
-        // const newUnselected = _.difference(selected, dataElementIds);
-        const currentSelection = new Set(dataElementIds);
-        const related = {
-            selected: this.getRelated(newSelected).filter(de => !currentSelection.has(de.id)),
-            unselected: [] as DataElement[],
+    ): { selectionInfo: SelectionInfo; dataElements: DataElementsSet } {
+        const newSelection = new Set(dataElementIds);
+        const prevSelection = new Set(this.get({ sectorId, onlySelected: true }).map(de => de.id));
+        const newRelated = this.getRelated(sectorId, dataElementIds);
+        const unselectable = newRelated.filter(
+            de => prevSelection.has(de.id) && !newSelection.has(de.id)
+        );
+        const msg = i18n.t("Global data elements with selected subs cannot be unselected");
+        const selectionInfo = {
+            selected: newRelated.filter(de => !prevSelection.has(de.id)),
+            messages: _.isEmpty(unselectable) ? undefined : [msg],
         };
         const finalSelected = _(dataElementIds)
-            .union(related.selected.map(de => de.id))
-            .difference(related.unselected.map(de => de.id))
+            .union(selectionInfo.selected.map(de => de.id))
+            .union(unselectable.map(de => de.id))
             .value();
-        const dataElementsUpdated = new DataElementsSet(this.config, {
-            ...this.data,
-            selected: finalSelected,
-        });
+        const dataElementsUpdated = this.updateSelected({ [sectorId]: finalSelected });
 
-        return { related, dataElements: dataElementsUpdated };
+        return { selectionInfo, dataElements: dataElementsUpdated };
     }
 
-    get selectedMER() {
-        return this.data.selectedMER;
-    }
-
-    updateMERSelected(dataElementIds: string[]): DataElementsSet {
-        const selectedIds = this.get({ onlySelected: true, includePaired: true }).map(de => de.id);
-        return new DataElementsSet(this.config, {
-            ...this.data,
-            selectedMER: _.intersection(selectedIds, dataElementIds),
-        });
-    }
-
-    getFullSelection(dataElementIds: string[], sectorId: string, getOptions: GetOptions): string[] {
-        const prevSelectedDataElements = this.get(getOptions);
-        const keepIds = prevSelectedDataElements.filter(de => !de.selectable).map(de => de.id);
-        const newDataElementIds = _(dataElementIds)
-            .map(deId => this.dataElementsBy.allId[deId])
-            .compact()
-            .filter(de => de.selectable)
-            .map(de => de.id)
-            .value();
-
-        const previousIdsInSector = prevSelectedDataElements
-            .filter(de => de.sectorId === sectorId)
-            .map(de => de.id);
-        const unselectedIds = new Set(_.difference(previousIdsInSector, newDataElementIds));
-
-        const selectedIdsInOtherSectors = prevSelectedDataElements
-            .filter(de => de.sectorId !== sectorId && !unselectedIds.has(de.id))
-            .map(de => de.id);
-
-        return _.uniq(_.union(selectedIdsInOtherSectors, newDataElementIds, keepIds));
-    }
-
-    getRelated(dataElementIds: Id[]): DataElement[] {
-        const dataElements = _(dataElementIds)
-            .map(dataElementId => _(this.dataElementsBy.id).get(dataElementId) as DataElement)
+    getRelated(sectorId: Id, dataElementIds: Id[]): DataElement[] {
+        const { dataElementsAllBySector } = this.data;
+        const allDataElements = dataElementsAllBySector[sectorId] || [];
+        const allDataElementsByKey = _.keyBy(allDataElements, de =>
+            [de.indicatorType, de.series].join(".")
+        );
+        const selectedDataElements = _(allDataElements)
+            .keyBy(de => de.id)
+            .at(dataElementIds)
+            .flatMap(de => [de, ...de.pairedDataElements])
+            .uniqBy(de => de.id)
             .compact()
             .value();
 
-        const relatedGlobalBySeries = _(dataElements)
-            .map(dataElement => {
-                const related =
-                    dataElement.indicatorType == "sub"
-                        ? _(this.dataElementsBy.sectorAndSeries).get(
-                              getSectorAndSeriesKey(dataElement, { indicatorType: "global" }),
-                              []
-                          )
-                        : [];
-                return { id: dataElement.id, related };
+        const relatedDataElements = _.compact(
+            selectedDataElements.map(de => {
+                if (de.indicatorType === "sub") {
+                    const key = ["global", de.series].join(".");
+                    return _(allDataElementsByKey).get(key, null);
+                } else {
+                    return null;
+                }
             })
-            .value();
+        );
 
-        return _(relatedGlobalBySeries)
-            .groupBy(({ id }) => id)
-            .mapValues(groups => _.flatMap(groups, ({ related }) => related))
-            .values()
-            .flatten()
-            .value();
+        return _.uniqBy(relatedDataElements, de => de.id);
     }
 }
 
-function getMainDataElements(dataElements: DataElementWithCodePairing[]): DataElement[] {
-    const pairedCodes = new Set(
-        _(dataElements)
-            .filter(de => de.peopleOrBenefit === "benefit")
-            .map(de => de.pairedDataElementCode)
-            .uniq()
-            .compact()
-            .value()
-    );
-    const dataElementsByCode = _(dataElements).keyBy(de => de.code);
-    const nonPairedPeopleDataElements = _.reject(
-        dataElements,
-        de => de.peopleOrBenefit === "people" && pairedCodes.has(de.code)
-    );
+type GroupByDataElement = Record<Id, Array<{ dataElements: Ref[] } & { id: string; code: string }>>;
 
-    return nonPairedPeopleDataElements.map(dataElement => {
-        const de = dataElementsByCode.get(dataElement.pairedDataElementCode, undefined);
-        const pairedDataElement = de
-            ? { ...de, pairedDataElement: undefined, pairedDataElementName: undefined }
+function getSectorsInfo(
+    dataElementId: Id,
+    sectorsByDataElementId: GroupByDataElement,
+    seriesByDataElementId: GroupByDataElement
+): SectorInfo[] {
+    const sectorsGroups = sectorsByDataElementId[dataElementId] || [];
+    const seriesGroups = seriesByDataElementId[dataElementId] || null;
+
+    // series.code = SERIES_${sectorCode}_${number}. Example: SERIES_FOOD_5002
+    return sectorsGroups.map(sectorGroup => {
+        const seriesGroupForSector = seriesGroups
+            ? seriesGroups.find(seriesGroup => {
+                  const [, sectorCode, series] = seriesGroup.code.split("_");
+                  return sectorGroup.code.split("_")[1] === sectorCode ? series : null;
+              })
             : undefined;
-        return {
-            ...dataElement,
-            pairedDataElement,
-            pairedDataElementName: de ? de.name : undefined,
+
+        const sectorInfo: SectorInfo = {
+            id: sectorGroup.id,
+            series: seriesGroupForSector ? _.last(seriesGroupForSector.code.split("_")) : undefined,
         };
+
+        return sectorInfo;
     });
+}
+
+function getDataElementsFromSet(
+    metadata: Metadata,
+    sectorsSet: { dataElementGroups: Array<{ dataElements: Ref[] }> }
+) {
+    const dataElementsById = _.keyBy(metadata.dataElements, de => de.id);
+    return _(sectorsSet.dataElementGroups)
+        .flatMap(deg => deg.dataElements.map(deRef => dataElementsById[deRef.id]))
+        .compact()
+        .uniqBy(de => de.id)
+        .value();
+}
+
+function getPairedDataElements(
+    pairedDataElement: string | null,
+    dataElementsByCode: Record<string, { id: Id; code: string; displayName: string }>
+): Array<{ id: Id; code: string; name: string }> {
+    return _((pairedDataElement || "").split(","))
+        .map(s => s.trim())
+        .compact()
+        .map(code => {
+            const de = _(dataElementsByCode).get(code, null);
+            return de ? { id: de.id, code: de.code, name: de.displayName } : null;
+        })
+        .compact()
+        .value();
 }
 
 function getGroupCodeByDataElementId(
@@ -414,20 +389,76 @@ function getAttrsMap(
     );
 }
 
-function getAllDataElements(dataElements: DataElement[]): DataElement[] {
-    return _(dataElements)
-        .flatMap(de => _.compact([de, de.pairedDataElement]))
-        .uniqBy(de => [de.id, de.sectorId].join("-"))
+function getDataElementsBySector(
+    config: Config,
+    options: { groupPaired: boolean }
+): BySector<DataElement[]> {
+    const { groupPaired } = options;
+
+    const pairs = config.sectors.map(sector => {
+        const allDes = _.compact(
+            config.dataElements.map(dataElement => {
+                const sectorInfo = dataElement.sectorsInfo.find(info => info.id === sector.id);
+                if (!sectorInfo) return null;
+                else
+                    return {
+                        ...dataElement,
+                        sector: { id: sector.id },
+                        base: dataElement,
+                        isMainSector: sectorInfo.id === dataElement.mainSector.id,
+                        series: sectorInfo.series,
+                        search: "",
+                    };
+            })
+        );
+        const pairedDes = groupPaired ? _.flatMap(allDes, de => de.pairedDataElements) : [];
+        const dataElementsById = _.keyBy(allDes, de => de.id);
+        const mainDataElements = _.differenceBy(allDes, pairedDes, de => de.id);
+
+        // Finally, add paired DataElement[] to main data elements
+        const dataElements: DataElement[] = mainDataElements.map(dataElement => {
+            const pairedDataElements = _(groupPaired ? dataElement.pairedDataElements : [])
+                .map(de => dataElementsById[de.id])
+                .compact()
+                .map(pairedDe => ({ ...pairedDe, pairedDataElements: [] }))
+                .value();
+
+            // Add name/code in search field of the paired elements so we can search on the table
+            const search = pairedDataElements.map(de => [de.name, de.code].join("\n")).join("\n");
+
+            return { ...dataElement, pairedDataElements, search };
+        });
+
+        return [sector.id, dataElements];
+    });
+
+    return _.fromPairs(pairs);
+}
+
+function getDataElementsBySectorInSet(
+    dataElementsAllBySector: BySector<DataElement[]>,
+    superSet: DataElementsSet | undefined
+) {
+    return superSet
+        ? _(dataElementsAllBySector)
+              .mapValues((dataElementsInSector, sectorId) =>
+                  _.intersectionBy(
+                      dataElementsInSector,
+                      superSet.get({ sectorId, onlySelected: true, includePaired: true }),
+                      de => de.id
+                  )
+              )
+              .value()
+        : dataElementsAllBySector;
+}
+
+function getGroupsByDataElementId<Group extends { dataElements: Array<Ref> }>(degSet: {
+    dataElementGroups: Group[];
+}): Record<Id, Group[]> {
+    const res = _(degSet.dataElementGroups)
+        .flatMap(deg => deg.dataElements.map(deRef => ({ deId: deRef.id, deg })))
+        .groupBy(item => item.deId)
+        .mapValues(items => items.map(item => item.deg))
         .value();
-}
-
-/* Type-safe helpers */
-
-function fromPairs<Key extends string, Value>(pairs: Array<[Key, Value]>): Record<Key, Value> {
-    const empty = {} as Record<Key, Value>;
-    return pairs.reduce((acc, [key, value]) => ({ ...acc, [key]: value }), empty);
-}
-
-function getKeys<T>(obj: T): Array<keyof T> {
-    return Object.keys(obj) as Array<keyof T>;
+    return res;
 }

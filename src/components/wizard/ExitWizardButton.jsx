@@ -30,4 +30,4 @@ class ExitWizardButton extends React.Component {
     }
 }
 
-export default ExitWizardButton;
+export default React.memo(ExitWizardButton);

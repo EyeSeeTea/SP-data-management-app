@@ -1,5 +1,25 @@
-import { Config } from "./Config";
+import { Config, Sector as SectorC, Funder as FunderC, Location as LocationC } from "./Config";
 import moment, { Moment } from "moment";
+import _ from "lodash";
+import { D2Api, SelectedPick, Id, Ref, D2OrganisationUnit, D2IndicatorSchema } from "d2-api";
+import { generateUid } from "d2/uid";
+import { TableSorting } from "d2-ui-components";
+
+import i18n from "../locales";
+import DataElementsSet, { PeopleOrBenefit, DataElement } from "./dataElementsSet";
+import ProjectDb from "./ProjectDb";
+import { toISOString, getMonthsRange } from "../utils/date";
+import ProjectDownload from "./ProjectDownload";
+import ProjectList, { ProjectForList, FiltersForList } from "./ProjectsList";
+import ProjectDataSet from "./ProjectDataSet";
+import ProjectDelete from "./ProjectDelete";
+import {
+    validatePresence,
+    validateRegexp,
+    validateNumber,
+    validateNonEmpty,
+} from "../utils/validations";
+import { getKeys, Maybe } from "../types/utils";
 
 /*
 Project model.
@@ -49,16 +69,9 @@ Project model.
     )
 */
 
-import _ from "lodash";
-import { D2Api, SelectedPick, Id, Ref, D2OrganisationUnit, D2IndicatorSchema } from "d2-api";
-import i18n from "../locales";
-import DataElementsSet, { DataElement, PeopleOrBenefit, SelectionUpdate } from "./dataElementsSet";
-import ProjectDb from "./ProjectDb";
-import { toISOString, getMonthsRange } from "../utils/date";
-import { generateUid } from "d2/uid";
-import ProjectDownload from "./ProjectDownload";
-import { TableSorting } from "d2-ui-components";
-import ProjectList, { ProjectForList, FiltersForList } from "./ProjectsList";
+export type Sector = SectorC;
+export type Funder = FunderC;
+export type Location = Omit<LocationC, "countries">;
 
 export interface ProjectData {
     id: Id;
@@ -74,42 +87,39 @@ export interface ProjectData {
     locations: Location[];
     orgUnit: OrganisationUnit | undefined;
     parentOrgUnit: OrganisationUnit | undefined;
-    dataElements: DataElementsSet;
+    dataElementsSelection: DataElementsSet;
+    dataElementsMER: DataElementsSet;
     dataSets: { actual: DataSet; target: DataSet } | undefined;
     dashboard: Ref | undefined;
     initialData: Omit<ProjectData, "initialData"> | undefined;
 }
 
-interface NamedObject {
-    id: Id;
-    displayName: string;
-}
-
-export type Sector = NamedObject & { code: string };
-export type Funder = NamedObject;
-export type Location = NamedObject;
-
-interface DataInputPeriod {
+export interface DataInputPeriod {
     period: { id: string };
     openingDate: string;
     closingDate: string;
 }
 
+export const dataSetTypes = ["actual", "target"] as const;
+export type DataSetType = typeof dataSetTypes[number];
+
 export interface DataSet {
     id: string;
     code: string;
     dataSetElements: Array<{ dataElement: Ref; categoryCombo: Ref }>;
-    dataInputPeriods: DataInputPeriod[];
     sections: Array<{ code: string }>;
+    dataInputPeriods: DataInputPeriod[];
+    openFuturePeriods: number;
+    expiryDays: number;
 }
 
-interface OrganisationUnit {
+export interface OrganisationUnit {
     id: string;
     path: string;
     displayName: string;
 }
 
-const monthFormat = "YYYYMM";
+export const monthFormat = "YYYYMM";
 
 const defaultProjectData = {
     id: undefined,
@@ -139,14 +149,22 @@ function defineGetters(sourceObject: any, targetObject: any) {
     });
 }
 
+const validationKeys = [
+    ...getKeys(defaultProjectData),
+    "code" as const,
+    "dataElementsSelection" as const,
+    "dataElementsMER" as const,
+];
+
 export type ProjectField = keyof ProjectData;
-export type ValidationKey = keyof ProjectData | "code" | "dataElementsMER";
+export type ValidationKey = typeof validationKeys[number];
 type Validation = () => ValidationError | Promise<ValidationError>;
 type ValidationError = string[];
 type Validations = { [K in ValidationKey]?: Validation };
 
 class Project {
     data: ProjectData;
+    dataSetsByType: Record<DataSetType, ProjectDataSet>;
 
     static lengths = {
         awardNumber: 5,
@@ -161,7 +179,8 @@ class Project {
     static fieldNames: Record<ProjectField, string> = {
         id: i18n.t("Id"),
         name: i18n.t("Name"),
-        dataElements: i18n.t("Data Elements"),
+        dataElementsSelection: i18n.t("Data Elements Selection"),
+        dataElementsMER: i18n.t("Data Elements MER"),
         description: i18n.t("Description"),
         awardNumber: i18n.t("Award Number"),
         subsequentLettering: i18n.t("Subsequent Lettering"),
@@ -214,8 +233,9 @@ class Project {
         locations: () => validateNonEmpty(this.locations, this.f("locations")),
         parentOrgUnit: () =>
             this.parentOrgUnit ? [] : [i18n.t("One Organisation Unit should be selected")],
-        dataElements: () => this.dataElements.validateSelection(this.sectors),
-        dataElementsMER: () => this.dataElements.validateMER(this.sectors),
+        dataElementsSelection: () =>
+            this.dataElementsSelection.validateAtLeastOneItemPerSector(this.sectors),
+        dataElementsMER: () => this.dataElementsMER.validatetOneItemTotal(this.sectors),
     };
 
     static requiredFields: Set<ProjectField> = new Set([
@@ -228,12 +248,17 @@ class Project {
         "funders",
         "locations",
         "parentOrgUnit",
-        "dataElements",
+        "dataElementsSelection",
+        "dataElementsMER",
     ]);
 
     constructor(public api: D2Api, public config: Config, rawData: ProjectData) {
         this.data = Project.processInitialData(config, rawData);
         defineGetters(this.data, this);
+        this.dataSetsByType = {
+            actual: new ProjectDataSet(this, "actual"),
+            target: new ProjectDataSet(this, "target"),
+        };
     }
 
     static processInitialData(config: Config, data: ProjectData) {
@@ -265,8 +290,8 @@ class Project {
 
     public get code(): string {
         return _([
-            this.subsequentLettering,
             this.awardNumber,
+            this.subsequentLettering,
             this.speedKey ? "-" + this.speedKey : null,
         ])
             .compact()
@@ -276,39 +301,70 @@ class Project {
     public getSelectedDataElements(
         filter: { peopleOrBenefit?: PeopleOrBenefit } = {}
     ): DataElement[] {
-        const { dataElements, sectors } = this.data;
+        const { dataElementsSelection, sectors } = this.data;
         const sectorIds = new Set(sectors.map(sector => sector.id));
-        const selectedDataElements = dataElements
-            .get({ onlySelected: true, includePaired: true, ...filter })
-            .filter(de => sectorIds.has(de.sectorId));
+        const selectedDataElements = _(
+            dataElementsSelection.get({ onlySelected: true, includePaired: true, ...filter })
+        )
+            .filter(de => sectorIds.has(de.sector.id))
+            .uniqBy(de => de.id)
+            .value();
         const orderBySectorId: _.Dictionary<string> = _(sectors)
             .map((sector, idx) => [sector.id, idx])
             .fromPairs()
             .value();
         const selectedDataElementsSorted = _.orderBy(
             selectedDataElements,
-            [de => orderBySectorId[de.sectorId], de => de.name],
+            [de => orderBySectorId[de.sector.id], de => de.name],
             ["asc", "asc"]
         );
         return selectedDataElementsSorted;
     }
 
+    public getSectorsInfo(): Array<{
+        sector: Sector;
+        dataElementsInfo: Array<{
+            dataElement: DataElement;
+            isMER: boolean;
+            usedInDataSetSection: boolean;
+        }>;
+    }> {
+        const { dataElementsSelection, dataElementsMER, sectors } = this;
+        const dataElementsBySectorMapping = new ProjectDb(this).getDataElementsBySectorMapping();
+        const selectedMER = new Set(dataElementsMER.get({ onlySelected: true }).map(de => de.id));
+
+        return sectors.map(sector => {
+            const getOptions = { onlySelected: true, includePaired: true, sectorId: sector.id };
+            const dataElements = _.sortBy(dataElementsSelection.get(getOptions), de => de.name);
+            const dataElementsInfo = dataElements.map(dataElement => ({
+                dataElement,
+                isMER: selectedMER.has(dataElement.id),
+                usedInDataSetSection: dataElementsBySectorMapping[dataElement.id] === sector.id,
+            }));
+
+            return { sector, dataElementsInfo };
+        });
+    }
+
     public async validate(
-        validationKeys: (ValidationKey)[] | undefined = undefined
-    ): Promise<Validations> {
-        const obj = _(validationKeys || (_.keys(this.validations) as ValidationKey[]))
-            .map(key => [key, this.validations[key]])
-            .fromPairs()
-            .mapValues(validationFn => (validationFn ? validationFn.call(this) : []))
-            .value();
-        const [keys, promises] = _.unzip(_.toPairs(obj));
-        const values = await Promise.all(promises);
-        return _.fromPairs(_.zip(keys, values)) as Validations;
+        keysToValidate: Maybe<ValidationKey[]> = undefined
+    ): Promise<Record<ValidationKey, string[]>> {
+        const errors = {} as Record<ValidationKey, string[]>;
+        const keys = keysToValidate || validationKeys;
+        for (const key of keys) {
+            const fn = this.validations[key];
+            if (fn) {
+                const fnErrors = await fn();
+                errors[key] = fnErrors;
+            }
+        }
+        return errors;
     }
 
     static getSelectableLocations(config: Config, country: Ref | undefined) {
         return config.locations.filter(
-            location => country && _.some(location.countries, country_ => country_.id == country.id)
+            location =>
+                country && _.some(location.countries, country_ => country_.id === country.id)
         );
     }
 
@@ -321,11 +377,16 @@ class Project {
     }
 
     static create(api: D2Api, config: Config) {
-        const dataElements = DataElementsSet.build(config);
+        const dataElementsSelection = DataElementsSet.build(config, { groupPaired: true });
+        const dataElementsMER = DataElementsSet.build(config, {
+            groupPaired: false,
+            superSet: dataElementsSelection,
+        });
         const projectData = {
             ...defaultProjectData,
             id: generateUid(),
-            dataElements,
+            dataElementsSelection,
+            dataElementsMER,
             initialData: undefined,
         };
         return new Project(api, config, projectData);
@@ -350,30 +411,22 @@ class Project {
         return projectsList.get(filters, sorting, pagination);
     }
 
-    updateDataElementsSelection(
-        dataElementIds: string[]
-    ): { related: SelectionUpdate; project: Project } {
-        const { related, dataElements } = this.data.dataElements.updateSelection(dataElementIds);
-        return { related, project: this.setObj({ dataElements }) };
-    }
-
-    updateDataElementsSelectionForSector(dataElementIds: string[], sectorId: string) {
-        const { dataElements } = this.data;
-        const ids = dataElements.getFullSelection(dataElementIds, sectorId, { onlySelected: true });
-        return this.updateDataElementsSelection(ids);
-    }
-
-    updateDataElementsMERSelection(dataElementIds: string[]): Project {
-        const { dataElements } = this.data;
-        return this.setObj({ dataElements: dataElements.updateMERSelected(dataElementIds) });
-    }
-
-    updateDataElementsMERSelectionForSector(dataElementIds: string[], sectorId: string): Project {
-        const { dataElements } = this.data;
-        const ids = dataElements.getFullSelection(dataElementIds, sectorId, {
-            onlyMERSelected: true,
+    updateDataElementsSelection(sectorId: string, dataElementIds: string[]) {
+        const { dataElementsSelection, dataElementsMER } = this.data;
+        const result = dataElementsSelection.updateSelectedWithRelations(sectorId, dataElementIds);
+        const { dataElements: dataElementsUpdate, selectionInfo } = result;
+        const newProject = this.setObj({
+            dataElementsSelection: dataElementsUpdate,
+            dataElementsMER: dataElementsMER.updateSuperSet(dataElementsUpdate),
         });
-        return this.setObj({ dataElements: dataElements.updateMERSelected(ids) });
+        return { selectionInfo, project: newProject };
+    }
+
+    updateDataElementsMERSelection(sectorId: string, dataElementIds: string[]) {
+        const { dataElementsMER } = this.data;
+        const newDataElementsMER = dataElementsMER.updateSelected({ [sectorId]: dataElementIds });
+        const newProject = this.setObj({ dataElementsMER: newDataElementsMER });
+        return { selectionInfo: {}, project: newProject };
     }
 
     public get uid() {
@@ -409,6 +462,12 @@ class Project {
         }));
     }
 
+    getDates(): { startDate: Moment; endDate: Moment } {
+        const { startDate, endDate } = this;
+        if (!startDate || !endDate) throw new Error("No project dates");
+        return { startDate, endDate };
+    }
+
     private getIndicators(
         dataElements: Array<{ code: string }>,
         codePrefix: string
@@ -422,9 +481,8 @@ class Project {
                 if (indicator) {
                     return indicator;
                 } else {
-                    console.error(
-                        `Data element (${de.code}) has no associated indicator with code=${indicatorCode}`
-                    );
+                    const msg = `Indicator ${indicatorCode} not found for data element ${de.code}`;
+                    console.error(msg);
                     return null;
                 }
             })
@@ -442,6 +500,15 @@ class Project {
         dataElements: Array<{ code: string }>
     ): Array<SelectedPick<D2IndicatorSchema, { id: true; code: true }>> {
         return this.getIndicators(dataElements, this.config.base.indicators.costBenefitPrefix);
+    }
+
+    getProjectDataSet(dataSet: DataSet) {
+        const dataSetType: DataSetType = dataSet.code.endsWith("ACTUAL") ? "actual" : "target";
+        return this.dataSetsByType[dataSetType];
+    }
+
+    static async delete(config: Config, api: D2Api, ids: Id[]): Promise<void> {
+        return new ProjectDelete(config, api).delete(ids);
     }
 }
 
@@ -482,62 +549,8 @@ export function getOrgUnitDatesFromProject(startDate: Moment, endDate: Moment): 
     };
 }
 
-function validatePresence(value: any, field: string): ValidationError {
-    const isBlank =
-        !value ||
-        (value.length !== undefined && value.length === 0) ||
-        (value.strip !== undefined && !value.strip());
-
-    return isBlank ? [i18n.t("{{field}} cannot be blank", { field })] : [];
-}
-
-function validateNonEmpty(value: any[], field: string): ValidationError {
-    return value.length == 0 ? [i18n.t("Select at least one item for {{field}}", { field })] : [];
-}
-
-/* eslint-disable @typescript-eslint/no-unused-vars */
-function validateNumber(
-    value: number,
-    field: string,
-    { min, max }: { min?: number; max?: number } = {}
-): ValidationError {
-    if (min && value < min) {
-        return [
-            i18n.t("{{field}} must be greater than or equal to {{value}}", { field, value: min }),
-        ];
-    } else if (max && value > max) {
-        return [i18n.t("{{field}} must be less than or equal to {{value}}", { field, value: max })];
-    } else {
-        return [];
-    }
-}
-
-function validateRegexp(
-    value: string,
-    field: string,
-    regexp: RegExp,
-    customMsg: string
-): ValidationError {
-    return regexp.test(value)
-        ? []
-        : [
-              customMsg ||
-                  i18n.t("{{field}} does not match pattern {{pattern}}", {
-                      field,
-                      pattern: regexp.source,
-                  }),
-          ];
-}
-
 function getPeriodIds(dataSet: DataSet): string[] {
-    const now = moment();
-    const isPeriodInPastOrOpen = (dip: DataInputPeriod) => {
-        const periodStart = moment(dip.period.id, monthFormat).startOf("month");
-        return periodStart.isBefore(now) || now.isBetween(dip.openingDate, dip.closingDate);
-    };
-
     return _(dataSet.dataInputPeriods)
-        .filter(isPeriodInPastOrOpen)
         .map(dip => dip.period.id)
         .sortBy()
         .value();

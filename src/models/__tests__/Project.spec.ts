@@ -1,6 +1,6 @@
 import { getMockApi } from "d2-api";
 import _ from "lodash";
-import { ProjectData } from "./../Project";
+import { ValidationKey } from "./../Project";
 import Project from "../Project";
 import { Config } from "../Config";
 import configJson from "./config.json";
@@ -13,7 +13,7 @@ function getProject() {
     return Project.create(api, config).set("id", "BvNo8zQaol8");
 }
 
-async function expectFieldPresence(field: keyof ProjectData) {
+async function expectFieldPresence(field: ValidationKey) {
     const project = await getProject();
     const errors = await project.validate([field]);
     expect(errors[field] !== undefined && (errors[field] || []).length > 0).toBeTruthy();
@@ -60,7 +60,7 @@ describe("Project", () => {
         });
 
         it("has data element sets", () => {
-            expect(project.dataElements.get().length).toBeGreaterThan(0);
+            expect(project.dataElementsSelection.get().length).toBeGreaterThan(0);
         });
     });
 
@@ -74,7 +74,7 @@ describe("Project", () => {
                         "attributeValues[attribute[id],value],closedDate,code,description,displayName,id,name,openingDate,organisationUnitGroups[id],parent[displayName,id,path],path",
                     "organisationUnits:filter": ["id:eq:R3rGhxWbAI9"],
                     "dataSets:fields":
-                        "code,dataInputPeriods[closingDate,openingDate,period],dataSetElements[categoryCombo[id],dataElement[id]],id,sections[code]",
+                        "code,dataInputPeriods[closingDate,openingDate,period],dataSetElements[categoryCombo[id],dataElement[id]],expiryDays,id,openFuturePeriods,sections[code,dataElements[id]]",
                     "dataSets:filter": ["code:$like:R3rGhxWbAI9"],
                 },
             }).replyOnce(200, metadataForGet);
@@ -101,10 +101,12 @@ describe("Project", () => {
             );
             expect(project.sectors.map(sector => sector.code)).toEqual(["SECTOR_LIVELIHOOD"]);
             expect(project.funders.map(funder => funder.displayName)).toEqual([
-                "2018 World Food Program",
-                "ACWME",
+                "funder-OE0KdZRX2FC",
+                "funder-WKUXmz4LIUG",
             ]);
-            expect(project.locations.map(location => location.displayName)).toEqual(["Abaco"]);
+            expect(project.locations.map(location => location.displayName)).toEqual([
+                "loc-GG0k0oNhgS7",
+            ]);
             expect(project.orgUnit && project.orgUnit.id).toEqual("R3rGhxWbAI9");
             expect(project.parentOrgUnit && project.parentOrgUnit.id).toEqual("eu2XF73JOzl");
             expect(project.dataSets && project.dataSets.actual.code).toEqual("R3rGhxWbAI9_ACTUAL");
@@ -116,11 +118,10 @@ describe("Project", () => {
         });
 
         it("has data element sets", () => {
-            expect(project.dataElements.get({ onlySelected: true }).map(de => de.id)).toEqual([
-                "u24zk6wAgFE",
-                "yMqK9DKbA3X",
-            ]);
-            expect(project.dataElements.get({ onlyMERSelected: true }).map(de => de.id)).toEqual([
+            expect(
+                project.dataElementsSelection.get({ onlySelected: true }).map(de => de.id)
+            ).toEqual(["u24zk6wAgFE", "yMqK9DKbA3X"]);
+            expect(project.dataElementsMER.get({ onlySelected: true }).map(de => de.id)).toEqual([
                 "u24zk6wAgFE",
             ]);
         });
@@ -139,13 +140,13 @@ describe("Project", () => {
                 awardNumber: "12345",
                 speedKey: "somekey",
             });
-            expect(project2.code).toEqual("es12345-somekey");
+            expect(project2.code).toEqual("12345es-somekey");
         });
 
         it("joins {subsequentLettering}{this.awardNumber} if speedKey not set", async () => {
             const project = await getProject();
             const project2 = project.set("subsequentLettering", "es").set("awardNumber", "12345");
-            expect(project2.code).toEqual("es12345");
+            expect(project2.code).toEqual("12345es");
         });
     });
 
@@ -247,13 +248,13 @@ describe("Project", () => {
             mock.onGet("/metadata", {
                 params: {
                     "organisationUnits:fields": "displayName",
-                    "organisationUnits:filter": ["code:eq:au19234-key", "id:ne:BvNo8zQaol8"],
+                    "organisationUnits:filter": ["code:eq:19234au-key", "id:ne:BvNo8zQaol8"],
                 },
             }).replyOnce(200, { organisationUnits: [{ displayName: "Asia" }] });
 
             const errors = await project.validate(["code"]);
             expect(errors.code).toEqual([
-                "There is a project with the same code 'au19234-key' -> Asia",
+                "There is a project with the same code '19234au-key' -> Asia",
             ]);
         });
 
@@ -264,23 +265,24 @@ describe("Project", () => {
                     { id: "GkiSljtLcOI", displayName: "Livelihood", code: "SECTOR_LIVELIHOOD" },
                 ],
             });
-            const errors = await project.validate(["dataElements"]);
-            expect(errors.dataElements).toEqual([
+            const errors = await project.validate(["dataElementsSelection"]);
+            expect(errors.dataElementsSelection).toEqual([
                 "The following sectors have no indicators selected: Agriculture, Livelihood",
             ]);
 
-            const { project: project2 } = project.updateDataElementsSelection(["qQy0N1xdwQ1"]);
-            const errors2 = await project2.validate(["dataElements"]);
-            expect(errors2.dataElements).toEqual([
+            const { project: project2 } = project.updateDataElementsSelection("mGQ5ckOTU8A", [
+                "qQy0N1xdwQ1",
+            ]);
+            const errors2 = await project2.validate(["dataElementsSelection"]);
+            expect(errors2.dataElementsSelection).toEqual([
                 "The following sectors have no indicators selected: Livelihood",
             ]);
 
-            const { project: project3 } = project2.updateDataElementsSelection([
-                "qQy0N1xdwQ1",
-                "iyQBe9Xv7bk",
-            ]);
-            const errors3 = await project3.validate(["dataElements"]);
-            expect(errors3.dataElements).toEqual([]);
+            const { project: project3 } = project2
+                .updateDataElementsSelection("mGQ5ckOTU8A", ["qQy0N1xdwQ1"])
+                .project.updateDataElementsSelection("GkiSljtLcOI", ["iyQBe9Xv7bk"]);
+            const errors3 = await project3.validate(["dataElementsSelection"]);
+            expect(errors3.dataElementsSelection).toEqual([]);
         });
 
         it("without keys, it runs all validations", async () => {
@@ -297,19 +299,22 @@ describe("Project", () => {
                     "sectors",
                     "funders",
                     "parentOrgUnit",
-                    "dataElements",
+                    "dataElementsSelection",
+                    "dataElementsMER",
                 ])
             );
         });
     });
 
     describe("getList", () => {
+        const createdByApp = { attribute: { id: "mgCKcJuP5n0" }, value: "true" };
         const organisationUnitsUnpaginated = [
-            { i: "1", c: "code1", n: "name1" },
-            { i: "2", c: "other2", n: "other2" },
-            { i: "3", c: "CODE3", n: "name3" },
-            { i: "4", c: "other4", n: "other4" },
-            { i: "5", c: "code5", n: "NAME5" },
+            { i: "1", c: "code1", n: "name1", attributeValues: [createdByApp] },
+            { i: "2", c: "other2", n: "other2", attributeValues: [createdByApp] },
+            { i: "3", c: "CODE3", n: "name3", attributeValues: [createdByApp] },
+            { i: "4", c: "other4", n: "other4", attributeValues: [createdByApp] },
+            { i: "5", c: "code5", n: "NAME5", attributeValues: [createdByApp] },
+            { i: "6", c: "code6", n: "NAME6", attributeValues: [] },
         ];
 
         const organisationUnits = [
@@ -318,17 +323,24 @@ describe("Project", () => {
             { id: "3", code: "CODE3", displayName: "name3" },
             { id: "4", code: "other4", displayName: "other4" },
             { id: "5", code: "code5", displayName: "NAME5" },
+            { id: "6", code: "code6", displayName: "NAME6" },
         ];
 
         const orgUnitsById = _.keyBy(organisationUnits, ou => ou.id);
 
-        it.only("returns list of organisation units filtered", async () => {
+        it("returns list of organisation units filtered", async () => {
             mock.onGet("/organisationUnits", {
                 params: {
                     paging: false,
-                    fields: "code~rename(c),displayName~rename(n),id~rename(i)",
+                    fields:
+                        "attributeValues[attribute[id],value],code~rename(c),displayName~rename(n),id~rename(i)",
                     order: "displayName:idesc",
-                    filter: ["level:eq:3", "parent.id:in:[parent1]", "user.id:eq:M5zQapPyTZI"],
+                    filter: [
+                        "attributeValues.attribute.id:eq:mgCKcJuP5n0",
+                        "level:eq:3",
+                        "parent.id:in:[parent1]",
+                        "user.id:eq:M5zQapPyTZI",
+                    ],
                 },
             }).replyOnce(200, { organisationUnits: _.reverse(organisationUnitsUnpaginated) });
 
@@ -356,7 +368,12 @@ describe("Project", () => {
             const { objects, pager: pagination } = await Project.getList(
                 api,
                 config,
-                { search: "name", createdByCurrentUser: true, countryIds: ["parent1"] },
+                {
+                    search: "name",
+                    createdByCurrentUser: true,
+                    countryIds: ["parent1"],
+                    createdByAppOnly: true,
+                },
                 { field: "displayName", order: "desc" },
                 { page: 1, pageSize: 2 }
             );
@@ -380,7 +397,7 @@ describe("Project", () => {
 const metadataForGet = {
     organisationUnits: [
         {
-            code: "fr34549",
+            code: "34549fr",
             name: "0Test1-13726c",
             id: "R3rGhxWbAI9",
             path: "/J0hschZVMBt/eu2XF73JOzl/R3rGhxWbAI9",
@@ -468,6 +485,7 @@ const metadataForGet = {
             sections: [
                 {
                     code: "SECTOR_LIVELIHOOD_imYbEtdoQZx",
+                    dataElements: [{ id: "u24zk6wAgFE" }, { id: "yMqK9DKbA3X" }],
                 },
             ],
         },
@@ -518,6 +536,7 @@ const metadataForGet = {
             sections: [
                 {
                     code: "SECTOR_LIVELIHOOD_KC6gi00Jm6H",
+                    dataElements: [{ id: "5678" }],
                 },
             ],
         },

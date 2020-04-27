@@ -1,5 +1,4 @@
 import React, { useState, ReactNode } from "react";
-import _ from "lodash";
 import { Button, LinearProgress } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -41,7 +40,7 @@ const SaveStep: React.FC<StepProps> = ({ project, onCancel }) => {
             if (response && response.status === "OK") {
                 history.push(generateUrl("projects"));
                 if (isDev) saveDataValues(api, projectSaved);
-                snackbar.success(i18n.t("Project saved:" + " " + projectSaved.name));
+                snackbar.success(`${i18n.t("Project saved:")} ${projectSaved.name}`);
             } else {
                 setErrorMessage(JSON.stringify({ response, payload }, null, 2));
             }
@@ -115,24 +114,19 @@ const LiEntry = ({ label, value }: { label: string; value?: React.ReactNode }) =
 };
 
 function getSectorsInfo(project: Project): ReactNode {
+    const sectorsInfo = project.getSectorsInfo();
+    const hiddenMsg = i18n.t("Hidden in data entry as it is selected in multiple sectors!");
+
     return (
         <ul>
-            {project.sectors.map(sector => {
-                const dataElements = _.sortBy(
-                    project.dataElements.get({
-                        onlySelected: true,
-                        sectorId: sector.id,
-                        includePaired: true,
-                    }),
-                    de => de.name
-                );
-                const selectedMER = new Set(project.dataElements.selectedMER);
+            {sectorsInfo.map(({ sector, dataElementsInfo }) => {
                 const value = (
                     <ul>
-                        {dataElements.map(de => (
-                            <li key={de.id}>
-                                {de.name}
-                                {selectedMER.has(de.id) ? ` [${i18n.t("MER")}]` : ""}
+                        {dataElementsInfo.map(({ dataElement, isMER, usedInDataSetSection }) => (
+                            <li key={dataElement.id}>
+                                {dataElement.name} - {dataElement.code}
+                                {isMER ? ` [${i18n.t("MER")}]` : ""}
+                                {usedInDataSetSection ? "" : <i> - {hiddenMsg}</i>}
                             </li>
                         ))}
                     </ul>
@@ -149,12 +143,13 @@ function getNames(objects: { displayName: string }[]) {
 
 function getProjectPeriodDateString(project: Project): string {
     const { startDate, endDate } = project;
+    const dateFormat = "MMMM YYYY";
 
     if (startDate && endDate) {
-        return [startDate.format("LL"), "->", endDate.format("LL")].join(" ");
+        return [startDate.format(dateFormat), "->", endDate.format(dateFormat)].join(" ");
     } else {
         return "-";
     }
 }
 
-export default SaveStep;
+export default React.memo(SaveStep);

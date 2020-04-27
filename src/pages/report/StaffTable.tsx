@@ -27,17 +27,18 @@ interface StaffTableProps {
 const StaffTable: React.FC<StaffTableProps> = props => {
     const { merReport, onChange } = props;
     const { date, organisationUnit } = merReport.data;
-    if (!date || !organisationUnit) return null;
     const translations = React.useMemo(() => getStaffTranslations(), []);
 
     function onTimeChange(staffKey: StaffKey, staffInfo: StaffInfo): void {
         onChange(merReport.setStaffHours(staffKey, staffInfo));
     }
 
-    if (!merReport || !merReport.data.projectsData) return <LinearProgress />;
     const staffTotals = React.useMemo(() => merReport.getStaffTotals(), [
         merReport.data.staffSummary,
     ]);
+
+    if (!date || !organisationUnit) return null;
+    if (!merReport || !merReport.data.projectsData) return <LinearProgress />;
 
     return (
         <Table style={{ width: "40vw" }}>
@@ -111,4 +112,4 @@ const StaffField: React.FC<{
     );
 };
 
-export default StaffTable;
+export default React.memo(StaffTable);

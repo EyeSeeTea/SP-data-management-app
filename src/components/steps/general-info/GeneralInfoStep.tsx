@@ -2,7 +2,7 @@ import React from "react";
 import _ from "lodash";
 import { Moment } from "moment";
 import { Card, CardContent } from "@material-ui/core";
-import { DatePicker } from "d2-ui-components";
+import { DatePicker, DatePickerProps } from "d2-ui-components";
 
 import i18n from "../../../locales";
 import { StepProps } from "../../../pages/project-wizard/ProjectWizard";
@@ -96,7 +96,7 @@ const validators = {
                 ": " +
                 _.compact([min && `min=${min}`, max && `max=${max}`]).join(", "),
         validator: (s: string) =>
-            (min === undefined || s.length >= min) && (max == undefined || s.length <= max),
+            (min === undefined || s.length >= min) && (max === undefined || s.length <= max),
     }),
     regexp: (regexp: RegExp, message: string) => ({
         message,
@@ -135,7 +135,7 @@ function getDateField(
     }: {
         onUpdateField: (name: DateField, value: Moment | undefined) => void;
         process: (date: Moment) => Moment;
-        props?: Partial<DatePicker["props"]>;
+        props?: Partial<DatePickerProps>;
     }
 ) {
     const humanName = getProjectFieldName(name);
@@ -156,4 +156,4 @@ function getDateField(
     };
 }
 
-export default GeneralInfoStep;
+export default React.memo(GeneralInfoStep);

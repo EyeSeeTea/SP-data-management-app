@@ -38,4 +38,4 @@ const SectorsStep: React.FC<StepProps> = ({ project, onChange }) => {
     );
 };
 
-export default SectorsStep;
+export default React.memo(SectorsStep);

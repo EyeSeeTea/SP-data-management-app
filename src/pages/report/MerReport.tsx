@@ -26,12 +26,12 @@ function goTo(history: History, url: string) {
 function getTranslations() {
     return {
         help: i18n.t(`Please choose the month of data you wish to extract for the MER report.
-
         Please make sure you choose your country for reporting.
+
         Note- when you click the date and location, the data will automatically populate.  Please add comments to the data as necessary, and complete the blank sections of the MER each month.
         Download- when you click the “Download” button, the MER will be downloaded to Excel.
 
-        Save- when you click the “Save” button, the MER will [TODO]`),
+        Save- when you click the "Save" button, the MER will automatically be stored in Platform. You can access previous MERs by clicking your country and month of reporting.`),
     };
 }
 
@@ -225,4 +225,4 @@ const useStyles = makeStyles({
     },
 });
 
-export default MerReportComponent;
+export default React.memo(MerReportComponent);

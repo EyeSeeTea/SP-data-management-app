@@ -5,6 +5,8 @@ import { Config } from "./Config";
 import moment from "moment";
 import { Sector, getOrgUnitDatesFromProject, getProjectFromOrgUnit } from "./Project";
 import { getSectorCodeFromSectionCode } from "./ProjectDb";
+import User from "./user";
+import { getIds } from "../utils/dhis2";
 
 export type FiltersForList = Partial<{
     search: string;
@@ -12,50 +14,57 @@ export type FiltersForList = Partial<{
     countryIds: string[];
     sectorIds: string[];
     onlyActive: boolean;
+    createdByAppOnly: boolean;
+    userCountriesOnly: boolean;
 }>;
 
-const yes = true as const;
+type Pagination = { page: number; pageSize: number };
 
 const orgUnitFields = {
-    id: yes,
-    user: { id: yes, displayName: yes },
-    displayName: yes,
-    displayDescription: yes,
-    href: yes,
-    publicAccess: yes,
-    created: yes,
-    lastUpdated: yes,
-    lastUpdatedBy: { name: yes },
-    parent: { id: yes, displayName: yes },
-    openingDate: yes,
-    closedDate: yes,
-    code: yes,
-};
+    id: true,
+    user: { id: true, displayName: true },
+    displayName: true,
+    displayDescription: true,
+    href: true,
+    publicAccess: true,
+    created: true,
+    lastUpdated: true,
+    lastUpdatedBy: { name: true },
+    parent: { id: true, displayName: true },
+    openingDate: true,
+    closedDate: true,
+    code: true,
+} as const;
 
 export type ProjectForList = SelectedPick<D2OrganisationUnitSchema, typeof orgUnitFields> & {
     sectors: Sector[];
 };
 
 export default class ProjectsList {
-    constructor(private api: D2Api, private config: Config) {}
+    currentUser: User;
+
+    constructor(private api: D2Api, private config: Config) {
+        this.currentUser = new User(config);
+    }
 
     async get(
         filters: FiltersForList,
         sorting: TableSorting<ProjectForList>,
-        pagination: { page: number; pageSize: number }
+        pagination: Pagination
     ): Promise<{ objects: ProjectForList[]; pager: Partial<TablePagination> }> {
         const { api, config } = this;
-        const data = await this.getOrgUnitListData(api, config, filters, sorting, pagination);
-        const { order, pager, ids } = data;
+        const order = `${sorting.field}:i${sorting.order}`;
+        const baseOrgUnitIds = await this.getBaseOrgUnitIds(api, config, filters, order);
+        const { pager, objects: orgUnitIds } = paginate(baseOrgUnitIds, pagination);
 
         const { objects: d2OrgUnits } =
-            ids.length === 0
+            orgUnitIds.length === 0
                 ? { objects: [] }
                 : await api.models.organisationUnits
                       .get({
                           paging: false,
                           fields: orgUnitFields,
-                          filter: { id: { in: ids } },
+                          filter: { id: { in: orgUnitIds } },
                           order,
                       })
                       .getData();
@@ -74,7 +83,7 @@ export default class ProjectsList {
                   })
                   .getData();
 
-        const dataSetByOrgUnitId = _.keyBy(dataSets, dataSet => dataSet.code.split("_")[0]);
+        const dataSetByOrgUnitId = _.keyBy(dataSets, dataSet => (dataSet.code || "").split("_")[0]);
         const sectorsByCode = _.keyBy(config.sectors, sector => sector.code);
 
         const projectsWithSectors = projects.map(orgUnit => {
@@ -82,7 +91,7 @@ export default class ProjectsList {
             if (!dataSet) {
                 return { ...orgUnit, sectors: [] };
             } else {
-                const sectors = _(dataSet.sections)
+                const sectors = _(dataSet.sections || [])
                     .map(section => sectorsByCode[getSectorCodeFromSectionCode(section.code)])
                     .compact()
                     .value();
@@ -93,25 +102,11 @@ export default class ProjectsList {
         return { pager: pager, objects: projectsWithSectors };
     }
 
-    async getOrgUnitListData(
-        api: D2Api,
-        config: Config,
-        filters: FiltersForList,
-        sorting: TableSorting<ProjectForList>,
-        pagination: { page: number; pageSize: number }
-    ) {
-        const order = `${sorting.field}:i${sorting.order}`;
-        const userId = config.currentUser.id;
-        const filterCountryIds = _.isEmpty(filters.countryIds) ? undefined : filters.countryIds;
-        const now = moment();
-        const { openingDate, closedDate } = getOrgUnitDatesFromProject(now, now);
-
-        const dateFilter = filters.onlyActive
-            ? {
-                  openingDate: { le: moment(openingDate).format("YYYY-MM-DD") },
-                  closedDate: { ge: moment(closedDate).format("YYYY-MM-DD") },
-              }
-            : {};
+    async getBaseOrgUnitIds(api: D2Api, config: Config, filters: FiltersForList, order: string) {
+        const { currentUser } = this;
+        const userId = currentUser.data.id;
+        const createByAppAttrId = config.attributes.createdByApp.id;
+        const createdByAppFilter = { "attributeValues.attribute.id": { eq: createByAppAttrId } };
 
         const { objects: d2OrgUnits } = await api.models.organisationUnits
             .get({
@@ -121,54 +116,54 @@ export default class ProjectsList {
                     id: { $fn: { name: "rename", to: "i" } as const },
                     code: { $fn: { name: "rename", to: "c" } as const },
                     displayName: { $fn: { name: "rename", to: "n" } as const },
+                    attributeValues: { attribute: { id: true }, value: true },
                 },
                 order,
                 filter: {
-                    level: { eq: "3" },
-                    ...dateFilter,
+                    level: { eq: config.base.orgUnits.levelForProjects.toString() },
+                    ...getDateFilter(filters),
+                    ...getOrgUnitsFilter(filters, currentUser),
+                    ...(filters.createdByAppOnly ? createdByAppFilter : {}),
                     ...(filters.createdByCurrentUser ? { "user.id": { eq: userId } } : {}),
-                    ...(filterCountryIds ? { "parent.id": { in: filterCountryIds } } : {}),
                 },
             })
             .getData();
 
-        // Apply filters that are not possible in the api request: (NAME or CODE) and SECTORS
-        const search = filters.search ? filters.search.toLowerCase() : undefined;
+        // Apply filters that are not possible in the api request:
+        // (NAME or CODE) and SECTORS and CREATED_BY_APP
 
+        const search = filters.search ? filters.search.toLowerCase() : undefined;
         const d2OrgUnitsFilteredByNameAndCode = search
             ? d2OrgUnits.filter(ou => {
-                  const name = ou.n.toLowerCase();
-                  const code = ou.c.toLowerCase();
+                  const name = (ou.n || "").toLowerCase();
+                  const code = (ou.c || "").toLowerCase();
                   // OR filter, not supported by the API
                   return name.includes(search) || code.includes(search);
               })
             : d2OrgUnits;
 
-        const d2OrgUnitsFiltered = await this.filterOrgUnitBySectors(
+        const orgUnitsFilteredBySectors = await this.filterOrgUnitBySectors(
             d2OrgUnitsFilteredByNameAndCode,
             filters.sectorIds
         );
 
-        // Paginator
+        const orgUnitsFiltered = !filters.createdByAppOnly
+            ? orgUnitsFilteredBySectors
+            : orgUnitsFilteredBySectors.filter(ou =>
+                  _(ou.attributeValues).some(
+                      attributeValue =>
+                          attributeValue.attribute.id === config.attributes.createdByApp.id &&
+                          attributeValue.value === "true"
+                  )
+              );
 
-        const pager = {
-            page: pagination.page,
-            pageSize: pagination.pageSize,
-            total: d2OrgUnitsFiltered.length,
-        };
-        const { page, pageSize } = pagination;
-        const start = (page - 1) * pageSize;
-
-        const ids = _(d2OrgUnitsFiltered)
-            .slice(start, start + pageSize)
-            .map(ou => ou.i)
-            .sortBy()
-            .value();
-
-        return { order, pager, ids };
+        return orgUnitsFiltered.map(ou => ou.i);
     }
 
-    async filterOrgUnitBySectors(orgUnits: Array<{ i: Id }>, sectorIds: Id[] | undefined) {
+    async filterOrgUnitBySectors<Ou extends { i: Id }>(
+        orgUnits: Ou[],
+        sectorIds: Id[] | undefined
+    ) {
         if (!sectorIds || _.isEmpty(sectorIds) || _.isEmpty(orgUnits)) return orgUnits;
 
         const { api, config } = this;
@@ -191,11 +186,51 @@ export default class ProjectsList {
 
         const orgUnitIdsWithinSections = new Set(
             _(sections)
-                .map(section => section.dataSet.code.split("_")[0] || "")
+                .map(section => (section.dataSet.code || "").split("_")[0] || "")
                 .compact()
                 .value()
         );
 
         return orgUnits.filter(ou => orgUnitIdsWithinSections.has(ou.i));
     }
+}
+
+function paginate<Obj>(objects: Obj[], pagination: Pagination) {
+    const pager = {
+        page: pagination.page,
+        pageSize: pagination.pageSize,
+        total: objects.length,
+    };
+    const { page, pageSize } = pagination;
+    const start = (page - 1) * pageSize;
+
+    const paginatedObjects = _(objects)
+        .slice(start, start + pageSize)
+        .sortBy()
+        .value();
+
+    return { pager, objects: paginatedObjects };
+}
+
+function getDateFilter(filters: FiltersForList) {
+    const now = moment();
+    const dateFormat = "YYYY-MM-DD";
+    const { openingDate, closedDate } = getOrgUnitDatesFromProject(now, now);
+
+    if (filters.onlyActive) {
+        return {
+            openingDate: { le: moment(openingDate).format(dateFormat) },
+            closedDate: { ge: moment(closedDate).format(dateFormat) },
+        };
+    } else {
+        return {};
+    }
+}
+
+function getOrgUnitsFilter(filters: FiltersForList, currentUser: User) {
+    const userCountryIds = filters.userCountriesOnly ? getIds(currentUser.getCountries()) : null;
+    const filterCountryIds = !_(filters.countryIds).isEmpty()
+        ? _.intersection(..._.compact([userCountryIds, filters.countryIds]))
+        : userCountryIds;
+    return filterCountryIds ? { "parent.id": { in: filterCountryIds } } : {};
 }

@@ -2,14 +2,14 @@ import _ from "lodash";
 import { D2ApiDefault, D2Api, Id, Ref, MetadataPick } from "d2-api";
 import fs from "fs";
 import path from "path";
-import DataElementsSet, { DataElement } from "./dataElementsSet";
+import DataElementsSet, { DataElementBase } from "./dataElementsSet";
 import { GetItemType } from "../types/utils";
 import "../utils/lodash-mixins";
 
 export type Config = {
     base: typeof baseConfig;
     currentUser: CurrentUser;
-    dataElements: DataElement[];
+    dataElements: DataElementBase[];
     sectors: Sector[];
     funders: Funder[];
     locations: Location[];
@@ -26,6 +26,10 @@ export type Config = {
 const yes = true as const;
 
 const baseConfig = {
+    orgUnits: {
+        levelForCountries: 2,
+        levelForProjects: 3,
+    },
     userRoles: {
         feedback: ["PM Feedback"],
         dataReviewer: ["Data Reviewer"],
@@ -106,7 +110,10 @@ const metadataParams = {
         fields: { id: yes, code: yes, categoryOptionCombos: { id: yes, displayName: yes } },
         filter: { code: { in: _.values(baseConfig.categoryCombos) } },
     },
-    categoryOptions: getParamsForIndexables(baseConfig.categoryOptions),
+    categoryOptions: {
+        fields: { id: yes, code: yes, categoryOptionCombos: { id: yes } },
+        filter: { code: { in: _.values(baseConfig.categoryOptions) } },
+    },
     legendSets: getParamsForIndexables(baseConfig.legendSets),
     dataElements: {
         fields: {
@@ -137,13 +144,14 @@ const metadataParams = {
     },
     organisationUnits: {
         fields: { id: yes, displayName: yes },
-        filter: { level: { eq: "2" } }, // Only countries
+        filter: { level: { eq: baseConfig.orgUnits.levelForCountries.toString() } },
     },
     organisationUnitGroupSets: {
         fields: {
             code: yes,
             organisationUnitGroups: {
                 id: yes,
+                shortName: yes,
                 displayName: yes,
                 organisationUnits: { id: yes, level: yes },
             },
@@ -178,6 +186,7 @@ export type CurrentUser = {
 export interface OrganisationUnit {
     id: Id;
     displayName: string;
+    level: number;
 }
 
 export type DataElementGroupSet = GetItemType<Metadata["dataElementGroupSets"]>;
@@ -198,7 +207,7 @@ type IndexedObjs<Key extends keyof BaseConfig, ValueType> = Record<
 
 type Attribute = CodedObject;
 export type CategoryCombo = CodedObject & { categoryOptionCombos: NamedObject[] };
-export type CategoryOption = CodedObject;
+export type CategoryOption = CodedObject & { categoryOptionCombos: NamedObject[] };
 export type Category = CodedObject & { categoryOptions: CategoryOption[] };
 export type LegendSet = CodedObject;
 export type Indicator = CodedObject;
@@ -209,34 +218,17 @@ class ConfigLoader {
     async get(): Promise<Config> {
         const metadata: Metadata = await this.api.metadata.get(metadataParams).getData();
         const d2CurrentUser = await this.getCurrentUser();
-        const ouSetsByCode = _(metadata.organisationUnitGroupSets).keyBy(ougSet => ougSet.code);
-
-        const funders = ouSetsByCode.getOrFail(baseConfig.organisationUnitGroupSets.funder)
-            .organisationUnitGroups;
-
-        const locations = ouSetsByCode
-            .getOrFail(baseConfig.organisationUnitGroupSets.location)
-            .organisationUnitGroups.map(oug => ({
-                id: oug.id,
-                displayName: oug.displayName,
-                countries: oug.organisationUnits
-                    .filter(ou => ou.level === 2)
-                    .map(ou => ({ id: ou.id })),
-            }));
-
-        const currentUser = {
-            ...d2CurrentUser,
-            userRoles: d2CurrentUser.userCredentials.userRoles,
-        };
-
+        const { funders, locations } = getFundersAndLocations(metadata);
+        const { userRoles } = d2CurrentUser.userCredentials;
+        const currentUser = { ...d2CurrentUser, userRoles };
         const dataElementsMetadata = await this.getDataElementsMetadata(currentUser, metadata);
 
-        const config = {
+        return {
             base: baseConfig,
-            currentUser: currentUser,
+            currentUser,
             ...dataElementsMetadata,
-            funders: _.sortBy(funders, funder => funder.displayName),
-            locations: _.sortBy(locations, location => location.displayName),
+            funders,
+            locations,
             indicators: metadata.indicators,
             attributes: indexObjects(metadata, "attributes"),
             categories: indexObjects(metadata, "categories"),
@@ -246,8 +238,6 @@ class ConfigLoader {
             dataApprovalWorkflows: indexObjects(metadata, "dataApprovalWorkflows"),
             countries: _.sortBy(metadata.organisationUnits, ou => ou.displayName),
         };
-
-        return config;
     }
 
     async getCurrentUser() {
@@ -257,7 +247,7 @@ class ConfigLoader {
                     id: true,
                     displayName: true,
                     userCredentials: { userRoles: { name: true } },
-                    organisationUnits: { id: true, displayName: true },
+                    organisationUnits: { id: true, displayName: true, level: true },
                 },
             })
             .getData();
@@ -309,27 +299,60 @@ export async function getConfig(api: D2Api): Promise<Config> {
 async function getFromApp(baseUrl: string) {
     const api = new D2ApiDefault({ baseUrl });
     const allConfig = await getConfig(api);
-    const dataElementIds = [
-        "WS8XV4WWPE7",
-        "ik0ICagvIjm",
-        "K6mAC5SiO29",
-        "We61YNYyOX0",
-        "yMqK9DKbA3X",
-        "qQy0N1xdwQ1",
-        "iyQBe9Xv7bk",
-        "u24zk6wAgFE",
-        "WS8XV4WWPE7",
-        "yUGuwPFkBrj",
-    ];
+    // Protect names for funders, locations and data elements.
     const config: Config = {
         ...allConfig,
-        funders: allConfig.funders.slice(0, 5),
-        locations: allConfig.locations.slice(0, 5),
-        dataElements: allConfig.dataElements.filter(de => dataElementIds.includes(de.id)),
+        funders: allConfig.funders.map(funder => ({
+            ...funder,
+            displayName: `funder-${funder.id}`,
+        })),
+        locations: allConfig.locations.map(location => ({
+            ...location,
+            displayName: `loc-${location.id}`,
+        })),
+        dataElements: allConfig.dataElements.map(de => ({
+            ...de,
+            name: `de-${de.code}`,
+            description: `de-description-${de.code}`,
+            pairedDataElements: de.pairedDataElements.map(pde => ({
+                ...pde,
+                name: `pde-${pde.code}`,
+            })),
+        })),
     };
     const jsonPath = path.join(__dirname, "__tests__", "config.json");
     fs.writeFileSync(jsonPath, JSON.stringify(config, null, 4) + "\n");
     console.info(`Written: ${jsonPath}`);
+}
+
+function getFundersAndLocations(metadata: Metadata) {
+    const ouSetsByCode = _(metadata.organisationUnitGroupSets).keyBy(ougSet => ougSet.code);
+
+    const fundersSet = ouSetsByCode.getOrFail(baseConfig.organisationUnitGroupSets.funder);
+    const funders = _(fundersSet.organisationUnitGroups)
+        .map(funder => ({
+            ...funder,
+            displayName: _.compact([funder.displayName, funder.shortName]).join(" - "),
+        }))
+        .orderBy(
+            [funder => funder.shortName === "IHQ", funder => funder.displayName],
+            ["desc" as const, "asc" as const]
+        )
+        .value();
+
+    const locationsSet = ouSetsByCode.getOrFail(baseConfig.organisationUnitGroupSets.location);
+    const locations = _(locationsSet.organisationUnitGroups)
+        .map(oug => ({
+            id: oug.id,
+            displayName: oug.displayName,
+            countries: oug.organisationUnits
+                .filter(ou => ou.level === 2)
+                .map(ou => ({ id: ou.id })),
+        }))
+        .sortBy(location => location.displayName)
+        .value();
+
+    return { funders, locations };
 }
 
 if (require.main === module) {
