@@ -31,9 +31,11 @@ class HelpButton extends React.Component<HelpProps> {
                 title={title}
                 contents={contents}
                 initialIsOpen={pageVisited === undefined ? undefined : !pageVisited}
+                fullWidth={true}
+                maxWidth="md"
             />
         );
     }
 }
 
-export default HelpButton;
+export default React.memo(HelpButton);

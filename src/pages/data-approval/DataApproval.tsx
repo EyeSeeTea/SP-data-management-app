@@ -5,14 +5,16 @@ import { History } from "history";
 import { makeStyles } from "@material-ui/core/styles";
 import { Paper, Button } from "@material-ui/core";
 import Dropdown from "../../components/dropdown/Dropdown";
-import Project, { DataSet, getPeriodsData } from "../../models/Project";
-import { D2Api, Id } from "d2-api";
+import Project, { getPeriodsData, DataSetType, dataSetTypes } from "../../models/Project";
+import { D2Api } from "d2-api";
 import { Config } from "../../models/Config";
-import _ from "lodash";
 
 import { useAppContext } from "../../contexts/api-context";
 import i18n from "../../locales";
 import PageHeader from "../../components/page-header/PageHeader";
+import ProjectDataSet from "../../models/ProjectDataSet";
+import { isValueInUnionType } from "../../types/utils";
+import "./widgets.css";
 
 declare global {
     interface Window {
@@ -33,9 +35,10 @@ type RouterParams = { id: string };
 type GetState<Data> = {
     loading: boolean;
     error?: string;
-    date?: string;
-    categoryCombo?: Id;
     data?: Data;
+    date?: string;
+    dataSetType?: DataSetType;
+    projectDataSet?: ProjectDataSet;
     report?: string;
     showApproveButton: boolean;
     showUnapproveButton: boolean;
@@ -43,30 +46,8 @@ type GetState<Data> = {
 
 type State = GetState<DataInterface>;
 
-type CategoryOptionCombosDataApprovals = CategoryOptionComboDataApprovals[];
-
-interface CategoryOptionComboDataApprovals {
-    level: Level;
-    ou: string;
-    permissions: {
-        mayApprove: boolean;
-        mayUnapprove: boolean;
-        mayAccept: boolean;
-        mayUnaccept: boolean;
-        mayReadData: boolean;
-    };
-    accepted: boolean;
-    id: string;
-    ouName: string;
-}
-
-type Level = {} | { level: string; id: string };
-
 interface DataInterface {
-    name: string;
-    orgUnit: { id: string; displayName: string };
-    dataSet: DataSet;
-    categoryCombos: Array<{ id: Id; displayName: string }>;
+    project: Project;
 }
 
 const DataApproval: React.FC = () => {
@@ -81,30 +62,29 @@ const DataApproval: React.FC = () => {
     });
     const goToLandingPage = () => goTo(history, "/");
     const { api, config } = useAppContext();
-    const { data, date, categoryCombo, report, error } = state;
+    const { data, date, dataSetType, projectDataSet, report, error } = state;
 
-    let periodItems;
-    let categoryComboItems;
-    if (data) {
-        const { periodIds } = getPeriodsData(data.dataSet);
-        periodItems = periodIds.map(periodId => ({
-            text: moment(periodId, monthFormat).format("MMMM YYYY"),
-            value: periodId,
-        }));
-        categoryComboItems = data.categoryCombos.map(categoryCombo => ({
-            text: categoryCombo.displayName,
-            value: categoryCombo.id,
-        }));
-    }
+    const categoryComboItems = [
+        { text: i18n.t("Target"), value: "target" },
+        { text: i18n.t("Actual"), value: "actual" },
+    ];
+
+    const periodItems = React.useMemo(() => {
+        if (data && data.project.dataSets) {
+            const { periodIds } = getPeriodsData(data.project.dataSets["actual"]);
+            return periodIds.map(periodId => ({
+                text: moment(periodId, monthFormat).format("MMMM YYYY"),
+                value: periodId,
+            }));
+        } else {
+            return [];
+        }
+    }, [data && data.project]);
 
     const title = i18n.t("Data Approval");
 
     useEffect(() => loadData(projectId, api, config, setState), [projectId]);
-    useEffect(() => getReport(date, categoryCombo, data, api, setState), [
-        data,
-        date,
-        categoryCombo,
-    ]);
+    useEffect(() => getReport(projectDataSet, date, setState), [projectDataSet, date]);
 
     const reportHtml = useMemo(() => {
         return { __html: report || "" };
@@ -112,14 +92,10 @@ const DataApproval: React.FC = () => {
 
     return (
         <React.Fragment>
-            <PageHeader
-                title={title}
-                help={i18n.t(`Data Approval`)}
-                onBackClick={() => goToLandingPage()}
-            />
+            <PageHeader title={title} help={getHelp()} onBackClick={goToLandingPage} />
             <Paper style={{ marginBottom: 20, padding: 20 }}>
                 <Dropdown
-                    items={periodItems ? periodItems : []}
+                    items={periodItems}
                     value={date}
                     onChange={value => setState({ ...state, date: value })}
                     label={i18n.t("Period")}
@@ -128,8 +104,13 @@ const DataApproval: React.FC = () => {
 
                 <Dropdown
                     items={categoryComboItems ? categoryComboItems : []}
-                    value={categoryCombo}
-                    onChange={value => setState({ ...state, categoryCombo: value })}
+                    value={dataSetType}
+                    onChange={dataSetType => {
+                        if (data && isValueInUnionType(dataSetType, dataSetTypes)) {
+                            const projectDataSet = data.project.dataSetsByType[dataSetType];
+                            setState({ ...state, projectDataSet, dataSetType });
+                        }
+                    }}
                     label={i18n.t("Actual/Target")}
                     hideEmpty={true}
                 />
@@ -147,11 +128,6 @@ const DataApproval: React.FC = () => {
                     <link
                         rel="stylesheet"
                         type="text/css"
-                        href={api.baseUrl + "/dhis-web-commons/css/widgets.css"}
-                    />
-                    <link
-                        rel="stylesheet"
-                        type="text/css"
                         href={api.baseUrl + "/dhis-web-commons/css/light_blue/light_blue.css"}
                     />
 
@@ -159,7 +135,7 @@ const DataApproval: React.FC = () => {
 
                     {state.showApproveButton && (
                         <Button
-                            onClick={() => approve(date, categoryCombo, data, api, setState, true)}
+                            onClick={() => approve(date, projectDataSet, setState, true)}
                             variant="contained"
                             className={classes.approveButton}
                         >
@@ -169,7 +145,7 @@ const DataApproval: React.FC = () => {
 
                     {state.showUnapproveButton && (
                         <Button
-                            onClick={() => approve(date, categoryCombo, data, api, setState, false)}
+                            onClick={() => approve(date, projectDataSet, setState, false)}
                             variant="contained"
                             className={classes.approveButton}
                         >
@@ -192,29 +168,15 @@ const useStyles = makeStyles({
 
 async function approve(
     date: string | undefined,
-    categoryCombo: Id | undefined,
-    data: DataInterface | undefined,
-    api: D2Api,
+    projectDataSet: ProjectDataSet | undefined,
     setState: React.Dispatch<React.SetStateAction<State>>,
     shouldApprove: boolean
 ) {
     try {
-        if (!categoryCombo || !date || !data) return;
+        if (!projectDataSet || !date) return;
 
-        const url = "/dataApprovals/" + (shouldApprove ? "approvals" : "unapprovals");
-        const dataSetId = data.dataSet.id;
-        const orgUnitId = data.orgUnit.id;
-
-        api.post(
-            url,
-            {},
-            {
-                ds: [dataSetId],
-                pe: [date],
-                approvals: [{ ou: orgUnitId, aoc: categoryCombo }],
-            }
-        )
-            .getData()
+        projectDataSet
+            .setApprovalState(date, shouldApprove)
             .then(() => {
                 setState(state => ({
                     ...state,
@@ -241,27 +203,15 @@ async function approve(
 }
 
 function getReport(
+    projectDataSet: ProjectDataSet | undefined,
     date: string | undefined,
-    categoryCombo: Id | undefined,
-    data: DataInterface | undefined,
-    api: D2Api,
     setState: React.Dispatch<React.SetStateAction<State>>
 ) {
-    if (!categoryCombo || !date || !data) return;
+    if (!projectDataSet || !date) return;
 
-    const datasetId = data.dataSet.id;
-    const orgUnitId = data.orgUnit.id;
-    const params = { ds: datasetId, pe: date, ou: orgUnitId };
-
-    api.get<CategoryOptionCombosDataApprovals>("/dataApprovals/categoryOptionCombos", params)
-        .getData()
-        .then(response => {
-            const categoryOptionCombosDataApprovals = _.filter(response, {
-                ou: orgUnitId,
-                id: categoryCombo,
-            });
-            const catOptComboDataApprovals = _(categoryOptionCombosDataApprovals).get(0, null);
-
+    projectDataSet
+        .getDataApproval(date)
+        .then(catOptComboDataApprovals => {
             if (!catOptComboDataApprovals) {
                 setState({
                     error: i18n.t("Cannot load category option combo"),
@@ -280,38 +230,28 @@ function getReport(
                 catOptComboDataApprovals.permissions.mayUnapprove &&
                 catOptComboDataApprovals.accepted;
 
-            // TODO: Move request + html parsing to some model
-            return api.baseConnection
-                .get("/dhis-web-reporting/generateDataSetReport.action", {
-                    params: {
-                        ds: datasetId,
-                        pe: date,
-                        ou: orgUnitId,
-                        dimension: "ao:" + categoryCombo,
-                    },
-                })
-                .then(report => {
-                    // Parse report
-                    const htmlReport = jQuery(jQuery("<div/>").html(report.data));
-                    htmlReport.find("table.listTable tbody tr:odd").addClass("listAlternateRow");
-                    htmlReport.find("table.listTable tbody tr:even").addClass("listRow");
-                    htmlReport.find("#shareForm").hide();
-                    htmlReport.find("table.listTable tbody tr").mouseover((element: any) => {
-                        jQuery(element).addClass("listHoverRow");
-                    });
-                    htmlReport.find("table.listTable tbody tr").mouseout((element: any) => {
-                        jQuery(element).removeClass("listHoverRow");
-                    });
-
-                    setState(state => ({
-                        ...state,
-                        date: date,
-                        report: htmlReport.html(),
-                        loading: false,
-                        showApproveButton: showApproveButton,
-                        showUnapproveButton: showUnapproveButton,
-                    }));
+            return projectDataSet.getApprovalForm(date).then(report => {
+                // Parse report
+                const htmlReport = jQuery(jQuery("<div/>").html(report.data));
+                htmlReport.find("table.listTable tbody tr:odd").addClass("listAlternateRow");
+                htmlReport.find("table.listTable tbody tr:even").addClass("listRow");
+                htmlReport.find("#shareForm").hide();
+                htmlReport.find("table.listTable tbody tr").mouseover((element: any) => {
+                    jQuery(element).addClass("listHoverRow");
                 });
+                htmlReport.find("table.listTable tbody tr").mouseout((element: any) => {
+                    jQuery(element).removeClass("listHoverRow");
+                });
+
+                setState(state => ({
+                    ...state,
+                    date: date,
+                    report: htmlReport.html(),
+                    loading: false,
+                    showApproveButton: showApproveButton,
+                    showUnapproveButton: showUnapproveButton,
+                }));
+            });
         })
         .catch(err =>
             setState({
@@ -334,21 +274,11 @@ function loadData(
     Project.get(api, config, projectId)
         .catch(_err => null)
         .then(project => {
-            const orgUnit = project ? project.orgUnit : null;
             const dataSet = project && project.dataSets ? project.dataSets["actual"] : null;
-            const categoryCombos =
-                project && project.config
-                    ? project.config.categoryCombos.targetActual.categoryOptionCombos
-                    : null;
 
-            if (project && orgUnit && dataSet && categoryCombos) {
+            if (project && dataSet) {
                 setState({
-                    data: {
-                        name: project.name,
-                        orgUnit,
-                        dataSet,
-                        categoryCombos: categoryCombos,
-                    },
+                    data: { project },
                     loading: false,
                     showApproveButton: false,
                     showUnapproveButton: false,
@@ -372,4 +302,10 @@ function loadData(
         );
 }
 
-export default DataApproval;
+function getHelp(): string {
+    return i18n.t(`Please choose the month and type of data (target or actual) you wish to approve.
+
+    Once you approve the data, scroll down to the bottom of the screen and click the blue "Approve" button.`);
+}
+
+export default React.memo(DataApproval);

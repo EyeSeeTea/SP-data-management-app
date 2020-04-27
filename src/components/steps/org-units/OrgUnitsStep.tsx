@@ -60,4 +60,4 @@ const OrgUnitsStep: React.FC<StepProps> = ({ project, onChange }) => {
     );
 };
 
-export default OrgUnitsStep;
+export default React.memo(OrgUnitsStep);

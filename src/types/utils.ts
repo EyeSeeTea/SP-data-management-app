@@ -1,4 +1,4 @@
-export type Maybe<T> = T | undefined;
+export type Maybe<T> = T | null | undefined;
 
 export type Either<Data, Error> = { type: "success"; data: Data } | { type: "error"; error: Error };
 
@@ -24,8 +24,25 @@ export type GetPropertiesByType<T, FieldType> = {
 }[keyof T];
 
 /* Get inner type of array */
-export type GetItemType<T> = T extends (infer U)[] ? U : never;
+export type GetItemType<T extends any[]> = T[number];
 
 export type RequiredProps<T> = {
     [P in keyof T]-?: NonNullable<T[P]>;
 };
+
+/* Function helpers */
+
+export function isValueInUnionType<S, T extends S>(value: S, values: readonly T[]): value is T {
+    return (values as readonly S[]).indexOf(value) >= 0;
+}
+
+export function fromPairs<Key extends string, Value>(
+    pairs: Array<[Key, Value]>
+): Record<Key, Value> {
+    const empty = {} as Record<Key, Value>;
+    return pairs.reduce((acc, [key, value]) => ({ ...acc, [key]: value }), empty);
+}
+
+export function getKeys<T>(obj: T): Array<keyof T> {
+    return Object.keys(obj) as Array<keyof T>;
+}

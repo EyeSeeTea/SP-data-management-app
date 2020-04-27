@@ -18,7 +18,7 @@ describe("ProjectDb", () => {
             mock.onGet("/metadata", {
                 expected: {
                     "organisationUnits:fields": "displayName",
-                    "organisationUnits:filter": ["code:eq:en12345", "id:ne:WGC0DJ0YSis"],
+                    "organisationUnits:filter": ["code:eq:12345en", "id:ne:WGC0DJ0YSis"],
                 },
             }).replyOnce(200, []);
 
@@ -109,7 +109,7 @@ const orgUnitsMetadata = {
 };
 
 const expectedDataStoreMer = {
-    merDataElementIds: ["yMqK9DKbA3X", "WS8XV4WWPE7"],
+    merDataElementIds: ["WS8XV4WWPE7", "yMqK9DKbA3X"],
 };
 
 const expectedOrgUnitPut = {
@@ -117,7 +117,7 @@ const expectedOrgUnitPut = {
     name: "MyProject",
     displayName: "MyProject",
     path: "/J0hschZVMBt/eu2XF73JOzl/WGC0DJ0YSis",
-    code: "en12345",
+    code: "12345en",
     shortName: "MyProject",
     description: "",
     parent: {
@@ -156,10 +156,10 @@ const expectedSectionsMetadataPost = {
                     id: "WS8XV4WWPE7",
                 },
                 {
-                    id: "ik0ICagvIjm",
+                    id: "K6mAC5SiO29",
                 },
                 {
-                    id: "K6mAC5SiO29",
+                    id: "ik0ICagvIjm",
                 },
             ],
             greyedFields: [],
@@ -195,10 +195,10 @@ const expectedSectionsMetadataPost = {
                     id: "WS8XV4WWPE7",
                 },
                 {
-                    id: "ik0ICagvIjm",
+                    id: "K6mAC5SiO29",
                 },
                 {
-                    id: "K6mAC5SiO29",
+                    id: "ik0ICagvIjm",
                 },
             ],
             greyedFields: [],
@@ -231,7 +231,7 @@ const expectedMetadataPost = {
             name: "MyProject",
             displayName: "MyProject",
             path: "/J0hschZVMBt/eu2XF73JOzl/WGC0DJ0YSis",
-            code: "en12345",
+            code: "12345en",
             shortName: "MyProject",
             description: "",
             parent: {
@@ -324,8 +324,6 @@ const expectedMetadataPost = {
     dataSets: [
         {
             id: "SCS4Dusnfdd",
-            publicAccess: "rwrw----",
-            workflow: { id: "CCy0oNyvlV1" },
             description: "",
             periodType: "Monthly",
             dataElementDecoration: true,
@@ -342,7 +340,23 @@ const expectedMetadataPost = {
             formType: "DEFAULT",
             name: "MyProject Target",
             code: "WGC0DJ0YSis_TARGET",
-            openFuturePeriods: 0,
+            attributeValues: [
+                {
+                    value: "true",
+                    attribute: {
+                        id: "mgCKcJuP5n0",
+                    },
+                },
+                {
+                    value: "WGC0DJ0YSis",
+                    attribute: {
+                        id: "qgSqj6sBF7j",
+                    },
+                },
+            ],
+            workflow: {
+                id: "CCy0oNyvlV1",
+            },
             dataInputPeriods: [
                 {
                     period: {
@@ -387,21 +401,8 @@ const expectedMetadataPost = {
                     closingDate: "2018-11-30T23:59:59",
                 },
             ],
+            openFuturePeriods: 0,
             expiryDays: 0,
-            attributeValues: [
-                {
-                    value: "true",
-                    attribute: {
-                        id: "mgCKcJuP5n0",
-                    },
-                },
-                {
-                    value: "WGC0DJ0YSis",
-                    attribute: {
-                        id: "qgSqj6sBF7j",
-                    },
-                },
-            ],
             sections: [
                 {
                     id: "qQopuH2XmFM",
@@ -429,7 +430,7 @@ const expectedMetadataPost = {
                         id: "SCS4Dusnfdd",
                     },
                     dataElement: {
-                        id: "ik0ICagvIjm",
+                        id: "K6mAC5SiO29",
                     },
                     categoryCombo: {
                         id: "GKWiemQPU5U",
@@ -440,7 +441,7 @@ const expectedMetadataPost = {
                         id: "SCS4Dusnfdd",
                     },
                     dataElement: {
-                        id: "K6mAC5SiO29",
+                        id: "ik0ICagvIjm",
                     },
                     categoryCombo: {
                         id: "GKWiemQPU5U",
@@ -469,13 +470,12 @@ const expectedMetadataPost = {
                     },
                 },
             ],
+            publicAccess: "rwrw----",
         },
         {
             id: "CwUxT9UIX3z",
-            publicAccess: "rwrw----",
             description: "",
             periodType: "Monthly",
-            workflow: { id: "CCy0oNyvlV1" },
             dataElementDecoration: true,
             renderAsTabs: true,
             categoryCombo: {
@@ -490,7 +490,23 @@ const expectedMetadataPost = {
             formType: "DEFAULT",
             name: "MyProject Actual",
             code: "WGC0DJ0YSis_ACTUAL",
-            openFuturePeriods: 1,
+            attributeValues: [
+                {
+                    value: "true",
+                    attribute: {
+                        id: "mgCKcJuP5n0",
+                    },
+                },
+                {
+                    value: "WGC0DJ0YSis",
+                    attribute: {
+                        id: "qgSqj6sBF7j",
+                    },
+                },
+            ],
+            workflow: {
+                id: "CCy0oNyvlV1",
+            },
             dataInputPeriods: [
                 {
                     period: {
@@ -535,21 +551,8 @@ const expectedMetadataPost = {
                     closingDate: "2019-04-10T00:00:00",
                 },
             ],
+            openFuturePeriods: 1,
             expiryDays: 11,
-            attributeValues: [
-                {
-                    value: "true",
-                    attribute: {
-                        id: "mgCKcJuP5n0",
-                    },
-                },
-                {
-                    value: "WGC0DJ0YSis",
-                    attribute: {
-                        id: "qgSqj6sBF7j",
-                    },
-                },
-            ],
             sections: [
                 {
                     id: "Kg4EmzighjA",
@@ -577,7 +580,7 @@ const expectedMetadataPost = {
                         id: "CwUxT9UIX3z",
                     },
                     dataElement: {
-                        id: "ik0ICagvIjm",
+                        id: "K6mAC5SiO29",
                     },
                     categoryCombo: {
                         id: "GKWiemQPU5U",
@@ -588,7 +591,7 @@ const expectedMetadataPost = {
                         id: "CwUxT9UIX3z",
                     },
                     dataElement: {
-                        id: "K6mAC5SiO29",
+                        id: "ik0ICagvIjm",
                     },
                     categoryCombo: {
                         id: "GKWiemQPU5U",
@@ -617,48 +620,25 @@ const expectedMetadataPost = {
                     },
                 },
             ],
+            publicAccess: "rwrw----",
         },
     ],
     dashboards: [
         {
             id: "WgOMVlwSV2i",
-            name: "MyProject",
             publicAccess: "rw------",
+            name: "MyProject",
             dashboardItems: [
-                {
-                    id: "ys0CVedHirZ",
-                    type: "CHART",
-                    chart: {
-                        id: "uG9C9z46CNK",
-                    },
-                },
-                {
-                    id: "KI0C90Ol10x",
-                    type: "CHART",
-                    chart: {
-                        id: "qmsj4FqnVPX",
-                    },
-                },
-                {
-                    id: "qUqsDmtiBLF",
-                    type: "CHART",
-                    chart: {
-                        id: "u6Sin4Fy1Wt",
-                    },
-                },
-                {
-                    id: "mwMpIdPdu8H",
-                    type: "CHART",
-                    chart: {
-                        id: "ukewRkZsyCI",
-                    },
-                },
                 {
                     id: "Ka4yijY2Vhl",
                     type: "REPORT_TABLE",
                     reportTable: {
                         id: "i07AWJAND8a",
                     },
+                    x: 0,
+                    y: 0,
+                    width: 29,
+                    height: 20,
                 },
                 {
                     id: "yWGKgz9vaOh",
@@ -666,6 +646,10 @@ const expectedMetadataPost = {
                     reportTable: {
                         id: "iqqgnCj9DQj",
                     },
+                    x: 29,
+                    y: 0,
+                    width: 29,
+                    height: 20,
                 },
                 {
                     id: "y2G8oh7xQBm",
@@ -673,6 +657,10 @@ const expectedMetadataPost = {
                     reportTable: {
                         id: "GycLEG8dPPO",
                     },
+                    x: 0,
+                    y: 20,
+                    width: 29,
+                    height: 20,
                 },
                 {
                     id: "qMSWdZHPjyN",
@@ -680,6 +668,10 @@ const expectedMetadataPost = {
                     reportTable: {
                         id: "aeGIpbJkZAX",
                     },
+                    x: 29,
+                    y: 20,
+                    width: 29,
+                    height: 20,
                 },
                 {
                     id: "uyoJujQVRjE",
@@ -687,6 +679,54 @@ const expectedMetadataPost = {
                     reportTable: {
                         id: "GM6SxObVwI3",
                     },
+                    x: 0,
+                    y: 40,
+                    width: 29,
+                    height: 20,
+                },
+                {
+                    id: "ys0CVedHirZ",
+                    type: "CHART",
+                    chart: {
+                        id: "uG9C9z46CNK",
+                    },
+                    x: 0,
+                    y: 60,
+                    width: 58,
+                    height: 20,
+                },
+                {
+                    id: "KI0C90Ol10x",
+                    type: "CHART",
+                    chart: {
+                        id: "qmsj4FqnVPX",
+                    },
+                    x: 0,
+                    y: 80,
+                    width: 29,
+                    height: 20,
+                },
+                {
+                    id: "qUqsDmtiBLF",
+                    type: "CHART",
+                    chart: {
+                        id: "u6Sin4Fy1Wt",
+                    },
+                    x: 29,
+                    y: 80,
+                    width: 29,
+                    height: 20,
+                },
+                {
+                    id: "mwMpIdPdu8H",
+                    type: "CHART",
+                    chart: {
+                        id: "ukewRkZsyCI",
+                    },
+                    x: 0,
+                    y: 100,
+                    width: 29,
+                    height: 20,
                 },
             ],
         },
@@ -694,7 +734,7 @@ const expectedMetadataPost = {
     reportTables: [
         {
             id: "i07AWJAND8a",
-            name: "MyProject - PM Target vs Actual - Benefits",
+            name: "MyProject - Target vs Actual - Benefits",
             numberType: "VALUE",
             publicAccess: "rw------",
             legendDisplayStyle: "FILL",
@@ -793,7 +833,7 @@ const expectedMetadataPost = {
         },
         {
             id: "iqqgnCj9DQj",
-            name: "MyProject - PM Target vs Actual - People",
+            name: "MyProject - Target vs Actual - People",
             numberType: "VALUE",
             publicAccess: "rw------",
             legendDisplayStyle: "FILL",
@@ -807,13 +847,13 @@ const expectedMetadataPost = {
                 {
                     dataDimensionItemType: "DATA_ELEMENT",
                     dataElement: {
-                        id: "ik0ICagvIjm",
+                        id: "K6mAC5SiO29",
                     },
                 },
                 {
                     dataDimensionItemType: "DATA_ELEMENT",
                     dataElement: {
-                        id: "K6mAC5SiO29",
+                        id: "ik0ICagvIjm",
                     },
                 },
                 {
@@ -952,7 +992,7 @@ const expectedMetadataPost = {
         },
         {
             id: "GycLEG8dPPO",
-            name: "MyProject - PM Target vs Actual - Unique People",
+            name: "MyProject - Target vs Actual - Unique People",
             numberType: "VALUE",
             publicAccess: "rw------",
             legendDisplayStyle: "FILL",
@@ -966,13 +1006,13 @@ const expectedMetadataPost = {
                 {
                     dataDimensionItemType: "DATA_ELEMENT",
                     dataElement: {
-                        id: "ik0ICagvIjm",
+                        id: "K6mAC5SiO29",
                     },
                 },
                 {
                     dataDimensionItemType: "DATA_ELEMENT",
                     dataElement: {
-                        id: "K6mAC5SiO29",
+                        id: "ik0ICagvIjm",
                     },
                 },
                 {
@@ -1103,7 +1143,7 @@ const expectedMetadataPost = {
         },
         {
             id: "aeGIpbJkZAX",
-            name: "MyProject - PM achieved (%) - Benefits",
+            name: "MyProject - Achieved (%) - Benefits",
             numberType: "VALUE",
             publicAccess: "rw------",
             legendDisplayStyle: "FILL",
@@ -1178,7 +1218,7 @@ const expectedMetadataPost = {
         },
         {
             id: "GM6SxObVwI3",
-            name: "MyProject - PM achieved (%) - People",
+            name: "MyProject - Achieved (%) - People",
             numberType: "VALUE",
             publicAccess: "rw------",
             legendDisplayStyle: "FILL",
@@ -1192,13 +1232,13 @@ const expectedMetadataPost = {
                 {
                     dataDimensionItemType: "INDICATOR",
                     indicator: {
-                        id: "u404ICrBKj3",
+                        id: "eYmeRzhBFV4",
                     },
                 },
                 {
                     dataDimensionItemType: "INDICATOR",
                     indicator: {
-                        id: "eYmeRzhBFV4",
+                        id: "u404ICrBKj3",
                     },
                 },
                 {
@@ -1261,7 +1301,7 @@ const expectedMetadataPost = {
     charts: [
         {
             id: "uG9C9z46CNK",
-            name: "MyProject - PM achieved monthly (%)",
+            name: "MyProject - Achieved monthly (%)",
             publicAccess: "rw------",
             type: "COLUMN",
             aggregationType: "DEFAULT",
@@ -1282,13 +1322,13 @@ const expectedMetadataPost = {
                 {
                     dataDimensionItemType: "INDICATOR",
                     indicator: {
-                        id: "u404ICrBKj3",
+                        id: "eYmeRzhBFV4",
                     },
                 },
                 {
                     dataDimensionItemType: "INDICATOR",
                     indicator: {
-                        id: "eYmeRzhBFV4",
+                        id: "u404ICrBKj3",
                     },
                 },
                 {
@@ -1345,7 +1385,7 @@ const expectedMetadataPost = {
         },
         {
             id: "qmsj4FqnVPX",
-            name: "MyProject - PM achieved (%)",
+            name: "MyProject - Achieved (%)",
             publicAccess: "rw------",
             type: "COLUMN",
             aggregationType: "DEFAULT",
@@ -1366,13 +1406,13 @@ const expectedMetadataPost = {
                 {
                     dataDimensionItemType: "INDICATOR",
                     indicator: {
-                        id: "u404ICrBKj3",
+                        id: "eYmeRzhBFV4",
                     },
                 },
                 {
                     dataDimensionItemType: "INDICATOR",
                     indicator: {
-                        id: "eYmeRzhBFV4",
+                        id: "u404ICrBKj3",
                     },
                 },
                 {
@@ -1429,7 +1469,7 @@ const expectedMetadataPost = {
         },
         {
             id: "u6Sin4Fy1Wt",
-            name: "MyProject - PM achieved by gender (%)",
+            name: "MyProject - Achieved by gender (%)",
             publicAccess: "rw------",
             type: "COLUMN",
             aggregationType: "DEFAULT",
@@ -1444,13 +1484,13 @@ const expectedMetadataPost = {
                 {
                     dataDimensionItemType: "INDICATOR",
                     indicator: {
-                        id: "u404ICrBKj3",
+                        id: "eYmeRzhBFV4",
                     },
                 },
                 {
                     dataDimensionItemType: "INDICATOR",
                     indicator: {
-                        id: "eYmeRzhBFV4",
+                        id: "u404ICrBKj3",
                     },
                 },
                 {
@@ -1548,7 +1588,7 @@ const expectedMetadataPost = {
         },
         {
             id: "ukewRkZsyCI",
-            name: "MyProject - PM Benefits Per Person",
+            name: "MyProject - Benefits Per Person",
             publicAccess: "rw------",
             type: "COLUMN",
             aggregationType: "DEFAULT",

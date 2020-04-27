@@ -1,4 +1,5 @@
 import moment from "moment";
+import { selectInMultiSelector, selectDatePicker, selectOrgUnit } from "../support/utils";
 
 describe("Projects - Create", () => {
     before(() => {
@@ -35,7 +36,7 @@ describe("Projects - Create", () => {
         // Funders
 
         cy.contains("Funders");
-        selectInMultiSelector("funders", "ACWME");
+        selectInMultiSelector("funders", "ACWME - ACWME");
 
         cy.contains("Next").click();
 
@@ -68,17 +69,13 @@ describe("Projects - Create", () => {
 
         cy.waitForStep("Selection of Indicators");
 
-        cy.get(".MuiInput-inputTypeSearch").type("market groups formed");
-        cy.contains("# of market groups formed")
+        cy.contains("# of agriculture groups receiving support for improved livelihoods")
             .parent("td")
             .prev("td")
             .click();
 
         cy.contains("Livelihood").click();
-        cy.get(".MuiInput-inputTypeSearch")
-            .clear()
-            .type("storage equipment provided");
-        cy.contains("# of HH-level storage equipment provided")
+        cy.contains("# of people trained in livelihood topics")
             .parent("td")
             .prev("td")
             .click();
@@ -89,13 +86,8 @@ describe("Projects - Create", () => {
 
         cy.waitForStep("Selection of MER Indicators");
 
-        cy.contains("# of agriculture groups receiving support for improved livelihoods")
-            .parent("td")
-            .prev("td")
-            .click();
-
         cy.contains("Livelihood").click();
-        cy.contains("# of HH-level storage equipment provided")
+        cy.contains("# of people trained in livelihood topics")
             .parent("td")
             .prev("td")
             .click();
@@ -111,7 +103,7 @@ describe("Projects - Create", () => {
         cy.contains("00Cypress Project");
 
         cy.contains("Period dates");
-        cy.contains(`February 1, ${projectYear} -> June 30, ${projectYear}`);
+        cy.contains(`February ${projectYear} -> June ${projectYear}`);
 
         cy.contains("Description");
 
@@ -122,41 +114,16 @@ describe("Projects - Create", () => {
         cy.contains("Abaco");
 
         cy.contains("Sectors");
+        cy.contains("Agriculture");
+        cy.contains("Livelihood");
 
-        cy.contains("# of agriculture groups receiving support for improved livelihoods [MER]");
-        cy.contains("# of HH-level storage equipment provided [MER]");
+        cy.contains("# of agriculture groups receiving support for improved livelihoods - B010200");
+        cy.contains("# of people trained in livelihood topics - P020100 [MER]");
 
         cy.get("[data-wizard-contents] button")
             .contains("Save")
             .click();
 
-        cy.contains("Project saved", { timeout: 20000 });
+        cy.contains("Project saved", { timeout: 30000 });
     });
 });
-
-function selectOrgUnit(label) {
-    cy.contains(label)
-        .find("input")
-        .click();
-    cy.contains(label)
-        .should("have.css", "color")
-        .and("equal", "rgb(255, 165, 0)");
-}
-
-function selectDatePicker(year, month) {
-    const pickerSelector = "[class^=MuiPickersBasePicker-pickerView]";
-    cy.get(pickerSelector)
-        .contains(year.toString())
-        .click();
-    cy.get(pickerSelector)
-        .contains(month)
-        .click();
-}
-
-function selectInMultiSelector(selectorName, label) {
-    const prefix = `[data-test-selector='${selectorName}'] > div > div:last`;
-    cy.get(prefix + " > div select:first").select(label);
-    cy.contains("Selected")
-        .next("button")
-        .click();
-}

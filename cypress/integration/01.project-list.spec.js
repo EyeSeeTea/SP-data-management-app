@@ -12,11 +12,24 @@ describe("Project Configuration - List page", () => {
         cy.contains(projectName);
     });
 
-    it("opens details window when mouse clicked", () => {
+    it("opens contextual menu when left button mouse is clicked", () => {
         cy.contains(projectName).click();
 
+        cy.contains("Details");
+        cy.contains("Add Actual Values");
+        cy.contains("Go to Dashboard");
+        cy.contains("Add Target Values");
+        cy.contains("Download Data");
+        cy.contains("Edit");
+        cy.contains("Delete");
+    });
+
+    it("shows details when details action is clicked", () => {
+        cy.contains(projectName).trigger("contextmenu");
+        cy.contains("Details").click();
+
         cy.contains("Name");
-        cy.contains("Code");
+        cy.contains("Award Number");
         cy.contains("Description");
         cy.contains("Last Updated");
         cy.contains("Last Updated By");
@@ -27,13 +40,12 @@ describe("Project Configuration - List page", () => {
         cy.contains("API Link");
     });
 
-    it("opens context window when right button mouse is clicked", () => {
+    it("opens contextual menu when right button mouse is clicked", () => {
         cy.contains(projectName).trigger("contextmenu");
 
         cy.contains("Details");
         cy.contains("Add Actual Values");
         cy.contains("Go to Dashboard");
-        cy.contains("Reopen Datasets");
         cy.contains("Add Target Values");
         cy.contains("Download Data");
         cy.contains("Edit");

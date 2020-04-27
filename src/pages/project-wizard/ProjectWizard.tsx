@@ -20,6 +20,7 @@ import DataElementsStep from "../../components/steps/data-elements/DataElementsS
 import { getDevProject } from "../../models/dev-project";
 import { Config } from "../../models/Config";
 import { helpTexts } from "./help-texts";
+import { ReactComponentLike } from "prop-types";
 
 type Action = { type: "create" } | { type: "edit"; id: string };
 
@@ -53,11 +54,11 @@ interface State {
 interface Step {
     key: string;
     label: string;
-    component: React.ReactNode;
+    component: ReactComponentLike;
     validationKeys?: ValidationKey[];
     validationKeysLive?: ValidationKey[];
     description?: string;
-    help?: ReactNode;
+    help?: React.ReactNode;
 }
 
 class ProjectWizardImpl extends React.Component<Props, State> {
@@ -126,7 +127,7 @@ class ProjectWizardImpl extends React.Component<Props, State> {
                 key: "indicators",
                 label: i18n.t("Selection of Indicators"),
                 component: DataElementsSelection,
-                validationKeys: ["dataElements"],
+                validationKeys: ["dataElementsSelection"],
                 help: helpTexts.indicators,
             },
             {
@@ -231,7 +232,7 @@ class ProjectWizardImpl extends React.Component<Props, State> {
 async function getValidationMessages(
     project: Project | undefined,
     validationKeys: ValidationKey[] | undefined
-) {
+): Promise<string[]> {
     if (!project || !validationKeys || validationKeys.length === 0) return [];
 
     const validationObj = await project.validate(validationKeys);
@@ -243,6 +244,8 @@ async function getValidationMessages(
         .value();
 }
 
+const ProjectWizardImplMemo = React.memo(ProjectWizardImpl);
+
 const ProjectWizard: React.FC<ProjectWizardProps> = props => {
     const snackbar = useSnackbar();
     const history = useHistory();
@@ -251,7 +254,7 @@ const ProjectWizard: React.FC<ProjectWizardProps> = props => {
     const { action } = props;
 
     return (
-        <ProjectWizardImpl
+        <ProjectWizardImplMemo
             snackbar={snackbar}
             api={api}
             config={config}
@@ -264,9 +267,11 @@ const ProjectWizard: React.FC<ProjectWizardProps> = props => {
 };
 
 const DataElementsSelection: React.FC<StepProps> = props => (
-    <DataElementsStep {...props} field="selection" />
+    <DataElementsStep {...props} type="mainSelection" />
 );
 
-const DataElementsMER: React.FC<StepProps> = props => <DataElementsStep {...props} field="MER" />;
+const DataElementsMER: React.FC<StepProps> = props => (
+    <DataElementsStep {...props} type="merSelection" />
+);
 
-export default ProjectWizard;
+export default React.memo(ProjectWizard);

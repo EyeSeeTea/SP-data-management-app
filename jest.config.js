@@ -1,5 +1,4 @@
 module.exports = {
-    setupTestFrameworkScriptFile: "<rootDir>/config/testSetup.ts",
     collectCoverageFrom: ["src/**/*.js"],
     testPathIgnorePatterns: ["/node_modules/", "/cypress"],
     transformIgnorePatterns: ["/node_modules/(?!d2-ui-components)"],

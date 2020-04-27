@@ -122,8 +122,7 @@ describe("MerReport", () => {
                     dataElements: [
                         {
                             id: "WS8XV4WWPE7",
-                            name:
-                                "# of agriculture groups receiving support for improved livelihoods",
+                            name: "de-B010200",
                             actual: 1,
                             actualAchieved: 2,
                             target: 3,
@@ -133,7 +132,7 @@ describe("MerReport", () => {
                         },
                         {
                             id: "We61YNYyOX0",
-                            name: "# of biogas digesters installed",
+                            name: "de-B020205",
                             actual: 2,
                             actualAchieved: 6,
                             target: 4,
@@ -150,7 +149,7 @@ describe("MerReport", () => {
                     dataElements: [
                         {
                             id: "yUGuwPFkBrj",
-                            name: "# of energy-saving stoves installed",
+                            name: "de-B020210",
                             actual: 0,
                             actualAchieved: 0,
                             target: 0,

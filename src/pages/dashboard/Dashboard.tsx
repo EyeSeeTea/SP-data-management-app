@@ -19,10 +19,10 @@ function goTo(history: History, url: string) {
 
 function getTranslations(projectName: string | undefined) {
     return {
-        title: i18n.t("Dashboard for Project" + ": " + (projectName || "...")),
-        help: i18n.t(
-            `Please click on the grey arrow next to the chart/table title if you want to modify the layout.`
-        ),
+        title: i18n.t("Dashboard for Project") + ": " + (projectName || "..."),
+        help: i18n.t(`Data updates in the dashboards every 15 minutes.  If you do not see your data immediately after data entry, please give the system additional time to update.
+
+        If you notice data errors while viewing the dashboards, please return to the home screen and edit the data under the data entry sections for your project.`),
         subtitle: i18n.t(`Dashboard project to analyse your data...`),
     };
 }
@@ -161,4 +161,4 @@ function loadData(
     }
 }
 
-export default Dashboard;
+export default React.memo(Dashboard);
