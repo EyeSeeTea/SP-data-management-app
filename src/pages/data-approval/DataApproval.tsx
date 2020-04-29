@@ -6,7 +6,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { Paper, Button } from "@material-ui/core";
 import Dropdown from "../../components/dropdown/Dropdown";
 import Project, { getPeriodsData, DataSetType, dataSetTypes } from "../../models/Project";
-import { D2Api } from "d2-api";
+import { D2Api } from "../../types/d2-api";
 import { Config } from "../../models/Config";
 
 import { useAppContext } from "../../contexts/api-context";
