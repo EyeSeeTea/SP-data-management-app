@@ -13,11 +13,12 @@ module.exports = {
     rules: {
         "no-console": "off",
         "@typescript-eslint/explicit-function-return-type": ["off"],
-        "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
+        "@typescript-eslint/no-unused-vars": [1, { argsIgnorePattern: "^_" }],
         "react/prop-types": "off",
         "no-unused-expressions": "off",
         "no-useless-concat": "off",
         "no-useless-constructor": "off",
+        "no-debugger": "off",
         "default-case": "off",
         "@typescript-eslint/no-use-before-define": "off",
         "@typescript-eslint/no-explicit-any": "off",
