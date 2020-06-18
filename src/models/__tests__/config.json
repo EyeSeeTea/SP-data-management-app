@@ -5,21 +5,11 @@
             "levelForProjects": 3
         },
         "userRoles": {
-            "feedback": [
-                "PM Feedback"
-            ],
-            "dataReviewer": [
-                "Data Reviewer"
-            ],
-            "dataViewer": [
-                "Data Viewer"
-            ],
-            "admin": [
-                "PM Admin"
-            ],
-            "dataEntry": [
-                "Data Entry"
-            ]
+            "feedback": ["PM Feedback"],
+            "dataReviewer": ["Data Reviewer"],
+            "dataViewer": ["Data Viewer"],
+            "admin": ["PM Admin"],
+            "dataEntry": ["Data Entry"]
         },
         "dataElementGroupSets": {
             "sector": "SECTOR",
@@ -2424,9 +2414,7 @@
             "peopleOrBenefit": "people",
             "pairedDataElements": [],
             "countingMethod": "",
-            "externals": [
-                "DFID"
-            ],
+            "externals": ["DFID"],
             "categoryCombo": {
                 "id": "GKWiemQPU5U"
             },
@@ -2498,9 +2486,7 @@
             "peopleOrBenefit": "people",
             "pairedDataElements": [],
             "countingMethod": "",
-            "externals": [
-                "UNHCR"
-            ],
+            "externals": ["UNHCR"],
             "categoryCombo": {
                 "id": "GKWiemQPU5U"
             },
@@ -2602,9 +2588,7 @@
             "peopleOrBenefit": "people",
             "pairedDataElements": [],
             "countingMethod": "",
-            "externals": [
-                "UNHCR"
-            ],
+            "externals": ["UNHCR"],
             "categoryCombo": {
                 "id": "GKWiemQPU5U"
             },
@@ -2784,9 +2768,7 @@
             "peopleOrBenefit": "people",
             "pairedDataElements": [],
             "countingMethod": "",
-            "externals": [
-                "OFDA"
-            ],
+            "externals": ["OFDA"],
             "categoryCombo": {
                 "id": "GKWiemQPU5U"
             },
@@ -2935,9 +2917,7 @@
             "peopleOrBenefit": "people",
             "pairedDataElements": [],
             "countingMethod": "",
-            "externals": [
-                "WFP"
-            ],
+            "externals": ["WFP"],
             "categoryCombo": {
                 "id": "GKWiemQPU5U"
             },
@@ -2985,10 +2965,7 @@
             "peopleOrBenefit": "people",
             "pairedDataElements": [],
             "countingMethod": "",
-            "externals": [
-                "GAC",
-                "UNHCR"
-            ],
+            "externals": ["GAC", "UNHCR"],
             "categoryCombo": {
                 "id": "GKWiemQPU5U"
             },
@@ -3036,9 +3013,7 @@
             "peopleOrBenefit": "benefit",
             "pairedDataElements": [],
             "countingMethod": "",
-            "externals": [
-                "GAC"
-            ],
+            "externals": ["GAC"],
             "categoryCombo": {
                 "id": "bjDvmb4bfuf"
             },
@@ -3122,9 +3097,7 @@
                 }
             ],
             "countingMethod": "",
-            "externals": [
-                "DFID"
-            ],
+            "externals": ["DFID"],
             "categoryCombo": {
                 "id": "bjDvmb4bfuf"
             },
@@ -3260,9 +3233,7 @@
                 }
             ],
             "countingMethod": "",
-            "externals": [
-                "DFID"
-            ],
+            "externals": ["DFID"],
             "categoryCombo": {
                 "id": "bjDvmb4bfuf"
             },
@@ -3310,10 +3281,7 @@
             "peopleOrBenefit": "people",
             "pairedDataElements": [],
             "countingMethod": "",
-            "externals": [
-                "DFID",
-                "OFDA"
-            ],
+            "externals": ["DFID", "OFDA"],
             "categoryCombo": {
                 "id": "GKWiemQPU5U"
             },
@@ -4749,9 +4717,7 @@
             "peopleOrBenefit": "benefit",
             "pairedDataElements": [],
             "countingMethod": "",
-            "externals": [
-                "OFDA"
-            ],
+            "externals": ["OFDA"],
             "categoryCombo": {
                 "id": "bjDvmb4bfuf"
             },
@@ -4883,9 +4849,7 @@
             "peopleOrBenefit": "people",
             "pairedDataElements": [],
             "countingMethod": "",
-            "externals": [
-                "OFDA"
-            ],
+            "externals": ["OFDA"],
             "categoryCombo": {
                 "id": "GKWiemQPU5U"
             },
@@ -4963,9 +4927,7 @@
                 }
             ],
             "countingMethod": "",
-            "externals": [
-                "OFDA"
-            ],
+            "externals": ["OFDA"],
             "categoryCombo": {
                 "id": "bjDvmb4bfuf"
             },
@@ -5079,9 +5041,7 @@
                 }
             ],
             "countingMethod": "",
-            "externals": [
-                "OFDA"
-            ],
+            "externals": ["OFDA"],
             "categoryCombo": {
                 "id": "bjDvmb4bfuf"
             },
@@ -5357,9 +5317,7 @@
                 }
             ],
             "countingMethod": "",
-            "externals": [
-                "OFDA"
-            ],
+            "externals": ["OFDA"],
             "categoryCombo": {
                 "id": "bjDvmb4bfuf"
             },
@@ -5527,9 +5485,7 @@
                 }
             ],
             "countingMethod": "",
-            "externals": [
-                "OFDA"
-            ],
+            "externals": ["OFDA"],
             "categoryCombo": {
                 "id": "bjDvmb4bfuf"
             },
@@ -5635,9 +5591,7 @@
                 }
             ],
             "countingMethod": "",
-            "externals": [
-                "OFDA"
-            ],
+            "externals": ["OFDA"],
             "categoryCombo": {
                 "id": "bjDvmb4bfuf"
             },
@@ -5769,9 +5723,7 @@
                 }
             ],
             "countingMethod": "",
-            "externals": [
-                "ODFA"
-            ],
+            "externals": ["ODFA"],
             "categoryCombo": {
                 "id": "bjDvmb4bfuf"
             },
@@ -5825,9 +5777,7 @@
                 }
             ],
             "countingMethod": "",
-            "externals": [
-                "OFDA"
-            ],
+            "externals": ["OFDA"],
             "categoryCombo": {
                 "id": "bjDvmb4bfuf"
             },
@@ -6043,9 +5993,7 @@
             "peopleOrBenefit": "people",
             "pairedDataElements": [],
             "countingMethod": "",
-            "externals": [
-                "OFDA"
-            ],
+            "externals": ["OFDA"],
             "categoryCombo": {
                 "id": "GKWiemQPU5U"
             },
@@ -6901,9 +6849,7 @@
             "peopleOrBenefit": "people",
             "pairedDataElements": [],
             "countingMethod": "",
-            "externals": [
-                "OFDA"
-            ],
+            "externals": ["OFDA"],
             "categoryCombo": {
                 "id": "GKWiemQPU5U"
             },
@@ -7365,9 +7311,7 @@
             "peopleOrBenefit": "people",
             "pairedDataElements": [],
             "countingMethod": "",
-            "externals": [
-                "OFDA"
-            ],
+            "externals": ["OFDA"],
             "categoryCombo": {
                 "id": "GKWiemQPU5U"
             },
@@ -8936,9 +8880,7 @@
             "peopleOrBenefit": "people",
             "pairedDataElements": [],
             "countingMethod": "",
-            "externals": [
-                "OFDA"
-            ],
+            "externals": ["OFDA"],
             "categoryCombo": {
                 "id": "GKWiemQPU5U"
             },
