@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2020-05-26T11:21:28.031Z\n"
-"PO-Revision-Date: 2020-05-26T11:21:28.031Z\n"
+"POT-Creation-Date: 2020-06-18T10:03:32.102Z\n"
+"PO-Revision-Date: 2020-06-18T10:03:32.102Z\n"
 
 msgid "Data Entry"
 msgstr ""
@@ -123,6 +123,15 @@ msgid "Selected country"
 msgstr ""
 
 msgid "Locations"
+msgstr ""
+
+msgid "Sharing"
+msgstr ""
+
+msgid "Users"
+msgstr ""
+
+msgid "User groups"
 msgstr ""
 
 msgid "Sectors"
@@ -254,9 +263,6 @@ msgid "Dashboard"
 msgstr ""
 
 msgid "Initial Data"
-msgstr ""
-
-msgid "Sharing"
 msgstr ""
 
 msgid "Award Number should be a number of 5 digits"
