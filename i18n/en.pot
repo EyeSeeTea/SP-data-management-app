@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2020-03-12T10:45:02.002Z\n"
-"PO-Revision-Date: 2020-03-12T10:45:02.002Z\n"
+"POT-Creation-Date: 2020-05-26T11:21:28.031Z\n"
+"PO-Revision-Date: 2020-05-26T11:21:28.031Z\n"
 
 msgid "Data Entry"
 msgstr ""
@@ -256,6 +256,9 @@ msgstr ""
 msgid "Initial Data"
 msgstr ""
 
+msgid "Sharing"
+msgstr ""
+
 msgid "Award Number should be a number of 5 digits"
 msgstr ""
 
@@ -460,6 +463,9 @@ msgid "Selection of Indicators"
 msgstr ""
 
 msgid "Selection of MER Indicators"
+msgstr ""
+
+msgid "Define sharing settings for metadata of the project."
 msgstr ""
 
 msgid "Summary and Save"

@@ -26,7 +26,6 @@ const orgUnitFields = {
     displayName: true,
     displayDescription: true,
     href: true,
-    publicAccess: true,
     created: true,
     lastUpdated: true,
     lastUpdatedBy: { name: true },

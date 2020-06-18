@@ -12,6 +12,7 @@ import { Config } from "./Config";
 import { runPromises } from "../utils/promises";
 import DataElementsSet from "./dataElementsSet";
 import { ProjectInfo, getProjectStorageKey } from "./MerReport";
+import ProjectSharing, { getSharing } from "./ProjectSharing";
 
 const expiryDaysInMonthActual = 10;
 
@@ -66,6 +67,7 @@ export default class ProjectDb {
                     .endOf("month")
             ),
             attributeValues: baseAttributeValues,
+            // No sharing, permissions through user -> organisationUnits
         };
 
         const projectWithOrgUnit = project.set("orgUnit", orgUnit);
@@ -335,6 +337,7 @@ export default class ProjectDb {
             };
         });
         const sections = _.compact(sections0);
+        const projectSharing = new ProjectSharing(project);
 
         const dataSet = {
             id: dataSetId,
@@ -350,7 +353,7 @@ export default class ProjectDb {
             sections: sections.map(section => ({ id: section.id, code: section.code })),
             dataSetElements,
             code: `${orgUnit.id}_${baseDataSet.code}`,
-            publicAccess: "rwrw----", // FUTURE: Add real permissions when defined
+            ...projectSharing.getSharingAttributesForDataSets(),
         };
 
         return { dataSets: [dataSet], sections };
@@ -369,7 +372,7 @@ export default class ProjectDb {
                         code: true,
                         openingDate: true,
                         closedDate: true,
-                        parent: { id: true, displayName: true, path: true },
+                        parent: { id: true, name: true, displayName: true, path: true },
                         organisationUnitGroups: { id: true },
                         attributeValues: { attribute: { id: true }, value: true },
                     },
@@ -384,6 +387,10 @@ export default class ProjectDb {
                         sections: { code: true, dataElements: { id: true } },
                         openFuturePeriods: true,
                         expiryDays: true,
+                        publicAccess: true,
+                        externalAccess: true,
+                        userAccesses: { id: true, displayName: true, access: true },
+                        userGroupAccesses: { id: true, displayName: true, access: true },
                     },
                     filter: { code: { $like: id } },
                 },
@@ -451,6 +458,7 @@ export default class ProjectDb {
             dashboard: dashboardId ? { id: dashboardId } : undefined,
             dataElementsSelection,
             dataElementsMER,
+            sharing: getSharing(projectDataSets.target),
         };
 
         const project = new Project(api, config, { ...projectData, initialData: projectData });

@@ -20,6 +20,7 @@ import {
     validateNonEmpty,
 } from "../utils/validations";
 import { getKeys, Maybe } from "../types/utils";
+import ProjectSharing, { Sharing } from "./ProjectSharing";
 
 /*
 Project model.
@@ -92,6 +93,7 @@ export interface ProjectData {
     dataSets: { actual: DataSet; target: DataSet } | undefined;
     dashboard: Ref | undefined;
     initialData: Omit<ProjectData, "initialData"> | undefined;
+    sharing: Sharing;
 }
 
 export interface DataInputPeriod {
@@ -195,6 +197,7 @@ class Project {
         dataSets: i18n.t("Data Sets"),
         dashboard: i18n.t("Dashboard"),
         initialData: i18n.t("Initial Data"),
+        sharing: i18n.t("Sharing"),
     };
 
     static getFieldName(field: ProjectField): string {
@@ -372,6 +375,13 @@ class Project {
         return Project.getSelectableLocations(this.config, country);
     }
 
+    setCountry(country: OrganisationUnit) {
+        return this.setObj({
+            parentOrgUnit: country,
+            sharing: new ProjectSharing(this).getSharingForCountry(country),
+        });
+    }
+
     static async get(api: D2Api, config: Config, id: string): Promise<Project> {
         return ProjectDb.get(api, config, id);
     }
@@ -387,6 +397,7 @@ class Project {
             id: generateUid(),
             dataElementsSelection,
             dataElementsMER,
+            sharing: ProjectSharing.getInitialSharing(config),
             initialData: undefined,
         };
         return new Project(api, config, projectData);
