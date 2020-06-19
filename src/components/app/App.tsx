@@ -93,7 +93,8 @@ const App = () => {
 
     useEffect(() => {
         const run = async () => {
-            const appConfig = await fetch("app-config.json", {
+            const appConfigUrl = process.env.PUBLIC_URL + "/app-config.json";
+            const appConfig = await fetch(appConfigUrl, {
                 credentials: "same-origin",
             }).then(res => res.json());
             const d2 = await init({ baseUrl: baseUrl + "/api" });
