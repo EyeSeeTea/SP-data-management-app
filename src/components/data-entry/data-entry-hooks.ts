@@ -26,13 +26,14 @@ export interface AfterSaveDataValue {
 
 type DataValueSavedMsg = { type: "dataValueSavedFromIframe"; dataValue: AfterSaveDataValue };
 type PreSaveDataValueMsg = { type: "preSaveDataValueFromIframe"; dataValue: PreSaveDataValue };
-type SaveDataValueMsg = { type: "saveDataValueToIframe"; dataValue: PreSaveDataValue };
 
 type MsgFromIframe = DataValueSavedMsg | PreSaveDataValueMsg;
 
 export type InputMsg =
     | { type: "preSaveDataValue"; dataValue: DataValue }
     | { type: "dataValueSaved"; dataValue: DataValue };
+
+type SaveDataValueMsg = { type: "saveDataValueToIframe"; dataValue: PreSaveDataValue };
 export type OutputMsg = SaveDataValueMsg;
 
 const inputMsgFromIframeTypes: MsgFromIframe["type"][] = [
@@ -46,10 +47,10 @@ function isInputMsgFromIframe(msg: any): msg is MsgFromIframe {
 
 export function useDhis2EntryEvents(
     iframeRef: React.RefObject<HTMLIFrameElement>,
-    onMessage: (inputMsg: InputMsg) => boolean | undefined
+    onMessage: (inputMsg: InputMsg) => Promise<boolean> | undefined
 ): void {
     const onMessageFromIframe = React.useCallback(
-        ev => {
+        async ev => {
             const iwindow =
                 iframeRef.current && (iframeRef.current.contentWindow as DataEntryWindow);
             if (!iwindow) return;
@@ -59,7 +60,8 @@ export function useDhis2EntryEvents(
 
             switch (data.type) {
                 case "preSaveDataValueFromIframe": {
-                    const value = iwindow.eval<string>(`$("#${data.dataValue.fieldId}").val()`);
+                    const { fieldId } = data.dataValue;
+                    const value = iwindow.eval<string>(`$("#${fieldId}").val()`);
                     const dataValue: DataValue = {
                         dataElementId: data.dataValue.dataElementId,
                         categoryOptionComboId: data.dataValue.optionComboId,
@@ -67,10 +69,11 @@ export function useDhis2EntryEvents(
                     };
 
                     const inputMsg: InputMsg = { type: "preSaveDataValue", dataValue };
-                    const result = onMessage(inputMsg);
+                    const continueSaving = await onMessage(inputMsg);
 
-                    if (result === false) {
-                        console.debug("[preSaveDataValueFromIframe] intercepted");
+                    if (continueSaving === false) {
+                        console.debug("[preSaveDataValueFromIframe] skip save");
+                        iwindow.eval(`$("#${fieldId}").css({backgroundColor: "#f48686"})`);
                     } else {
                         const saveDataValueMsg: SaveDataValueMsg = {
                             type: "saveDataValueToIframe",
@@ -117,16 +120,17 @@ export function useDhis2EntryEvents(
 }
 
 interface DataEntryWindow extends Window {
+    eval<T>(code: string): T;
+    dataEntryHooksInit: boolean;
     saveVal(
         dataElementId: string,
         optionComboId: string,
         fieldId: string,
         feedbackId: string | undefined
     ): void;
-    eval<T>(code: string): T;
-    dataEntryHooksInit: boolean;
 }
 
+/* Function to eval inside the iframe to send/receive events from the parent page */
 function setupDataEntryInterceptors() {
     const iframeWindow = (window as unknown) as DataEntryWindow;
     if (iframeWindow.dataEntryHooksInit) return;

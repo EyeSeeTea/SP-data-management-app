@@ -28,25 +28,24 @@ export function useValidation(
     const onMessage = React.useCallback(
         (msg: InputMsg) => {
             if (msg.type === "preSaveDataValue") {
-                if (!validator) return true;
-                const validation = validator.validateDataValue(msg.dataValue);
-                console.log("validation", validation);
-                setValidationResult(validation);
-                return !validation.error;
+                if (!validator) return Promise.resolve(true);
+                return validator.validateDataValue(msg.dataValue).then(validation => {
+                    console.log("validation", validation);
+                    setValidationResult(validation);
+                    return !validation.error;
+                });
             }
         },
         [validator]
     );
 
-    /*
-    const initialResult = {
+    const initialResult = {}; /*{
         info: ["info1", "info2"],
         warning: ["warning"],
         error: ["error"],
-    };
-    */
+    };*/
 
-    const [validationResult, setValidationResult] = React.useState<ValidationResult>({});
+    const [validationResult, setValidationResult] = React.useState<ValidationResult>(initialResult);
     const clearResult = React.useCallback(() => setValidationResult({}), [setValidationResult]);
 
     useDhis2EntryEvents(iframeRef, onMessage);

@@ -5,7 +5,14 @@ import Project from "./Project";
 import i18n from "../locales";
 
 export class Validator {
-    constructor(private project: Project, private options: ConstructorOptions) {}
+    newRecurringCocIds: string[];
+
+    constructor(private project: Project, private options: ConstructorOptions) {
+        const { categoryCombos } = project.config;
+        this.newRecurringCocIds = categoryCombos.genderNewRecurring.categoryOptionCombos.map(
+            coc => coc.id
+        );
+    }
 
     static async build(
         api: D2Api,
@@ -26,7 +33,7 @@ export class Validator {
         return new Validator(project, { ...options, targetDataValues });
     }
 
-    validateDataValue(dataValue: DataValue): ValidationResult {
+    async validateDataValue(dataValue: DataValue): Promise<ValidationResult> {
         const items: ValidationItem[] = _.concat(
             this.validateTargetActual(dataValue),
             this.validateNewRecurring(dataValue)
@@ -38,8 +45,11 @@ export class Validator {
             .value();
     }
 
-    private validateNewRecurring(_dataValue: DataValue): ValidationItem[] {
-        return []; // [["error", "test errror"]];
+    private validateNewRecurring(dataValue: DataValue): ValidationItem[] {
+        const { project, newRecurringCocIds } = this;
+        // const isNewRecurringCoc = _(newRecurringCocIds).includes(dataValue.categoryOptionComboId);
+        const value = toFloat(dataValue.value) || 0;
+        return value < 5 ? [["error", `${value} is less than 5`]] : [];
     }
 
     private validateTargetActual(dataValue: DataValue): ValidationItem[] {
@@ -59,8 +69,8 @@ export class Validator {
 
         if (!targetDataValue) return [];
 
-        const targetValue = parseFloat(targetDataValue.value) || 0;
-        const actualValue = parseFloat(dataValue.value) || 0;
+        const targetValue = toFloat(targetDataValue.value) || 0;
+        const actualValue = toFloat(dataValue.value) || 0;
         const isValid = actualValue <= 1.2 * targetValue;
         const msg = i18n.t(
             "Actual value ({{actualValue}}) excess over the target value {{targetValue}} is greater than 20%",
@@ -69,6 +79,10 @@ export class Validator {
 
         return isValid ? [] : [["warning", msg]];
     }
+}
+
+function toFloat(s: string): number {
+    return parseFloat(s) || 0.0;
 }
 
 export interface DataValue {

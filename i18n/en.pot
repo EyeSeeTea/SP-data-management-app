@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2020-06-19T11:35:57.885Z\n"
-"PO-Revision-Date: 2020-06-19T11:35:57.885Z\n"
+"POT-Creation-Date: 2020-06-22T09:48:49.587Z\n"
+"PO-Revision-Date: 2020-06-22T09:48:49.587Z\n"
 
 msgid "Data Entry"
 msgstr ""
@@ -24,6 +24,12 @@ msgid "Edit Data"
 msgstr ""
 
 msgid "Editing Complete"
+msgstr ""
+
+msgid "Validation results"
+msgstr ""
+
+msgid "Close"
 msgstr ""
 
 msgid "{{n}} projects deleted"
@@ -370,7 +376,7 @@ msgid "People"
 msgstr ""
 
 msgid ""
-"Target value ({{targetValue}}) excess over the actual value {{actualValue}} "
+"Actual value ({{actualValue}}) excess over the target value {{targetValue}} "
 "is greater than 20%"
 msgstr ""
 
