@@ -9,6 +9,8 @@ import Project, { DataSet, monthFormat, getPeriodsData } from "../../models/Proj
 import DataSetStateButton from "./DataSetStateButton";
 import { useAppContext } from "../../contexts/api-context";
 import i18n from "../../locales";
+import { ValidationDialog } from "./ValidationDialog";
+import { useValidation } from "./validation-hooks";
 
 type Attributes = Record<string, string>;
 
@@ -148,6 +150,10 @@ const DataEntry = (props: DataEntryProps) => {
         }
     }, [iframeKey]);
 
+    const period = state.dropdownValue;
+
+    const validation = useValidation(iframeRef, project, dataSet, period);
+
     useEffect(() => {
         const iframe = iframeRef.current;
 
@@ -165,6 +171,8 @@ const DataEntry = (props: DataEntryProps) => {
 
     return (
         <React.Fragment>
+            <ValidationDialog result={validation.result} onClose={validation.clear} />
+
             <div style={styles.selector}>
                 {!state.dropdownHasValues && <Spinner isLoading={state.loading} />}
                 {state.dropdownHasValues && (
