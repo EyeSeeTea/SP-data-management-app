@@ -1,4 +1,5 @@
 import { D2Api, DataValueSetsGetRequest } from "d2-api";
+import _ from "lodash";
 import moment from "moment";
 import Project from "./Project";
 import i18n from "../locales";
@@ -24,7 +25,7 @@ export class DataEntry {
             attributeOptionCombo: aocIds,
         };
         const dataValuesRes = await api.dataValues.getSet(getSetOptions).getData();
-        const usernames = dataValuesRes.dataValues.map(dv => dv.storedBy);
+        const usernames = _.uniq(dataValuesRes.dataValues.map(dv => dv.storedBy));
 
         const usersRes = await api.models.users
             .get({
