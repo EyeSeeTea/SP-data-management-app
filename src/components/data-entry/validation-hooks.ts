@@ -1,9 +1,10 @@
 import { Maybe } from "./../../types/utils";
-import { Validator, ValidationResult } from "./../../models/Validator";
+import { Validator } from "./../../models/Validator";
 import React from "react";
 import { useAppContext } from "../../contexts/api-context";
-import Project, { DataSet } from "../../models/Project";
-import { InputMsg, useDhis2EntryEvents } from "./data-entry-hooks";
+import Project, { DataSetType } from "../../models/Project";
+import { InputMsg, useDhis2EntryEvents, Options } from "./data-entry-hooks";
+import { ValidationResult } from "../../models/validators/validator-common";
 
 interface UseValidationResponse {
     result: ValidationResult;
@@ -13,17 +14,18 @@ interface UseValidationResponse {
 export function useValidation(
     iframeRef: React.RefObject<HTMLIFrameElement>,
     project: Project,
-    dataSet: DataSet,
-    period: Maybe<string>
+    dataSetType: DataSetType,
+    period: Maybe<string>,
+    options: Options = {}
 ): UseValidationResponse {
     const { api } = useAppContext();
     const [validator, setValidator] = React.useState<Validator | undefined>();
 
     React.useEffect(() => {
         if (period) {
-            Validator.build(api, project, { period, dataSetId: dataSet.id }).then(setValidator);
+            Validator.build(api, project, dataSetType, period).then(setValidator);
         }
-    }, [api, project, dataSet, period]);
+    }, [api, project, dataSetType, period]);
 
     const onMessage = React.useCallback(
         (msg: InputMsg) => {
@@ -39,16 +41,10 @@ export function useValidation(
         [validator]
     );
 
-    const initialResult = {}; /*{
-        info: ["info1", "info2"],
-        warning: ["warning"],
-        error: ["error"],
-    };*/
-
-    const [validationResult, setValidationResult] = React.useState<ValidationResult>(initialResult);
+    const [validationResult, setValidationResult] = React.useState<ValidationResult>({});
     const clearResult = React.useCallback(() => setValidationResult({}), [setValidationResult]);
 
-    useDhis2EntryEvents(iframeRef, onMessage);
+    useDhis2EntryEvents(iframeRef, onMessage, options);
 
     return { result: validationResult, clear: clearResult };
 }

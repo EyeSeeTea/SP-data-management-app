@@ -7,13 +7,13 @@ export interface PreSaveDataValue {
     feedbackId: string | undefined;
 }
 
-interface DataValue {
+export interface DataValue {
     dataElementId: string;
     categoryOptionComboId: string;
     value: string;
 }
 
-export interface AfterSaveDataValue {
+interface AfterSaveDataValue {
     cc: string;
     co: string;
     cp: string;
@@ -41,13 +41,10 @@ const inputMsgFromIframeTypes: MsgFromIframe["type"][] = [
     "preSaveDataValueFromIframe",
 ];
 
-function isInputMsgFromIframe(msg: any): msg is MsgFromIframe {
-    return typeof msg === "object" && inputMsgFromIframeTypes.includes(msg.type);
-}
-
 export function useDhis2EntryEvents(
     iframeRef: React.RefObject<HTMLIFrameElement>,
-    onMessage: (inputMsg: InputMsg) => Promise<boolean> | undefined
+    onMessage: (inputMsg: InputMsg) => Promise<boolean> | undefined,
+    options: Options = {}
 ): void {
     const onMessageFromIframe = React.useCallback(
         async ev => {
@@ -108,7 +105,7 @@ export function useDhis2EntryEvents(
 
         iframe.addEventListener("load", () => {
             const init = setupDataEntryInterceptors.toString();
-            iwindow.eval(`(${init})();`);
+            iwindow.eval(`(${init})(${JSON.stringify(options)});`);
         });
 
         window.addEventListener("message", onMessageFromIframe);
@@ -117,6 +114,10 @@ export function useDhis2EntryEvents(
             window.removeEventListener("message", onMessageFromIframe);
         };
     }, [iframeRef.current, onMessageFromIframe]);
+}
+
+function isInputMsgFromIframe(msg: any): msg is MsgFromIframe {
+    return typeof msg === "object" && inputMsgFromIframeTypes.includes(msg.type);
 }
 
 interface DataEntryWindow extends Window {
@@ -130,43 +131,52 @@ interface DataEntryWindow extends Window {
     ): void;
 }
 
-/* Function to eval inside the iframe to send/receive events from the parent page */
-function setupDataEntryInterceptors() {
+export interface Options {
+    interceptSave?: boolean;
+    getOnSaveEvent?: boolean;
+}
+
+/* Function to eval within the iframe to send/receive events to/from the parent page */
+function setupDataEntryInterceptors(options: Options = {}) {
     const iframeWindow = (window as unknown) as DataEntryWindow;
     if (iframeWindow.dataEntryHooksInit) return;
 
-    iframeWindow
-        .jQuery(iframeWindow)
-        .on("dhis2.de.event.dataValueSaved", function(
-            _ev: unknown,
-            _dataSetId: string,
-            dataValue: AfterSaveDataValue
-        ) {
-            const msg: DataValueSavedMsg = {
-                type: "dataValueSavedFromIframe",
-                dataValue: dataValue,
+    if (options.getOnSaveEvent) {
+        iframeWindow
+            .jQuery(iframeWindow)
+            .on("dhis2.de.event.dataValueSaved", function(
+                _ev: unknown,
+                _dataSetId: string,
+                dataValue: AfterSaveDataValue
+            ) {
+                const msg: DataValueSavedMsg = {
+                    type: "dataValueSavedFromIframe",
+                    dataValue: dataValue,
+                };
+                console.debug("<-|data-entry|", msg);
+                iframeWindow.parent.postMessage(msg, window.location.origin);
+            });
+    }
+
+    const saveValOld = iframeWindow.saveVal;
+
+    if (options.interceptSave) {
+        // Wrap saveVal (dhis-web-dataentry/javascript/entry.js)
+        iframeWindow.saveVal = function(dataElementId, optionComboId, fieldId, feedbackId) {
+            const preSaveDataValue: PreSaveDataValue = {
+                dataElementId,
+                optionComboId,
+                fieldId,
+                feedbackId,
+            };
+            const msg: PreSaveDataValueMsg = {
+                type: "preSaveDataValueFromIframe",
+                dataValue: preSaveDataValue,
             };
             console.debug("<-|data-entry|", msg);
             iframeWindow.parent.postMessage(msg, window.location.origin);
-        });
-
-    // Wrap saveVal (dhis-web-dataentry/javascript/entry.js)
-    const saveValOld = iframeWindow.saveVal;
-
-    iframeWindow.saveVal = function(dataElementId, optionComboId, fieldId, feedbackId) {
-        const preSaveDataValue: PreSaveDataValue = {
-            dataElementId,
-            optionComboId,
-            fieldId,
-            feedbackId,
         };
-        const msg: PreSaveDataValueMsg = {
-            type: "preSaveDataValueFromIframe",
-            dataValue: preSaveDataValue,
-        };
-        console.debug("<-|data-entry|", msg);
-        iframeWindow.parent.postMessage(msg, window.location.origin);
-    };
+    }
 
     window.addEventListener("message", function(ev) {
         const data = ev.data as SaveDataValueMsg;

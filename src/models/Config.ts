@@ -107,7 +107,15 @@ const metadataParams = {
     },
     attributes: getParamsForIndexables(baseConfig.attributes),
     categoryCombos: {
-        fields: { id: yes, code: yes, categoryOptionCombos: { id: yes, displayName: yes } },
+        fields: {
+            id: yes,
+            code: yes,
+            categoryOptionCombos: {
+                id: yes,
+                displayName: yes,
+                categoryOptions: { id: yes, displayName: yes },
+            },
+        },
         filter: { code: { in: _.values(baseConfig.categoryCombos) } },
     },
     categoryOptions: {
@@ -206,7 +214,10 @@ type IndexedObjs<Key extends keyof BaseConfig, ValueType> = Record<
 >;
 
 type Attribute = CodedObject;
-export type CategoryCombo = CodedObject & { categoryOptionCombos: NamedObject[] };
+export type CategoryOptionCombo = NamedObject & { categoryOptions: NamedObject[] };
+export type CategoryCombo = CodedObject & {
+    categoryOptionCombos: CategoryOptionCombo[];
+};
 export type CategoryOption = CodedObject & { categoryOptionCombos: NamedObject[] };
 export type Category = CodedObject & { categoryOptions: CategoryOption[] };
 export type LegendSet = CodedObject;

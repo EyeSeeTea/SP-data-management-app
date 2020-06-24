@@ -28,7 +28,7 @@ export const ValidationDialog: React.FC<ValidationDialogProps> = props => {
             fullWidth={true}
             onCancel={props.onClose}
             title={i18n.t("Validation results")}
-            cancelText={i18n.t("Close")}
+            cancelText={i18n.t("OK")}
         >
             <Entry texts={info} icon={InfoIcon} color="green" />
             <Entry texts={warning} icon={WarningIcon} color="orange" />

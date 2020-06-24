@@ -5,7 +5,7 @@ import Spinner from "../spinner/Spinner";
 //@ts-ignore
 import { useConfig } from "@dhis2/app-runtime";
 import Dropdown from "../../components/dropdown/Dropdown";
-import Project, { DataSet, monthFormat, getPeriodsData } from "../../models/Project";
+import Project, { DataSet, monthFormat, getPeriodsData, DataSetType } from "../../models/Project";
 import DataSetStateButton from "./DataSetStateButton";
 import { useAppContext } from "../../contexts/api-context";
 import i18n from "../../locales";
@@ -17,6 +17,7 @@ type Attributes = Record<string, string>;
 interface DataEntryProps {
     orgUnitId: string;
     project: Project;
+    dataSetType: DataSetType;
     dataSet: DataSet;
     attributes: Attributes;
 }
@@ -108,7 +109,7 @@ const getDataEntryForm = async (
 };
 
 const DataEntry = (props: DataEntryProps) => {
-    const { orgUnitId, dataSet, attributes } = props;
+    const { orgUnitId, dataSet, attributes, dataSetType } = props;
     const { api, config } = useAppContext();
     const [project, setProject] = useState<Project>(props.project);
     const [iframeKey, setIframeKey] = useState(new Date());
@@ -152,7 +153,10 @@ const DataEntry = (props: DataEntryProps) => {
 
     const period = state.dropdownValue;
 
-    const validation = useValidation(iframeRef, project, dataSet, period);
+    const validation = useValidation(iframeRef, project, dataSetType, period, {
+        interceptSave: true,
+        getOnSaveEvent: false,
+    });
 
     useEffect(() => {
         const iframe = iframeRef.current;
