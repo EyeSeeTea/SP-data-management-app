@@ -4,6 +4,7 @@ import _ from "lodash";
 import Project, { DataSetType } from "../Project";
 import i18n from "../../locales";
 import { toFloat, DataValue, ValidationItem } from "./validator-common";
+import { Maybe } from "../../types/utils";
 
 /*
     Validate only for actual data sets:
@@ -11,7 +12,7 @@ import { toFloat, DataValue, ValidationItem } from "./validator-common";
 */
 
 interface Data {
-    targetDataValues: { [key: string]: number };
+    targetDataValues: { [key: string]: Maybe<number> };
 }
 
 export class ActualValidator {

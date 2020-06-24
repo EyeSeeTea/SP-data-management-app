@@ -14,6 +14,7 @@ import {
     formatPeriod,
 } from "./validator-common";
 import { Config } from "../Config";
+import { Maybe } from "../../types/utils";
 
 /*
     Validate only for recurring values:
@@ -21,7 +22,7 @@ import { Config } from "../Config";
 */
 
 interface Data {
-    newDataValues: { [key: string]: DataValueSetsDataValue[] };
+    newDataValues: { [key: string]: Maybe<DataValueSetsDataValue[]> };
 }
 
 export class RecurringValidator {
@@ -63,7 +64,7 @@ export class RecurringValidator {
         if (!cocForRelatedNewValue) return [];
 
         const key = getKey(dataValue.dataElementId, cocForRelatedNewValue.id);
-        const pastNewDataValues = this.data.newDataValues[key];
+        const pastNewDataValues = this.data.newDataValues[key] || [];
         const sumOfNewOnPastPeriods = _.sum(pastNewDataValues.map(dv => toFloat(dv.value)));
         const summatory = pastNewDataValues
             .map(dv => `${formatPeriod(dv.period)} [${toFloat(dv.value)}]`)
