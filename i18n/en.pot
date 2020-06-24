@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2020-06-24T12:37:35.226Z\n"
-"PO-Revision-Date: 2020-06-24T12:37:35.226Z\n"
+"POT-Creation-Date: 2020-06-24T12:56:37.878Z\n"
+"PO-Revision-Date: 2020-06-24T12:56:37.878Z\n"
 
 msgid "Data Entry"
 msgstr ""
@@ -30,6 +30,9 @@ msgid "Validation results"
 msgstr ""
 
 msgid "OK"
+msgstr ""
+
+msgid "Validation data is not loaded, skip validation"
 msgstr ""
 
 msgid "{{n}} projects deleted"

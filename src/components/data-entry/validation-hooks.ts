@@ -5,6 +5,8 @@ import { useAppContext } from "../../contexts/api-context";
 import Project, { DataSetType } from "../../models/Project";
 import { InputMsg, useDhis2EntryEvents, Options } from "./data-entry-hooks";
 import { ValidationResult } from "../../models/validators/validator-common";
+import { useSnackbar } from "d2-ui-components";
+import i18n from "../../locales";
 
 interface UseValidationResponse {
     result: ValidationResult;
@@ -20,6 +22,7 @@ export function useValidation(
 ): UseValidationResponse {
     const { api } = useAppContext();
     const [validator, setValidator] = React.useState<Validator | undefined>();
+    const snackbar = useSnackbar();
 
     React.useEffect(() => {
         if (period) {
@@ -30,12 +33,16 @@ export function useValidation(
     const onMessage = React.useCallback(
         (msg: InputMsg) => {
             if (msg.type === "preSaveDataValue") {
-                if (!validator) return Promise.resolve(true);
-                return validator.validateDataValue(msg.dataValue).then(validation => {
-                    console.log("validation", validation);
-                    setValidationResult(validation);
-                    return !validation.error;
-                });
+                if (!validator) {
+                    snackbar.warning(i18n.t("Validation data is not loaded, skip validation"));
+                    return Promise.resolve(true);
+                } else {
+                    return validator.validateDataValue(msg.dataValue).then(validation => {
+                        console.log("validation", validation);
+                        setValidationResult(validation);
+                        return !validation.error;
+                    });
+                }
             }
         },
         [validator]
