@@ -213,11 +213,9 @@ type IndexedObjs<Key extends keyof BaseConfig, ValueType> = Record<
     ValueType
 >;
 
-type Attribute = CodedObject;
+export type Attribute = CodedObject;
 export type CategoryOptionCombo = NamedObject & { categoryOptions: NamedObject[] };
-export type CategoryCombo = CodedObject & {
-    categoryOptionCombos: CategoryOptionCombo[];
-};
+export type CategoryCombo = CodedObject & { categoryOptionCombos: CategoryOptionCombo[] };
 export type CategoryOption = CodedObject & { categoryOptionCombos: NamedObject[] };
 export type Category = CodedObject & { categoryOptions: CategoryOption[] };
 export type LegendSet = CodedObject;

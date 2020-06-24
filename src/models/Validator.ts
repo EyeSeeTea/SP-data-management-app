@@ -1,8 +1,8 @@
+import _ from "lodash";
+import { D2Api } from "d2-api";
+
 import { RecurringValidator } from "./validators/RecurringValidator";
 import { ActualValidator } from "./validators/ActualValidator";
-import { D2Api } from "d2-api";
-import _ from "lodash";
-
 import Project, { DataSetType } from "./Project";
 import { DataValue, ValidationItem, ValidationResult } from "./validators/validator-common";
 

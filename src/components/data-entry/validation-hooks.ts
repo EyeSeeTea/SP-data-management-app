@@ -40,7 +40,7 @@ export function useValidation(
                     return validator.validateDataValue(msg.dataValue).then(validation => {
                         console.log("validation", validation);
                         setValidationResult(validation);
-                        return !validation.error;
+                        return !validation.error || validation.error.length === 0;
                     });
                 }
             }

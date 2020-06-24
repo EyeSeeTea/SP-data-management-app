@@ -38,7 +38,6 @@ export class RecurringValidator {
 
         const dataSet = project.dataSets[dataSetType];
         const categoryOptionForDataSetType = project.config.categoryOptions[dataSetType];
-        const aocIds = getIds(categoryOptionForDataSetType.categoryOptionCombos);
 
         const pastPeriods = project
             .getPeriods()
@@ -49,10 +48,12 @@ export class RecurringValidator {
             orgUnit: [project.orgUnit.id],
             dataSet: [dataSet.id],
             period: pastPeriods,
-            attributeOptionCombo: aocIds,
+            attributeOptionCombo: getIds(categoryOptionForDataSetType.categoryOptionCombos),
         };
-        const res = await api.dataValues.getSet(getSetOptions).getData();
-        const newDataValues = _(res.dataValues)
+        const dataValues = _.isEmpty(pastPeriods)
+            ? []
+            : (await api.dataValues.getSet(getSetOptions).getData()).dataValues;
+        const newDataValues = _(dataValues)
             .groupBy(dataValue => getKey(dataValue.dataElement, dataValue.categoryOptionCombo))
             .value();
 
@@ -60,7 +61,7 @@ export class RecurringValidator {
     }
 
     validate(dataValue: DataValue): ValidationItem[] {
-        const cocForRelatedNewValue = this.getCategoryOptionComboForRelatedNewValues(dataValue);
+        const cocForRelatedNewValue = this.getCategoryOptionComboForRelatedNew(dataValue);
         if (!cocForRelatedNewValue) return [];
 
         const key = getKey(dataValue.dataElementId, cocForRelatedNewValue.id);
@@ -83,9 +84,7 @@ export class RecurringValidator {
         return isValid ? [] : [["error", msg]];
     }
 
-    getCategoryOptionComboForRelatedNewValues(
-        dataValue: DataValue
-    ): CategoryOptionCombo | undefined {
+    getCategoryOptionComboForRelatedNew(dataValue: DataValue): CategoryOptionCombo | undefined {
         const { config } = this;
         const categoryOptionRecurring = config.categoryOptions.recurring;
         const recurringCocIds = getIds(categoryOptionRecurring.categoryOptionCombos);
@@ -95,12 +94,12 @@ export class RecurringValidator {
         const dataElement = config.dataElements.find(de => de.id === dataValue.dataElementId);
         if (!dataElement) return;
 
-        const categoryCombo = _(config.categoryCombos)
+        const categoryComboForDataElement = _(config.categoryCombos)
             .values()
             .find(cc => cc.id === dataElement.categoryCombo.id);
-        if (!categoryCombo) return;
+        if (!categoryComboForDataElement) return;
 
-        const cocForDataValueRecurring = _(categoryCombo.categoryOptionCombos).find(
+        const cocForDataValueRecurring = _(categoryComboForDataElement.categoryOptionCombos).find(
             coc => coc.id === dataValue.categoryOptionComboId
         );
         if (!cocForDataValueRecurring) return;
@@ -112,7 +111,7 @@ export class RecurringValidator {
                 .value()
         );
 
-        const cocForRelatedNewValue = categoryCombo.categoryOptionCombos.find(coc =>
+        const cocForRelatedNewValue = categoryComboForDataElement.categoryOptionCombos.find(coc =>
             areSetsEqual(new Set(getIds(coc.categoryOptions)), categoryOptionIdsForRelatedNew)
         );
 
