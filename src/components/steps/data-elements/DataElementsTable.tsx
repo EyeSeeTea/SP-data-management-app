@@ -7,6 +7,8 @@ import { Id } from "d2-api";
 import DataElementsFilters, { Filter } from "./DataElementsFilters";
 import i18n from "../../../locales";
 import DataElementsSet, { SelectionInfo, DataElement } from "../../../models/dataElementsSet";
+import { Tooltip } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 
 export interface DataElementsTableProps {
     dataElementsSet: DataElementsSet;
@@ -144,20 +146,46 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
     );
 };
 
-function getName(dataElement: DataElement, _value: ReactNode): ReactNode {
-    const dataElements = [dataElement, ...dataElement.pairedDataElements];
+const useStyles = makeStyles(() => ({
+    tooltip: {
+        maxWidth: 800,
+        border: "1px solid #dadde9",
+        backgroundColor: "#616161",
+    },
+    tooltipContents: {
+        fontSize: "1.5em",
+        lineHeight: "1.3em",
+        fontWeight: "normal",
+    },
+}));
 
-    const dataElementNodes = renderJoin(
-        dataElements.map(de => (
-            <span key={de.id} title={de.description}>
-                {de.name}
-            </span>
+function getName(dataElement: DataElement, _value: ReactNode): ReactNode {
+    return <NameColumn key={dataElement.name} dataElement={dataElement} />;
+}
+
+const NameColumn: React.FC<{ dataElement: DataElement }> = ({ dataElement }) => {
+    const dataElements = [dataElement, ...dataElement.pairedDataElements];
+    const classes = useStyles();
+    const tooltips = renderJoin(
+        dataElements.map(dataElement => (
+            <Tooltip
+                key={dataElement.id}
+                title={
+                    <div
+                        className={classes.tooltipContents}
+                        dangerouslySetInnerHTML={{ __html: dataElement.description }}
+                    />
+                }
+                classes={{ tooltip: classes.tooltip }}
+            >
+                <span>{dataElement.name}</span>
+            </Tooltip>
         )),
         <br />
     );
 
-    return <React.Fragment key={dataElement.name}>{dataElementNodes}</React.Fragment>;
-}
+    return <React.Fragment>{tooltips}</React.Fragment>;
+};
 
 function withPaired<Field extends keyof DataElement>(
     field: SortableField & Field,
