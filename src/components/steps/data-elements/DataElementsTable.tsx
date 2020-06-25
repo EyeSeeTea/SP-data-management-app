@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useMemo, ReactNode } from "react";
-import { ObjectsTable, TablePagination, TableColumn, TableState } from "d2-ui-components";
-import { useSnackbar } from "d2-ui-components";
+import { ObjectsTable, useSnackbar } from "d2-ui-components";
+import { TablePagination, TableColumn, TableState, TableSorting } from "d2-ui-components";
 import _ from "lodash";
+import { Id } from "d2-api";
+
 import DataElementsFilters, { Filter } from "./DataElementsFilters";
 import i18n from "../../../locales";
 import DataElementsSet, { SelectionInfo, DataElement } from "../../../models/dataElementsSet";
-import { Id } from "d2-api";
 
 export interface DataElementsTableProps {
     dataElementsSet: DataElementsSet;
@@ -19,46 +20,69 @@ const initialPagination: Partial<TablePagination> = {
     pageSizeOptions: [10, 20, 50],
 };
 
+const initialSorting: TableSorting<DataElement> = {
+    field: "series",
+    order: "asc" as const,
+};
+
+const searchBoxColumns = ["name" as const, "code" as const, "search" as const];
+
+const sortableFields = [
+    "name",
+    "code",
+    "peopleOrBenefit",
+    "series",
+    "countingMethod",
+    "externals",
+] as const;
+type SortableField = typeof sortableFields[number];
+
+const columns: TableColumn<DataElement>[] = [
+    {
+        name: "name" as const,
+        text: i18n.t("Name"),
+        sortable: true,
+        getValue: getName,
+    },
+    {
+        name: "code" as const,
+        text: i18n.t("Code"),
+        sortable: true,
+        getValue: withPaired("code"),
+    },
+    { name: "indicatorType" as const, text: i18n.t("Indicator Type"), sortable: true },
+    {
+        name: "peopleOrBenefit" as const,
+        text: i18n.t("People / Benefit"),
+        sortable: true,
+        getValue: withPaired("peopleOrBenefit"),
+    },
+    {
+        name: "series" as const,
+        text: i18n.t("Series"),
+        sortable: true,
+        getValue: withPaired("series"),
+    },
+    {
+        name: "countingMethod" as const,
+        text: i18n.t("Counting Method"),
+        sortable: true,
+        getValue: withPaired("countingMethod"),
+    },
+    {
+        name: "externals" as const,
+        text: i18n.t("Externals"),
+        sortable: true,
+        getValue: withPaired("externals", externals => externals.join(", ")),
+    },
+];
+
 const DataElementsTable: React.FC<DataElementsTableProps> = props => {
     const { dataElementsSet, sectorId, onSelectionChange } = props;
     const snackbar = useSnackbar();
     const [filter, setFilter] = useState<Filter>({});
 
     useEffect(() => setFilter({}), [sectorId]);
-
-    const columns: TableColumn<DataElement>[] = [
-        {
-            name: "name" as const,
-            text: i18n.t("Name"),
-            sortable: true,
-            getValue: getName,
-        },
-        {
-            name: "code" as const,
-            text: i18n.t("Code"),
-            sortable: true,
-            getValue: withPaired("code"),
-        },
-        { name: "indicatorType" as const, text: i18n.t("Indicator Type"), sortable: true },
-        {
-            name: "peopleOrBenefit" as const,
-            text: i18n.t("People / Benefit"),
-            sortable: true,
-            getValue: withPaired("peopleOrBenefit"),
-        },
-        {
-            name: "countingMethod" as const,
-            text: i18n.t("Counting Method"),
-            sortable: true,
-            getValue: withPaired("countingMethod"),
-        },
-        {
-            name: "externals" as const,
-            text: i18n.t("Externals"),
-            sortable: true,
-            getValue: withPaired("externals", externals => externals.join(", ")),
-        },
-    ];
 
     const fullFilter = { ...filter, sectorId };
 
@@ -79,6 +103,29 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
         return dataElementsSet.get({ onlySelected: true, sectorId }).map(de => ({ id: de.id }));
     }, [dataElementsSet, sectorId]);
 
+    const initialState = useMemo(() => {
+        return { pagination: initialPagination, sorting: initialSorting };
+    }, [initialPagination, initialSorting]);
+
+    const onChange = React.useCallback(
+        (state: TableState<DataElement>) => {
+            return onTableChange(onSelectionChange, snackbar, state);
+        },
+        [onTableChange, onSelectionChange, snackbar]
+    );
+
+    const filterComponents = React.useMemo(
+        () => (
+            <DataElementsFilters
+                key="filters"
+                filter={filter}
+                filterOptions={filterOptions}
+                onChange={setFilter}
+            />
+        ),
+        [filter, filterOptions, setFilter]
+    );
+
     if (!sectorId) return null;
 
     return (
@@ -86,20 +133,13 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
             selection={selection}
             rows={dataElements}
             forceSelectionColumn={true}
-            initialState={{ pagination: initialPagination }}
+            initialState={initialState}
             columns={columns}
             searchBoxLabel={i18n.t("Search by name / code")}
-            onChange={state => onTableChange(onSelectionChange, snackbar, state)}
-            searchBoxColumns={["name", "code", "search"]}
+            onChange={onChange}
+            searchBoxColumns={searchBoxColumns}
             resetKey={JSON.stringify(fullFilter)}
-            filterComponents={
-                <DataElementsFilters
-                    key="filters"
-                    filter={filter}
-                    filterOptions={filterOptions}
-                    onChange={setFilter}
-                />
-            }
+            filterComponents={filterComponents}
         />
     );
 };
