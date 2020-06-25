@@ -24,10 +24,13 @@ import { getConfig } from "../../models/Config";
 import User from "../../models/user";
 import { LinearProgress } from "@material-ui/core";
 
-interface AppConfig {
+export interface AppConfig {
     appKey: string;
     appearance: {
         showShareButton: boolean;
+    };
+    app: {
+        notifyEmailOnProjectSave: string[];
     };
     feedback: {
         token: string[];
@@ -93,16 +96,16 @@ const App = () => {
 
     useEffect(() => {
         const run = async () => {
-            const appConfig = await fetch("app-config.json", {
+            const appConfig = (await fetch("app-config.json", {
                 credentials: "same-origin",
-            }).then(res => res.json());
+            }).then(res => res.json())) as AppConfig;
             const d2 = await init({ baseUrl: baseUrl + "/api" });
             const api = new D2ApiDefault({ baseUrl });
             const config = await getConfig(api);
 
             configI18n(data.userSettings);
             const currentUser = new User(config);
-            const appContext: AppContext = { d2, api, config, currentUser, isDev };
+            const appContext: AppContext = { d2, api, config, currentUser, isDev, appConfig };
             setAppContext(appContext);
             Object.assign(window, { pm: appContext });
 

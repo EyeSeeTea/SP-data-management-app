@@ -124,6 +124,6 @@ describe("Projects - Create", () => {
             .contains("Save")
             .click();
 
-        cy.contains("Project saved", { timeout: 30000 });
+        cy.contains("Project created", { timeout: 30000 });
     });
 });

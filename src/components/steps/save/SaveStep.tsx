@@ -1,6 +1,8 @@
-import React, { useState, ReactNode } from "react";
+import React, { useState, ReactNode, ReactElement } from "react";
 import { Button, LinearProgress } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import striptags from "striptags";
+import ReactDOMServer from "react-dom/server";
 
 import ExitWizardButton from "../../wizard/ExitWizardButton";
 import i18n from "../../../locales";
@@ -23,32 +25,11 @@ const useStyles = makeStyles({
     },
 });
 
-const SaveStep: React.FC<StepProps> = ({ project, onCancel }) => {
-    const { api, isDev } = useAppContext();
-    const [isSaving, setSaving] = useState(false);
+const SaveStep: React.FC<StepProps> = ({ project, onCancel, action }) => {
     const [dialogOpen, setDialogOpen] = useState(false);
-    const [errorMessage, setErrorMessage] = useState("");
-    const snackbar = useSnackbar();
-    const history = useHistory();
     const classes = useStyles();
-
-    async function save() {
-        try {
-            setSaving(true);
-            const { payload, response, project: projectSaved } = await project.save();
-            setSaving(false);
-            if (response && response.status === "OK") {
-                history.push(generateUrl("projects"));
-                if (isDev) saveDataValues(api, projectSaved);
-                snackbar.success(`${i18n.t("Project saved:")} ${projectSaved.name}`);
-            } else {
-                setErrorMessage(JSON.stringify({ response, payload }, null, 2));
-            }
-        } catch (err) {
-            setSaving(false);
-            snackbar.error(err.message || err.toString());
-        }
-    }
+    const projectInfo = React.useMemo(() => <ProjectInfo project={project} />, [project]);
+    const { isSaving, errorMessage, save } = useSave(project, action, projectInfo);
 
     return (
         <React.Fragment>
@@ -59,35 +40,7 @@ const SaveStep: React.FC<StepProps> = ({ project, onCancel }) => {
             />
 
             <div className={classes.wrapper}>
-                <ul>
-                    <LiEntry label={i18n.t("Name")} value={project.name} />
-                    <LiEntry label={i18n.t("Description")} value={project.description} />
-                    <LiEntry label={i18n.t("Award Number")} value={project.awardNumber} />
-                    <LiEntry
-                        label={i18n.t("Subsequent Lettering")}
-                        value={project.subsequentLettering}
-                    />
-                    <LiEntry label={i18n.t("Speed Key")} value={project.speedKey} />
-
-                    <LiEntry
-                        label={i18n.t("Period dates")}
-                        value={getProjectPeriodDateString(project)}
-                    />
-
-                    <LiEntry label={i18n.t("Funders")} value={getNames(project.funders)} />
-
-                    <LiEntry
-                        label={i18n.t("Selected country")}
-                        value={project.parentOrgUnit ? project.parentOrgUnit.displayName : "-"}
-                    />
-
-                    <LiEntry
-                        label={i18n.t("Locations")}
-                        value={project.locations.map(location => location.displayName).join(", ")}
-                    />
-
-                    <LiEntry label={i18n.t("Sectors")} value={getSectorsInfo(project)} />
-                </ul>
+                {projectInfo}
 
                 <Button onClick={() => setDialogOpen(true)} variant="contained">
                     {i18n.t("Cancel")}
@@ -112,6 +65,32 @@ const LiEntry = ({ label, value }: { label: string; value?: React.ReactNode }) =
         </li>
     );
 };
+
+const ProjectInfo: React.FC<{ project: Project }> = ({ project }) => (
+    <ul>
+        <LiEntry label={i18n.t("Name")} value={project.name} />
+        <LiEntry label={i18n.t("Description")} value={project.description} />
+        <LiEntry label={i18n.t("Award Number")} value={project.awardNumber} />
+        <LiEntry label={i18n.t("Subsequent Lettering")} value={project.subsequentLettering} />
+        <LiEntry label={i18n.t("Speed Key")} value={project.speedKey} />
+
+        <LiEntry label={i18n.t("Period dates")} value={getProjectPeriodDateString(project)} />
+
+        <LiEntry label={i18n.t("Funders")} value={getNames(project.funders)} />
+
+        <LiEntry
+            label={i18n.t("Selected country")}
+            value={project.parentOrgUnit ? project.parentOrgUnit.displayName : "-"}
+        />
+
+        <LiEntry
+            label={i18n.t("Locations")}
+            value={project.locations.map(location => location.displayName).join(", ")}
+        />
+
+        <LiEntry label={i18n.t("Sectors")} value={getSectorsInfo(project)} />
+    </ul>
+);
 
 function getSectorsInfo(project: Project): ReactNode {
     const sectorsInfo = project.getSectorsInfo();
@@ -150,6 +129,45 @@ function getProjectPeriodDateString(project: Project): string {
     } else {
         return "-";
     }
+}
+
+function useSave(project: Project, action: StepProps["action"], projectInfo: ReactElement) {
+    const { api, isDev, appConfig } = useAppContext();
+    const [isSaving, setSaving] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
+    const snackbar = useSnackbar();
+    const history = useHistory();
+
+    const save = React.useCallback(async () => {
+        try {
+            setSaving(true);
+            const { payload, response, project: projectSaved } = await project.save();
+            const baseMsg =
+                action === "create" ? i18n.t("Project created") : i18n.t("Project updated");
+            const msg = `${baseMsg}: ${projectSaved.name}`;
+            const recipients = appConfig.app.notifyEmailOnProjectSave;
+            api.email.sendMessage({ recipients, subject: msg, text: html2Text(projectInfo) });
+            setSaving(false);
+
+            if (response && response.status === "OK") {
+                history.push(generateUrl("projects"));
+                if (isDev) saveDataValues(api, projectSaved);
+                snackbar.success(msg);
+            } else {
+                setErrorMessage(JSON.stringify({ response, payload }, null, 2));
+            }
+        } catch (err) {
+            setSaving(false);
+            snackbar.error(err.message || err.toString());
+        }
+    }, [project, setSaving, history, snackbar, action, api, appConfig, isDev, projectInfo]);
+
+    return { isSaving, errorMessage, save };
+}
+
+function html2Text(element: ReactElement): string {
+    const html = ReactDOMServer.renderToStaticMarkup(element);
+    return striptags(html, [], "\n");
 }
 
 export default React.memo(SaveStep);

@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2020-03-12T10:45:02.002Z\n"
-"PO-Revision-Date: 2020-03-12T10:45:02.002Z\n"
+"POT-Creation-Date: 2020-06-25T12:02:16.813Z\n"
+"PO-Revision-Date: 2020-06-25T12:02:16.813Z\n"
 
 msgid "Data Entry"
 msgstr ""
@@ -101,6 +101,9 @@ msgstr ""
 msgid "Field length is invalid"
 msgstr ""
 
+msgid "Save"
+msgstr ""
+
 msgid "Description"
 msgstr ""
 
@@ -128,13 +131,16 @@ msgstr ""
 msgid "Sectors"
 msgstr ""
 
-msgid "Save"
-msgstr ""
-
 msgid "Hidden in data entry as it is selected in multiple sectors!"
 msgstr ""
 
 msgid "MER"
+msgstr ""
+
+msgid "Project created"
+msgstr ""
+
+msgid "Project updated"
 msgstr ""
 
 msgid "Cancel Project creation?"
