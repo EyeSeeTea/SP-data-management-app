@@ -107,7 +107,7 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
 function getName(dataElement: DataElement, _value: ReactNode): ReactNode {
     const dataElements = [dataElement, ...dataElement.pairedDataElements];
 
-    return renderJoin(
+    const dataElementNodes = renderJoin(
         dataElements.map(de => (
             <span key={de.id} title={de.description}>
                 {de.name}
@@ -115,19 +115,26 @@ function getName(dataElement: DataElement, _value: ReactNode): ReactNode {
         )),
         <br />
     );
+
+    return <React.Fragment key={dataElement.name}>{dataElementNodes}</React.Fragment>;
 }
 
 function withPaired<Field extends keyof DataElement>(
-    field: Field,
+    field: SortableField & Field,
     mapper?: (val: DataElement[Field]) => string
 ) {
     const mapper_ = mapper || _.identity;
     const render = function(dataElement: DataElement, _value: ReactNode) {
-        const values = [dataElement, ...dataElement.pairedDataElements].map(de =>
-            mapper_(de[field])
-        );
-        return <React.Fragment key={dataElement.name}>{renderJoin(values, <br />)}</React.Fragment>;
+        const paired = dataElement.pairedDataElements;
+        const values = [dataElement, ...paired].map(de => mapper_(de[field]));
+        // <DataTable /> uses the column node key (if present) as sorting key, so let's set it
+        // to a value that performs a composite (dataElement[FIELD], dataElement.code) ordering.
+        const value = dataElement[field];
+        const code = dataElement.code;
+        const key = value + "-" + code;
+        return <React.Fragment key={key}>{renderJoin(values, <br />)}</React.Fragment>;
     };
+
     return render;
 }
 
