@@ -153,6 +153,7 @@ const useStyles = makeStyles(() => ({
         backgroundColor: "#616161",
     },
     tooltipContents: {
+        padding: 2,
         fontSize: "1.5em",
         lineHeight: "1.3em",
         fontWeight: "normal",
@@ -169,12 +170,11 @@ const NameColumn: React.FC<{ dataElement: DataElement }> = ({ dataElement }) => 
     const tooltips = renderJoin(
         dataElements.map(dataElement => (
             <Tooltip
+                enterDelay={500}
+                leaveDelay={0}
                 key={dataElement.id}
                 title={
-                    <div
-                        className={classes.tooltipContents}
-                        dangerouslySetInnerHTML={{ __html: dataElement.description }}
-                    />
+                    <div className={classes.tooltipContents}>{getTooltipContents(dataElement)}</div>
                 }
                 classes={{ tooltip: classes.tooltip }}
             >
@@ -187,6 +187,31 @@ const NameColumn: React.FC<{ dataElement: DataElement }> = ({ dataElement }) => 
     return <React.Fragment>{tooltips}</React.Fragment>;
 };
 
+function getTooltipContents(dataElement: DataElement) {
+    const { externalsDescription, description } = dataElement;
+    return (
+        <React.Fragment>
+            <div>
+                {dataElement.code} - {dataElement.name}
+            </div>
+            <br />
+            {externalsDescription && (
+                <div>
+                    <b>{i18n.t("Externals")}: </b>
+                    {externalsDescription}
+                </div>
+            )}
+            {description && (
+                <div>
+                    <b>{i18n.t("Guidance")}: </b>
+                    {description}
+                </div>
+            )}
+            ) : null,
+        </React.Fragment>
+    );
+}
+
 function withPaired<Field extends keyof DataElement>(
     field: SortableField & Field,
     mapper?: (val: DataElement[Field]) => string
@@ -194,7 +219,7 @@ function withPaired<Field extends keyof DataElement>(
     const mapper_ = mapper || _.identity;
     const render = function(dataElement: DataElement, _value: ReactNode) {
         const paired = dataElement.pairedDataElements;
-        const values = [dataElement, ...paired].map(de => mapper_(de[field]));
+        const values = [dataElement, ...paired].map(de => mapper_(de[field]) || "-");
         // <DataTable /> uses the column node key (if present) as sorting key, so let's set it
         // to a value that performs a composite (dataElement[FIELD], dataElement.code) ordering.
         const value = dataElement[field];
@@ -236,9 +261,11 @@ function onTableChange(
 }
 
 function renderJoin(nodes: ReactNode[], separator: ReactNode): ReactNode {
-    return _.flatMap(nodes, (node, idx) =>
-        idx < nodes.length - 1 ? [node, separator] : [node]
-    ).map((node, idx) => <React.Fragment key={idx}>{node || "-"}</React.Fragment>);
+    return _(nodes)
+        .compact()
+        .flatMap((node, idx) => (idx < nodes.length - 1 ? [node, separator] : [node]))
+        .map((node, idx) => <React.Fragment key={idx}>{node || "-"}</React.Fragment>)
+        .value();
 }
 
 export default React.memo(DataElementsTable);

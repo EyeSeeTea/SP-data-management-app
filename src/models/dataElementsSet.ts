@@ -34,6 +34,7 @@ export interface DataElementBase {
     peopleOrBenefit: PeopleOrBenefit;
     countingMethod: string;
     externals: string[];
+    externalsDescription: string;
     pairedDataElements: Array<{ id: Id; name: string; code: string }>;
     categoryCombo: Ref;
     selectable: boolean;
@@ -147,7 +148,7 @@ export default class DataElementsSet {
                     id: d2DataElement.id,
                     name: name,
                     code: d2DataElement.code,
-                    description: d2DataElement.description,
+                    ...getDescriptionFields(d2DataElement),
                     sectorsInfo: sectorsInfo,
                     mainSector: { id: _(sectorsByCode).getOrFail(mainSector).id },
                     indicatorType,
@@ -461,4 +462,15 @@ function getGroupsByDataElementId<Group extends { dataElements: Array<Ref> }>(de
         .mapValues(items => items.map(item => item.deg))
         .value();
     return res;
+}
+
+function getDescriptionFields(d2DataElement: { description: string }) {
+    const { description } = d2DataElement;
+    const [externals = "", notes = ""] = description.split("\n", 2);
+    const externalsDescription = externals.split("Externals: ", 2)[1] || "";
+
+    return {
+        externalsDescription: externalsDescription === "-" ? "" : externalsDescription,
+        description: notes.trim(),
+    };
 }
