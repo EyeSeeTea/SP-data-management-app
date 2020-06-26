@@ -1,5 +1,11 @@
 import React, { useState, useEffect, useMemo, ReactNode } from "react";
-import { ObjectsTable, TablePagination, TableColumn, TableState } from "d2-ui-components";
+import {
+    ObjectsTable,
+    TablePagination,
+    TableColumn,
+    TableState,
+    RowConfig,
+} from "d2-ui-components";
 import { useSnackbar } from "d2-ui-components";
 import _ from "lodash";
 import DataElementsFilters, { Filter } from "./DataElementsFilters";
@@ -79,12 +85,21 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
         return dataElementsSet.get({ onlySelected: true, sectorId }).map(de => ({ id: de.id }));
     }, [dataElementsSet, sectorId]);
 
+    const rowConfig = React.useCallback(
+        (de: DataElement): RowConfig => ({
+            selectable: de.selectable,
+            style: de.selectable ? undefined : { backgroundColor: "#F5DFDF" },
+        }),
+        [dataElements]
+    );
+
     if (!sectorId) return null;
 
     return (
         <ObjectsTable<DataElement>
             selection={selection}
             rows={dataElements}
+            rowConfig={rowConfig}
             forceSelectionColumn={true}
             initialState={{ pagination: initialPagination }}
             columns={columns}
