@@ -11,7 +11,7 @@ import _ from "lodash";
 import DataElementsFilters, { Filter } from "./DataElementsFilters";
 import i18n from "../../../locales";
 import DataElementsSet, { SelectionInfo, DataElement } from "../../../models/dataElementsSet";
-import { Id } from "d2-api";
+import { Id } from "../../../types/d2-api";
 
 export interface DataElementsTableProps {
     dataElementsSet: DataElementsSet;
@@ -137,7 +137,7 @@ function withPaired<Field extends keyof DataElement>(
     mapper?: (val: DataElement[Field]) => string
 ) {
     const mapper_ = mapper || _.identity;
-    const render = function(dataElement: DataElement, _value: ReactNode) {
+    const render = (dataElement: DataElement, _value: ReactNode) => {
         const values = [dataElement, ...dataElement.pairedDataElements].map(de =>
             mapper_(de[field])
         );

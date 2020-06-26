@@ -1,6 +1,6 @@
-import { PartialPersistedModel, PartialModel } from "d2-api/api/common";
+import { PartialPersistedModel, PartialModel } from "../types/d2-api";
 import _ from "lodash";
-import { D2Dashboard, D2ReportTable, Ref, D2Chart, D2DashboardItem, Id } from "d2-api";
+import { D2Dashboard, D2ReportTable, Ref, D2Chart, D2DashboardItem, Id } from "../types/d2-api";
 import Project from "./Project";
 import i18n from "../locales";
 import { getUid } from "../utils/dhis2";

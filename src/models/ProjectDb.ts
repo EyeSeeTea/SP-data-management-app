@@ -1,8 +1,9 @@
 import _ from "lodash";
 import moment from "moment";
-import { D2DataSet, D2OrganisationUnit, D2ApiResponse, MetadataPayload, Id, D2Api } from "d2-api";
-import { SelectedPick, D2OrganisationUnitSchema } from "d2-api";
-import { PartialModel, Ref, PartialPersistedModel, MetadataResponse } from "d2-api";
+import { MetadataPayload, Id, D2Api } from "../types/d2-api";
+import { D2DataSet, D2OrganisationUnit, D2ApiResponse } from "../types/d2-api";
+import { SelectedPick, D2OrganisationUnitSchema } from "../types/d2-api";
+import { PartialModel, Ref, PartialPersistedModel, MetadataResponse } from "../types/d2-api";
 import Project, { getOrgUnitDatesFromProject, getDatesFromOrgUnit, DataSetType } from "./Project";
 import { getMonthsRange, toISOString } from "../utils/date";
 import "../utils/lodash-mixins";
@@ -149,7 +150,8 @@ export default class ProjectDb {
         const dbDataSet = _(dataSets).get(0, null);
 
         if (dbDataSet) {
-            const res = await this.api.models.dataSets.put({ ...dbDataSet, ...attrs }).getData();
+            const dataSetAttrs = { ...dbDataSet, ...attrs, id: dbDataSet.id };
+            const res = await this.api.models.dataSets.put(dataSetAttrs).getData();
 
             if (res.status !== "OK") throw new Error("Error saving data set");
         }

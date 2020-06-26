@@ -1,6 +1,6 @@
 import moment, { Moment } from "moment";
 import _ from "lodash";
-import { Id, D2Api, D2DataInputPeriod } from "d2-api";
+import { Id, D2Api, D2DataInputPeriod } from "../types/d2-api";
 import { Config } from "./Config";
 import Project, { OrganisationUnit, DataSet, DataSetType } from "./Project";
 import ProjectDb, { DataSetOpenAttributes } from "./ProjectDb";
