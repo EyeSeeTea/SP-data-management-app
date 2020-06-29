@@ -12,7 +12,7 @@ import { formatDateShort, formatDateLong } from "../../utils/date";
 import ActionButton from "../../components/action-button/ActionButton";
 import { GetPropertiesByType } from "../../types/utils";
 import { downloadFile } from "../../utils/download";
-import { D2Api, Id } from "d2-api";
+import { D2Api, Id } from "../../types/d2-api";
 import { Icon, LinearProgress, CircularProgress } from "@material-ui/core";
 import ProjectsListFilters, { Filter } from "./ProjectsListFilters";
 import { ProjectForList, FiltersForList } from "../../models/ProjectsList";

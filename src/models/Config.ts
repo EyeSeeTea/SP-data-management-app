@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { D2ApiDefault, D2Api, Id, Ref, MetadataPick } from "d2-api";
+import { D2Api, Id, Ref, MetadataPick } from "../types/d2-api";
 import fs from "fs";
 import path from "path";
 import DataElementsSet, { DataElementBase } from "./dataElementsSet";
@@ -311,7 +311,7 @@ export async function getConfig(api: D2Api): Promise<Config> {
 /* Runnable script to generate __tests__/config.json */
 
 async function getFromApp(baseUrl: string) {
-    const api = new D2ApiDefault({ baseUrl });
+    const api = new D2Api({ baseUrl });
     const allConfig = await getConfig(api);
     // Protect names for funders, locations and data elements.
     const config: Config = {

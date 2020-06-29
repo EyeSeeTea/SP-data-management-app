@@ -1,7 +1,8 @@
 import { Config, Sector as SectorC, Funder as FunderC, Location as LocationC } from "./Config";
 import moment, { Moment } from "moment";
 import _ from "lodash";
-import { D2Api, SelectedPick, Id, Ref, D2OrganisationUnit, D2IndicatorSchema } from "d2-api";
+import { D2Api, SelectedPick, Id, Ref } from "../types/d2-api";
+import { D2OrganisationUnit, D2IndicatorSchema } from "../types/d2-api";
 import { generateUid } from "d2/uid";
 import { TableSorting } from "d2-ui-components";
 

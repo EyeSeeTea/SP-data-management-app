@@ -1,11 +1,17 @@
 import React, { useState, useEffect, useMemo, ReactNode } from "react";
-import { ObjectsTable, TablePagination, TableColumn, TableState } from "d2-ui-components";
+import {
+    ObjectsTable,
+    TablePagination,
+    TableColumn,
+    TableState,
+    RowConfig,
+} from "d2-ui-components";
 import { useSnackbar } from "d2-ui-components";
 import _ from "lodash";
 import DataElementsFilters, { Filter } from "./DataElementsFilters";
 import i18n from "../../../locales";
 import DataElementsSet, { SelectionInfo, DataElement } from "../../../models/dataElementsSet";
-import { Id } from "d2-api";
+import { Id } from "../../../types/d2-api";
 
 export interface DataElementsTableProps {
     dataElementsSet: DataElementsSet;
@@ -79,12 +85,21 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
         return dataElementsSet.get({ onlySelected: true, sectorId }).map(de => ({ id: de.id }));
     }, [dataElementsSet, sectorId]);
 
+    const rowConfig = React.useCallback(
+        (de: DataElement): RowConfig => ({
+            selectable: de.selectable,
+            style: de.selectable ? undefined : { backgroundColor: "#F5DFDF" },
+        }),
+        [dataElements]
+    );
+
     if (!sectorId) return null;
 
     return (
         <ObjectsTable<DataElement>
             selection={selection}
             rows={dataElements}
+            rowConfig={rowConfig}
             forceSelectionColumn={true}
             initialState={{ pagination: initialPagination }}
             columns={columns}
@@ -122,7 +137,7 @@ function withPaired<Field extends keyof DataElement>(
     mapper?: (val: DataElement[Field]) => string
 ) {
     const mapper_ = mapper || _.identity;
-    const render = function(dataElement: DataElement, _value: ReactNode) {
+    const render = (dataElement: DataElement, _value: ReactNode) => {
         const values = [dataElement, ...dataElement.pairedDataElements].map(de =>
             mapper_(de[field])
         );
