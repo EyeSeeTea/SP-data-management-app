@@ -1,8 +1,8 @@
-import { D2Api, DataValueSetsGetRequest } from "d2-api";
 import _ from "lodash";
 import moment from "moment";
 import Project from "./Project";
 import i18n from "../locales";
+import { D2Api, DataValueSetsGetRequest } from "../types/d2-api";
 
 export class DataEntry {
     constructor(
