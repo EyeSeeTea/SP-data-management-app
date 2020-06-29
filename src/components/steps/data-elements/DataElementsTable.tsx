@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useMemo, ReactNode } from "react";
-import { ObjectsTable, useSnackbar } from "d2-ui-components";
+import { ObjectsTable, useSnackbar, RowConfig } from "d2-ui-components";
 import { TablePagination, TableColumn, TableState, TableSorting } from "d2-ui-components";
 import _ from "lodash";
-import { Id } from "d2-api";
 
 import DataElementsFilters, { Filter } from "./DataElementsFilters";
 import i18n from "../../../locales";
 import DataElementsSet, { SelectionInfo, DataElement } from "../../../models/dataElementsSet";
 import { Tooltip } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import { Id } from "../../../types/d2-api";
 
 export interface DataElementsTableProps {
     dataElementsSet: DataElementsSet;
@@ -128,12 +128,21 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
         [filter, filterOptions, setFilter]
     );
 
+    const rowConfig = React.useCallback(
+        (de: DataElement): RowConfig => ({
+            selectable: de.selectable,
+            style: de.selectable ? undefined : { backgroundColor: "#F5DFDF" },
+        }),
+        [dataElements]
+    );
+
     if (!sectorId) return null;
 
     return (
         <ObjectsTable<DataElement>
             selection={selection}
             rows={dataElements}
+            rowConfig={rowConfig}
             forceSelectionColumn={true}
             initialState={initialState}
             columns={columns}

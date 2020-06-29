@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { Id, Ref } from "d2-api";
+import { Id, Ref } from "../types/d2-api";
 
 import { Config, DataElementGroupSet, BaseConfig, Metadata, CurrentUser } from "./Config";
 import { Sector } from "./Config";
