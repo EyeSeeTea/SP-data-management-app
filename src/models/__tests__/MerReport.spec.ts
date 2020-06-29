@@ -1,4 +1,4 @@
-import { getMockApi } from "d2-api";
+import { getMockApi } from "../../types/d2-api";
 import MerReport from "../MerReport";
 import config from "./config";
 import moment from "moment";

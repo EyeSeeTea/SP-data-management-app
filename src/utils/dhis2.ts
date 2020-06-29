@@ -1,7 +1,7 @@
 import _ from "lodash";
 import md5 from "md5";
-import { D2Api, Ref, Id, MetadataPayload } from "d2-api";
-import { PostOptions } from "d2-api/api/metadata";
+
+import { D2Api, Ref, Id, MetadataPayload, PostOptions } from "../types/d2-api";
 import { runPromises } from "./promises";
 
 export function getIds<T extends Ref>(objs: T[]): Id[] {

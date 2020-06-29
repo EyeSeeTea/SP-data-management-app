@@ -1,5 +1,5 @@
 import { ProjectData } from "./../Project";
-import { D2Api } from "d2-api";
+import { D2Api } from "../../types/d2-api";
 import _ from "lodash";
 import moment from "moment";
 import Project from "../Project";
