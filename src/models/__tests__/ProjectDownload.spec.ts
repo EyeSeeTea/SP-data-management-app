@@ -1,6 +1,6 @@
 import ExcelJS, { Workbook } from "exceljs";
 import _ from "lodash";
-import { getMockApi } from "d2-api";
+import { getMockApi } from "../../types/d2-api";
 import Project from "../Project";
 import { getProject } from "./project-data";
 import moment from "moment";

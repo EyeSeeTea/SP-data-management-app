@@ -1,4 +1,4 @@
-import { getMockApi } from "d2-api";
+import { getMockApi } from "../../types/d2-api";
 import _ from "lodash";
 import { ValidationKey } from "./../Project";
 import Project from "../Project";

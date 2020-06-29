@@ -9,7 +9,7 @@ import { generateUrl } from "../../router";
 import { LinearProgress } from "@material-ui/core";
 import Project, { DataSet, DataSetType } from "../../models/Project";
 import { useAppContext } from "../../contexts/api-context";
-import { D2Api } from "d2-api";
+import { D2Api } from "../../types/d2-api";
 import { Config } from "../../models/Config";
 import { link } from "../../utils/form";
 
