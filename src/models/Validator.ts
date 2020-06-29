@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { D2Api } from "d2-api";
+import { D2Api } from "../types/d2-api";
 
 import { RecurringValidator } from "./validators/RecurringValidator";
 import { ActualValidator } from "./validators/ActualValidator";

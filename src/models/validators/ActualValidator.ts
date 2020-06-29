@@ -1,4 +1,4 @@
-import { D2Api, DataValueSetsGetRequest } from "d2-api";
+import { D2Api, DataValueSetsGetRequest } from "../../types/d2-api";
 import _ from "lodash";
 
 import Project, { DataSetType } from "../Project";
