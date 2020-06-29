@@ -6,7 +6,7 @@ import { LinearProgress } from "@material-ui/core";
 import { History, Location } from "history";
 
 import Project, { ValidationKey } from "../../models/Project";
-import { D2Api } from "d2-api";
+import { D2Api } from "../../types/d2-api";
 import { generateUrl } from "../../router";
 import i18n from "../../locales";
 import ExitWizardButton from "../../components/wizard/ExitWizardButton";

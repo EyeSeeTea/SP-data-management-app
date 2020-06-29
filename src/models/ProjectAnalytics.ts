@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { Ref } from "d2-api";
+import { Ref } from "../types/d2-api";
 import Project from "./Project";
 import { DataElement } from "./dataElementsSet";
 import { getIds } from "../utils/dhis2";

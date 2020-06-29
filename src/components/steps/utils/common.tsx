@@ -1,7 +1,7 @@
 import React from "react";
 import _ from "lodash";
 import { CSSProperties } from "@material-ui/core/styles/withStyles";
-import { Ref } from "d2-api";
+import { Ref } from "../../../types/d2-api";
 
 export function getValuesFromSelection<Option extends Ref>(
     options: Option[],
