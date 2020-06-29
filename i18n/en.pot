@@ -89,6 +89,9 @@ msgstr ""
 msgid "People / Benefit"
 msgstr ""
 
+msgid "Series"
+msgstr ""
+
 msgid "Counting Method"
 msgstr ""
 
