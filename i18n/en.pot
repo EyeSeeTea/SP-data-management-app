@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2020-06-29T16:37:57.937Z\n"
-"PO-Revision-Date: 2020-06-29T16:37:57.937Z\n"
+"POT-Creation-Date: 2020-06-29T16:58:16.305Z\n"
+"PO-Revision-Date: 2020-06-29T16:58:16.305Z\n"
 
 msgid "Data Entry"
 msgstr ""
@@ -24,6 +24,15 @@ msgid "Edit Data"
 msgstr ""
 
 msgid "Editing Complete"
+msgstr ""
+
+msgid "Validation results"
+msgstr ""
+
+msgid "OK"
+msgstr ""
+
+msgid "Validation data is not loaded, skip validation"
 msgstr ""
 
 msgid "{{n}} projects deleted"
@@ -391,6 +400,19 @@ msgid "[only for admin users]"
 msgstr ""
 
 msgid "Global data elements with selected subs cannot be unselected"
+msgstr ""
+
+msgid ""
+"Actual value ({{actualValue}}) should not be greater than 20% of the target "
+"value ({{targetValue}})"
+msgstr ""
+
+msgid "there is no data for previous periods"
+msgstr ""
+
+msgid ""
+"Recurring value ({{recurringValue}}) cannot be greater than the sum of new "
+"values for past periods ({{newValuesSumFormula}})"
 msgstr ""
 
 msgid "Dashboard for Project"

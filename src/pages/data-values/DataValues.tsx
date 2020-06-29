@@ -7,16 +7,14 @@ import { useHistory, useRouteMatch } from "react-router";
 import DataEntry from "../../components/data-entry/DataEntry";
 import { generateUrl } from "../../router";
 import { LinearProgress } from "@material-ui/core";
-import Project, { DataSet } from "../../models/Project";
+import Project, { DataSet, DataSetType } from "../../models/Project";
 import { useAppContext } from "../../contexts/api-context";
 import { D2Api } from "../../types/d2-api";
 import { Config } from "../../models/Config";
 import { link } from "../../utils/form";
 
-type Type = "target" | "actual";
-
 interface DataValuesProps {
-    type: Type;
+    type: DataSetType;
 }
 
 type RouterParams = { id: string };
@@ -54,6 +52,7 @@ const DataValues: React.FC<DataValuesProps> = ({ type }) => {
             {data && (
                 <DataEntry
                     project={data.project}
+                    dataSetType={type}
                     orgUnitId={data.orgUnit.id}
                     dataSet={data.dataSet}
                     attributes={attributes}
@@ -72,7 +71,7 @@ function goBack(history: History) {
 
 function loadData(
     projectId: string | null | undefined,
-    type: Type,
+    type: DataSetType,
     api: D2Api,
     config: Config,
     setState: React.Dispatch<React.SetStateAction<State>>
@@ -96,7 +95,7 @@ function loadData(
         .catch(err => setState({ error: err.message || err.toString(), loading: false }));
 }
 
-function getTranslations(type: Type, projectName: string | undefined) {
+function getTranslations(type: DataSetType, projectName: string | undefined) {
     const isTarget = type === "target";
     const baseTitle = isTarget
         ? i18n.t("Set Target Values for Project")
@@ -124,7 +123,7 @@ function getTranslations(type: Type, projectName: string | undefined) {
     };
 }
 
-function getAttributes(config: Config, type: Type) {
+function getAttributes(config: Config, type: DataSetType) {
     const category = config.categories.targetActual;
     const categoryOption = _(category.categoryOptions)
         .keyBy(co => co.code)

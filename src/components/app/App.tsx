@@ -84,7 +84,8 @@ const App: React.FC<AppProps> = props => {
 
     useEffect(() => {
         const run = async () => {
-            const appConfig = await fetch("app-config.json", {
+            const appConfigUrl = process.env.PUBLIC_URL + "/app-config.json";
+            const appConfig = await fetch(appConfigUrl, {
                 credentials: "same-origin",
             }).then(res => res.json());
             const config = await getConfig(api);
