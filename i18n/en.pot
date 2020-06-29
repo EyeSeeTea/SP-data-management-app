@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2020-06-18T10:03:32.102Z\n"
-"PO-Revision-Date: 2020-06-18T10:03:32.102Z\n"
+"POT-Creation-Date: 2020-06-29T16:37:57.937Z\n"
+"PO-Revision-Date: 2020-06-29T16:37:57.937Z\n"
 
 msgid "Data Entry"
 msgstr ""
@@ -158,6 +158,9 @@ msgid "Yes"
 msgstr ""
 
 msgid "No"
+msgstr ""
+
+msgid "Data Approval"
 msgstr ""
 
 msgid "National Staff"
@@ -409,9 +412,6 @@ msgstr ""
 msgid "Cannot load project relations"
 msgstr ""
 
-msgid "Data Approval"
-msgstr ""
-
 msgid "Period"
 msgstr ""
 
@@ -424,6 +424,9 @@ msgstr ""
 msgid "Unapprove"
 msgstr ""
 
+msgid "Send Message"
+msgstr ""
+
 msgid "Cannot load category option combo"
 msgstr ""
 
@@ -433,6 +436,30 @@ msgid ""
 "\n"
 "    Once you approve the data, scroll down to the bottom of the screen and "
 "click the blue \"Approve\" button."
+msgstr ""
+
+msgid "Message sent"
+msgstr ""
+
+msgid "Send message to users that have introduced data for this month"
+msgstr ""
+
+msgid "Sending..."
+msgstr ""
+
+msgid "Send"
+msgstr ""
+
+msgid "Loading..."
+msgstr ""
+
+msgid "There is no data for this month"
+msgstr ""
+
+msgid "List of users"
+msgstr ""
+
+msgid "Message"
 msgstr ""
 
 msgid "Set Target Values for Project"
@@ -486,9 +513,6 @@ msgid "Edit project"
 msgstr ""
 
 msgid "New project"
-msgstr ""
-
-msgid "Loading..."
 msgstr ""
 
 msgid ""

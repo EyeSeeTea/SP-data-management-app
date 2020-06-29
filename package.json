@@ -25,7 +25,7 @@
         "axios": "^0.19.2",
         "classnames": "^2.2.6",
         "d2": "^31.8.1",
-        "d2-api": "1.0.0-beta.2",
+        "d2-api": "1.0.0-beta.5",
         "d2-manifest": "^1.0.0",
         "d2-ui-components": "1.4.2",
         "exceljs": "^3.5.0",
