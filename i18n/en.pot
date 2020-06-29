@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2020-06-25T08:39:14.191Z\n"
-"PO-Revision-Date: 2020-06-25T08:39:14.191Z\n"
+"POT-Creation-Date: 2020-06-29T19:45:10.271Z\n"
+"PO-Revision-Date: 2020-06-29T19:45:10.271Z\n"
 
 msgid "Data Entry"
 msgstr ""
@@ -24,6 +24,15 @@ msgid "Edit Data"
 msgstr ""
 
 msgid "Editing Complete"
+msgstr ""
+
+msgid "Validation results"
+msgstr ""
+
+msgid "OK"
+msgstr ""
+
+msgid "Validation data is not loaded, skip validation"
 msgstr ""
 
 msgid "{{n}} projects deleted"
@@ -89,6 +98,9 @@ msgstr ""
 msgid "Search by name / code"
 msgstr ""
 
+msgid "Guidance"
+msgstr ""
+
 msgid "selected"
 msgstr ""
 
@@ -128,6 +140,15 @@ msgstr ""
 msgid "Locations"
 msgstr ""
 
+msgid "Sharing"
+msgstr ""
+
+msgid "Users"
+msgstr ""
+
+msgid "User groups"
+msgstr ""
+
 msgid "Sectors"
 msgstr ""
 
@@ -152,6 +173,9 @@ msgid "Yes"
 msgstr ""
 
 msgid "No"
+msgstr ""
+
+msgid "Data Approval"
 msgstr ""
 
 msgid "National Staff"
@@ -384,6 +408,19 @@ msgstr ""
 msgid "Global data elements with selected subs cannot be unselected"
 msgstr ""
 
+msgid ""
+"Actual value ({{actualValue}}) should not be greater than 20% of the target "
+"value ({{targetValue}})"
+msgstr ""
+
+msgid "there is no data for previous periods"
+msgstr ""
+
+msgid ""
+"Recurring value ({{recurringValue}}) cannot be greater than the sum of new "
+"values for past periods ({{newValuesSumFormula}})"
+msgstr ""
+
 msgid "Dashboard for Project"
 msgstr ""
 
@@ -403,9 +440,6 @@ msgstr ""
 msgid "Cannot load project relations"
 msgstr ""
 
-msgid "Data Approval"
-msgstr ""
-
 msgid "Period"
 msgstr ""
 
@@ -418,6 +452,9 @@ msgstr ""
 msgid "Unapprove"
 msgstr ""
 
+msgid "Send Message"
+msgstr ""
+
 msgid "Cannot load category option combo"
 msgstr ""
 
@@ -427,6 +464,30 @@ msgid ""
 "\n"
 "    Once you approve the data, scroll down to the bottom of the screen and "
 "click the blue \"Approve\" button."
+msgstr ""
+
+msgid "Message sent"
+msgstr ""
+
+msgid "Send message to users that have introduced data for this month"
+msgstr ""
+
+msgid "Sending..."
+msgstr ""
+
+msgid "Send"
+msgstr ""
+
+msgid "Loading..."
+msgstr ""
+
+msgid "There is no data for this month"
+msgstr ""
+
+msgid "List of users"
+msgstr ""
+
+msgid "Message"
 msgstr ""
 
 msgid "Set Target Values for Project"
@@ -465,6 +526,9 @@ msgstr ""
 msgid "Selection of MER Indicators"
 msgstr ""
 
+msgid "Define sharing settings for metadata of the project."
+msgstr ""
+
 msgid "Summary and Save"
 msgstr ""
 
@@ -477,9 +541,6 @@ msgid "Edit project"
 msgstr ""
 
 msgid "New project"
-msgstr ""
-
-msgid "Loading..."
 msgstr ""
 
 msgid ""

@@ -31,6 +31,7 @@ const SaveStep: React.FC<StepProps> = ({ project, onCancel }) => {
     const snackbar = useSnackbar();
     const history = useHistory();
     const classes = useStyles();
+    const sharing = project.sharing;
 
     async function save() {
         try {
@@ -86,6 +87,19 @@ const SaveStep: React.FC<StepProps> = ({ project, onCancel }) => {
                         value={project.locations.map(location => location.displayName).join(", ")}
                     />
 
+                    <LiEntry label={i18n.t("Sharing")}>
+                        <ul>
+                            <li>
+                                {i18n.t("Users") + ": "}
+                                {sharing.userAccesses.map(ua => ua.name).join(", ") || " - "}
+                            </li>
+                            <li>
+                                {i18n.t("User groups") + ": "}
+                                {sharing.userGroupAccesses.map(uga => uga.name).join(", ") || " -"}
+                            </li>
+                        </ul>
+                    </LiEntry>
+
                     <LiEntry label={i18n.t("Sectors")} value={getSectorsInfo(project)} />
                 </ul>
 
@@ -105,10 +119,16 @@ const SaveStep: React.FC<StepProps> = ({ project, onCancel }) => {
     );
 };
 
-const LiEntry = ({ label, value }: { label: string; value?: React.ReactNode }) => {
+interface LiEntryProps {
+    label: string;
+    value?: React.ReactNode;
+}
+
+const LiEntry: React.FC<LiEntryProps> = props => {
+    const { label, value, children } = props;
     return (
         <li key={label}>
-            {label}:&nbsp;{value || "-"}
+            {label}:&nbsp;{value || children || "-"}
         </li>
     );
 };
