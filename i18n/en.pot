@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2020-06-23T10:12:38.562Z\n"
-"PO-Revision-Date: 2020-06-23T10:12:38.562Z\n"
+"POT-Creation-Date: 2020-06-29T16:37:57.937Z\n"
+"PO-Revision-Date: 2020-06-29T16:37:57.937Z\n"
 
 msgid "Data Entry"
 msgstr ""
@@ -123,6 +123,15 @@ msgid "Selected country"
 msgstr ""
 
 msgid "Locations"
+msgstr ""
+
+msgid "Sharing"
+msgstr ""
+
+msgid "Users"
+msgstr ""
+
+msgid "User groups"
 msgstr ""
 
 msgid "Sectors"
@@ -487,6 +496,9 @@ msgid "Selection of Indicators"
 msgstr ""
 
 msgid "Selection of MER Indicators"
+msgstr ""
+
+msgid "Define sharing settings for metadata of the project."
 msgstr ""
 
 msgid "Summary and Save"

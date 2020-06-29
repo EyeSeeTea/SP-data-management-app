@@ -21,6 +21,7 @@ export type Config = {
     indicators: Indicator[];
     countries: Country[];
     dataApprovalWorkflows: IndexedObjs<"dataApprovalWorkflows", DataApprovalWorkflow>;
+    userGroups: Record<string, UserGroup>;
 };
 
 const yes = true as const;
@@ -91,6 +92,11 @@ const baseConfig = {
     dataApprovalWorkflows: {
         project: "PM_PROJECT",
     },
+    userGroups: {
+        systemAdmin: "SYSTEM_ADMIN",
+        appAdmin: "PROJECT_MONITORING_ADMIN",
+        countryAdminPrefix: "ADMIN_COUNTRY_",
+    },
 };
 
 function getParamsForIndexables(indexedCodes: _.Dictionary<string>) {
@@ -143,7 +149,7 @@ const metadataParams = {
         fields: { id: yes, code: yes },
     },
     organisationUnits: {
-        fields: { id: yes, displayName: yes },
+        fields: { id: yes, code: yes, displayName: yes },
         filter: { level: { eq: baseConfig.orgUnits.levelForCountries.toString() } },
     },
     organisationUnitGroupSets: {
@@ -171,6 +177,12 @@ const metadataParams = {
             code: { in: _.values(baseConfig.dataApprovalWorkflows) },
         },
     },
+    userGroups: {
+        fields: { id: yes, code: yes, displayName: yes },
+        filter: {
+            code: { like: "ADMIN" },
+        },
+    },
 };
 
 export type Metadata = MetadataPick<typeof metadataParams>;
@@ -196,7 +208,7 @@ type CodedObject = { id: Id; code: string };
 
 export type Sector = NamedObject & CodedObject;
 export type Funder = NamedObject;
-export type Country = NamedObject;
+export type Country = NamedObject & CodedObject;
 export type Location = NamedObject & { countries: Ref[] };
 export type DataApprovalWorkflow = CodedObject;
 
@@ -211,6 +223,7 @@ export type CategoryOption = CodedObject & { categoryOptionCombos: NamedObject[]
 export type Category = CodedObject & { categoryOptions: CategoryOption[] };
 export type LegendSet = CodedObject;
 export type Indicator = CodedObject;
+export type UserGroup = NamedObject & CodedObject;
 
 class ConfigLoader {
     constructor(public api: D2Api) {}
@@ -237,6 +250,7 @@ class ConfigLoader {
             legendSets: indexObjects(metadata, "legendSets"),
             dataApprovalWorkflows: indexObjects(metadata, "dataApprovalWorkflows"),
             countries: _.sortBy(metadata.organisationUnits, ou => ou.displayName),
+            userGroups: _.keyBy(metadata.userGroups, ug => ug.code),
         };
     }
 
