@@ -4,11 +4,11 @@ import ReactDOM from "react-dom";
 import { init } from "d2";
 import i18n from "@dhis2/d2-i18n";
 import { Provider } from "@dhis2/app-runtime";
-import { D2ApiDefault } from "d2-api";
 
 import App from "./components/app/App";
 import "./locales";
 import "./utils/lodash-mixins";
+import { D2Api } from "./types/d2-api";
 
 async function getBaseUrl() {
     if (process.env.NODE_ENV === "development") {
@@ -36,7 +36,7 @@ function configI18n(userSettings) {
 async function main() {
     const baseUrl = await getBaseUrl();
     const d2 = await init({ baseUrl: baseUrl + "/api" });
-    const api = new D2ApiDefault({ baseUrl });
+    const api = new D2Api({ baseUrl });
     const userSettings = await api.get("/userSettings").getData();
     configI18n(userSettings);
     const config = { baseUrl, apiVersion: "30" };

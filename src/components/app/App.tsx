@@ -9,7 +9,7 @@ import { useDataQuery, useConfig } from "@dhis2/app-runtime";
 import _ from "lodash";
 //@ts-ignore
 import { SnackbarProvider } from "d2-ui-components";
-import { D2Api } from "d2-api";
+import { D2Api } from "../../types/d2-api";
 
 import "./App.css";
 import { muiTheme } from "./themes/dhis2.theme";
