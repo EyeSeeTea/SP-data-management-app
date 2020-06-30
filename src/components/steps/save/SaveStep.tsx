@@ -1,8 +1,6 @@
 import React, { useState, ReactNode, ReactElement } from "react";
 import { Button, LinearProgress } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import striptags from "striptags";
-import ReactDOMServer from "react-dom/server";
 
 import ExitWizardButton from "../../wizard/ExitWizardButton";
 import i18n from "../../../locales";
@@ -13,6 +11,7 @@ import { useHistory } from "react-router";
 import { generateUrl } from "../../../router";
 import { useAppContext } from "../../../contexts/api-context";
 import { saveDataValues } from "../../../models/dev-project";
+import { ProjectNotification } from "../../../models/ProjectNotification";
 
 const useStyles = makeStyles({
     wrapper: {
@@ -132,7 +131,7 @@ function getProjectPeriodDateString(project: Project): string {
 }
 
 function useSave(project: Project, action: StepProps["action"], projectInfo: ReactElement) {
-    const { api, isDev, appConfig } = useAppContext();
+    const { api, isDev, isTest, appConfig, currentUser } = useAppContext();
     const [isSaving, setSaving] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const snackbar = useSnackbar();
@@ -142,14 +141,17 @@ function useSave(project: Project, action: StepProps["action"], projectInfo: Rea
         try {
             setSaving(true);
             const { payload, response, project: projectSaved } = await project.save();
-            const baseMsg =
-                action === "create" ? i18n.t("Project created") : i18n.t("Project updated");
-            const msg = `${baseMsg}: ${projectSaved.name}`;
             const recipients = appConfig.app.notifyEmailOnProjectSave;
-            api.email.sendMessage({ recipients, subject: msg, text: html2Text(projectInfo) });
             setSaving(false);
 
             if (response && response.status === "OK") {
+                if (!isTest) {
+                    const notificator = new ProjectNotification(api, projectSaved, currentUser);
+                    notificator.notifyOnProjectSave(projectInfo, recipients, action);
+                }
+                const baseMsg =
+                    action === "create" ? i18n.t("Project created") : i18n.t("Project updated");
+                const msg = `${baseMsg}: ${projectSaved.name}`;
                 history.push(generateUrl("projects"));
                 if (isDev) saveDataValues(api, projectSaved);
                 snackbar.success(msg);
@@ -163,11 +165,6 @@ function useSave(project: Project, action: StepProps["action"], projectInfo: Rea
     }, [project, setSaving, history, snackbar, action, api, appConfig, isDev, projectInfo]);
 
     return { isSaving, errorMessage, save };
-}
-
-function html2Text(element: ReactElement): string {
-    const html = ReactDOMServer.renderToStaticMarkup(element);
-    return striptags(html, [], "\n");
 }
 
 export default React.memo(SaveStep);

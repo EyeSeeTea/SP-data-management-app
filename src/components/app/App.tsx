@@ -102,10 +102,11 @@ const App = () => {
             const d2 = await init({ baseUrl: baseUrl + "/api" });
             const api = new D2ApiDefault({ baseUrl });
             const config = await getConfig(api);
+            const isTest = process.env.REACT_APP_CYPRESS === "true";
 
             configI18n(data.userSettings);
             const currentUser = new User(config);
-            const appContext: AppContext = { d2, api, config, currentUser, isDev, appConfig };
+            const appContext = { d2, api, config, currentUser, isDev, isTest, appConfig };
             setAppContext(appContext);
             Object.assign(window, { pm: appContext });
 

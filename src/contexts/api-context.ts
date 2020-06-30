@@ -11,6 +11,7 @@ export interface AppContext {
     currentUser: User;
     appConfig: AppConfig;
     isDev: boolean;
+    isTest: boolean;
 }
 
 export type CurrentUser = AppContext["currentUser"];

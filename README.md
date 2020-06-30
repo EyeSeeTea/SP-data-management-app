@@ -43,6 +43,8 @@ For cypress tests to work in Travis CI, you will have to create an environment v
 
 ## Build
 
+Customize main configuration file `public/app-config.json` and then build the ZIP package:
+
 ```
 $ yarn build-webapp
 ```
