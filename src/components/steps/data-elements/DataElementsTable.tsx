@@ -17,7 +17,7 @@ export interface DataElementsTableProps {
 }
 
 const initialPagination: Partial<TablePagination> = {
-    pageSize: 50,
+    pageSize: 20,
     page: 1,
     pageSizeOptions: [10, 20, 50],
 };
@@ -38,6 +38,8 @@ const sortableFields = [
     "externals",
 ] as const;
 type SortableField = typeof sortableFields[number];
+
+const getName = _.memoize(_getName, dataElement => dataElement.id);
 
 const columns: TableColumn<DataElement>[] = [
     {
@@ -169,7 +171,7 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-function getName(dataElement: DataElement, _value: ReactNode): ReactNode {
+function _getName(dataElement: DataElement, _value: ReactNode): ReactNode {
     return <NameColumn key={dataElement.name} dataElement={dataElement} />;
 }
 
@@ -236,7 +238,7 @@ function withPaired<Field extends keyof DataElement>(
         return <React.Fragment key={key}>{renderJoin(values, <br />)}</React.Fragment>;
     };
 
-    return render;
+    return _.memoize(render, dataElement => dataElement.id);
 }
 
 function getSelectionMessage(dataElements: DataElement[], action: string): string | null {
