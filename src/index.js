@@ -1,11 +1,14 @@
 import React from "react";
 import axios from "axios";
 import ReactDOM from "react-dom";
+import { init } from "d2";
+import i18n from "@dhis2/d2-i18n";
 import { Provider } from "@dhis2/app-runtime";
 
 import App from "./components/app/App";
 import "./locales";
 import "./utils/lodash-mixins";
+import { D2Api } from "./types/d2-api";
 
 async function getBaseUrl() {
     if (process.env.NODE_ENV === "development") {
@@ -18,15 +21,29 @@ async function getBaseUrl() {
     }
 }
 
+function isLangRTL(code) {
+    const langs = ["ar", "fa", "ur"];
+    const prefixed = langs.map(c => `${c}-`);
+    return langs.includes(code) || prefixed.filter(c => code && code.startsWith(c)).length > 0;
+}
+
+function configI18n(userSettings) {
+    const uiLocale = userSettings.keyUiLocale;
+    i18n.changeLanguage(uiLocale);
+    document.documentElement.setAttribute("dir", isLangRTL(uiLocale) ? "rtl" : "ltr");
+}
+
 async function main() {
-    const config = {
-        baseUrl: await getBaseUrl(),
-        apiVersion: "30",
-    };
+    const baseUrl = await getBaseUrl();
+    const d2 = await init({ baseUrl: baseUrl + "/api" });
+    const api = new D2Api({ baseUrl });
+    const userSettings = await api.get("/userSettings").getData();
+    configI18n(userSettings);
+    const config = { baseUrl, apiVersion: "30" };
     try {
         ReactDOM.render(
             <Provider config={config}>
-                <App />
+                <App d2={d2} api={api} />
             </Provider>,
             document.getElementById("root")
         );
