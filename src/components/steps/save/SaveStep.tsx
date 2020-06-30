@@ -143,7 +143,7 @@ function getProjectPeriodDateString(project: Project): string {
     const dateFormat = "MMMM YYYY";
 
     if (startDate && endDate) {
-        return [startDate.format(dateFormat), "->", endDate.format(dateFormat)].join(" ");
+        return [startDate.format(dateFormat), "-", endDate.format(dateFormat)].join(" ");
     } else {
         return "-";
     }
