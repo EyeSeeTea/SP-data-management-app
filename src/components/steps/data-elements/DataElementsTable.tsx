@@ -216,7 +216,6 @@ function getTooltipContents(dataElement: DataElement) {
                     {description}
                 </div>
             )}
-            ) : null,
         </React.Fragment>
     );
 }
