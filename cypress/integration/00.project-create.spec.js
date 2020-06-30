@@ -94,6 +94,14 @@ describe("Projects - Create", () => {
 
         cy.contains("Next").click();
 
+        // Sharing
+
+        cy.waitForStep("Sharing");
+        cy.contains("System Admin");
+        cy.contains("Project Monitoring Admin");
+        cy.contains("Country Admin Bahamas");
+        cy.contains("Next").click();
+
         // Save step
 
         cy.waitForStep("Summary and Save");

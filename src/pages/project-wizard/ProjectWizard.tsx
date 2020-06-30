@@ -6,7 +6,7 @@ import { LinearProgress } from "@material-ui/core";
 import { History, Location } from "history";
 
 import Project, { ValidationKey } from "../../models/Project";
-import { D2Api } from "d2-api";
+import { D2Api } from "../../types/d2-api";
 import { generateUrl } from "../../router";
 import i18n from "../../locales";
 import ExitWizardButton from "../../components/wizard/ExitWizardButton";
@@ -21,6 +21,7 @@ import { getDevProject } from "../../models/dev-project";
 import { Config } from "../../models/Config";
 import { helpTexts } from "./help-texts";
 import { ReactComponentLike } from "prop-types";
+import SharingStep from "../../components/steps/sharing/SharingStep";
 
 type Action = { type: "create" } | { type: "edit"; id: string };
 
@@ -137,6 +138,12 @@ class ProjectWizardImpl extends React.Component<Props, State> {
                 component: DataElementsMER,
                 validationKeys: ["dataElementsMER"],
                 help: helpTexts.merIndicators,
+            },
+            {
+                key: "sharing",
+                label: i18n.t("Sharing"),
+                component: SharingStep,
+                description: i18n.t("Define sharing settings for metadata of the project."),
             },
             {
                 key: "save",

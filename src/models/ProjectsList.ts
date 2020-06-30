@@ -1,6 +1,6 @@
 import _ from "lodash";
 import { TableSorting, TablePagination } from "d2-ui-components";
-import { D2Api, D2OrganisationUnitSchema, SelectedPick, Id } from "d2-api";
+import { D2Api, D2OrganisationUnitSchema, SelectedPick, Id } from "../types/d2-api";
 import { Config } from "./Config";
 import moment from "moment";
 import { Sector, getOrgUnitDatesFromProject, getProjectFromOrgUnit } from "./Project";
@@ -26,7 +26,6 @@ const orgUnitFields = {
     displayName: true,
     displayDescription: true,
     href: true,
-    publicAccess: true,
     created: true,
     lastUpdated: true,
     lastUpdatedBy: { name: true },

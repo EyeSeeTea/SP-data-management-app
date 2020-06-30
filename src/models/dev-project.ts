@@ -1,5 +1,5 @@
 import md5 from "md5";
-import { D2Api, DataValueSetsPostRequest } from "d2-api";
+import { D2Api, DataValueSetsPostRequest } from "../types/d2-api";
 import _ from "lodash";
 import Project from "./Project";
 import moment from "moment";

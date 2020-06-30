@@ -29,6 +29,9 @@ describe("Projects - Edit", () => {
         cy.waitForStep("Selection of MER Indicators");
         cy.contains("Next").click();
 
+        cy.waitForStep("Sharing");
+        cy.contains("Next").click();
+
         cy.waitForStep("Summary and Save");
 
         cy.contains("Name");

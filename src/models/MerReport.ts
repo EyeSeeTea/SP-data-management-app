@@ -1,10 +1,9 @@
 import { GetItemType } from "./../types/utils";
 import moment, { Moment } from "moment";
 import _ from "lodash";
-import { D2Api, Id, Ref, D2OrganisationUnit } from "d2-api";
+import { Id, Ref, D2Api, D2OrganisationUnit, DataStore } from "../types/d2-api";
 import { Config } from "./Config";
 import { getDataStore } from "../utils/dhis2";
-import DataStore from "d2-api/api/dataStore";
 import { runPromises } from "../utils/promises";
 import { getProjectFromOrgUnit, getOrgUnitDatesFromProject } from "./Project";
 import { toISOString, getMonthsRange } from "../utils/date";

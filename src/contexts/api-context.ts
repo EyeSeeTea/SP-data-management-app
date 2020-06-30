@@ -1,6 +1,6 @@
 import { Config } from "../models/Config";
 import React, { useContext } from "react";
-import { D2Api } from "d2-api";
+import { D2Api } from "../types/d2-api";
 import User from "../models/user";
 import { AppConfig } from "../components/app/App";
 

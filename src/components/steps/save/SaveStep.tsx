@@ -57,10 +57,16 @@ const SaveStep: React.FC<StepProps> = ({ project, onCancel, action }) => {
     );
 };
 
-const LiEntry = ({ label, value }: { label: string; value?: React.ReactNode }) => {
+interface LiEntryProps {
+    label: string;
+    value?: React.ReactNode;
+}
+
+const LiEntry: React.FC<LiEntryProps> = props => {
+    const { label, value, children } = props;
     return (
         <li key={label}>
-            {label}:&nbsp;{value || "-"}
+            {label}:&nbsp;{value || children || "-"}
         </li>
     );
 };
@@ -86,6 +92,19 @@ const ProjectInfo: React.FC<{ project: Project }> = ({ project }) => (
             label={i18n.t("Locations")}
             value={project.locations.map(location => location.displayName).join(", ")}
         />
+
+        <LiEntry label={i18n.t("Sharing")}>
+            <ul>
+                <li>
+                    {i18n.t("Users") + ": "}
+                    {project.sharing.userAccesses.map(ua => ua.name).join(", ") || " - "}
+                </li>
+                <li>
+                    {i18n.t("User groups") + ": "}
+                    {project.sharing.userGroupAccesses.map(uga => uga.name).join(", ") || " -"}
+                </li>
+            </ul>
+        </LiEntry>
 
         <LiEntry label={i18n.t("Sectors")} value={getSectorsInfo(project)} />
     </ul>

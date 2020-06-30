@@ -16,7 +16,7 @@ const OrgUnitsStep: React.FC<StepProps> = ({ project, onChange }) => {
     const { d2, config } = useAppContext();
 
     const setOrgUnit = async (orgUnit: OrganisationUnit) => {
-        const newProject = project.set("parentOrgUnit", orgUnit);
+        const newProject = project.setCountry(orgUnit);
         onChange(newProject);
     };
 
