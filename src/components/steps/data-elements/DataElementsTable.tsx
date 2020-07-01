@@ -6,6 +6,8 @@ import _ from "lodash";
 import DataElementsFilters, { Filter } from "./DataElementsFilters";
 import i18n from "../../../locales";
 import DataElementsSet, { SelectionInfo, DataElement } from "../../../models/dataElementsSet";
+import { Tooltip } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import { Id } from "../../../types/d2-api";
 
 export interface DataElementsTableProps {
@@ -15,7 +17,7 @@ export interface DataElementsTableProps {
 }
 
 const initialPagination: Partial<TablePagination> = {
-    pageSize: 50,
+    pageSize: 20,
     page: 1,
     pageSizeOptions: [10, 20, 50],
 };
@@ -36,6 +38,8 @@ const sortableFields = [
     "externals",
 ] as const;
 type SortableField = typeof sortableFields[number];
+
+const getName = _.memoize(_getName, dataElement => dataElement.id);
 
 const columns: TableColumn<DataElement>[] = [
     {
@@ -153,19 +157,69 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
     );
 };
 
-function getName(dataElement: DataElement, _value: ReactNode): ReactNode {
-    const dataElements = [dataElement, ...dataElement.pairedDataElements];
+const useStyles = makeStyles(() => ({
+    tooltip: {
+        maxWidth: 800,
+        border: "1px solid #dadde9",
+        backgroundColor: "#616161",
+    },
+    tooltipContents: {
+        padding: 2,
+        fontSize: "1.5em",
+        lineHeight: "1.3em",
+        fontWeight: "normal",
+    },
+}));
 
-    const dataElementNodes = renderJoin(
-        dataElements.map(de => (
-            <span key={de.id} title={de.description}>
-                {de.name}
-            </span>
+function _getName(dataElement: DataElement, _value: ReactNode): ReactNode {
+    return <NameColumn key={dataElement.name} dataElement={dataElement} />;
+}
+
+const NameColumn: React.FC<{ dataElement: DataElement }> = ({ dataElement }) => {
+    const dataElements = [dataElement, ...dataElement.pairedDataElements];
+    const classes = useStyles();
+    const tooltips = renderJoin(
+        dataElements.map(dataElement => (
+            <Tooltip
+                enterDelay={500}
+                leaveDelay={0}
+                key={dataElement.id}
+                title={
+                    <div className={classes.tooltipContents}>{getTooltipContents(dataElement)}</div>
+                }
+                classes={{ tooltip: classes.tooltip }}
+            >
+                <span>{dataElement.name}</span>
+            </Tooltip>
         )),
         <br />
     );
 
-    return <React.Fragment key={dataElement.name}>{dataElementNodes}</React.Fragment>;
+    return <React.Fragment>{tooltips}</React.Fragment>;
+};
+
+function getTooltipContents(dataElement: DataElement) {
+    const { externalsDescription, description } = dataElement;
+    return (
+        <React.Fragment>
+            <div>
+                {dataElement.code} - {dataElement.name}
+            </div>
+            <br />
+            {externalsDescription && (
+                <div>
+                    <b>{i18n.t("Externals")}: </b>
+                    {externalsDescription}
+                </div>
+            )}
+            {description && (
+                <div>
+                    <b>{i18n.t("Guidance")}: </b>
+                    {description}
+                </div>
+            )}
+        </React.Fragment>
+    );
 }
 
 function withPaired<Field extends keyof DataElement>(
@@ -175,7 +229,7 @@ function withPaired<Field extends keyof DataElement>(
     const mapper_ = mapper || _.identity;
     const render = function(dataElement: DataElement, _value: ReactNode) {
         const paired = dataElement.pairedDataElements;
-        const values = [dataElement, ...paired].map(de => mapper_(de[field]));
+        const values = [dataElement, ...paired].map(de => mapper_(de[field]) || "-");
         // <DataTable /> uses the column node key (if present) as sorting key, so let's set it
         // to a value that performs a composite (dataElement[FIELD], dataElement.code) ordering.
         const value = dataElement[field];
@@ -184,7 +238,7 @@ function withPaired<Field extends keyof DataElement>(
         return <React.Fragment key={key}>{renderJoin(values, <br />)}</React.Fragment>;
     };
 
-    return render;
+    return _.memoize(render, dataElement => dataElement.id);
 }
 
 function getSelectionMessage(dataElements: DataElement[], action: string): string | null {
@@ -217,9 +271,11 @@ function onTableChange(
 }
 
 function renderJoin(nodes: ReactNode[], separator: ReactNode): ReactNode {
-    return _.flatMap(nodes, (node, idx) =>
-        idx < nodes.length - 1 ? [node, separator] : [node]
-    ).map((node, idx) => <React.Fragment key={idx}>{node || "-"}</React.Fragment>);
+    return _(nodes)
+        .compact()
+        .flatMap((node, idx) => (idx < nodes.length - 1 ? [node, separator] : [node]))
+        .map((node, idx) => <React.Fragment key={idx}>{node || "-"}</React.Fragment>)
+        .value();
 }
 
 export default React.memo(DataElementsTable);

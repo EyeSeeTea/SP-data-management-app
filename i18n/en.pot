@@ -98,6 +98,9 @@ msgstr ""
 msgid "Search by name / code"
 msgstr ""
 
+msgid "Guidance"
+msgstr ""
+
 msgid "selected"
 msgstr ""
 
