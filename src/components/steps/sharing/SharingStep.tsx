@@ -5,6 +5,7 @@ import { StepProps } from "../../../pages/project-wizard/ProjectWizard";
 import ProjectSharing from "../../../models/ProjectSharing";
 
 const showOptions = {
+    title: false,
     dataSharing: true,
     publicSharing: false,
     externalSharing: false,
