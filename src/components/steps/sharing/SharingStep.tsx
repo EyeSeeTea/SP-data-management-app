@@ -73,7 +73,7 @@ const SharingStep: React.FC<StepProps> = props => {
 };
 
 const useStyles = makeStyles({
-    footer: { marginTop: 10, fontSize: "1.2em" },
+    footer: { marginTop: 10, marginBottom: 15, fontSize: "1.1em", textAlign: "right" },
 });
 
 export default React.memo(SharingStep);

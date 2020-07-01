@@ -331,9 +331,10 @@ function getSharingInfo(project: ProjectForList) {
     const { sharing } = project;
     return (
         <React.Fragment>
-            {i18n.t("Users")}: {sharing.userAccesses.map(ua => ua.name).join(", ")}
+            <i>{i18n.t("Users")}:</i> {sharing.userAccesses.map(ua => ua.name).join(", ")}
             <br />
-            {i18n.t("User groups")}: {sharing.userGroupAccesses.map(ua => ua.name).join(", ")}
+            <i>{i18n.t("User groups")}:</i>{" "}
+            {sharing.userGroupAccesses.map(ua => ua.name).join(", ")}
         </React.Fragment>
     );
 }
