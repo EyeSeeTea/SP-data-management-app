@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2020-06-29T16:58:16.305Z\n"
-"PO-Revision-Date: 2020-06-29T16:58:16.305Z\n"
+"POT-Creation-Date: 2020-06-29T19:45:10.271Z\n"
+"PO-Revision-Date: 2020-06-29T19:45:10.271Z\n"
 
 msgid "Data Entry"
 msgstr ""
@@ -96,6 +96,9 @@ msgid "Counting Method"
 msgstr ""
 
 msgid "Search by name / code"
+msgstr ""
+
+msgid "Guidance"
 msgstr ""
 
 msgid "selected"
