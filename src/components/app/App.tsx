@@ -21,10 +21,13 @@ import { getConfig } from "../../models/Config";
 import User from "../../models/user";
 import { LinearProgress } from "@material-ui/core";
 
-interface AppConfig {
+export interface AppConfig {
     appKey: string;
     appearance: {
         showShareButton: boolean;
+    };
+    app: {
+        notifyEmailOnProjectSave: string[];
     };
     feedback: {
         token: string[];
@@ -90,7 +93,8 @@ const App: React.FC<AppProps> = props => {
             }).then(res => res.json());
             const config = await getConfig(api);
             const currentUser = new User(config);
-            const appContext: AppContext = { d2, api, config, currentUser, isDev };
+            const isTest = process.env.REACT_APP_CYPRESS === "true";
+            const appContext = { d2, api, config, currentUser, isDev, isTest, appConfig };
             setAppContext(appContext);
 
             Object.assign(window, { pm: appContext });

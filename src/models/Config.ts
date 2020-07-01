@@ -199,6 +199,7 @@ export type BaseConfig = typeof baseConfig;
 export type CurrentUser = {
     id: Id;
     displayName: string;
+    username: string;
     userRoles: Array<{ name: string }>;
     organisationUnits: OrganisationUnit[];
 };
@@ -241,8 +242,8 @@ class ConfigLoader {
         const metadata: Metadata = await this.api.metadata.get(metadataParams).getData();
         const d2CurrentUser = await this.getCurrentUser();
         const { funders, locations } = getFundersAndLocations(metadata);
-        const { userRoles } = d2CurrentUser.userCredentials;
-        const currentUser = { ...d2CurrentUser, userRoles };
+        const { userRoles, username } = d2CurrentUser.userCredentials;
+        const currentUser = { ...d2CurrentUser, userRoles, username };
         const dataElementsMetadata = await this.getDataElementsMetadata(currentUser, metadata);
 
         return {
@@ -269,7 +270,7 @@ class ConfigLoader {
                 fields: {
                     id: true,
                     displayName: true,
-                    userCredentials: { userRoles: { name: true } },
+                    userCredentials: { username: true, userRoles: { name: true } },
                     organisationUnits: { id: true, displayName: true, level: true },
                 },
             })

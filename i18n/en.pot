@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2020-06-29T19:45:10.271Z\n"
-"PO-Revision-Date: 2020-06-29T19:45:10.271Z\n"
+"POT-Creation-Date: 2020-06-30T09:46:03.552Z\n"
+"PO-Revision-Date: 2020-06-30T09:46:03.552Z\n"
 
 msgid "Data Entry"
 msgstr ""
@@ -116,6 +116,9 @@ msgstr ""
 msgid "Field length is invalid"
 msgstr ""
 
+msgid "Save"
+msgstr ""
+
 msgid "Description"
 msgstr ""
 
@@ -152,13 +155,16 @@ msgstr ""
 msgid "Sectors"
 msgstr ""
 
-msgid "Save"
-msgstr ""
-
 msgid "Hidden in data entry as it is selected in multiple sectors!"
 msgstr ""
 
 msgid "MER"
+msgstr ""
+
+msgid "Project created"
+msgstr ""
+
+msgid "Project updated"
 msgstr ""
 
 msgid "Cancel Project creation?"
@@ -394,6 +400,15 @@ msgid "Female Recurring"
 msgstr ""
 
 msgid "People"
+msgstr ""
+
+msgid "Project '{{projectName}}' was {{action}} by {{user}} ({{username}})"
+msgstr ""
+
+msgid "created"
+msgstr ""
+
+msgid "updated"
 msgstr ""
 
 msgid "The following sectors have no indicators selected"
