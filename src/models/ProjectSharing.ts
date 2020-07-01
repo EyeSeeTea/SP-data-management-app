@@ -5,10 +5,10 @@ import { Config } from "./Config";
 type D2Access = string;
 
 export interface D2Sharing {
-    publicAccess: D2Access;
-    externalAccess: boolean;
-    userAccesses: D2EntityAccess[];
-    userGroupAccesses: D2EntityAccess[];
+    publicAccess?: D2Access;
+    externalAccess?: boolean;
+    userAccesses?: D2EntityAccess[];
+    userGroupAccesses?: D2EntityAccess[];
 }
 
 type D2SharingUpdate = Partial<D2Sharing>;
@@ -191,8 +191,8 @@ function getEntitiesAccess(d2EntitySharings: D2EntityAccess[]): EntityAccess[] {
 }
 
 export function getSharing(object: D2Sharing): Sharing {
-    const userAccesses = getEntitiesAccess(object.userAccesses);
-    const userGroupAccesses = getEntitiesAccess(object.userGroupAccesses);
+    const userAccesses = getEntitiesAccess(object.userAccesses || []);
+    const userGroupAccesses = getEntitiesAccess(object.userGroupAccesses || []);
     return { userAccesses, userGroupAccesses };
 }
 

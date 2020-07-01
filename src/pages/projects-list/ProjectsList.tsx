@@ -82,6 +82,11 @@ function getComponentConfig(
                 `${project.lastUpdatedBy ? project.lastUpdatedBy.name : "-"}`,
         },
         {
+            name: "sharing" as const,
+            text: i18n.t("Sharing"),
+            getValue: getSharingInfo,
+        },
+        {
             name: "href" as const,
             text: i18n.t("API Link"),
             getValue: function getDataSetLink(project: ProjectForList) {
@@ -314,6 +319,17 @@ const LoadingSpinner: React.FunctionComponent<{ isVisible: boolean }> = ({ isVis
 function onFirst<T>(objs: T[], fn: (obj: T) => void): void {
     const obj = _.first(objs);
     if (obj) fn(obj);
+}
+
+function getSharingInfo(project: ProjectForList) {
+    const { sharing } = project;
+    return (
+        <React.Fragment>
+            {i18n.t("Users")}: {sharing.userAccesses.map(ua => ua.name).join(", ")}
+            <br />
+            {i18n.t("User groups")}: {sharing.userGroupAccesses.map(ua => ua.name).join(", ")}
+        </React.Fragment>
+    );
 }
 
 export default React.memo(ProjectsList);
