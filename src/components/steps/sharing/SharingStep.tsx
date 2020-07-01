@@ -33,12 +33,17 @@ const SharingStep: React.FC<StepProps> = props => {
     );
     const search = React.useCallback((query: string) => searchUsers(api, query), [api]);
 
+    const unremovebleIds = React.useMemo(() => {
+        return projectSharing.getBaseSharingIds();
+    }, [projectSharing]);
+
     return (
         <Sharing
             meta={sharedObject}
             showOptions={showOptions}
             onSearch={search}
             onChange={setProjectSharing}
+            unremovebleIds={unremovebleIds}
         />
     );
 };
