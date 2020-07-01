@@ -34,6 +34,7 @@ export interface StepProps {
     project: Project;
     onChange: (project: Project) => void;
     onCancel: () => void;
+    action: "create" | "update";
 }
 
 interface Props {
@@ -189,7 +190,7 @@ class ProjectWizardImpl extends React.Component<Props, State> {
 
     render() {
         const { project, dialogOpen } = this.state;
-        const { api, location } = this.props;
+        const { api, location, action } = this.props;
         if (project) Object.assign(window, { project, Project });
 
         const steps = this.getStepsBaseInfo().map(step => ({
@@ -199,6 +200,7 @@ class ProjectWizardImpl extends React.Component<Props, State> {
                 api,
                 onChange: this.onChange(step),
                 onCancel: this.goToConfiguration,
+                action: action.type,
             },
         }));
 

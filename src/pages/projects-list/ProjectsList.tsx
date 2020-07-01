@@ -18,6 +18,8 @@ import ProjectsListFilters, { Filter } from "./ProjectsListFilters";
 import { ProjectForList, FiltersForList } from "../../models/ProjectsList";
 import DeleteDialog from "../../components/delete-dialog/DeleteDialog";
 import { Action } from "../../models/user";
+import { useLocation } from "react-router-dom";
+import { parse } from "querystring";
 
 type ContextualAction = Exclude<Action, "create" | "accessMER" | "reopen"> | "details";
 
@@ -171,6 +173,8 @@ type ProjectTableSorting = TableSorting<ProjectForList>;
 const ProjectsList: React.FC = () => {
     const goTo = useGoTo();
     const { api, config, currentUser } = useAppContext();
+    const match = useLocation();
+    const queryParams = parse(match.search.slice(1));
     const [projectIdsToDelete, setProjectIdsToDelete] = useState<Id[] | undefined>(undefined);
     const componentConfig = React.useMemo(() => {
         return getComponentConfig(api, config, goTo, setProjectIdsToDelete, currentUser);
@@ -178,7 +182,8 @@ const ProjectsList: React.FC = () => {
     const [rows, setRows] = useState<ProjectForList[] | undefined>(undefined);
     const [pagination, setPagination] = useState(componentConfig.initialPagination);
     const [sorting, setSorting] = useState<ProjectTableSorting>(componentConfig.initialSorting);
-    const [search, setSearch] = useState("");
+    const initialSearch = _.castArray(queryParams.search)[0] || "";
+    const [search, setSearch] = useState(initialSearch);
     const [filter, setFilter] = useState<Filter>({});
     const [isLoading, setLoading] = useState(true);
     const [objectsTableKey, objectsTableKeySet] = useState(() => new Date().getTime());
@@ -239,6 +244,7 @@ const ProjectsList: React.FC = () => {
             {rows && (
                 <ObjectsTable<ProjectForList>
                     key={objectsTableKey}
+                    initialSearch={initialSearch}
                     searchBoxLabel={i18n.t("Search by name or code")}
                     onChangeSearch={setSearch}
                     pagination={pagination}

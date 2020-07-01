@@ -1984,6 +1984,13 @@
   resolved "https://registry.npmjs.org/@types/stack-utils/-/stack-utils-1.0.1.tgz#0a851d3bd96498fa25c33ab7278ed3bd65f06c3e"
   integrity sha512-l42BggppR6zLmpfU6fq9HEa2oGPEI8yrSPL3GITjfRInppYFahObbIQOQK3UGxEnyQpltZLaPe75046NOZQikw==
 
+"@types/striptags@^3.1.1":
+  version "3.1.1"
+  resolved "https://registry.npmjs.org/@types/striptags/-/striptags-3.1.1.tgz#26322004d802843db36a6bf31a9744e946194108"
+  integrity sha512-t11pzegWB32MpVjCMXD0LoSxsUQESC7CInDtVoEmnPbLWA5hMRSLBa0U/xCOdj6zFQyHlLn0Qmp76kyp/KyfQw==
+  dependencies:
+    striptags "*"
+
 "@types/styled-jsx@^2.2.8":
   version "2.2.8"
   resolved "https://registry.npmjs.org/@types/styled-jsx/-/styled-jsx-2.2.8.tgz#b50d13d8a3c34036282d65194554cf186bab7234"
@@ -4698,10 +4705,10 @@ cypress@^4.2.0:
     url "0.11.0"
     yauzl "2.10.0"
 
-d2-api@1.0.0-beta.5:
-  version "1.0.0-beta.5"
-  resolved "https://registry.npmjs.org/d2-api/-/d2-api-1.0.0-beta.5.tgz#f055362642ed92258699c359f7286403ac454229"
-  integrity sha512-t/vOtsgFOUBr6b/EQ9kGkhBZrqBEvihVhSyxzX+gZCYUbfKVyScj7OmxMVEFElmIm2WAz28Fypy0dgZhUeK7CQ==
+d2-api@1.0.0-beta.7:
+  version "1.0.0-beta.7"
+  resolved "https://registry.npmjs.org/d2-api/-/d2-api-1.0.0-beta.7.tgz#333b02c7774b117e879335bb32e6bebe27ec606e"
+  integrity sha512-dLxq6qkt5bSFdaqw2PQcFgGFoqsEHvS3PLZ8h2NOKV4LPZ8xHoW2KZ+kAuypKOPx61ANP07sll+QT9NTB+WBQg==
   dependencies:
     "@babel/runtime" "^7.5.4"
     "@dhis2/d2-i18n" "^1.0.5"
@@ -12058,7 +12065,7 @@ qs@~6.5.2:
   resolved "https://registry.npmjs.org/qs/-/qs-6.5.2.tgz#cb3ae806e8740444584ef154ce8ee98d403f3e36"
   integrity sha512-N5ZAX4/LxJmF+7wN74pUD6qAh9/wnvdQcjq9TZjevvXzSUo7bfmw91saqMjzGS2xq91/odN2dW/WOl7qQHNDGA==
 
-query-string@^4.1.0:
+query-string@^4.1.0, query-string@^4.3.4:
   version "4.3.4"
   resolved "https://registry.npmjs.org/query-string/-/query-string-4.3.4.tgz#bbb693b9ca915c232515b228b1a02b609043dbeb"
   integrity sha1-u7aTucqRXCMlFbIosaArYJBD2+s=
@@ -13841,6 +13848,11 @@ strip-json-comments@^3.0.1:
   version "3.0.1"
   resolved "https://registry.npmjs.org/strip-json-comments/-/strip-json-comments-3.0.1.tgz#85713975a91fb87bf1b305cca77395e40d2a64a7"
   integrity sha512-VTyMAUfdm047mwKl+u79WIdrZxtFtn+nBxHeb844XBQ9uMNTuTHdx2hc5RiAJYqwTj3wc/xe5HLSdJSkJ+WfZw==
+
+striptags@*, striptags@^3.1.1:
+  version "3.1.1"
+  resolved "https://registry.npmjs.org/striptags/-/striptags-3.1.1.tgz#c8c3e7fdd6fb4bb3a32a3b752e5b5e3e38093ebd"
+  integrity sha1-yMPn/db7S7OjKjt1LltePjgJPr0=
 
 style-loader@0.23.1:
   version "0.23.1"

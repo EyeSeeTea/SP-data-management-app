@@ -1,4 +1,5 @@
 import { useHistory } from "react-router";
+import { stringify } from "querystring";
 
 const routes = {
     projects: () => "/",
@@ -17,11 +18,13 @@ export type GoTo = typeof generateUrl;
 
 export function generateUrl<Name extends keyof Routes>(
     name: Name,
-    params: Parameters<Routes[Name]>[0] = undefined
+    params: Parameters<Routes[Name]>[0] = undefined,
+    search: Record<string, string> | undefined = undefined
 ): string {
     const fn = routes[name];
     /* eslint-disable @typescript-eslint/no-explicit-any */
-    return params ? fn(params as any) : fn(undefined as any);
+    const baseUrl = params ? fn(params as any) : fn(undefined as any);
+    return baseUrl + (search ? `?${stringify(search)}` : "");
 }
 
 export function useGoTo(): GoTo {

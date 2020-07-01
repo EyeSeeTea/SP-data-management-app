@@ -2,13 +2,16 @@ import { Config } from "../models/Config";
 import React, { useContext } from "react";
 import { D2Api } from "../types/d2-api";
 import User from "../models/user";
+import { AppConfig } from "../components/app/App";
 
 export interface AppContext {
     api: D2Api;
     d2: object;
     config: Config;
     currentUser: User;
+    appConfig: AppConfig;
     isDev: boolean;
+    isTest: boolean;
 }
 
 export type CurrentUser = AppContext["currentUser"];
