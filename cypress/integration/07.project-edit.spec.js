@@ -43,10 +43,15 @@ describe("Projects - Edit", () => {
         cy.contains("Bahamas");
         cy.contains("Sectors");
 
+        cy.server()
+            .route({ method: "post", url: "/api/email/notification*" })
+            .as("sendEmail");
+
         cy.get("[data-wizard-contents] button")
             .contains("Save")
             .click();
 
         cy.contains("Project updated", { timeout: 20000 });
+        cy.wait("@sendEmail", { timeout: 20000 });
     });
 });

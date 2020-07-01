@@ -128,10 +128,15 @@ describe("Projects - Create", () => {
         cy.contains("# of agriculture groups receiving support for improved livelihoods - B010200");
         cy.contains("# of people trained in livelihood topics - P020100 [MER]");
 
+        cy.server()
+            .route({ method: "post", url: "/api/email/notification*" })
+            .as("sendEmail");
+
         cy.get("[data-wizard-contents] button")
             .contains("Save")
             .click();
 
         cy.contains("Project created", { timeout: 30000 });
+        cy.wait("@sendEmail", { timeout: 20000 });
     });
 });

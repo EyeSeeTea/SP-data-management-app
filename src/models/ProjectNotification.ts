@@ -12,7 +12,12 @@ type Email = string;
 type Action = "create" | "update";
 
 export class ProjectNotification {
-    constructor(private api: D2Api, private project: Project, private currentUser: User) {}
+    constructor(
+        private api: D2Api,
+        private project: Project,
+        private currentUser: User,
+        private isTest: boolean
+    ) {}
 
     notifyOnProjectSave(element: ReactElement, recipients: Email[], action: Action) {
         const { api, project, currentUser } = this;
@@ -26,15 +31,13 @@ export class ProjectNotification {
                 user: currentUser.data.displayName,
                 username: currentUser.data.username,
             }),
-            getUrl(project),
+            // Cypress fails when body includes an URL,
+            !this.isTest ? getUrl(project) : "test-url",
             html2Text(element),
         ];
 
-        api.email.sendMessage({
-            recipients,
-            subject,
-            text: body.join("\n\n"),
-        });
+        const text = body.join("\n\n");
+        return api.email.sendMessage({ recipients, subject, text: text }).getData();
     }
 }
 

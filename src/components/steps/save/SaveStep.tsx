@@ -164,10 +164,8 @@ function useSave(project: Project, action: StepProps["action"], projectInfo: Rea
             setSaving(false);
 
             if (response && response.status === "OK") {
-                if (!isTest) {
-                    const notificator = new ProjectNotification(api, projectSaved, currentUser);
-                    notificator.notifyOnProjectSave(projectInfo, recipients, action);
-                }
+                const notificator = new ProjectNotification(api, projectSaved, currentUser, isTest);
+                notificator.notifyOnProjectSave(projectInfo, recipients, action);
                 const baseMsg =
                     action === "create" ? i18n.t("Project created") : i18n.t("Project updated");
                 const msg = `${baseMsg}: ${projectSaved.name}`;
