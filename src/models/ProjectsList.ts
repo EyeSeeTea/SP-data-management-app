@@ -7,6 +7,7 @@ import { Sector, getOrgUnitDatesFromProject, getProjectFromOrgUnit } from "./Pro
 import { getSectorCodeFromSectionCode } from "./ProjectDb";
 import User from "./user";
 import { getIds } from "../utils/dhis2";
+import { Sharing, getSharing } from "./ProjectSharing";
 
 export type FiltersForList = Partial<{
     search: string;
@@ -35,9 +36,11 @@ const orgUnitFields = {
     code: true,
 } as const;
 
-export type ProjectForList = SelectedPick<D2OrganisationUnitSchema, typeof orgUnitFields> & {
+type BaseProject = SelectedPick<D2OrganisationUnitSchema, typeof orgUnitFields>;
+export interface ProjectForList extends BaseProject {
     sectors: Sector[];
-};
+    sharing: Sharing;
+}
 
 export default class ProjectsList {
     currentUser: User;
@@ -76,7 +79,12 @@ export default class ProjectsList {
             : await api.metadata
                   .get({
                       dataSets: {
-                          fields: { code: true, sections: { code: true } },
+                          fields: {
+                              code: true,
+                              sections: { code: true },
+                              userAccesses: { id: true, displayName: true, access: true },
+                              userGroupAccesses: { id: true, displayName: true, access: true },
+                          },
                           filter: { code: { in: dataSetCodes } },
                       },
                   })
@@ -85,16 +93,18 @@ export default class ProjectsList {
         const dataSetByOrgUnitId = _.keyBy(dataSets, dataSet => (dataSet.code || "").split("_")[0]);
         const sectorsByCode = _.keyBy(config.sectors, sector => sector.code);
 
-        const projectsWithSectors = projects.map(orgUnit => {
+        const projectsWithSectors: ProjectForList[] = projects.map(orgUnit => {
             const dataSet = _(dataSetByOrgUnitId).get(orgUnit.id, null);
             if (!dataSet) {
-                return { ...orgUnit, sectors: [] };
+                const sharing = getSharing({});
+                return { ...orgUnit, sectors: [], sharing } as ProjectForList;
             } else {
                 const sectors = _(dataSet.sections || [])
                     .map(section => sectorsByCode[getSectorCodeFromSectionCode(section.code)])
                     .compact()
                     .value();
-                return { ...orgUnit, sectors };
+                const sharing = getSharing(dataSet);
+                return { ...orgUnit, sectors, sharing } as ProjectForList;
             }
         });
 

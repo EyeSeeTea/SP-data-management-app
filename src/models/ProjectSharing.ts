@@ -5,10 +5,10 @@ import { Config } from "./Config";
 type D2Access = string;
 
 export interface D2Sharing {
-    publicAccess: D2Access;
-    externalAccess: boolean;
-    userAccesses: D2EntityAccess[];
-    userGroupAccesses: D2EntityAccess[];
+    publicAccess?: D2Access;
+    externalAccess?: boolean;
+    userAccesses?: D2EntityAccess[];
+    userGroupAccesses?: D2EntityAccess[];
 }
 
 type D2SharingUpdate = Partial<D2Sharing>;
@@ -55,6 +55,23 @@ export default class ProjectSharing {
         ]);
 
         return { userAccesses: [], userGroupAccesses };
+    }
+
+    getBaseSharing(): Sharing {
+        const { project } = this;
+        const initialSharing = ProjectSharing.getInitialSharing(project.config);
+        const countrySharing = this.getSharingForCountry(project.parentOrgUnit);
+        return mergeSharing(initialSharing, countrySharing);
+    }
+
+    getBaseSharingIds(): Set<string> {
+        const baseSharing = this.getBaseSharing();
+        return new Set(
+            _(baseSharing.userAccesses)
+                .concat(baseSharing.userGroupAccesses)
+                .map(access => access.id)
+                .value()
+        );
     }
 
     getSharingAttributesForDataSets(): D2Sharing {
@@ -113,40 +130,38 @@ export default class ProjectSharing {
         return this.project.setObj({ sharing: newSharing });
     }
 
-    getSharingForCountry(country: OrganisationUnit): Sharing {
+    getUpdatedSharingForCountry(country: OrganisationUnit | undefined): Sharing {
         const { config } = this.project;
         const currentSharing = this.project.sharing;
-
-        const configCountry = config.countries.find(c => c.id === country.id);
-        if (!configCountry) {
-            console.error(`Country not found: ${country.id}`);
-            return currentSharing;
-        }
-
-        const code = "ADMIN_" + configCountry.code;
-        const userGroup = _(config.userGroups).get(code, null);
-        if (!userGroup) {
-            console.error(`User group found: code=${code}`);
-            return currentSharing;
-        }
+        const countrySharing = this.getSharingForCountry(country);
 
         const userGroupCodesById = _(config.userGroups)
             .map(userGroup => [userGroup.id, userGroup.code] as [string, string])
             .fromPairs()
             .value();
-        const userGroupAccessesWithCountries = _(currentSharing.userGroupAccesses)
+
+        const userGroupAccessesWithoutCountries = _(currentSharing.userGroupAccesses)
             .reject(userGroupAccess => {
                 const code = userGroupCodesById[userGroupAccess.id];
                 return !!code && code.startsWith(config.base.userGroups.countryAdminPrefix);
             })
             .value();
-        const newEntityAccess: EntityAccess = { id: userGroup.id, name: userGroup.displayName };
-        const newSharing: Sharing = {
-            ...currentSharing,
-            userGroupAccesses: [...userGroupAccessesWithCountries, newEntityAccess],
+
+        const sharingWithoutCountries: Sharing = {
+            userAccesses: currentSharing.userAccesses,
+            userGroupAccesses: userGroupAccessesWithoutCountries,
         };
 
-        return newSharing;
+        return mergeSharing(sharingWithoutCountries, countrySharing);
+    }
+
+    getSharingForCountry(country: OrganisationUnit | undefined): Sharing {
+        const { config } = this.project;
+        const configCountry = country ? config.countries.find(c => c.id === country.id) : null;
+        const userGroupCode = configCountry ? "ADMIN_" + configCountry.code : null;
+        const userGroup = userGroupCode ? _(config.userGroups).get(userGroupCode, null) : null;
+        const groupAccesses = userGroup ? [{ id: userGroup.id, name: userGroup.displayName }] : [];
+        return { userAccesses: [], userGroupAccesses: groupAccesses };
     }
 }
 
@@ -176,8 +191,8 @@ function getEntitiesAccess(d2EntitySharings: D2EntityAccess[]): EntityAccess[] {
 }
 
 export function getSharing(object: D2Sharing): Sharing {
-    const userAccesses = getEntitiesAccess(object.userAccesses);
-    const userGroupAccesses = getEntitiesAccess(object.userGroupAccesses);
+    const userAccesses = getEntitiesAccess(object.userAccesses || []);
+    const userGroupAccesses = getEntitiesAccess(object.userGroupAccesses || []);
     return { userAccesses, userGroupAccesses };
 }
 
@@ -187,4 +202,18 @@ export function getAccessFromD2Access(d2Access: D2Access): Access {
         meta: { read: metaRead === "r", write: metaWrite === "w" },
         data: { read: dataRead === "r", write: dataWrite === "w" },
     };
+}
+
+export function mergeSharing(sharing1: Sharing, sharing2: Sharing): Sharing {
+    const userAccesses = _(sharing1.userAccesses)
+        .concat(sharing2.userAccesses)
+        .uniqBy(sharing => sharing.id)
+        .value();
+
+    const userGroupAccesses = _(sharing1.userGroupAccesses)
+        .concat(sharing2.userGroupAccesses)
+        .uniqBy(sharing => sharing.id)
+        .value();
+
+    return { userAccesses, userGroupAccesses };
 }

@@ -356,7 +356,8 @@ describe("Project", () => {
 
             mock.onGet("/metadata", {
                 params: {
-                    "dataSets:fields": "code,sections[code]",
+                    "dataSets:fields":
+                        "code,sections[code],userAccesses[access,displayName,id],userGroupAccesses[access,displayName,id]",
                     "dataSets:filter": ["code:in:[3_ACTUAL,5_ACTUAL]"],
                 },
             }).replyOnce(200, {
@@ -379,8 +380,15 @@ describe("Project", () => {
             );
 
             expect(pagination).toEqual({ page: 1, pageSize: 2, total: 3 });
+            const emptySharing = { userAccesses: [], userGroupAccesses: [] };
             expect(objects).toEqual([
-                { id: "5", code: "code5", displayName: "NAME5", sectors: [] },
+                {
+                    id: "5",
+                    code: "code5",
+                    displayName: "NAME5",
+                    sectors: [],
+                    sharing: emptySharing,
+                },
                 {
                     id: "3",
                     code: "CODE3",
@@ -388,6 +396,7 @@ describe("Project", () => {
                     sectors: expect.arrayContaining([
                         expect.objectContaining({ code: "SECTOR_AGRICULTURE" }),
                     ]),
+                    sharing: emptySharing,
                 },
             ]);
         });

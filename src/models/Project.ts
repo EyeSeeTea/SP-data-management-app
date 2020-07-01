@@ -379,7 +379,7 @@ class Project {
     setCountry(country: OrganisationUnit) {
         return this.setObj({
             parentOrgUnit: country,
-            sharing: new ProjectSharing(this).getSharingForCountry(country),
+            sharing: new ProjectSharing(this).getUpdatedSharingForCountry(country),
         });
     }
 
