@@ -111,7 +111,7 @@ describe("Projects - Create", () => {
         cy.contains("00Cypress Project");
 
         cy.contains("Period dates");
-        cy.contains(`February ${projectYear} -> June ${projectYear}`);
+        cy.contains(`February ${projectYear} - June ${projectYear}`);
 
         cy.contains("Description");
 
