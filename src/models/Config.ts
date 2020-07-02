@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { D2ApiDefault, D2Api, Id, Ref, MetadataPick } from "d2-api";
+import { D2Api, Id, Ref, MetadataPick } from "../types/d2-api";
 import fs from "fs";
 import path from "path";
 import DataElementsSet, { DataElementBase } from "./dataElementsSet";
@@ -21,6 +21,7 @@ export type Config = {
     indicators: Indicator[];
     countries: Country[];
     dataApprovalWorkflows: IndexedObjs<"dataApprovalWorkflows", DataApprovalWorkflow>;
+    userGroups: Record<string, UserGroup>;
 };
 
 const yes = true as const;
@@ -91,6 +92,11 @@ const baseConfig = {
     dataApprovalWorkflows: {
         project: "PM_PROJECT",
     },
+    userGroups: {
+        systemAdmin: "SYSTEM_ADMIN",
+        appAdmin: "PROJECT_MONITORING_ADMIN",
+        countryAdminPrefix: "ADMIN_COUNTRY_",
+    },
 };
 
 function getParamsForIndexables(indexedCodes: _.Dictionary<string>) {
@@ -107,7 +113,15 @@ const metadataParams = {
     },
     attributes: getParamsForIndexables(baseConfig.attributes),
     categoryCombos: {
-        fields: { id: yes, code: yes, categoryOptionCombos: { id: yes, displayName: yes } },
+        fields: {
+            id: yes,
+            code: yes,
+            categoryOptionCombos: {
+                id: yes,
+                displayName: yes,
+                categoryOptions: { id: yes, displayName: yes },
+            },
+        },
         filter: { code: { in: _.values(baseConfig.categoryCombos) } },
     },
     categoryOptions: {
@@ -143,7 +157,7 @@ const metadataParams = {
         fields: { id: yes, code: yes },
     },
     organisationUnits: {
-        fields: { id: yes, displayName: yes },
+        fields: { id: yes, code: yes, displayName: yes },
         filter: { level: { eq: baseConfig.orgUnits.levelForCountries.toString() } },
     },
     organisationUnitGroupSets: {
@@ -171,6 +185,12 @@ const metadataParams = {
             code: { in: _.values(baseConfig.dataApprovalWorkflows) },
         },
     },
+    userGroups: {
+        fields: { id: yes, code: yes, displayName: yes },
+        filter: {
+            code: { like: "ADMIN" },
+        },
+    },
 };
 
 export type Metadata = MetadataPick<typeof metadataParams>;
@@ -179,6 +199,7 @@ export type BaseConfig = typeof baseConfig;
 export type CurrentUser = {
     id: Id;
     displayName: string;
+    username: string;
     userRoles: Array<{ name: string }>;
     organisationUnits: OrganisationUnit[];
 };
@@ -196,7 +217,7 @@ type CodedObject = { id: Id; code: string };
 
 export type Sector = NamedObject & CodedObject;
 export type Funder = NamedObject;
-export type Country = NamedObject;
+export type Country = NamedObject & CodedObject;
 export type Location = NamedObject & { countries: Ref[] };
 export type DataApprovalWorkflow = CodedObject;
 
@@ -205,12 +226,14 @@ type IndexedObjs<Key extends keyof BaseConfig, ValueType> = Record<
     ValueType
 >;
 
-type Attribute = CodedObject;
-export type CategoryCombo = CodedObject & { categoryOptionCombos: NamedObject[] };
+export type Attribute = CodedObject;
+export type CategoryOptionCombo = NamedObject & { categoryOptions: NamedObject[] };
+export type CategoryCombo = CodedObject & { categoryOptionCombos: CategoryOptionCombo[] };
 export type CategoryOption = CodedObject & { categoryOptionCombos: NamedObject[] };
 export type Category = CodedObject & { categoryOptions: CategoryOption[] };
 export type LegendSet = CodedObject;
 export type Indicator = CodedObject;
+export type UserGroup = NamedObject & CodedObject;
 
 class ConfigLoader {
     constructor(public api: D2Api) {}
@@ -219,8 +242,8 @@ class ConfigLoader {
         const metadata: Metadata = await this.api.metadata.get(metadataParams).getData();
         const d2CurrentUser = await this.getCurrentUser();
         const { funders, locations } = getFundersAndLocations(metadata);
-        const { userRoles } = d2CurrentUser.userCredentials;
-        const currentUser = { ...d2CurrentUser, userRoles };
+        const { userRoles, username } = d2CurrentUser.userCredentials;
+        const currentUser = { ...d2CurrentUser, userRoles, username };
         const dataElementsMetadata = await this.getDataElementsMetadata(currentUser, metadata);
 
         return {
@@ -237,6 +260,7 @@ class ConfigLoader {
             legendSets: indexObjects(metadata, "legendSets"),
             dataApprovalWorkflows: indexObjects(metadata, "dataApprovalWorkflows"),
             countries: _.sortBy(metadata.organisationUnits, ou => ou.displayName),
+            userGroups: _.keyBy(metadata.userGroups, ug => ug.code),
         };
     }
 
@@ -246,7 +270,7 @@ class ConfigLoader {
                 fields: {
                     id: true,
                     displayName: true,
-                    userCredentials: { userRoles: { name: true } },
+                    userCredentials: { username: true, userRoles: { name: true } },
                     organisationUnits: { id: true, displayName: true, level: true },
                 },
             })
@@ -297,7 +321,7 @@ export async function getConfig(api: D2Api): Promise<Config> {
 /* Runnable script to generate __tests__/config.json */
 
 async function getFromApp(baseUrl: string) {
-    const api = new D2ApiDefault({ baseUrl });
+    const api = new D2Api({ baseUrl });
     const allConfig = await getConfig(api);
     // Protect names for funders, locations and data elements.
     const config: Config = {

@@ -1,4 +1,4 @@
-import { getMockApi } from "d2-api";
+import { getMockApi } from "../../types/d2-api";
 import _ from "lodash";
 import { ValidationKey } from "./../Project";
 import Project from "../Project";
@@ -71,10 +71,10 @@ describe("Project", () => {
             mock.onGet("/metadata", {
                 params: {
                     "organisationUnits:fields":
-                        "attributeValues[attribute[id],value],closedDate,code,description,displayName,id,name,openingDate,organisationUnitGroups[id],parent[displayName,id,path],path",
+                        "attributeValues[attribute[id],value],closedDate,code,description,displayName,id,name,openingDate,organisationUnitGroups[id],parent[displayName,id,name,path],path",
                     "organisationUnits:filter": ["id:eq:R3rGhxWbAI9"],
                     "dataSets:fields":
-                        "code,dataInputPeriods[closingDate,openingDate,period],dataSetElements[categoryCombo[id],dataElement[id]],expiryDays,id,openFuturePeriods,sections[code,dataElements[id]]",
+                        "code,dataInputPeriods[closingDate,openingDate,period],dataSetElements[categoryCombo[id],dataElement[id]],expiryDays,externalAccess,id,openFuturePeriods,publicAccess,sections[code,dataElements[id]],userAccesses[access,displayName,id],userGroupAccesses[access,displayName,id]",
                     "dataSets:filter": ["code:$like:R3rGhxWbAI9"],
                 },
             }).replyOnce(200, metadataForGet);
@@ -348,7 +348,7 @@ describe("Project", () => {
                 params: {
                     paging: false,
                     fields:
-                        "closedDate,code,created,displayDescription,displayName,href,id,lastUpdated,lastUpdatedBy[name],openingDate,parent[displayName,id],publicAccess,user[displayName,id]",
+                        "closedDate,code,created,displayDescription,displayName,href,id,lastUpdated,lastUpdatedBy[name],openingDate,parent[displayName,id],user[displayName,id]",
                     order: "displayName:idesc",
                     filter: ["id:in:[3,5]"],
                 },
@@ -356,7 +356,8 @@ describe("Project", () => {
 
             mock.onGet("/metadata", {
                 params: {
-                    "dataSets:fields": "code,sections[code]",
+                    "dataSets:fields":
+                        "code,sections[code],userAccesses[access,displayName,id],userGroupAccesses[access,displayName,id]",
                     "dataSets:filter": ["code:in:[3_ACTUAL,5_ACTUAL]"],
                 },
             }).replyOnce(200, {
@@ -379,8 +380,15 @@ describe("Project", () => {
             );
 
             expect(pagination).toEqual({ page: 1, pageSize: 2, total: 3 });
+            const emptySharing = { userAccesses: [], userGroupAccesses: [] };
             expect(objects).toEqual([
-                { id: "5", code: "code5", displayName: "NAME5", sectors: [] },
+                {
+                    id: "5",
+                    code: "code5",
+                    displayName: "NAME5",
+                    sectors: [],
+                    sharing: emptySharing,
+                },
                 {
                     id: "3",
                     code: "CODE3",
@@ -388,6 +396,7 @@ describe("Project", () => {
                     sectors: expect.arrayContaining([
                         expect.objectContaining({ code: "SECTOR_AGRICULTURE" }),
                     ]),
+                    sharing: emptySharing,
                 },
             ]);
         });
@@ -441,6 +450,10 @@ const metadataForGet = {
         {
             code: "R3rGhxWbAI9_ACTUAL",
             id: "imYbEtdoQZx",
+            publicAccess: "--------",
+            externalAccess: false,
+            userAccesses: [],
+            userGroupAccesses: [],
             dataSetElements: [
                 {
                     categoryCombo: {
@@ -492,6 +505,10 @@ const metadataForGet = {
         {
             code: "R3rGhxWbAI9_TARGET",
             id: "KC6gi00Jm6H",
+            publicAccess: "--------",
+            externalAccess: false,
+            userAccesses: [],
+            userGroupAccesses: [],
             dataSetElements: [
                 {
                     categoryCombo: {

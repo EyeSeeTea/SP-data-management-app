@@ -1,7 +1,8 @@
 import { Config, Sector as SectorC, Funder as FunderC, Location as LocationC } from "./Config";
 import moment, { Moment } from "moment";
 import _ from "lodash";
-import { D2Api, SelectedPick, Id, Ref, D2OrganisationUnit, D2IndicatorSchema } from "d2-api";
+import { D2Api, SelectedPick, Id, Ref } from "../types/d2-api";
+import { D2OrganisationUnit, D2IndicatorSchema } from "../types/d2-api";
 import { generateUid } from "d2/uid";
 import { TableSorting } from "d2-ui-components";
 
@@ -20,6 +21,7 @@ import {
     validateNonEmpty,
 } from "../utils/validations";
 import { getKeys, Maybe } from "../types/utils";
+import ProjectSharing, { Sharing } from "./ProjectSharing";
 
 /*
 Project model.
@@ -92,6 +94,7 @@ export interface ProjectData {
     dataSets: { actual: DataSet; target: DataSet } | undefined;
     dashboard: Ref | undefined;
     initialData: Omit<ProjectData, "initialData"> | undefined;
+    sharing: Sharing;
 }
 
 export interface DataInputPeriod {
@@ -195,6 +198,7 @@ class Project {
         dataSets: i18n.t("Data Sets"),
         dashboard: i18n.t("Dashboard"),
         initialData: i18n.t("Initial Data"),
+        sharing: i18n.t("Sharing"),
     };
 
     static getFieldName(field: ProjectField): string {
@@ -372,6 +376,13 @@ class Project {
         return Project.getSelectableLocations(this.config, country);
     }
 
+    setCountry(country: OrganisationUnit) {
+        return this.setObj({
+            parentOrgUnit: country,
+            sharing: new ProjectSharing(this).getUpdatedSharingForCountry(country),
+        });
+    }
+
     static async get(api: D2Api, config: Config, id: string): Promise<Project> {
         return ProjectDb.get(api, config, id);
     }
@@ -387,6 +398,7 @@ class Project {
             id: generateUid(),
             dataElementsSelection,
             dataElementsMER,
+            sharing: ProjectSharing.getInitialSharing(config),
             initialData: undefined,
         };
         return new Project(api, config, projectData);

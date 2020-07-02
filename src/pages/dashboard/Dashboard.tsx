@@ -10,7 +10,7 @@ import { History } from "history";
 import { useAppContext } from "../../contexts/api-context";
 import Project from "../../models/Project";
 import { generateUrl } from "../../router";
-import { D2Api } from "d2-api";
+import { D2Api } from "../../types/d2-api";
 import { Config } from "../../models/Config";
 
 function goTo(history: History, url: string) {

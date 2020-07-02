@@ -8,11 +8,8 @@ import OldMuiThemeProvider from "material-ui/styles/MuiThemeProvider";
 import { useDataQuery, useConfig } from "@dhis2/app-runtime";
 import _ from "lodash";
 //@ts-ignore
-import i18n from "@dhis2/d2-i18n";
-//@ts-ignore
-import { init } from "d2";
 import { SnackbarProvider } from "d2-ui-components";
-import { D2ApiDefault } from "d2-api";
+import { D2Api } from "../../types/d2-api";
 
 import "./App.css";
 import { muiTheme } from "./themes/dhis2.theme";
@@ -24,10 +21,13 @@ import { getConfig } from "../../models/Config";
 import User from "../../models/user";
 import { LinearProgress } from "@material-ui/core";
 
-interface AppConfig {
+export interface AppConfig {
     appKey: string;
     appearance: {
         showShareButton: boolean;
+    };
+    app: {
+        notifyEmailOnProjectSave: string[];
     };
     feedback: {
         token: string[];
@@ -58,12 +58,6 @@ type AppWindow = Window & {
     };
 };
 
-function isLangRTL(code: string): boolean {
-    const langs = ["ar", "fa", "ur"];
-    const prefixed = langs.map(c => `${c}-`);
-    return _(langs).includes(code) || prefixed.filter(c => code && code.startsWith(c)).length > 0;
-}
-
 function initFeedbackTool(d2: D2, appConfig: AppConfig): void {
     const appKey = _(appConfig).get("appKey");
 
@@ -76,15 +70,15 @@ function initFeedbackTool(d2: D2, appConfig: AppConfig): void {
     }
 }
 
-function configI18n(userSettings: { keyUiLocale: string }) {
-    const uiLocale = userSettings.keyUiLocale;
-    i18n.changeLanguage(uiLocale);
-    document.documentElement.setAttribute("dir", isLangRTL(uiLocale) ? "rtl" : "ltr");
-}
-
 const settingsQuery = { userSettings: { resource: "/userSettings" } };
 
-const App = () => {
+interface AppProps {
+    api: D2Api;
+    d2: object;
+}
+
+const App: React.FC<AppProps> = props => {
+    const { api, d2 } = props;
     const { baseUrl } = useConfig();
     const [appContext, setAppContext] = useState<AppContext | null>(null);
     const [showShareButton, setShowShareButton] = useState(false);
@@ -93,17 +87,16 @@ const App = () => {
 
     useEffect(() => {
         const run = async () => {
-            const appConfig = await fetch("app-config.json", {
+            const appConfigUrl = process.env.PUBLIC_URL + "/app-config.json";
+            const appConfig = await fetch(appConfigUrl, {
                 credentials: "same-origin",
             }).then(res => res.json());
-            const d2 = await init({ baseUrl: baseUrl + "/api" });
-            const api = new D2ApiDefault({ baseUrl });
             const config = await getConfig(api);
-
-            configI18n(data.userSettings);
             const currentUser = new User(config);
-            const appContext: AppContext = { d2, api, config, currentUser, isDev };
+            const isTest = process.env.REACT_APP_CYPRESS === "true";
+            const appContext = { d2, api, config, currentUser, isDev, isTest, appConfig };
             setAppContext(appContext);
+
             Object.assign(window, { pm: appContext });
 
             setShowShareButton(_(appConfig).get("appearance.showShareButton") || false);

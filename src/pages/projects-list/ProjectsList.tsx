@@ -12,12 +12,14 @@ import { formatDateShort, formatDateLong } from "../../utils/date";
 import ActionButton from "../../components/action-button/ActionButton";
 import { GetPropertiesByType } from "../../types/utils";
 import { downloadFile } from "../../utils/download";
-import { D2Api, Id } from "d2-api";
+import { D2Api, Id } from "../../types/d2-api";
 import { Icon, LinearProgress, CircularProgress } from "@material-ui/core";
 import ProjectsListFilters, { Filter } from "./ProjectsListFilters";
 import { ProjectForList, FiltersForList } from "../../models/ProjectsList";
 import DeleteDialog from "../../components/delete-dialog/DeleteDialog";
 import { Action } from "../../models/user";
+import { useLocation } from "react-router-dom";
+import { parse } from "querystring";
 
 type ContextualAction = Exclude<Action, "create" | "accessMER" | "reopen"> | "details";
 
@@ -80,6 +82,11 @@ function getComponentConfig(
             text: i18n.t("Last Updated By"),
             getValue: (project: ProjectForList) =>
                 `${project.lastUpdatedBy ? project.lastUpdatedBy.name : "-"}`,
+        },
+        {
+            name: "sharing" as const,
+            text: i18n.t("Sharing"),
+            getValue: getSharingInfo,
         },
         {
             name: "href" as const,
@@ -166,6 +173,8 @@ type ProjectTableSorting = TableSorting<ProjectForList>;
 const ProjectsList: React.FC = () => {
     const goTo = useGoTo();
     const { api, config, currentUser } = useAppContext();
+    const match = useLocation();
+    const queryParams = parse(match.search.slice(1));
     const [projectIdsToDelete, setProjectIdsToDelete] = useState<Id[] | undefined>(undefined);
     const componentConfig = React.useMemo(() => {
         return getComponentConfig(api, config, goTo, setProjectIdsToDelete, currentUser);
@@ -173,7 +182,8 @@ const ProjectsList: React.FC = () => {
     const [rows, setRows] = useState<ProjectForList[] | undefined>(undefined);
     const [pagination, setPagination] = useState(componentConfig.initialPagination);
     const [sorting, setSorting] = useState<ProjectTableSorting>(componentConfig.initialSorting);
-    const [search, setSearch] = useState("");
+    const initialSearch = _.castArray(queryParams.search)[0] || "";
+    const [search, setSearch] = useState(initialSearch);
     const [filter, setFilter] = useState<Filter>({});
     const [isLoading, setLoading] = useState(true);
     const [objectsTableKey, objectsTableKeySet] = useState(() => new Date().getTime());
@@ -234,6 +244,7 @@ const ProjectsList: React.FC = () => {
             {rows && (
                 <ObjectsTable<ProjectForList>
                     key={objectsTableKey}
+                    initialSearch={initialSearch}
                     searchBoxLabel={i18n.t("Search by name or code")}
                     onChangeSearch={setSearch}
                     pagination={pagination}
@@ -314,6 +325,18 @@ const LoadingSpinner: React.FunctionComponent<{ isVisible: boolean }> = ({ isVis
 function onFirst<T>(objs: T[], fn: (obj: T) => void): void {
     const obj = _.first(objs);
     if (obj) fn(obj);
+}
+
+function getSharingInfo(project: ProjectForList) {
+    const { sharing } = project;
+    return (
+        <React.Fragment>
+            <i>{i18n.t("Users")}:</i> {sharing.userAccesses.map(ua => ua.name).join(", ")}
+            <br />
+            <i>{i18n.t("User groups")}:</i>{" "}
+            {sharing.userGroupAccesses.map(ua => ua.name).join(", ")}
+        </React.Fragment>
+    );
 }
 
 export default React.memo(ProjectsList);

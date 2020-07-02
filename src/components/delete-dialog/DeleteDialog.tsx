@@ -1,5 +1,5 @@
 import React from "react";
-import { Id } from "d2-api";
+import { Id } from "../../types/d2-api";
 import { withSnackbarOnError } from "../utils/errors";
 import { useSnackbar, ConfirmationDialog } from "d2-ui-components";
 import Project from "../../models/Project";

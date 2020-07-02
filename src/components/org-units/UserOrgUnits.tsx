@@ -6,7 +6,7 @@ import { useAppContext } from "../../contexts/api-context";
 import User from "../../models/user";
 import i18n from "../../locales";
 import { getIdFromOrgUnit } from "../../utils/dhis2";
-import { D2Api } from "d2-api";
+import { D2Api } from "../../types/d2-api";
 import { makeStyles } from "@material-ui/styles";
 
 type Path = string;

@@ -1,4 +1,4 @@
-import { getMockApi } from "d2-api";
+import { getMockApi } from "../../types/d2-api";
 import ProjectDb from "../ProjectDb";
 import { getProject } from "./project-data";
 
@@ -156,10 +156,10 @@ const expectedSectionsMetadataPost = {
                     id: "WS8XV4WWPE7",
                 },
                 {
-                    id: "K6mAC5SiO29",
+                    id: "ik0ICagvIjm",
                 },
                 {
-                    id: "ik0ICagvIjm",
+                    id: "K6mAC5SiO29",
                 },
             ],
             greyedFields: [],
@@ -195,10 +195,10 @@ const expectedSectionsMetadataPost = {
                     id: "WS8XV4WWPE7",
                 },
                 {
-                    id: "K6mAC5SiO29",
+                    id: "ik0ICagvIjm",
                 },
                 {
-                    id: "ik0ICagvIjm",
+                    id: "K6mAC5SiO29",
                 },
             ],
             greyedFields: [],
@@ -329,7 +329,7 @@ const expectedMetadataPost = {
             dataElementDecoration: true,
             renderAsTabs: true,
             categoryCombo: {
-                id: "qAgB0mD1wC6",
+                id: "pQjIEZS8Sx7",
             },
             organisationUnits: [
                 {
@@ -355,7 +355,7 @@ const expectedMetadataPost = {
                 },
             ],
             workflow: {
-                id: "CCy0oNyvlV1",
+                id: "SXvbJzbogqj",
             },
             dataInputPeriods: [
                 {
@@ -470,7 +470,21 @@ const expectedMetadataPost = {
                     },
                 },
             ],
-            publicAccess: "rwrw----",
+            publicAccess: "--------",
+            externalAccess: false,
+            userAccesses: [],
+            userGroupAccesses: [
+                {
+                    id: "ywuI2WspUUG",
+                    displayName: "System Admin",
+                    access: "rwrw----",
+                },
+                {
+                    id: "KAQv2ZlGCLn",
+                    displayName: "Project Monitoring Admin",
+                    access: "rwrw----",
+                },
+            ],
         },
         {
             id: "CwUxT9UIX3z",
@@ -479,7 +493,7 @@ const expectedMetadataPost = {
             dataElementDecoration: true,
             renderAsTabs: true,
             categoryCombo: {
-                id: "qAgB0mD1wC6",
+                id: "pQjIEZS8Sx7",
             },
             organisationUnits: [
                 {
@@ -505,7 +519,7 @@ const expectedMetadataPost = {
                 },
             ],
             workflow: {
-                id: "CCy0oNyvlV1",
+                id: "SXvbJzbogqj",
             },
             dataInputPeriods: [
                 {
@@ -620,13 +634,26 @@ const expectedMetadataPost = {
                     },
                 },
             ],
-            publicAccess: "rwrw----",
+            publicAccess: "--------",
+            externalAccess: false,
+            userAccesses: [],
+            userGroupAccesses: [
+                {
+                    id: "ywuI2WspUUG",
+                    displayName: "System Admin",
+                    access: "rwrw----",
+                },
+                {
+                    id: "KAQv2ZlGCLn",
+                    displayName: "Project Monitoring Admin",
+                    access: "rwrw----",
+                },
+            ],
         },
     ],
     dashboards: [
         {
             id: "WgOMVlwSV2i",
-            publicAccess: "rw------",
             name: "MyProject",
             dashboardItems: [
                 {
@@ -635,10 +662,10 @@ const expectedMetadataPost = {
                     reportTable: {
                         id: "i07AWJAND8a",
                     },
-                    x: 0,
-                    y: 0,
                     width: 29,
                     height: 20,
+                    x: 0,
+                    y: 0,
                 },
                 {
                     id: "yWGKgz9vaOh",
@@ -646,10 +673,10 @@ const expectedMetadataPost = {
                     reportTable: {
                         id: "iqqgnCj9DQj",
                     },
-                    x: 29,
-                    y: 0,
                     width: 29,
                     height: 20,
+                    x: 29,
+                    y: 0,
                 },
                 {
                     id: "y2G8oh7xQBm",
@@ -657,10 +684,10 @@ const expectedMetadataPost = {
                     reportTable: {
                         id: "GycLEG8dPPO",
                     },
-                    x: 0,
-                    y: 20,
                     width: 29,
                     height: 20,
+                    x: 0,
+                    y: 20,
                 },
                 {
                     id: "qMSWdZHPjyN",
@@ -668,10 +695,10 @@ const expectedMetadataPost = {
                     reportTable: {
                         id: "aeGIpbJkZAX",
                     },
-                    x: 29,
-                    y: 20,
                     width: 29,
                     height: 20,
+                    x: 29,
+                    y: 20,
                 },
                 {
                     id: "uyoJujQVRjE",
@@ -679,10 +706,10 @@ const expectedMetadataPost = {
                     reportTable: {
                         id: "GM6SxObVwI3",
                     },
-                    x: 0,
-                    y: 40,
                     width: 29,
                     height: 20,
+                    x: 0,
+                    y: 40,
                 },
                 {
                     id: "ys0CVedHirZ",
@@ -690,10 +717,10 @@ const expectedMetadataPost = {
                     chart: {
                         id: "uG9C9z46CNK",
                     },
-                    x: 0,
-                    y: 60,
                     width: 58,
                     height: 20,
+                    x: 0,
+                    y: 60,
                 },
                 {
                     id: "KI0C90Ol10x",
@@ -701,10 +728,10 @@ const expectedMetadataPost = {
                     chart: {
                         id: "qmsj4FqnVPX",
                     },
-                    x: 0,
-                    y: 80,
                     width: 29,
                     height: 20,
+                    x: 0,
+                    y: 80,
                 },
                 {
                     id: "qUqsDmtiBLF",
@@ -712,10 +739,10 @@ const expectedMetadataPost = {
                     chart: {
                         id: "u6Sin4Fy1Wt",
                     },
-                    x: 29,
-                    y: 80,
                     width: 29,
                     height: 20,
+                    x: 29,
+                    y: 80,
                 },
                 {
                     id: "mwMpIdPdu8H",
@@ -723,10 +750,25 @@ const expectedMetadataPost = {
                     chart: {
                         id: "ukewRkZsyCI",
                     },
-                    x: 0,
-                    y: 100,
                     width: 29,
                     height: 20,
+                    x: 0,
+                    y: 100,
+                },
+            ],
+            publicAccess: "--------",
+            externalAccess: false,
+            userAccesses: [],
+            userGroupAccesses: [
+                {
+                    id: "ywuI2WspUUG",
+                    displayName: "System Admin",
+                    access: "rw------",
+                },
+                {
+                    id: "KAQv2ZlGCLn",
+                    displayName: "Project Monitoring Admin",
+                    access: "rw------",
                 },
             ],
         },
@@ -736,7 +778,6 @@ const expectedMetadataPost = {
             id: "i07AWJAND8a",
             name: "MyProject - Target vs Actual - Benefits",
             numberType: "VALUE",
-            publicAccess: "rw------",
             legendDisplayStyle: "FILL",
             rowSubTotals: true,
             showDimensionLabels: true,
@@ -830,12 +871,26 @@ const expectedMetadataPost = {
                     ],
                 },
             ],
+            publicAccess: "--------",
+            externalAccess: false,
+            userAccesses: [],
+            userGroupAccesses: [
+                {
+                    id: "ywuI2WspUUG",
+                    displayName: "System Admin",
+                    access: "rw------",
+                },
+                {
+                    id: "KAQv2ZlGCLn",
+                    displayName: "Project Monitoring Admin",
+                    access: "rw------",
+                },
+            ],
         },
         {
             id: "iqqgnCj9DQj",
             name: "MyProject - Target vs Actual - People",
             numberType: "VALUE",
-            publicAccess: "rw------",
             legendDisplayStyle: "FILL",
             rowSubTotals: true,
             showDimensionLabels: true,
@@ -989,12 +1044,26 @@ const expectedMetadataPost = {
                     ],
                 },
             ],
+            publicAccess: "--------",
+            externalAccess: false,
+            userAccesses: [],
+            userGroupAccesses: [
+                {
+                    id: "ywuI2WspUUG",
+                    displayName: "System Admin",
+                    access: "rw------",
+                },
+                {
+                    id: "KAQv2ZlGCLn",
+                    displayName: "Project Monitoring Admin",
+                    access: "rw------",
+                },
+            ],
         },
         {
             id: "GycLEG8dPPO",
             name: "MyProject - Target vs Actual - Unique People",
             numberType: "VALUE",
-            publicAccess: "rw------",
             legendDisplayStyle: "FILL",
             rowSubTotals: true,
             showDimensionLabels: true,
@@ -1077,6 +1146,14 @@ const expectedMetadataPost = {
                         {
                             code: "NEW",
                             id: "S2y8dcmR2kD",
+                            categoryOptionCombos: [
+                                {
+                                    id: "nwv02VfyQuz",
+                                },
+                                {
+                                    id: "UU2P0YSJM8A",
+                                },
+                            ],
                         },
                     ],
                 },
@@ -1140,12 +1217,26 @@ const expectedMetadataPost = {
                     ],
                 },
             ],
+            publicAccess: "--------",
+            externalAccess: false,
+            userAccesses: [],
+            userGroupAccesses: [
+                {
+                    id: "ywuI2WspUUG",
+                    displayName: "System Admin",
+                    access: "rw------",
+                },
+                {
+                    id: "KAQv2ZlGCLn",
+                    displayName: "Project Monitoring Admin",
+                    access: "rw------",
+                },
+            ],
         },
         {
             id: "aeGIpbJkZAX",
             name: "MyProject - Achieved (%) - Benefits",
             numberType: "VALUE",
-            publicAccess: "rw------",
             legendDisplayStyle: "FILL",
             rowSubTotals: true,
             showDimensionLabels: true,
@@ -1211,6 +1302,21 @@ const expectedMetadataPost = {
             ],
             rowDimensions: ["dx"],
             categoryDimensions: [],
+            publicAccess: "--------",
+            externalAccess: false,
+            userAccesses: [],
+            userGroupAccesses: [
+                {
+                    id: "ywuI2WspUUG",
+                    displayName: "System Admin",
+                    access: "rw------",
+                },
+                {
+                    id: "KAQv2ZlGCLn",
+                    displayName: "Project Monitoring Admin",
+                    access: "rw------",
+                },
+            ],
             legendSet: {
                 code: "ACTUAL_TARGET_ACHIEVED",
                 id: "yoAt108kUFm",
@@ -1220,7 +1326,6 @@ const expectedMetadataPost = {
             id: "GM6SxObVwI3",
             name: "MyProject - Achieved (%) - People",
             numberType: "VALUE",
-            publicAccess: "rw------",
             legendDisplayStyle: "FILL",
             rowSubTotals: true,
             showDimensionLabels: true,
@@ -1292,6 +1397,21 @@ const expectedMetadataPost = {
             ],
             rowDimensions: ["dx"],
             categoryDimensions: [],
+            publicAccess: "--------",
+            externalAccess: false,
+            userAccesses: [],
+            userGroupAccesses: [
+                {
+                    id: "ywuI2WspUUG",
+                    displayName: "System Admin",
+                    access: "rw------",
+                },
+                {
+                    id: "KAQv2ZlGCLn",
+                    displayName: "Project Monitoring Admin",
+                    access: "rw------",
+                },
+            ],
             legendSet: {
                 code: "ACTUAL_TARGET_ACHIEVED",
                 id: "yoAt108kUFm",
@@ -1302,7 +1422,6 @@ const expectedMetadataPost = {
         {
             id: "uG9C9z46CNK",
             name: "MyProject - Achieved monthly (%)",
-            publicAccess: "rw------",
             type: "COLUMN",
             aggregationType: "DEFAULT",
             showData: true,
@@ -1382,11 +1501,25 @@ const expectedMetadataPost = {
             ],
             filterDimensions: ["ou"],
             categoryDimensions: [],
+            publicAccess: "--------",
+            externalAccess: false,
+            userAccesses: [],
+            userGroupAccesses: [
+                {
+                    id: "ywuI2WspUUG",
+                    displayName: "System Admin",
+                    access: "rw------",
+                },
+                {
+                    id: "KAQv2ZlGCLn",
+                    displayName: "Project Monitoring Admin",
+                    access: "rw------",
+                },
+            ],
         },
         {
             id: "qmsj4FqnVPX",
             name: "MyProject - Achieved (%)",
-            publicAccess: "rw------",
             type: "COLUMN",
             aggregationType: "DEFAULT",
             showData: true,
@@ -1466,11 +1599,25 @@ const expectedMetadataPost = {
             ],
             filterDimensions: ["pe"],
             categoryDimensions: [],
+            publicAccess: "--------",
+            externalAccess: false,
+            userAccesses: [],
+            userGroupAccesses: [
+                {
+                    id: "ywuI2WspUUG",
+                    displayName: "System Admin",
+                    access: "rw------",
+                },
+                {
+                    id: "KAQv2ZlGCLn",
+                    displayName: "Project Monitoring Admin",
+                    access: "rw------",
+                },
+            ],
         },
         {
             id: "u6Sin4Fy1Wt",
             name: "MyProject - Achieved by gender (%)",
-            publicAccess: "rw------",
             type: "COLUMN",
             aggregationType: "DEFAULT",
             showData: true,
@@ -1555,6 +1702,14 @@ const expectedMetadataPost = {
                         {
                             code: "NEW",
                             id: "S2y8dcmR2kD",
+                            categoryOptionCombos: [
+                                {
+                                    id: "nwv02VfyQuz",
+                                },
+                                {
+                                    id: "UU2P0YSJM8A",
+                                },
+                            ],
                         },
                     ],
                 },
@@ -1585,11 +1740,25 @@ const expectedMetadataPost = {
                     ],
                 },
             ],
+            publicAccess: "--------",
+            externalAccess: false,
+            userAccesses: [],
+            userGroupAccesses: [
+                {
+                    id: "ywuI2WspUUG",
+                    displayName: "System Admin",
+                    access: "rw------",
+                },
+                {
+                    id: "KAQv2ZlGCLn",
+                    displayName: "Project Monitoring Admin",
+                    access: "rw------",
+                },
+            ],
         },
         {
             id: "ukewRkZsyCI",
             name: "MyProject - Benefits Per Person",
-            publicAccess: "rw------",
             type: "COLUMN",
             aggregationType: "DEFAULT",
             showData: true,
@@ -1645,6 +1814,21 @@ const expectedMetadataPost = {
             ],
             filterDimensions: ["pe"],
             categoryDimensions: [],
+            publicAccess: "--------",
+            externalAccess: false,
+            userAccesses: [],
+            userGroupAccesses: [
+                {
+                    id: "ywuI2WspUUG",
+                    displayName: "System Admin",
+                    access: "rw------",
+                },
+                {
+                    id: "KAQv2ZlGCLn",
+                    displayName: "Project Monitoring Admin",
+                    access: "rw------",
+                },
+            ],
         },
     ],
 };
