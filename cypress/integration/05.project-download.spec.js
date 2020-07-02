@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-expressions */
 import ExcelJS from "exceljs";
 
 describe("Download project", () => {

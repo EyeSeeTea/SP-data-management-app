@@ -6,7 +6,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { Paper, Button } from "@material-ui/core";
 import Dropdown from "../../components/dropdown/Dropdown";
 import Project, { getPeriodsData, DataSetType, dataSetTypes } from "../../models/Project";
-import { D2Api } from "d2-api";
+import { D2Api } from "../../types/d2-api";
 import { Config } from "../../models/Config";
 
 import { useAppContext } from "../../contexts/api-context";
@@ -15,6 +15,8 @@ import PageHeader from "../../components/page-header/PageHeader";
 import ProjectDataSet from "../../models/ProjectDataSet";
 import { isValueInUnionType } from "../../types/utils";
 import "./widgets.css";
+import { useDialog } from "./data-approval-hooks";
+import { DataApprovalMessage } from "./DataApprovalMessage";
 
 declare global {
     interface Window {
@@ -32,10 +34,10 @@ function goTo(history: History, url: string) {
 
 type RouterParams = { id: string };
 
-type GetState<Data> = {
+type State = {
     loading: boolean;
     error?: string;
-    data?: Data;
+    project?: Project;
     date?: string;
     dataSetType?: DataSetType;
     projectDataSet?: ProjectDataSet;
@@ -44,13 +46,12 @@ type GetState<Data> = {
     showUnapproveButton: boolean;
 };
 
-type State = GetState<DataInterface>;
-
 interface DataInterface {
     project: Project;
 }
 
 const DataApproval: React.FC = () => {
+    const { api, config } = useAppContext();
     const match = useRouteMatch<RouterParams>();
     const projectId = match ? match.params.id : null;
     const history = useHistory();
@@ -60,9 +61,9 @@ const DataApproval: React.FC = () => {
         showApproveButton: false,
         showUnapproveButton: false,
     });
+
     const goToLandingPage = () => goTo(history, "/");
-    const { api, config } = useAppContext();
-    const { data, date, dataSetType, projectDataSet, report, error } = state;
+    const { project, date, dataSetType, projectDataSet, report, error } = state;
 
     const categoryComboItems = [
         { text: i18n.t("Target"), value: "target" },
@@ -70,8 +71,8 @@ const DataApproval: React.FC = () => {
     ];
 
     const periodItems = React.useMemo(() => {
-        if (data && data.project.dataSets) {
-            const { periodIds } = getPeriodsData(data.project.dataSets["actual"]);
+        if (project && project.dataSets) {
+            const { periodIds } = getPeriodsData(project.dataSets["actual"]);
             return periodIds.map(periodId => ({
                 text: moment(periodId, monthFormat).format("MMMM YYYY"),
                 value: periodId,
@@ -79,19 +80,31 @@ const DataApproval: React.FC = () => {
         } else {
             return [];
         }
-    }, [data && data.project]);
+    }, [project]);
 
     const title = i18n.t("Data Approval");
 
     useEffect(() => loadData(projectId, api, config, setState), [projectId]);
     useEffect(() => getReport(projectDataSet, date, setState), [projectDataSet, date]);
 
+    useDebugValuesOnDev(project, setState);
+
     const reportHtml = useMemo(() => {
         return { __html: report || "" };
     }, [report]);
 
+    const dataApprovalDialog = useDialog();
+
     return (
         <React.Fragment>
+            {dataApprovalDialog.isOpen && (
+                <DataApprovalMessage
+                    onClose={dataApprovalDialog.close}
+                    project={project}
+                    dataSetType={dataSetType}
+                    period={state.date}
+                />
+            )}
             <PageHeader title={title} help={getHelp()} onBackClick={goToLandingPage} />
             <Paper style={{ marginBottom: 20, padding: 20 }}>
                 <Dropdown
@@ -106,8 +119,8 @@ const DataApproval: React.FC = () => {
                     items={categoryComboItems ? categoryComboItems : []}
                     value={dataSetType}
                     onChange={dataSetType => {
-                        if (data && isValueInUnionType(dataSetType, dataSetTypes)) {
-                            const projectDataSet = data.project.dataSetsByType[dataSetType];
+                        if (project && isValueInUnionType(dataSetType, dataSetTypes)) {
+                            const projectDataSet = project.dataSetsByType[dataSetType];
                             setState({ ...state, projectDataSet, dataSetType });
                         }
                     }}
@@ -152,6 +165,10 @@ const DataApproval: React.FC = () => {
                             {i18n.t("Unapprove")}
                         </Button>
                     )}
+
+                    <Button onClick={dataApprovalDialog.open} variant="contained">
+                        {i18n.t("Send Message")}
+                    </Button>
                 </Paper>
             )}
         </React.Fragment>
@@ -278,7 +295,7 @@ function loadData(
 
             if (project && dataSet) {
                 setState({
-                    data: { project },
+                    project,
                     loading: false,
                     showApproveButton: false,
                     showUnapproveButton: false,
@@ -306,6 +323,20 @@ function getHelp(): string {
     return i18n.t(`Please choose the month and type of data (target or actual) you wish to approve.
 
     Once you approve the data, scroll down to the bottom of the screen and click the blue "Approve" button.`);
+}
+
+function useDebugValuesOnDev(
+    project: Project | undefined,
+    setState: React.Dispatch<React.SetStateAction<State>>
+) {
+    const { isDev } = useAppContext();
+    React.useEffect(() => {
+        if (!isDev || !project) return;
+        const dataSetType = "actual" as const;
+        const projectDataSet = project.dataSetsByType[dataSetType];
+        const newState = { date: moment().format(monthFormat), dataSetType, projectDataSet };
+        setState(state_ => ({ ...state_, ...newState }));
+    }, [project]);
 }
 
 export default React.memo(DataApproval);

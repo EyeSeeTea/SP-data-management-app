@@ -16,6 +16,10 @@ describe("Projects - Indicators", () => {
         selectInMultiSelector("sectors", "Nutrition");
         cy.contains("Next").click();
 
+        // Set pageSize = 50
+        cy.contains("20").click();
+        cy.contains("50").click();
+
         new IndicatorsPage(cy)
             .selectSector("Agriculture")
             // De-select initial indicator

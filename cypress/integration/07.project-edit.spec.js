@@ -29,21 +29,29 @@ describe("Projects - Edit", () => {
         cy.waitForStep("Selection of MER Indicators");
         cy.contains("Next").click();
 
+        cy.waitForStep("Sharing");
+        cy.contains("Next").click();
+
         cy.waitForStep("Summary and Save");
 
         cy.contains("Name");
         cy.contains("00Cypress Project");
         cy.contains("Period dates");
-        cy.contains(`February ${projectYear} -> June ${projectYear}`);
+        cy.contains(`February ${projectYear} - June ${projectYear}`);
         cy.contains("Description");
         cy.contains("Selected country");
         cy.contains("Bahamas");
         cy.contains("Sectors");
 
+        cy.server()
+            .route({ method: "post", url: "/api/email/notification*" })
+            .as("sendEmail");
+
         cy.get("[data-wizard-contents] button")
             .contains("Save")
             .click();
 
-        cy.contains("Project saved", { timeout: 20000 });
+        cy.contains("Project updated", { timeout: 20000 });
+        cy.wait("@sendEmail", { timeout: 20000 });
     });
 });

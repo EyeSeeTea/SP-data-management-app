@@ -1,10 +1,11 @@
-import { PartialPersistedModel, PartialModel } from "d2-api/api/common";
+import { PartialPersistedModel, PartialModel } from "../types/d2-api";
 import _ from "lodash";
-import { D2Dashboard, D2ReportTable, Ref, D2Chart, D2DashboardItem, Id } from "d2-api";
+import { D2Dashboard, D2ReportTable, Ref, D2Chart, D2DashboardItem, Id } from "../types/d2-api";
 import Project from "./Project";
 import i18n from "../locales";
 import { getUid } from "../utils/dhis2";
 import { DataElement } from "./dataElementsSet";
+import ProjectSharing from "./ProjectSharing";
 
 type Maybe<T> = T | null | undefined;
 
@@ -57,9 +58,9 @@ export default class ProjectDashboard {
 
         const dashboard: PartialPersistedModel<D2Dashboard> = {
             id: getUid("dashboard", project.uid),
-            publicAccess: "rw------",
             name: project.name,
             dashboardItems: positionItems(items),
+            ...new ProjectSharing(project).getSharingAttributesForDashboard(),
         };
 
         return { dashboards: [dashboard], ...favorites };
@@ -268,7 +269,6 @@ function getReportTable(project: Project, table: Table): MaybeD2Table {
         id: getUid(table.key, project.uid),
         name: `${project.name} - ${table.name}`,
         numberType: "VALUE",
-        publicAccess: "rw------",
         legendDisplayStyle: "FILL",
         rowSubTotals: true,
         showDimensionLabels: true,
@@ -286,6 +286,7 @@ function getReportTable(project: Project, table: Table): MaybeD2Table {
         rows: table.rowDimensions,
         rowDimensions: table.rowDimensions.map(dimension => dimension.id),
         categoryDimensions: getCategoryDimensions(dimensions),
+        ...new ProjectSharing(project).getSharingAttributesForDashboard(),
     };
 
     return _.merge({}, baseTable, table.extra || {});
@@ -311,7 +312,6 @@ function getChart(project: Project, chart: Chart): MaybeD2Chart {
     const baseChart: PartialPersistedModel<D2Chart> = {
         id: getUid(chart.key, project.uid),
         name: `${project.name} - ${chart.name}`,
-        publicAccess: "rw------",
         type: "COLUMN",
         aggregationType: "DEFAULT",
         showData: true,
@@ -325,6 +325,7 @@ function getChart(project: Project, chart: Chart): MaybeD2Chart {
         filters: chart.reportFilter,
         filterDimensions: chart.reportFilter.map(dimension => dimension.id),
         categoryDimensions: getCategoryDimensions(dimensions),
+        ...new ProjectSharing(project).getSharingAttributesForDashboard(),
     };
 
     return _.merge({}, baseChart, chart.extra || {});
