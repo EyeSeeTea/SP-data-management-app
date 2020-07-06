@@ -12,7 +12,6 @@ describe("Target Values", () => {
         const entryPage = new DataEntryPage("data-entry");
         entryPage.selectInput("WS8XV4WWPE7", "HllvX50cXC0", 10);
 
-        /*
         const dataElementId = "e6wdrrz9ZS6";
         const cocIds = {
             maleNew: "nwv02VfyQuz",
@@ -41,6 +40,5 @@ describe("Target Values", () => {
         entryPage.selectInput(dataElementId, cocIds.maleNew, 3);
         entryPage.selectInput(dataElementId, cocIds.maleRecurring, 4);
         entryPage.hasValidationError("Recurring value (4) cannot be greater");
-        */
     });
 });
