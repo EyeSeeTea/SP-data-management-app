@@ -54,7 +54,7 @@ Cypress.Commands.add("loadPage", (path = appUrl) => {
     cy.visit(path, {
         onBeforeLoad: stubFetch,
     });
-    cy.get("#app", { log: false, timeout: 20000 }); // Waits for the page to fully load
+    cy.get("#app", { log: false }); // Waits for the page to fully load
 });
 
 Cypress.on("uncaught:exception", (err, runnable) => {

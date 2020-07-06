@@ -141,7 +141,7 @@ describe("Projects - Create", () => {
             .contains("Save")
             .click();
 
-        cy.contains("Project created", { timeout: 30000 });
-        cy.wait("@sendEmail", { timeout: 20000 });
+        cy.contains("Project created");
+        cy.wait("@sendEmail");
     });
 });

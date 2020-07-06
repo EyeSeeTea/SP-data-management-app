@@ -56,7 +56,7 @@ describe("Projects - Edit", () => {
             .contains("Save")
             .click();
 
-        cy.contains("Project updated", { timeout: 20000 });
-        cy.wait("@sendEmail", { timeout: 20000 });
+        cy.contains("Project updated");
+        cy.wait("@sendEmail");
     });
 });
