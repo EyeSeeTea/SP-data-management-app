@@ -1,7 +1,5 @@
 import moment from "moment";
 
-const projectYear = moment().year() + 1;
-
 describe("Projects - Edit", () => {
     before(() => {
         cy.login("admin");

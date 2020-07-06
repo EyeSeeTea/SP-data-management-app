@@ -1,7 +1,6 @@
 // <reference types="Cypress" />
 /* global Cypress, cy */
 
-import path from "path";
 import _ from "lodash";
 
 const externalUrl = Cypress.env("EXTERNAL_API");

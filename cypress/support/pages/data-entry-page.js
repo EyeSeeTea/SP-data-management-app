@@ -8,9 +8,10 @@ export default class DataEntryPage {
 
     selectInput(dataElementId, cocId, value) {
         cy.iframe()
+            .find("#tabs")
             .find(`#${dataElementId}-${cocId}-val`)
-            .wait(1000)
             .focus()
+            .clear()
             .clear({ force: true })
             .type(value, { force: true });
 
