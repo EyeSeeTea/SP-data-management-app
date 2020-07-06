@@ -1,6 +1,7 @@
 // <reference types="Cypress" />
 /* global Cypress, cy */
 
+import path from "path";
 import _ from "lodash";
 
 const externalUrl = Cypress.env("EXTERNAL_API");
@@ -68,4 +69,9 @@ Cypress.Commands.add("waitForStep", stepName => {
         console.log($el);
         expect($el.attr("class")).to.contain("current-step", `Current step should be ${stepName}`);
     });
+});
+
+Cypress.Commands.add("deleteDataValues", () => {
+    const sqlPath = "cypress/fixtures/delete-data-values.sql";
+    cy.exec(`d2-docker run-sql ${sqlPath}`);
 });

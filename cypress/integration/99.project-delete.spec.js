@@ -2,6 +2,7 @@ describe("Projects - Delete", () => {
     before(() => {
         cy.login("admin");
         cy.loadPage();
+        cy.deleteDataValues();
         cy.contains("00Cypress Project").trigger("contextmenu");
         cy.contains("Delete").click();
     });
