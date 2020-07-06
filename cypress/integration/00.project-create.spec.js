@@ -26,12 +26,14 @@ describe("Projects - Create", () => {
         cy.get("[data-field='awardNumber']").type(Math.floor(10000 + Math.random() * 90000));
         cy.get("[data-field='subsequentLettering']").type("SL");
 
+        const startDate = moment();
+        const endDate = moment().add(3, "months");
+
         cy.contains("Start Date").click({ force: true });
-        const projectYear = moment().year() + 1;
-        selectDatePicker(projectYear, "Feb");
+        selectDatePicker(startDate.year(), startDate.format("MMM"));
 
         cy.contains("End Date").click({ force: true });
-        selectDatePicker(projectYear, "Jun");
+        selectDatePicker(endDate.year(), endDate.format("MMM"));
 
         // Funders
 
@@ -111,7 +113,10 @@ describe("Projects - Create", () => {
         cy.contains("00Cypress Project");
 
         cy.contains("Period dates");
-        cy.contains(`February ${projectYear} - June ${projectYear}`);
+
+        const start = `${startDate.format("MMMM")} ${startDate.format("YYYY")}`;
+        const end = `${endDate.format("MMMM")} ${endDate.format("YYYY")}`;
+        cy.contains(start + " - " + end);
 
         cy.contains("Description");
 
