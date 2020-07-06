@@ -80,32 +80,51 @@ async function setDataset(iframe: HTMLIFrameElement, dataSet: DataSet, onDone: (
     onDone();
 }
 
+function wait(timeSeconds: number) {
+    return new Promise(resolve => setTimeout(resolve, 1000 * timeSeconds));
+}
+
 const getDataEntryForm = async (
     iframe: HTMLIFrameElement,
+    project: Project,
     dataSet: DataSet,
     orgUnitId: string,
-    attributes: Attributes,
     onDone: () => void
 ) => {
     const contentWindow = iframe.contentWindow as (Window & DataEntryWindow) | null;
     const iframeDocument = iframe.contentDocument;
-    if (!contentWindow || !iframeDocument) return;
+    const iframeSelection = contentWindow ? contentWindow.selection : null;
+    if (!contentWindow || !iframeDocument || !iframeSelection || !project.parentOrgUnit) return;
 
-    const iframeSelection = contentWindow.selection;
-    setEntryStyling(iframe);
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+        const selector = `#orgUnit${project.parentOrgUnit.id} .toggle`;
+        const el = iframeDocument.querySelector<HTMLSpanElement>(selector);
+        if (el) {
+            console.debug("[data-entry] Click country", selector);
+            el.click();
+            break;
+        } else {
+            await wait(1);
+            setTimeout(() => iframeSelection.select(orgUnitId), 10);
+        }
+    }
 
     contentWindow.dhis2.util.on(
         "dhis2.ou.event.orgUnitSelected",
         async (_event: unknown, organisationUnitIds: string[]) => {
             const options = iframeDocument.querySelectorAll("#selectedDataSetId option");
             if (organisationUnitIds[0] === orgUnitId && options.length > 1) {
-                await setDataset(iframe, dataSet, onDone);
+                if (!contentWindow.spDataSetSelected) {
+                    contentWindow.spDataSetSelected = true;
+                    await setDataset(iframe, dataSet, onDone);
+                }
             } else {
+                console.debug("[data-entry] Select project orgunit", orgUnitId);
                 iframeSelection.select(orgUnitId);
             }
         }
     );
-    iframeSelection.select(orgUnitId);
 };
 
 const DataEntry = (props: DataEntryProps) => {
@@ -144,7 +163,8 @@ const DataEntry = (props: DataEntryProps) => {
             iframe.style.display = "none";
             setState({ ...state, loading: true });
             iframe.addEventListener("load", () => {
-                getDataEntryForm(iframe, dataSet, orgUnitId, attributes, () =>
+                setEntryStyling(iframe);
+                getDataEntryForm(iframe, project, dataSet, orgUnitId, () =>
                     setState({ ...state, dropdownHasValues: true })
                 );
             });
@@ -180,7 +200,7 @@ const DataEntry = (props: DataEntryProps) => {
             <div style={styles.selector}>
                 {!state.dropdownHasValues && <Spinner isLoading={state.loading} />}
                 {state.dropdownHasValues && (
-                    <div style={styles.dropdown}>
+                    <div style={styles.dropdown} data-cy="month-selector">
                         <Dropdown
                             items={periodItems}
                             value={state.dropdownValue}
@@ -203,6 +223,7 @@ const DataEntry = (props: DataEntryProps) => {
                 )}
             </div>
             <iframe
+                data-cy="data-entry"
                 key={iframeKey.getTime()}
                 ref={iframeRef}
                 src={iFrameSrc}
@@ -229,6 +250,7 @@ function isOptionInSelect(select: HTMLSelectElement, value: string): boolean {
 }
 
 function selectOption(select: HTMLSelectElement, value: string) {
+    console.debug("[data-entry] selectOption", value, select.options);
     const stubEvent = new Event("stub");
     select.value = value;
     if (select.onchange) select.onchange(stubEvent);
@@ -242,6 +264,7 @@ interface DataEntryWindow {
     };
     displayPeriods: () => void;
     selection: { select: (orgUnitId: string) => void; isBusy(): boolean };
+    spDataSetSelected: boolean;
 }
 
 function setSelectPeriod(
@@ -264,7 +287,7 @@ function setSelectPeriod(
         try {
             iframeWindow.displayPeriods();
         } catch (err) {
-            console.log("setSelectPeriod", err);
+            console.error("setSelectPeriod", err);
         }
 
         if (isOptionInSelect(periodSelector, periodKey)) {
@@ -281,7 +304,7 @@ function setSelectPeriod(
 
             return true;
         } else {
-            console.log("Period is not selectable", periodKey);
+            console.error("Period is not selectable", periodKey);
             return false;
         }
     } else {
