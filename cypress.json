@@ -1,4 +1,5 @@
 {
     "projectId": "yoy7vz",
-    "defaultCommandTimeout": 10000
+    "defaultCommandTimeout": 10000,
+    "chromeWebSecurity": false
 }
