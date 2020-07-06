@@ -10,7 +10,10 @@ export default class DataEntryPage {
         cy.iframe()
             .find(`#${dataElementId}-${cocId}-val`)
             .focus()
-            .clear()
+            .clear();
+
+        cy.iframe()
+            .find(`#${dataElementId}-${cocId}-val`)
             .clear({ force: true })
             .type(value, { force: true });
 

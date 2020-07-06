@@ -1,4 +1,6 @@
 language: node_js
+services:
+    - xvfb
 node_js:
     - 12.13.0
 dist: bionic
@@ -31,7 +33,7 @@ install:
 script:
     - yarn wait-on http-get://localhost:8080
     - curl -F file=@project-monitoring-app.zip -X POST -u "$CYPRESS_DHIS2_AUTH" "http://localhost:8080/api/apps"
-    - CYPRESS_EXTERNAL_API=http://localhost:8080 CYPRESS_ROOT_URL=http://localhost:8080 yarn cy:e2e:run --record --key ae48c13f-96a1-4850-b8b2-d5329b3c4813
+    - CYPRESS_EXTERNAL_API=http://localhost:8080 CYPRESS_ROOT_URL=http://localhost:8080 xvfb-run --auto-servernum --server-num=1 --server-args="-screen 0 1024x768x24" yarn cy:e2e:run --browser chrome
     - kill $(jobs -p) || true
 addons:
     apt:
