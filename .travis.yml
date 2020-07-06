@@ -12,6 +12,7 @@ before_install:
     - sudo apt-get install python3 python python3-setuptools docker.io docker-compose
     #  Install d2-docker
     - git clone https://github.com/EyeSeeTea/d2-docker.git
+    - sed -i  's@name.split("_")@name.split("_", 2)@' d2-docker/src/d2_docker/utils.py
     - (cd d2-docker/ && sudo python3 setup.py install)
     # Hack to not be prompted in the terminal
     - sudo apt-get remove golang-docker-credential-helpers
