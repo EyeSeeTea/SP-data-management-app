@@ -8,7 +8,6 @@ export default class DataEntryPage {
 
     selectInput(dataElementId, cocId, value) {
         cy.iframe()
-            .find("#tabs")
             .find(`#${dataElementId}-${cocId}-val`)
             .focus()
             .clear()
@@ -36,6 +35,8 @@ export default class DataEntryPage {
         const text = `${startDate.format("MMMM")} ${startDate.format("YYYY")}`;
         cy.get("[data-cy=month-selector]").click();
         cy.contains(text).click();
+
+        return this;
     }
 
     hasValidationError(text) {
