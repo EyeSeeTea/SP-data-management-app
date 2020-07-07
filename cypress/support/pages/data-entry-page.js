@@ -7,13 +7,12 @@ export default class DataEntryPage {
     }
 
     selectInput(dataElementId, cocId, value) {
+        // eslint-disable-next-line cypress/no-unnecessary-waiting
         cy.iframe()
             .find(`#${dataElementId}-${cocId}-val`)
+            .wait(200)
             .focus()
-            .clear();
-
-        cy.iframe()
-            .find(`#${dataElementId}-${cocId}-val`)
+            .clear({ force: true })
             .clear({ force: true })
             .type(value, { force: true });
 
@@ -43,10 +42,7 @@ export default class DataEntryPage {
     }
 
     hasValidationError(text) {
-        cy.iframe()
-            .get("body")
-            .should($body => expect($body.get(0).innerText).to.contain(text));
-
+        cy.contains(text);
         return this;
     }
 }
