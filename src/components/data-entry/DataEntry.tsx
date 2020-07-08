@@ -12,6 +12,8 @@ import i18n from "../../locales";
 import { ValidationDialog } from "./ValidationDialog";
 import { useValidation } from "./validation-hooks";
 
+const showControls = false;
+
 type Attributes = Record<string, string>;
 
 interface DataEntryProps {
@@ -26,7 +28,7 @@ function autoResizeIframeByContent(iframe: HTMLIFrameElement) {
     const resize = () => {
         if (iframe.contentWindow) {
             const height = iframe.contentWindow.document.body.scrollHeight;
-            iframe.height = height.toString();
+            if (height > 0) iframe.height = height.toString();
         }
     };
     window.setInterval(resize, 1000);
@@ -41,6 +43,8 @@ function setEntryStyling(iframe: HTMLIFrameElement) {
     if (!iframe.contentWindow) return;
     const iframeDocument = iframe.contentWindow.document;
     autoResizeIframeByContent(iframe);
+
+    if (showControls) return;
 
     on(iframeDocument, "#currentSelection", el => el.remove());
     on(iframeDocument, "#header", el => el.remove());
@@ -74,14 +78,14 @@ async function setDataset(iframe: HTMLIFrameElement, dataSet: DataSet, onDone: (
     const dataSetSelector = iframeDocument.querySelector<HTMLSelectElement>("#selectedDataSetId");
     if (!dataSetSelector) return;
 
-    await waitForOption(dataSetSelector, option => option.value === dataSet.id);
+    await waitForOption(
+        dataSetSelector,
+        // data-multiorg is set when the country org unit is still selected
+        option => option.value === dataSet.id && !option.getAttribute("data-multiorg")
+    );
     selectOption(dataSetSelector, dataSet.id);
 
     onDone();
-}
-
-function wait(timeSeconds: number) {
-    return new Promise(resolve => setTimeout(resolve, 1000 * timeSeconds));
 }
 
 const getDataEntryForm = async (
@@ -93,38 +97,37 @@ const getDataEntryForm = async (
 ) => {
     const contentWindow = iframe.contentWindow as (Window & DataEntryWindow) | null;
     const iframeDocument = iframe.contentDocument;
+    const { parentOrgUnit } = project;
     const iframeSelection = contentWindow ? contentWindow.selection : null;
-    if (!contentWindow || !iframeDocument || !iframeSelection || !project.parentOrgUnit) return;
+    if (!contentWindow || !iframeDocument || !iframeSelection || !parentOrgUnit) return;
+    const parentSelector = `#orgUnit${parentOrgUnit.id} .toggle`;
 
-    // eslint-disable-next-line no-constant-condition
-    while (true) {
-        const selector = `#orgUnit${project.parentOrgUnit.id} .toggle`;
-        const el = iframeDocument.querySelector<HTMLSpanElement>(selector);
-        if (el) {
-            console.debug("[data-entry] Click country", selector);
-            el.click();
-            break;
+    const selectDataSet = () => {
+        console.debug("[data-entry] Select project orgunit", parentSelector);
+        iframeSelection.select(orgUnitId);
+        console.debug("[data-entry] Select options");
+        setDataset(iframe, dataSet, onDone);
+    };
+
+    const selectOrgUnitAndOptions = async () => {
+        const ouSelector = "orgUnit" + orgUnitId;
+        const ouEl = iframeDocument.querySelector(ouSelector);
+        if (ouEl) {
+            setTimeout(selectDataSet, 10);
         } else {
-            await wait(1);
-            setTimeout(() => iframeSelection.select(orgUnitId), 10);
-        }
-    }
-
-    contentWindow.dhis2.util.on(
-        "dhis2.ou.event.orgUnitSelected",
-        async (_event: unknown, organisationUnitIds: string[]) => {
-            const options = iframeDocument.querySelectorAll("#selectedDataSetId option");
-            if (organisationUnitIds[0] === orgUnitId && options.length > 1) {
-                if (!contentWindow.spDataSetSelected) {
-                    contentWindow.spDataSetSelected = true;
-                    await setDataset(iframe, dataSet, onDone);
-                }
+            const parentEl = iframeDocument.querySelector<HTMLSpanElement>(parentSelector);
+            if (parentEl) {
+                console.debug("[data-entry] Click country", parentSelector);
+                parentEl.click();
+                setTimeout(selectDataSet, 10);
             } else {
-                console.debug("[data-entry] Select project orgunit", orgUnitId);
-                iframeSelection.select(orgUnitId);
+                console.debug("[data-entry] wait");
+                setTimeout(selectOrgUnitAndOptions, 1000);
             }
         }
-    );
+    };
+
+    selectOrgUnitAndOptions();
 };
 
 const DataEntry = (props: DataEntryProps) => {
@@ -160,7 +163,7 @@ const DataEntry = (props: DataEntryProps) => {
         const iframe = iframeRef.current;
 
         if (iframe) {
-            iframe.style.display = "none";
+            if (!showControls) iframe.style.display = "none";
             setState({ ...state, loading: true });
             iframe.addEventListener("load", () => {
                 setEntryStyling(iframe);
@@ -225,9 +228,10 @@ const DataEntry = (props: DataEntryProps) => {
             <iframe
                 data-cy="data-entry"
                 key={iframeKey.getTime()}
+                height={showControls ? 1000 : undefined}
                 ref={iframeRef}
                 src={iFrameSrc}
-                style={isDataSetOpen ? styles.iframe : styles.iframeHidden}
+                style={isDataSetOpen || showControls ? styles.iframe : styles.iframeHidden}
                 title={i18n.t("Data Entry")}
             ></iframe>
         </React.Fragment>
@@ -264,7 +268,6 @@ interface DataEntryWindow {
     };
     displayPeriods: () => void;
     selection: { select: (orgUnitId: string) => void; isBusy(): boolean };
-    spDataSetSelected: boolean;
 }
 
 function setSelectPeriod(

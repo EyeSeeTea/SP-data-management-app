@@ -1,7 +1,7 @@
 {
     "name": "project-monitoring-app",
     "description": "DHIS2 Project Monitoring App",
-    "version": "0.3.0",
+    "version": "0.3.1-beta",
     "license": "GPL-3.0",
     "author": "EyeSeeTea team",
     "homepage": ".",
@@ -112,7 +112,7 @@
         "wait-on": "^4.0.0"
     },
     "manifest.webapp": {
-        "name": "Project Monitoring App",
+        "name": "Project Monitoring App [DEV]",
         "description": "DHIS2 Project Monitoring App",
         "icons": {
             "48": "icon.png"
