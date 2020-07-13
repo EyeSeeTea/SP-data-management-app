@@ -29,12 +29,13 @@ function getTranslations(projectName: string | undefined) {
 
 function autoResizeIframeByContent(iframe: HTMLIFrameElement) {
     const resize = () => {
-        if (iframe.contentWindow) {
-            const height = iframe.contentWindow.document.body.scrollHeight;
-            iframe.height = height.toString();
+        const body = iframe?.contentWindow?.document?.body;
+        if (iframe && body) {
+            const height = body.scrollHeight;
+            if (height > 0) iframe.height = height.toString();
         }
     };
-    window.setInterval(resize, 1000);
+    return window.setInterval(resize, 1000);
 }
 
 function waitforElementToLoad(iframeDocument: any, selector: string) {
@@ -43,7 +44,7 @@ function waitforElementToLoad(iframeDocument: any, selector: string) {
             if (iframeDocument.querySelector(selector)) {
                 resolve();
             } else {
-                setTimeout(check, 10);
+                setTimeout(check, 1000);
             }
         };
         check();
@@ -83,14 +84,11 @@ const Dashboard: React.FC = () => {
         const iFrameRoot = iframeDocument.querySelector("#root");
         const iFrameWrapper = iframeDocument.querySelector(".app-wrapper");
         const pageContainer = iframeDocument.querySelector(".page-container-top-margin");
-
-        iFrameWrapper.removeChild(iFrameWrapper.firstChild).remove();
-        iFrameWrapper.removeChild(iFrameWrapper.firstChild).remove();
+        if (iFrameWrapper.children[0]) iFrameWrapper.children[0].style.display = "none";
+        if (iFrameWrapper.children[1]) iFrameWrapper.children[1].style.display = "none";
 
         pageContainer.style.marginTop = "0px";
         iFrameRoot.style.marginTop = "0px";
-
-        autoResizeIframeByContent(iframe);
     };
 
     useEffect(() => {
@@ -98,6 +96,8 @@ const Dashboard: React.FC = () => {
 
         if (iframe !== null && !loading) {
             iframe.addEventListener("load", setDashboardStyling.bind(null, iframe));
+            const intervalId = autoResizeIframeByContent(iframe);
+            return () => window.clearInterval(intervalId);
         }
     }, [iframeRef]);
 

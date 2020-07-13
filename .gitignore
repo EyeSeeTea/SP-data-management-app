@@ -42,5 +42,4 @@ cypress/videos/
 scripts/
 project-monitoring-app.zip
 bak/
-cypress/fixtures
 src/dev
