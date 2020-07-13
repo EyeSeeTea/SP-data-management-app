@@ -65,12 +65,13 @@ export default class ProjectDataSet {
     async reopen(options: { unapprovePeriod?: string } = {}): Promise<Project> {
         const { unapprovePeriod } = options;
         const dataSet = this.getDataSet();
-        const { startDate, endDate } = this.project.getDates();
+        const { endDate } = this.project.getDates();
+        const now = moment();
         const projectDb = new ProjectDb(this.project);
         const normalAttributes = this.getDefaultOpenAttributes();
         const openAttributes: DataSetOpenAttributes = {
             dataInputPeriods: normalAttributes.dataInputPeriods.map(expandDataInputPeriod),
-            openFuturePeriods: Math.max(endDate.diff(startDate, "month") + 1, 0),
+            openFuturePeriods: Math.max(endDate.diff(now, "month") + 1, 0),
             expiryDays: 0,
         };
         // Open all dataSet periods but only unapprove the given period
