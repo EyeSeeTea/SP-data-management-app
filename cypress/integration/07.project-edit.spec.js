@@ -1,7 +1,5 @@
 import moment from "moment";
 
-const projectYear = moment().year() + 1;
-
 describe("Projects - Edit", () => {
     before(() => {
         cy.login("admin");
@@ -11,6 +9,9 @@ describe("Projects - Edit", () => {
     });
 
     it("gets data from the user to edit a project", () => {
+        const startDate = moment();
+        const endDate = moment().add(3, "months");
+
         cy.contains("Edit project");
 
         cy.waitForStep("General info");
@@ -36,8 +37,12 @@ describe("Projects - Edit", () => {
 
         cy.contains("Name");
         cy.contains("00Cypress Project");
+
         cy.contains("Period dates");
-        cy.contains(`February ${projectYear} - June ${projectYear}`);
+        const start = `${startDate.format("MMMM")} ${startDate.format("YYYY")}`;
+        const end = `${endDate.format("MMMM")} ${endDate.format("YYYY")}`;
+        cy.contains(start + " - " + end);
+
         cy.contains("Description");
         cy.contains("Selected country");
         cy.contains("Bahamas");
@@ -51,7 +56,7 @@ describe("Projects - Edit", () => {
             .contains("Save")
             .click();
 
-        cy.contains("Project updated", { timeout: 20000 });
-        cy.wait("@sendEmail", { timeout: 20000 });
+        cy.contains("Project updated");
+        cy.wait("@sendEmail");
     });
 });

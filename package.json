@@ -1,7 +1,7 @@
 {
     "name": "project-monitoring-app",
     "description": "DHIS2 Project Monitoring App",
-    "version": "0.3.0",
+    "version": "0.3.1-beta.1",
     "license": "GPL-3.0",
     "author": "EyeSeeTea team",
     "homepage": ".",
@@ -88,7 +88,8 @@
         "axios-mock-adapter": "^1.17.0",
         "babel-core": "^6.26.3",
         "babel-eslint": "^10.0.3",
-        "cypress": "^4.2.0",
+        "cypress": "4.2.0",
+        "cypress-iframe": "^1.0.1",
         "cypress-xpath": "^1.4.0",
         "enzyme": "^3.11.0",
         "enzyme-adapter-react-16": "^1.15.2",

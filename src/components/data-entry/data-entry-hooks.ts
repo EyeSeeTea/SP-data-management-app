@@ -103,7 +103,7 @@ export function useDhis2EntryEvents(
         const iwindow = iframe && (iframe.contentWindow as DataEntryWindow);
         if (!iframe || !iwindow || !onMessage) return;
 
-        iframe.addEventListener("load", () => {
+        iwindow.addEventListener("load", () => {
             const init = setupDataEntryInterceptors.toString();
             iwindow.eval(`(${init})(${JSON.stringify(options)});`);
         });
