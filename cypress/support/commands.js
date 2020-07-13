@@ -54,7 +54,7 @@ Cypress.Commands.add("loadPage", (path = appUrl) => {
     cy.visit(path, {
         onBeforeLoad: stubFetch,
     });
-    cy.get("#app", { log: false, timeout: 20000 }); // Waits for the page to fully load
+    cy.get("#app", { log: false }); // Waits for the page to fully load
 });
 
 Cypress.on("uncaught:exception", (err, runnable) => {
@@ -68,4 +68,9 @@ Cypress.Commands.add("waitForStep", stepName => {
         console.log($el);
         expect($el.attr("class")).to.contain("current-step", `Current step should be ${stepName}`);
     });
+});
+
+Cypress.Commands.add("deleteDataValues", () => {
+    const sqlPath = "cypress/fixtures/delete-data-values.sql";
+    cy.exec(`d2-docker run-sql ${sqlPath}`);
 });

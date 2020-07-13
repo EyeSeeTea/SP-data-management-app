@@ -52,6 +52,8 @@ const SharingStep: React.FC<StepProps> = props => {
         return projectSharing.getBaseSharingIds();
     }, [projectSharing]);
 
+    const country = project.parentOrgUnit?.displayName || "-";
+
     return (
         <React.Fragment>
             <Sharing
@@ -65,7 +67,7 @@ const SharingStep: React.FC<StepProps> = props => {
             <div className={classes.footer}>
                 {i18n.t(
                     "Note: only users with permissions in the selected country ({{country}}) can be added to this project",
-                    { country: project.parentOrgUnit?.displayName }
+                    { nsSeparator: false, country }
                 )}
             </div>
         </React.Fragment>

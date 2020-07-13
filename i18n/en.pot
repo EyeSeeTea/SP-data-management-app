@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2020-06-30T09:46:03.552Z\n"
-"PO-Revision-Date: 2020-06-30T09:46:03.552Z\n"
+"POT-Creation-Date: 2020-07-06T21:07:30.089Z\n"
+"PO-Revision-Date: 2020-07-06T21:07:30.089Z\n"
 
 msgid "Data Entry"
 msgstr ""
@@ -165,6 +165,11 @@ msgid "Project created"
 msgstr ""
 
 msgid "Project updated"
+msgstr ""
+
+msgid ""
+"Note: only users with permissions in the selected country ({{country}}) can "
+"be added to this project"
 msgstr ""
 
 msgid "Cancel Project creation?"
