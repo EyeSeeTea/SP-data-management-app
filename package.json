@@ -1,7 +1,7 @@
 {
     "name": "project-monitoring-app",
     "description": "DHIS2 Project Monitoring App",
-    "version": "0.3.1-beta.1",
+    "version": "0.3.1",
     "license": "GPL-3.0",
     "author": "EyeSeeTea team",
     "homepage": ".",
