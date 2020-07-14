@@ -7,7 +7,7 @@ import { generateUid } from "d2/uid";
 import { TableSorting } from "d2-ui-components";
 
 import i18n from "../locales";
-import DataElementsSet, { PeopleOrBenefit, DataElement } from "./dataElementsSet";
+import DataElementsSet, { PeopleOrBenefit, DataElement, SelectionInfo } from "./dataElementsSet";
 import ProjectDb from "./ProjectDb";
 import { toISOString, getMonthsRange } from "../utils/date";
 import ProjectDownload from "./ProjectDownload";

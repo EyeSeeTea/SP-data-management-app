@@ -22,6 +22,9 @@ import { Config } from "../../models/Config";
 import { helpTexts } from "./help-texts";
 import { ReactComponentLike } from "prop-types";
 import SharingStep from "../../components/steps/sharing/SharingStep";
+import DisaggregationStep from "../../components/steps/disaggregation/DisaggregationStep";
+import DataElementsSelectionStep from "../../components/steps/data-elements-selection/DataElementsSelectionStep";
+import MerSelectionStep from "../../components/steps/mer-selection/MerSelectionStep";
 
 type Action = { type: "create" } | { type: "edit"; id: string };
 
@@ -128,16 +131,23 @@ class ProjectWizardImpl extends React.Component<Props, State> {
             {
                 key: "indicators",
                 label: i18n.t("Selection of Indicators"),
-                component: DataElementsSelection,
+                component: DataElementsSelectionStep,
                 validationKeys: ["dataElementsSelection"],
                 help: helpTexts.indicators,
             },
             {
                 key: "mer-indicators",
                 label: i18n.t("Selection of MER Indicators"),
-                component: DataElementsMER,
+                component: MerSelectionStep,
                 validationKeys: ["dataElementsMER"],
                 help: helpTexts.merIndicators,
+            },
+            {
+                key: "disaggregation",
+                label: i18n.t("Disaggregation"),
+                component: DisaggregationStep,
+                validationKeys: [],
+                help: helpTexts.disaggregation,
             },
             {
                 key: "sharing",
@@ -274,13 +284,5 @@ const ProjectWizard: React.FC<ProjectWizardProps> = props => {
         />
     );
 };
-
-const DataElementsSelection: React.FC<StepProps> = props => (
-    <DataElementsStep {...props} type="mainSelection" />
-);
-
-const DataElementsMER: React.FC<StepProps> = props => (
-    <DataElementsStep {...props} type="merSelection" />
-);
 
 export default React.memo(ProjectWizard);

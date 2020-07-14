@@ -6,6 +6,7 @@ import { Sector } from "./Config";
 import i18n from "../locales";
 import User from "./user";
 import { fromPairs, getKeys } from "../types/utils";
+import Project from "./Project";
 
 /*
     Abstract list of Project data element of type DataElement. Usage:
@@ -62,6 +63,11 @@ interface DataElementsData {
 export interface SelectionInfo {
     selected?: DataElement[];
     messages?: string[];
+}
+
+export interface ProjectSelection {
+    selectionInfo: SelectionInfo;
+    project: Project;
 }
 
 type GetOptions = Partial<{

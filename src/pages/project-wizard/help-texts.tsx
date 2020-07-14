@@ -33,6 +33,7 @@ export const helpTexts = {
         `- MER indicators must be selected in coordination with your Country Director and Regional Team.`,
         { nsSeparator: false }
     ),
+    disaggregation: i18n.t("Override default disaggregation for project indicators"),
     save: i18n.t(
         `If you need to correct an item in your project, please click the grey “Previous” button located on the bottom right side of the screen.`
     ),
