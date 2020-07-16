@@ -16,7 +16,6 @@ import GeneralInfoStep from "../../components/steps/general-info/GeneralInfoStep
 import SectorsStep from "../../components/steps/sectors/SectorsStep";
 import OrgUnitsStep from "../../components/steps/org-units/OrgUnitsStep";
 import SaveStep from "../../components/steps/save/SaveStep";
-import DataElementsStep from "../../components/steps/data-elements/DataElementsStep";
 import { getDevProject } from "../../models/dev-project";
 import { Config } from "../../models/Config";
 import { helpTexts } from "./help-texts";
@@ -151,7 +150,7 @@ class ProjectWizardImpl extends React.Component<Props, State> {
             },
             {
                 key: "sharing",
-                label: i18n.t("Sharing"),
+                label: i18n.t("Username Access"),
                 component: SharingStep,
                 description: i18n.t("Define sharing settings for metadata of the project."),
             },

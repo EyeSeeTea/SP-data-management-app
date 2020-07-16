@@ -5,10 +5,12 @@ import DropdownForm from "./DropdownForm";
 
 type Value = string;
 
-interface DropdownProps {
-    items: Array<{ value: Value; text: string }>;
+export type DropdownItem = { value: Value; text: string };
+
+export interface DropdownProps {
+    items: Array<DropdownItem>;
     onChange: (value: Value | undefined) => void;
-    label: string;
+    label?: string;
     value?: Value;
     hideEmpty?: boolean;
 }
@@ -18,8 +20,15 @@ const Dropdown: React.FC<DropdownProps> = props => {
     const selectValue =
         value === undefined || !items.map(item => item.value).includes(value) ? "" : value;
 
+    const SelectWrapper = (props: any) =>
+        label ? (
+            <DropdownForm label={label}>{props.children}</DropdownForm>
+        ) : (
+            <React.Fragment>{props.children}</React.Fragment>
+        );
+
     return (
-        <DropdownForm label={label}>
+        <SelectWrapper>
             <Select
                 value={selectValue}
                 onChange={ev => onChange((ev.target.value as string) || undefined)}
@@ -35,7 +44,7 @@ const Dropdown: React.FC<DropdownProps> = props => {
                     </MenuItem>
                 ))}
             </Select>
-        </DropdownForm>
+        </SelectWrapper>
     );
 };
 

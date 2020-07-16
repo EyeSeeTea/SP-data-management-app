@@ -1,19 +1,32 @@
 import React, { useState, useEffect, useMemo, ReactNode } from "react";
-import { ObjectsTable, useSnackbar, RowConfig } from "d2-ui-components";
+import { ObjectsTable, useSnackbar, RowConfig, TableAction } from "d2-ui-components";
 import { TablePagination, TableColumn, TableState, TableSorting } from "d2-ui-components";
 import _ from "lodash";
 
-import DataElementsFilters, { Filter } from "./DataElementsFilters";
+import DataElementsFilters, { Filter, FilterKey } from "./DataElementsFilters";
 import i18n from "../../../locales";
-import DataElementsSet, { SelectionInfo, DataElement } from "../../../models/dataElementsSet";
+import DataElementsSet, {
+    SelectionInfo,
+    DataElement as DataElement_,
+} from "../../../models/dataElementsSet";
 import { Tooltip } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { Id } from "../../../types/d2-api";
+import { renderJoin } from "../../../utils/react";
+
+// Add keys used in custom columns
+type DataElement = DataElement_ & { isCovid19?: boolean };
 
 export interface DataElementsTableProps {
     dataElementsSet: DataElementsSet;
     sectorId: Id;
-    onSelectionChange: (dataElementIds: Id[]) => SelectionInfo;
+    onlySelected?: boolean;
+    onSelectionChange?: (dataElementIds: Id[]) => SelectionInfo;
+    showGuidance?: boolean;
+    columns: FieldName[];
+    customColumns?: TableColumn<DataElement>[];
+    actions?: TableAction<DataElement>[];
+    visibleFilters?: FilterKey[];
 }
 
 const initialPagination: Partial<TablePagination> = {
@@ -39,56 +52,37 @@ const sortableFields = [
 ] as const;
 type SortableField = typeof sortableFields[number];
 
-const getName = _.memoize(_getName, dataElement => dataElement.id);
+// TODO: memoize should use de.id and step key
+//const getName = _.memoize(_getName, dataElement => dataElement.id);
+const getName = _getName;
 
-const columns: TableColumn<DataElement>[] = [
-    {
-        name: "name" as const,
-        text: i18n.t("Name"),
-        sortable: true,
-        getValue: getName,
-    },
-    {
-        name: "code" as const,
-        text: i18n.t("Code"),
-        sortable: true,
-        getValue: withPaired("code"),
-    },
-    { name: "indicatorType" as const, text: i18n.t("Indicator Type"), sortable: true },
-    {
-        name: "peopleOrBenefit" as const,
-        text: i18n.t("People / Benefit"),
-        sortable: true,
-        getValue: withPaired("peopleOrBenefit"),
-    },
-    {
-        name: "series" as const,
-        text: i18n.t("Series"),
-        sortable: true,
-        getValue: withPaired("series"),
-    },
-    {
-        name: "countingMethod" as const,
-        text: i18n.t("Counting Method"),
-        sortable: true,
-        getValue: withPaired("countingMethod"),
-    },
-    {
-        name: "externals" as const,
-        text: i18n.t("Externals"),
-        sortable: true,
-        getValue: withPaired("externals", externals => externals.join(", ")),
-    },
-];
+export type FieldName =
+    | "name"
+    | "code"
+    | "peopleOrBenefit"
+    | "series"
+    | "countingMethod"
+    | "externals"
+    | "indicatorType";
 
 const DataElementsTable: React.FC<DataElementsTableProps> = props => {
-    const { dataElementsSet, sectorId, onSelectionChange } = props;
+    const {
+        dataElementsSet,
+        sectorId,
+        onSelectionChange,
+        columns: initialColumns,
+        visibleFilters,
+        onlySelected,
+        showGuidance = true,
+        customColumns = [],
+        actions,
+    } = props;
     const snackbar = useSnackbar();
     const [filter, setFilter] = useState<Filter>({});
 
     useEffect(() => setFilter({}), [sectorId]);
 
-    const fullFilter = { ...filter, sectorId };
+    const fullFilter = { ...filter, sectorId, onlySelected };
 
     const dataElements = useMemo(() => dataElementsSet.get(fullFilter), [
         dataElementsSet,
@@ -104,7 +98,9 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
     }, [dataElementsSet, sectorId]);
 
     const selection = useMemo(() => {
-        return dataElementsSet.get({ onlySelected: true, sectorId }).map(de => ({ id: de.id }));
+        return onSelectionChange
+            ? dataElementsSet.get({ onlySelected: true, sectorId }).map(de => ({ id: de.id }))
+            : undefined;
     }, [dataElementsSet, sectorId]);
 
     const initialState = useMemo(() => {
@@ -113,7 +109,7 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
 
     const onChange = React.useCallback(
         (state: TableState<DataElement>) => {
-            return onTableChange(onSelectionChange, snackbar, state);
+            if (onSelectionChange) return onTableChange(onSelectionChange, snackbar, state);
         },
         [onTableChange, onSelectionChange, snackbar]
     );
@@ -125,6 +121,7 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
                 filter={filter}
                 filterOptions={filterOptions}
                 onChange={setFilter}
+                visibleFilters={visibleFilters}
             />
         ),
         [filter, filterOptions, setFilter]
@@ -138,6 +135,53 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
         [dataElements]
     );
 
+    const allColumns = React.useMemo(() => {
+        const columns = [
+            {
+                name: "name" as const,
+                text: i18n.t("Name"),
+                sortable: true,
+                getValue: (de: DataElement) => getName(de, showGuidance),
+            },
+            {
+                name: "code" as const,
+                text: i18n.t("Code"),
+                sortable: true,
+                getValue: withPaired("code"),
+            },
+            { name: "indicatorType" as const, text: i18n.t("Indicator Type"), sortable: true },
+            {
+                name: "peopleOrBenefit" as const,
+                text: i18n.t("People / Benefit"),
+                sortable: true,
+                getValue: withPaired("peopleOrBenefit"),
+            },
+            {
+                name: "series" as const,
+                text: i18n.t("Series"),
+                sortable: true,
+                getValue: withPaired("series"),
+            },
+            {
+                name: "countingMethod" as const,
+                text: i18n.t("Counting Method"),
+                sortable: true,
+                getValue: withPaired("countingMethod"),
+            },
+            {
+                name: "externals" as const,
+                text: i18n.t("Externals"),
+                sortable: true,
+                getValue: withPaired("externals", externals => externals.join(", ")),
+            },
+        ];
+        const columnsToShow: TableColumn<DataElement>[] = _(columns)
+            .keyBy(column => column.name)
+            .at(initialColumns)
+            .value();
+        return _.concat(columnsToShow, customColumns);
+    }, [initialColumns, customColumns, showGuidance]);
+
     if (!sectorId) return null;
 
     return (
@@ -147,12 +191,13 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
             rowConfig={rowConfig}
             forceSelectionColumn={true}
             initialState={initialState}
-            columns={columns}
+            columns={allColumns}
             searchBoxLabel={i18n.t("Search by name / code")}
             onChange={onChange}
             searchBoxColumns={searchBoxColumns}
             resetKey={JSON.stringify(fullFilter)}
             filterComponents={filterComponents}
+            actions={actions}
         />
     );
 };
@@ -171,27 +216,38 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-function _getName(dataElement: DataElement, _value: ReactNode): ReactNode {
-    return <NameColumn key={dataElement.name} dataElement={dataElement} />;
+function _getName(dataElement: DataElement, showGuidance: boolean): ReactNode {
+    return (
+        <NameColumn key={dataElement.name} dataElement={dataElement} showGuidance={showGuidance} />
+    );
 }
 
-const NameColumn: React.FC<{ dataElement: DataElement }> = ({ dataElement }) => {
+const NameColumn: React.FC<{ dataElement: DataElement; showGuidance: boolean }> = ({
+    dataElement,
+    showGuidance,
+}) => {
     const dataElements = [dataElement, ...dataElement.pairedDataElements];
     const classes = useStyles();
     const tooltips = renderJoin(
-        dataElements.map(dataElement => (
-            <Tooltip
-                enterDelay={500}
-                leaveDelay={0}
-                key={dataElement.id}
-                title={
-                    <div className={classes.tooltipContents}>{getTooltipContents(dataElement)}</div>
-                }
-                classes={{ tooltip: classes.tooltip }}
-            >
+        dataElements.map(dataElement =>
+            showGuidance ? (
+                <Tooltip
+                    enterDelay={500}
+                    leaveDelay={0}
+                    key={dataElement.id}
+                    title={
+                        <div className={classes.tooltipContents}>
+                            {getTooltipContents(dataElement)}
+                        </div>
+                    }
+                    classes={{ tooltip: classes.tooltip }}
+                >
+                    <span>{dataElement.name}</span>
+                </Tooltip>
+            ) : (
                 <span>{dataElement.name}</span>
-            </Tooltip>
-        )),
+            )
+        ),
         <br />
     );
 
@@ -238,7 +294,8 @@ function withPaired<Field extends keyof DataElement>(
         return <React.Fragment key={key}>{renderJoin(values, <br />)}</React.Fragment>;
     };
 
-    return _.memoize(render, dataElement => dataElement.id);
+    //return _.memoize(render, dataElement => dataElement.id);
+    return render;
 }
 
 function getSelectionMessage(dataElements: DataElement[], action: string): string | null {
@@ -268,14 +325,6 @@ function onTableChange(
     const selectedIds = state.selection.map(de => de.id);
     const selectionInfo = onSelectionChange(selectedIds);
     if (selectionInfo) showSelectionMessage(snackbar, selectionInfo);
-}
-
-function renderJoin(nodes: ReactNode[], separator: ReactNode): ReactNode {
-    return _(nodes)
-        .compact()
-        .flatMap((node, idx) => (idx < nodes.length - 1 ? [node, separator] : [node]))
-        .map((node, idx) => <React.Fragment key={idx}>{node || "-"}</React.Fragment>)
-        .value();
 }
 
 export default React.memo(DataElementsTable);

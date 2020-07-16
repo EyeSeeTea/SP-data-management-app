@@ -119,13 +119,16 @@ function getSectorsInfo(project: Project): ReactNode {
             {sectorsInfo.map(({ sector, dataElementsInfo }) => {
                 const value = (
                     <ul>
-                        {dataElementsInfo.map(({ dataElement, isMER, usedInDataSetSection }) => (
-                            <li key={dataElement.id}>
-                                {dataElement.name} - {dataElement.code}
-                                {isMER ? ` [${i18n.t("MER")}]` : ""}
-                                {usedInDataSetSection ? "" : <i> - {hiddenMsg}</i>}
-                            </li>
-                        ))}
+                        {dataElementsInfo.map(
+                            ({ dataElement, isMER, isCovid19, usedInDataSetSection }) => (
+                                <li key={dataElement.id}>
+                                    {dataElement.name} - {dataElement.code}
+                                    {isCovid19 ? ` [${i18n.t("COVID-19")}]` : ""}
+                                    {isMER ? ` [${i18n.t("MER")}]` : ""}
+                                    {usedInDataSetSection ? "" : <i> - {hiddenMsg}</i>}
+                                </li>
+                            )
+                        )}
                     </ul>
                 );
                 return <LiEntry key={sector.id} label={sector.displayName} value={value} />;

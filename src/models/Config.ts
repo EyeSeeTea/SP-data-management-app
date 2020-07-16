@@ -56,20 +56,23 @@ const baseConfig = {
     categories: {
         targetActual: "ACTUAL_TARGET",
         gender: "GENDER",
-        newRecurring: "NEW_RECURRING",
+        newRecurring: "NEW_RETURNING",
+        covid19: "COVID19",
     },
     categoryCombos: {
         targetActual: "ACTUAL_TARGET",
-        genderNewRecurring: "GENDER_NEW_RECURRING",
+        genderNewRecurring: "NEW_RETURNING_GENDER",
+        genderNewRecurringCovid19: "NEW_RETURNING_GENDER_COVID19",
         default: "default",
     },
     categoryOptions: {
         target: "TARGET",
         actual: "ACTUAL",
         new: "NEW",
-        recurring: "RECURRING",
+        recurring: "RETURNING",
         male: "MALE",
         female: "FEMALE",
+        covid19: "COVID19",
     },
     dataElementGroups: {
         global: "GLOBAL",
@@ -116,6 +119,8 @@ const metadataParams = {
         fields: {
             id: yes,
             code: yes,
+            displayName: yes,
+            categories: { id: yes },
             categoryOptionCombos: {
                 id: yes,
                 displayName: yes,
@@ -228,7 +233,8 @@ type IndexedObjs<Key extends keyof BaseConfig, ValueType> = Record<
 
 export type Attribute = CodedObject;
 export type CategoryOptionCombo = NamedObject & { categoryOptions: NamedObject[] };
-export type CategoryCombo = CodedObject & { categoryOptionCombos: CategoryOptionCombo[] };
+export type CategoryCombo = NamedObject &
+    CodedObject & { categories: Ref[]; categoryOptionCombos: CategoryOptionCombo[] };
 export type CategoryOption = CodedObject & { categoryOptionCombos: NamedObject[] };
 export type Category = CodedObject & { categoryOptions: CategoryOption[] };
 export type LegendSet = CodedObject;

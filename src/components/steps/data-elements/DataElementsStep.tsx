@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { StepProps } from "../../../pages/project-wizard/ProjectWizard";
-import DataElementsTable from "./DataElementsTable";
+import DataElementsTable, { FieldName } from "./DataElementsTable";
 import Sidebar from "./Sidebar";
 import { Id } from "../../../types/d2-api";
 import DataElementsSet, { ProjectSelection } from "../../../models/dataElementsSet";
@@ -41,11 +41,22 @@ const DataElementsStep: React.FC<DataElementsStepProps> = props => {
                         dataElementsSet={dataElementsSet}
                         sectorId={sectorId}
                         onSelectionChange={onSelectionChange}
+                        columns={initialColumns}
                     />
                 </div>
             }
         />
     );
 };
+
+const initialColumns: FieldName[] = [
+    "name",
+    "code",
+    "indicatorType",
+    "peopleOrBenefit",
+    "series",
+    "countingMethod",
+    "externals",
+];
 
 export default React.memo(DataElementsStep);

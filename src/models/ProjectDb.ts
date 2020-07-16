@@ -1,3 +1,4 @@
+import { Disaggregation } from "./Disaggregation";
 import _ from "lodash";
 import moment from "moment";
 import { MetadataPayload, Id, D2Api } from "../types/d2-api";
@@ -322,7 +323,7 @@ export default class ProjectDb {
         const dataSetElements = _.uniqBy(selectedDataElements, de => de.id).map(dataElement => ({
             dataSet: { id: dataSetId },
             dataElement: { id: dataElement.id },
-            categoryCombo: { id: dataElement.categoryCombo.id },
+            categoryCombo: project.disaggregation.getCategoryCombo(dataElement.id),
         }));
 
         const sections0 = this.getDataElementsBySector().map(({ sector, dataElements }, index) => {
@@ -442,6 +443,21 @@ export default class ProjectDb {
             superSet: dataElementsSelection,
         }).updateSelected(_.mapValues(dataElementsBySectorId, value => value.selectedMERIds));
 
+        const categoryCombosById = _.keyBy(config.categoryCombos, cc => cc.id);
+
+        const covidMapping = _(projectDataSets.actual.dataSetElements)
+            .map(dse => {
+                const categoryCombo = categoryCombosById[dse.categoryCombo.id];
+                const isCovid19 = _(categoryCombo.categories).some(
+                    category => category.id === config.categories.covid19.id
+                );
+                return [dse.dataElement.id, isCovid19];
+            })
+            .fromPairs()
+            .value();
+
+        const disaggregation = Disaggregation.build(config, covidMapping);
+
         const projectData = {
             id: orgUnit.id,
             name: orgUnit.name,
@@ -460,6 +476,7 @@ export default class ProjectDb {
             dashboard: dashboardId ? { id: dashboardId } : undefined,
             dataElementsSelection,
             dataElementsMER,
+            disaggregation,
             sharing: getSharing(projectDataSets.target),
         };
 

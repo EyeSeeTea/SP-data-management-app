@@ -37,7 +37,7 @@ export interface DataElementBase {
     externals: string[];
     externalsDescription: string;
     pairedDataElements: Array<{ id: Id; name: string; code: string }>;
-    categoryCombo: Ref;
+    categoryCombo: { id: Id; displayName: string };
     selectable: boolean;
 }
 
@@ -70,7 +70,7 @@ export interface ProjectSelection {
     project: Project;
 }
 
-type GetOptions = Partial<{
+export type GetOptions = Partial<{
     sectorId: string;
     series: string;
     indicatorType: IndicatorType;
@@ -122,6 +122,7 @@ export default class DataElementsSet {
         const sectorsByDataElementId = getGroupsByDataElementId(sectorsSet);
         const seriesByDataElementId = getGroupsByDataElementId(seriesSet);
         const groupCodesByDataElementId = getGroupCodeByDataElementId(dataElementGroupSets);
+        const categoryCombosById = _.keyBy(metadata.categoryCombos, cc => cc.id);
 
         const dataElements = d2DataElements.map(d2DataElement => {
             const deId = d2DataElement.id;
@@ -150,6 +151,7 @@ export default class DataElementsSet {
                 console.error(`DataElement ${deCode} has no main sector`);
                 return null;
             } else {
+                const { categoryCombo } = d2DataElement;
                 const dataElement: DataElementBase = {
                     id: d2DataElement.id,
                     name: name,
@@ -162,7 +164,10 @@ export default class DataElementsSet {
                     pairedDataElements,
                     countingMethod: countingMethod || "",
                     externals,
-                    categoryCombo: { id: d2DataElement.categoryCombo.id },
+                    categoryCombo: {
+                        id: categoryCombo.id,
+                        displayName: getCategoryComboName(categoryCombosById, categoryCombo),
+                    },
                     selectable: isSelectable,
                 };
                 return dataElement;
@@ -232,6 +237,18 @@ export default class DataElementsSet {
         });
     }
 
+    set(dataElementId: Id, data: Partial<DataElementBase>): DataElementsSet {
+        const newDataElementsBase = this.data.dataElementsBase.map(
+            (de): DataElementBase => {
+                return de.id === dataElementId ? { ...de, ...data } : de;
+            }
+        );
+        return new DataElementsSet(this.config, {
+            ...this.data,
+            dataElementsBase: newDataElementsBase,
+        });
+    }
+
     updateSelected(dataElementsBySectorId: Record<Id, Id[]>): DataElementsSet {
         return new DataElementsSet(this.config, {
             ...this.data,
@@ -289,6 +306,30 @@ export default class DataElementsSet {
         );
 
         return _.uniqBy(relatedDataElements, de => de.id);
+    }
+
+    getRelatedGroup(sectorId: Id, dataElementIds: Id[]): DataElement[] {
+        const { dataElementsAllBySector } = this.data;
+        const allDataElements = dataElementsAllBySector[sectorId] || [];
+        const allDataElementsByKey = _.groupBy(allDataElements, de => de.series || "");
+        const byId = _.keyBy(allDataElements, de => de.id);
+        const selectedDataElements = _(byId)
+            .at(dataElementIds)
+            .flatMap(de => [de, ...de.pairedDataElements])
+            .uniqBy(de => de.id)
+            .compact()
+            .value();
+
+        const relatedDataElements = _.compact(
+            selectedDataElements.flatMap(de => _(allDataElementsByKey).get(de.series || "", []))
+        );
+
+        const dataElements = _.compact(_.at(byId, dataElementIds));
+
+        return _(dataElements)
+            .concat(relatedDataElements)
+            .uniqBy(de => de.id)
+            .value();
     }
 }
 
@@ -479,4 +520,16 @@ function getDescriptionFields(d2DataElement: { description: string }) {
         externalsDescription: externalsDescription === "-" ? "" : externalsDescription,
         description: notes.trim(),
     };
+}
+
+function getCategoryComboName(
+    categoryCombosById: Record<Id, { displayName: string; code: string }>,
+    categoryComboRef: Ref
+) {
+    const categoryCombo = _(categoryCombosById).get(categoryComboRef.id, null);
+    if (categoryCombo) {
+        return categoryCombo.code === "default" ? i18n.t("None") : categoryCombo.displayName;
+    } else {
+        return "Unknown";
+    }
 }
