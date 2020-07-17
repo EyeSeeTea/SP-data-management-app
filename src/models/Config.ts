@@ -16,6 +16,7 @@ export type Config = {
     attributes: IndexedObjs<"attributes", Attribute>;
     categories: IndexedObjs<"categories", Category>;
     categoryCombos: IndexedObjs<"categoryCombos", CategoryCombo>;
+    allCategoryCombos: CategoryCombo[];
     categoryOptions: IndexedObjs<"categoryOptions", CategoryOption>;
     legendSets: IndexedObjs<"legendSets", LegendSet>;
     indicators: Indicator[];
@@ -54,16 +55,18 @@ const baseConfig = {
         mainSector: "PM_MAIN_SECTOR",
     },
     categories: {
+        default: "default",
         targetActual: "ACTUAL_TARGET",
         gender: "GENDER",
         newRecurring: "NEW_RETURNING",
         covid19: "COVID19",
     },
     categoryCombos: {
-        targetActual: "ACTUAL_TARGET",
-        genderNewRecurring: "NEW_RETURNING_GENDER",
-        genderNewRecurringCovid19: "NEW_RETURNING_GENDER_COVID19",
         default: "default",
+        targetActual: "ACTUAL_TARGET",
+        covid19: "COVID19",
+        genderNewRecurring: "NEW_RETURNING_GENDER",
+        genderNewRecurringCovid19: "COVID19_NEW_RETURNING_GENDER",
     },
     categoryOptions: {
         target: "TARGET",
@@ -127,7 +130,6 @@ const metadataParams = {
                 categoryOptions: { id: yes, displayName: yes },
             },
         },
-        filter: { code: { in: _.values(baseConfig.categoryCombos) } },
     },
     categoryOptions: {
         fields: { id: yes, code: yes, categoryOptionCombos: { id: yes } },
@@ -262,6 +264,7 @@ class ConfigLoader {
             attributes: indexObjects(metadata, "attributes"),
             categories: indexObjects(metadata, "categories"),
             categoryCombos: indexObjects(metadata, "categoryCombos"),
+            allCategoryCombos: metadata.categoryCombos,
             categoryOptions: indexObjects(metadata, "categoryOptions"),
             legendSets: indexObjects(metadata, "legendSets"),
             dataApprovalWorkflows: indexObjects(metadata, "dataApprovalWorkflows"),

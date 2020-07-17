@@ -231,7 +231,7 @@ class ProjectDownload {
                 ],
                 [
                     ...repeat(empty, 4),
-                    text(i18n.t("Recurring"), {
+                    text(i18n.t("Returning"), {
                         fill: fills.target,
                         alignment: { horizontal: "right" },
                     }),
@@ -292,7 +292,7 @@ class ProjectDownload {
                 ],
                 [
                     ...repeat(empty, 4),
-                    text(i18n.t("Male Recurring"), { alignment: { horizontal: "right" } }),
+                    text(i18n.t("Male Returning"), { alignment: { horizontal: "right" } }),
                     ...this.mapPeriods(period =>
                         analytics.get(dataElement, period.id, [
                             config.categoryOptions.actual,
@@ -304,7 +304,7 @@ class ProjectDownload {
                 ],
                 [
                     ...repeat(empty, 4),
-                    text(i18n.t("Female Recurring"), { alignment: { horizontal: "right" } }),
+                    text(i18n.t("Female Returning"), { alignment: { horizontal: "right" } }),
                     ...this.mapPeriods(period =>
                         analytics.get(dataElement, period.id, [
                             config.categoryOptions.actual,

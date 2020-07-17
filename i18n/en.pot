@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2020-07-06T21:07:30.089Z\n"
-"PO-Revision-Date: 2020-07-06T21:07:30.089Z\n"
+"POT-Creation-Date: 2020-07-17T08:38:07.286Z\n"
+"PO-Revision-Date: 2020-07-17T08:38:07.286Z\n"
 
 msgid "Data Entry"
 msgstr ""
@@ -104,6 +104,24 @@ msgstr ""
 msgid "selected"
 msgstr ""
 
+msgid "No"
+msgstr ""
+
+msgid "Yes"
+msgstr ""
+
+msgid "Disaggregation"
+msgstr ""
+
+msgid "COVID-19"
+msgstr ""
+
+msgid "Add COVID-19 disaggregation"
+msgstr ""
+
+msgid "Remove COVID-19 disaggregation"
+msgstr ""
+
 msgid "Field should be a 5-digit number"
 msgstr ""
 
@@ -178,12 +196,6 @@ msgstr ""
 msgid ""
 "You are about to exit the Project creation wizard. All your changes will be "
 "lost. Are you sure you want to proceed?"
-msgstr ""
-
-msgid "Yes"
-msgstr ""
-
-msgid "No"
 msgstr ""
 
 msgid "Data Approval"
@@ -386,7 +398,7 @@ msgstr ""
 msgid "New"
 msgstr ""
 
-msgid "Recurring"
+msgid "Returning"
 msgstr ""
 
 msgid "Total Actual People"
@@ -398,10 +410,10 @@ msgstr ""
 msgid "Female New"
 msgstr ""
 
-msgid "Male Recurring"
+msgid "Male Returning"
 msgstr ""
 
-msgid "Female Recurring"
+msgid "Female Returning"
 msgstr ""
 
 msgid "People"
@@ -428,6 +440,9 @@ msgstr ""
 msgid "Global data elements with selected subs cannot be unselected"
 msgstr ""
 
+msgid "None"
+msgstr ""
+
 msgid ""
 "Actual value ({{actualValue}}) should not be greater than 20% of the target "
 "value ({{targetValue}})"
@@ -437,7 +452,7 @@ msgid "there is no data for previous periods"
 msgstr ""
 
 msgid ""
-"Recurring value ({{recurringValue}}) cannot be greater than the sum of new "
+"Returning value ({{recurringValue}}) cannot be greater than the sum of new "
 "values for past periods ({{newValuesSumFormula}})"
 msgstr ""
 
@@ -546,6 +561,9 @@ msgstr ""
 msgid "Selection of MER Indicators"
 msgstr ""
 
+msgid "Username Access"
+msgstr ""
+
 msgid "Define sharing settings for metadata of the project."
 msgstr ""
 
@@ -590,6 +608,9 @@ msgstr ""
 msgid ""
 "- MER indicators must be selected in coordination with your Country "
 "Director and Regional Team."
+msgstr ""
+
+msgid "Override default disaggregation for project indicators"
 msgstr ""
 
 msgid ""

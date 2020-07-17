@@ -8,6 +8,15 @@ export function getIds<T extends Ref>(objs: T[]): Id[] {
     return objs.map(obj => obj.id);
 }
 
+export function getRef<T extends Ref>(obj: T): Ref {
+    return { id: obj.id };
+}
+
+export function haveSameRefs<T extends Ref>(objs1: T[], objs2: T[]): boolean {
+    const get = <T extends Ref>(objs: T[]) => _.sortBy(objs.map(o => o.id)).join("-");
+    return objs1.length === objs2.length && get(objs1) === get(objs2);
+}
+
 export function getRefs<T extends Ref>(objs: T[]): Ref[] {
     return objs.map(obj => ({ id: obj.id }));
 }

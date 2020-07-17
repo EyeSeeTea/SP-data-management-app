@@ -443,20 +443,8 @@ export default class ProjectDb {
             superSet: dataElementsSelection,
         }).updateSelected(_.mapValues(dataElementsBySectorId, value => value.selectedMERIds));
 
-        const categoryCombosById = _.keyBy(config.categoryCombos, cc => cc.id);
-
-        const covidMapping = _(projectDataSets.actual.dataSetElements)
-            .map(dse => {
-                const categoryCombo = categoryCombosById[dse.categoryCombo.id];
-                const isCovid19 = _(categoryCombo.categories).some(
-                    category => category.id === config.categories.covid19.id
-                );
-                return [dse.dataElement.id, isCovid19];
-            })
-            .fromPairs()
-            .value();
-
-        const disaggregation = Disaggregation.build(config, covidMapping);
+        const { dataSetElements } = projectDataSets.actual;
+        const disaggregation = Disaggregation.buildFromDataSetElements(config, dataSetElements);
 
         const projectData = {
             id: orgUnit.id,

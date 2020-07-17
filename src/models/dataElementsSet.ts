@@ -286,7 +286,7 @@ export default class DataElementsSet {
         const allDataElementsByKey = _.keyBy(allDataElements, de =>
             [de.indicatorType, de.series].join(".")
         );
-        const selectedDataElements = _(allDataElements)
+        const sourceDataElements = _(allDataElements)
             .keyBy(de => de.id)
             .at(dataElementIds)
             .flatMap(de => [de, ...de.pairedDataElements])
@@ -295,7 +295,7 @@ export default class DataElementsSet {
             .value();
 
         const relatedDataElements = _.compact(
-            selectedDataElements.map(de => {
+            sourceDataElements.map(de => {
                 if (de.indicatorType === "sub") {
                     const key = ["global", de.series].join(".");
                     return _(allDataElementsByKey).get(key, null);
@@ -308,12 +308,15 @@ export default class DataElementsSet {
         return _.uniqBy(relatedDataElements, de => de.id);
     }
 
-    getRelatedGroup(sectorId: Id, dataElementIds: Id[]): DataElement[] {
+    /* Return Global -> sub and paired relations, including source data elements */
+    getGroupForDisaggregation(sectorId: Id, dataElementIds: Id[]): DataElement[] {
         const { dataElementsAllBySector } = this.data;
         const allDataElements = dataElementsAllBySector[sectorId] || [];
-        const allDataElementsByKey = _.groupBy(allDataElements, de => de.series || "");
-        const byId = _.keyBy(allDataElements, de => de.id);
-        const selectedDataElements = _(byId)
+        const allDataElementsByKey = _.keyBy(allDataElements, de =>
+            [de.indicatorType, de.series].join(".")
+        );
+        const sourceDataElements = _(allDataElements)
+            .keyBy(de => de.id)
             .at(dataElementIds)
             .flatMap(de => [de, ...de.pairedDataElements])
             .uniqBy(de => de.id)
@@ -321,12 +324,17 @@ export default class DataElementsSet {
             .value();
 
         const relatedDataElements = _.compact(
-            selectedDataElements.flatMap(de => _(allDataElementsByKey).get(de.series || "", []))
+            sourceDataElements.map(de => {
+                if (de.indicatorType === "global") {
+                    const key = ["sub", de.series].join(".");
+                    return _(allDataElementsByKey).get(key, null);
+                } else {
+                    return null;
+                }
+            })
         );
 
-        const dataElements = _.compact(_.at(byId, dataElementIds));
-
-        return _(dataElements)
+        return _(sourceDataElements)
             .concat(relatedDataElements)
             .uniqBy(de => de.id)
             .value();

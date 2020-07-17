@@ -33,8 +33,8 @@ const DisaggregationStep: React.FC<StepProps> = ({ project, onChange }) => {
 
     const setValues = React.useCallback(
         (dataElementIds: Id[], isSet: boolean) => {
-            const relatedIds = getIds(dataElementsSet.getRelatedGroup(sectorId, dataElementIds));
-            const newDisaggregation = project.disaggregation.setCovid19(relatedIds, isSet);
+            const related = dataElementsSet.getGroupForDisaggregation(sectorId, dataElementIds);
+            const newDisaggregation = project.disaggregation.setCovid19(getIds(related), isSet);
             const newProject = project.setObj({ disaggregation: newDisaggregation });
             onChange(newProject);
         },
@@ -81,7 +81,7 @@ const DisaggregationStep: React.FC<StepProps> = ({ project, onChange }) => {
             {
                 name: "set-covid19",
                 icon: <LocalHospitalIcon />,
-                text: i18n.t("Set COVID-19"),
+                text: i18n.t("Add COVID-19 disaggregation"),
                 multiple: true,
                 onClick: (ids: Id[]) => setValues(ids, true),
                 primary: false,
@@ -89,13 +89,13 @@ const DisaggregationStep: React.FC<StepProps> = ({ project, onChange }) => {
             {
                 name: "unset-covid19",
                 icon: <NotInterestedIcon />,
-                text: i18n.t("Unset COVID-19"),
+                text: i18n.t("Remove COVID-19 disaggregation"),
                 multiple: true,
                 primary: false,
                 onClick: (ids: Id[]) => setValues(ids, false),
             },
         ];
-    }, [Covid19Column]);
+    }, [Covid19Column, setValues]);
 
     return (
         <Sidebar
