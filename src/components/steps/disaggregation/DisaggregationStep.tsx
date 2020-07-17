@@ -32,7 +32,7 @@ const DisaggregationStep: React.FC<StepProps> = ({ project, onChange }) => {
             const newProject = project.setObj({ disaggregation: newDisaggregation });
             onChange(newProject);
         },
-        [onChange, project]
+        [onChange, project, sectorId]
     );
 
     const customColumns = React.useMemo(() => {

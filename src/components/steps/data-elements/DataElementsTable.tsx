@@ -82,7 +82,7 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
 
     useEffect(() => setFilter({}), [sectorId]);
 
-    const fullFilter = { ...filter, sectorId, onlySelected };
+    const fullFilter = { onlySelected, ...filter, sectorId };
 
     const dataElements = useMemo(() => dataElementsSet.get(fullFilter), [
         dataElementsSet,
