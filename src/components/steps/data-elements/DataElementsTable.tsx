@@ -14,7 +14,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { Id } from "../../../types/d2-api";
 import { renderJoin } from "../../../utils/react";
 
-// Add keys used in custom columns
+// Column names must be known to the model interface, so we need to add keys used in custom columns
 type DataElement = DataElement_ & { isCovid19?: boolean };
 
 export interface DataElementsTableProps {
@@ -52,9 +52,9 @@ const sortableFields = [
 ] as const;
 type SortableField = typeof sortableFields[number];
 
-// TODO: memoize should use de.id and step key
-//const getName = _.memoize(_getName, dataElement => dataElement.id);
-const getName = _getName;
+const getName = _.memoize(_getName, (dataElement, arePaired, showGuidance) =>
+    [dataElement.id, arePaired, showGuidance].join("-")
+);
 
 export type FieldName =
     | "name"
@@ -74,7 +74,7 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
         visibleFilters,
         onlySelected,
         showGuidance = true,
-        customColumns = [],
+        customColumns,
         actions,
     } = props;
     const snackbar = useSnackbar();
@@ -136,50 +136,51 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
     );
 
     const allColumns = React.useMemo(() => {
+        const paired = dataElementsSet.arePairedGrouped;
         const columns = [
             {
                 name: "name" as const,
                 text: i18n.t("Name"),
                 sortable: true,
-                getValue: (de: DataElement) => getName(de, showGuidance),
+                getValue: (de: DataElement) => getName(de, paired, showGuidance),
             },
             {
                 name: "code" as const,
                 text: i18n.t("Code"),
                 sortable: true,
-                getValue: withPaired("code"),
+                getValue: withPaired(paired, "code"),
             },
             { name: "indicatorType" as const, text: i18n.t("Indicator Type"), sortable: true },
             {
                 name: "peopleOrBenefit" as const,
                 text: i18n.t("People / Benefit"),
                 sortable: true,
-                getValue: withPaired("peopleOrBenefit"),
+                getValue: withPaired(paired, "peopleOrBenefit"),
             },
             {
                 name: "series" as const,
                 text: i18n.t("Series"),
                 sortable: true,
-                getValue: withPaired("series"),
+                getValue: withPaired(paired, "series"),
             },
             {
                 name: "countingMethod" as const,
                 text: i18n.t("Counting Method"),
                 sortable: true,
-                getValue: withPaired("countingMethod"),
+                getValue: withPaired(paired, "countingMethod"),
             },
             {
                 name: "externals" as const,
                 text: i18n.t("Externals"),
                 sortable: true,
-                getValue: withPaired("externals", externals => externals.join(", ")),
+                getValue: withPaired(paired, "externals", externals => externals.join(", ")),
             },
         ];
         const columnsToShow: TableColumn<DataElement>[] = _(columns)
             .keyBy(column => column.name)
             .at(initialColumns)
             .value();
-        return _.concat(columnsToShow, customColumns);
+        return _.concat(columnsToShow, customColumns || []);
     }, [initialColumns, customColumns, showGuidance]);
 
     if (!sectorId) return null;
@@ -216,7 +217,7 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-function _getName(dataElement: DataElement, showGuidance: boolean): ReactNode {
+function _getName(dataElement: DataElement, _paired: boolean, showGuidance: boolean): ReactNode {
     return (
         <NameColumn key={dataElement.name} dataElement={dataElement} showGuidance={showGuidance} />
     );
@@ -279,13 +280,14 @@ function getTooltipContents(dataElement: DataElement) {
 }
 
 function withPaired<Field extends keyof DataElement>(
+    paired: boolean,
     field: SortableField & Field,
     mapper?: (val: DataElement[Field]) => string
 ) {
     const mapper_ = mapper || _.identity;
     const render = function(dataElement: DataElement, _value: ReactNode) {
-        const paired = dataElement.pairedDataElements;
-        const values = [dataElement, ...paired].map(de => mapper_(de[field]) || "-");
+        const pairedDes = dataElement.pairedDataElements;
+        const values = [dataElement, ...pairedDes].map(de => mapper_(de[field]) || "-");
         // <DataTable /> uses the column node key (if present) as sorting key, so let's set it
         // to a value that performs a composite (dataElement[FIELD], dataElement.code) ordering.
         const value = dataElement[field];
@@ -294,8 +296,7 @@ function withPaired<Field extends keyof DataElement>(
         return <React.Fragment key={key}>{renderJoin(values, <br />)}</React.Fragment>;
     };
 
-    //return _.memoize(render, dataElement => dataElement.id);
-    return render;
+    return _.memoize(render, (paired, dataElement) => [dataElement.id, paired].join("-"));
 }
 
 function getSelectionMessage(dataElements: DataElement[], action: string): string | null {

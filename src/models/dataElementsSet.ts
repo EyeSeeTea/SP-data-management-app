@@ -58,6 +58,7 @@ interface DataElementsData {
     dataElementsAllBySector: BySector<DataElement[]>;
     dataElementsBySector: BySector<DataElement[]>;
     selected: BySector<Id[]>;
+    groupPaired: boolean;
 }
 
 export interface SelectionInfo {
@@ -188,7 +189,12 @@ export default class DataElementsSet {
             dataElementsAllBySector,
             dataElementsBySector: desBySector,
             selected: {},
+            groupPaired,
         });
+    }
+
+    get arePairedGrouped() {
+        return this.data.groupPaired;
     }
 
     updateSuperSet(superSet: DataElementsSet): DataElementsSet {
