@@ -1,8 +1,7 @@
 import React from "react";
 import { StepProps } from "../../../pages/project-wizard/ProjectWizard";
-import Sidebar from "../data-elements/Sidebar";
 import DataElementsTable, { FieldName } from "../data-elements/DataElementsTable";
-import { Ref, Id } from "../../../types/d2-api";
+import { Id } from "../../../types/d2-api";
 import { FilterKey } from "../data-elements/DataElementsFilters";
 import { DataElement } from "../../../models/dataElementsSet";
 import i18n from "../../../locales";
@@ -12,16 +11,11 @@ import NotInterestedIcon from "@material-ui/icons/NotInterested";
 import Project from "../../../models/Project";
 import { renderJoin } from "../../../utils/react";
 import { getIds } from "../../../utils/dhis2";
+import { useSectionsSidebar } from "../../sections-sidebar/sections-sidebar-hooks";
+import SectionsSidebar from "../../sections-sidebar/SectionsSidebar";
 
 const DisaggregationStep: React.FC<StepProps> = ({ project, onChange }) => {
-    const menuItems = React.useMemo(
-        () => project.sectors.map(sector => ({ id: sector.id, text: sector.displayName })),
-        [project]
-    );
-    const [sectorId, setSectorId] = React.useState<string>(
-        menuItems.length > 0 ? menuItems[0].id : ""
-    );
-    const setSector = React.useCallback((sector: Ref) => setSectorId(sector.id), [setSectorId]);
+    const { items: sectorItems, sectorId, setSector } = useSectionsSidebar(project);
     const dataElementsSet = project.dataElementsSelection;
 
     const disaggregationItems = React.useMemo(() => {
@@ -98,25 +92,18 @@ const DisaggregationStep: React.FC<StepProps> = ({ project, onChange }) => {
     }, [Covid19Column, setValues]);
 
     return (
-        <Sidebar
-            menuItems={menuItems}
-            currentMenuItemId={sectorId}
-            onMenuItemClick={setSector}
-            contents={
-                <div style={styles.wrapper}>
-                    <DataElementsTable
-                        dataElementsSet={dataElementsSet}
-                        sectorId={sectorId}
-                        onlySelected={true}
-                        showGuidance={false}
-                        columns={initialColumns}
-                        visibleFilters={visibleFilters}
-                        customColumns={customColumns}
-                        actions={actions}
-                    />
-                </div>
-            }
-        />
+        <SectionsSidebar items={sectorItems} sectorId={sectorId} setSector={setSector}>
+            <DataElementsTable
+                dataElementsSet={dataElementsSet}
+                sectorId={sectorId}
+                onlySelected={true}
+                showGuidance={false}
+                columns={initialColumns}
+                visibleFilters={visibleFilters}
+                customColumns={customColumns}
+                actions={actions}
+            />
+        </SectionsSidebar>
     );
 };
 
@@ -138,8 +125,6 @@ const Covid19Column: React.FC<{
 
     return <Dropdown onChange={setValue} items={items} value={value.toString()} hideEmpty={true} />;
 };
-
-const styles = { wrapper: { width: "100%" } };
 
 const initialColumns: FieldName[] = ["name", "code", "indicatorType", "peopleOrBenefit"];
 const visibleFilters: FilterKey[] = ["indicatorType"];

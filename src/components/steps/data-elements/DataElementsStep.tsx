@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 import { StepProps } from "../../../pages/project-wizard/ProjectWizard";
 import DataElementsTable, { FieldName } from "./DataElementsTable";
-import Sidebar from "./Sidebar";
 import { Id } from "../../../types/d2-api";
 import DataElementsSet, { ProjectSelection } from "../../../models/dataElementsSet";
+import SectionsSidebar from "../../sections-sidebar/SectionsSidebar";
+import { useSectionsSidebar } from "../../sections-sidebar/sections-sidebar-hooks";
 
 export interface DataElementsStepProps extends StepProps {
     onSelect(sectorId: Id, dataElementIds: Id[]): ProjectSelection;
@@ -12,11 +13,7 @@ export interface DataElementsStepProps extends StepProps {
 
 const DataElementsStep: React.FC<DataElementsStepProps> = props => {
     const { onChange, project, dataElementsSet, onSelect } = props;
-    const menuItems = React.useMemo(
-        () => project.sectors.map(sector => ({ id: sector.id, text: sector.displayName })),
-        [project]
-    );
-    const [sectorId, setSectorId] = useState<string>(menuItems.length > 0 ? menuItems[0].id : "");
+    const { items: sectorItems, sectorId, setSector } = useSectionsSidebar(project);
 
     const onSelectionChange = React.useCallback(
         (dataElementIds: Id[]) => {
@@ -31,21 +28,14 @@ const DataElementsStep: React.FC<DataElementsStepProps> = props => {
     if (!sectorId) return null;
 
     return (
-        <Sidebar
-            menuItems={menuItems}
-            currentMenuItemId={sectorId}
-            onMenuItemClick={item => setSectorId(item.id)}
-            contents={
-                <div style={{ width: "100%" }}>
-                    <DataElementsTable
-                        dataElementsSet={dataElementsSet}
-                        sectorId={sectorId}
-                        onSelectionChange={onSelectionChange}
-                        columns={initialColumns}
-                    />
-                </div>
-            }
-        />
+        <SectionsSidebar items={sectorItems} sectorId={sectorId} setSector={setSector}>
+            <DataElementsTable
+                dataElementsSet={dataElementsSet}
+                sectorId={sectorId}
+                onSelectionChange={onSelectionChange}
+                columns={initialColumns}
+            />
+        </SectionsSidebar>
     );
 };
 
