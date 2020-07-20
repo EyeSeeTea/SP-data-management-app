@@ -296,7 +296,7 @@ function withPaired<Field extends keyof DataElement>(
         return <React.Fragment key={key}>{renderJoin(values, <br />)}</React.Fragment>;
     };
 
-    return _.memoize(render, (paired, dataElement) => [dataElement.id, paired].join("-"));
+    return _.memoize(render, dataElement => [dataElement.id, paired].join("-"));
 }
 
 function getSelectionMessage(dataElements: DataElement[], action: string): string | null {
