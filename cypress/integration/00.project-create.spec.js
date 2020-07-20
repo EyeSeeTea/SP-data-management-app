@@ -96,9 +96,20 @@ describe("Projects - Create", () => {
 
         cy.contains("Next").click();
 
+        // Disaggregation
+
+        cy.waitForStep("Disaggregation");
+        cy.get("[data-test=covid19-selector-B010200]")
+            .contains("No")
+            .click();
+        cy.get(".MuiPopover-paper")
+            .contains("Yes")
+            .click();
+        cy.contains("Next").click();
+
         // Sharing
 
-        cy.waitForStep("Sharing");
+        cy.waitForStep("Username Access");
         cy.contains("System Admin");
         cy.contains("Project Monitoring Admin");
         cy.contains("Country Admin Bahamas");
@@ -130,7 +141,9 @@ describe("Projects - Create", () => {
         cy.contains("Agriculture");
         cy.contains("Livelihood");
 
-        cy.contains("# of agriculture groups receiving support for improved livelihoods - B010200");
+        cy.contains(
+            "# of agriculture groups receiving support for improved livelihoods - B010200 [COVID-19]"
+        );
         cy.contains("# of people trained in livelihood topics - P020100 [MER]");
 
         cy.server()
