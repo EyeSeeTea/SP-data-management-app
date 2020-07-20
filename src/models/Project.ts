@@ -405,7 +405,7 @@ class Project {
             id: generateUid(),
             dataElementsSelection,
             dataElementsMER,
-            disaggregation: Disaggregation.build(config),
+            disaggregation: Disaggregation.buildFromDataSetElements(config, []),
             sharing: ProjectSharing.getInitialSharing(config),
             initialData: undefined,
         };

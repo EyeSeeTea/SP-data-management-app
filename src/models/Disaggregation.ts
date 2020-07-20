@@ -3,6 +3,17 @@ import { Id, Ref } from "../types/d2-api";
 import { Config } from "./Config";
 import { getRef, haveSameRefs } from "../utils/dhis2";
 
+/* Custom disaggregation for data elements in target/actual data sets.
+
+- If a data element is not selected as COVID-19, simply use its category combo.
+- If a data element is selected as COVID-19:
+    - Get its category combo,
+    - Extract its categories,
+    - Add the COVID-19 category to the previous set
+    - Find a category combo containing those categories.
+    - Use that category combo as disaggregation for this data element.
+*/
+
 interface Data {
     mapping: Record<Id, boolean>;
     dataElementsById: Record<Id, Config["dataElements"][0]>;
@@ -17,13 +28,12 @@ interface DataSetElement {
 export class Disaggregation {
     constructor(private config: Config, private data: Data) {}
 
-    static build(config: Config, mapping: Data["mapping"] = {}) {
-        const data = {
+    static getData(config: Config, mapping: Data["mapping"] = {}): Data {
+        return {
             dataElementsById: _.keyBy(config.dataElements, de => de.id),
             categoryCombosById: _.keyBy(config.allCategoryCombos, cc => cc.id),
             mapping: mapping,
         };
-        return new Disaggregation(config, data);
     }
 
     static buildFromDataSetElements(config: Config, dataSetElements: DataSetElement[]) {
@@ -34,7 +44,7 @@ export class Disaggregation {
                     ? categoryCombosById[dse.categoryCombo.id]
                     : null;
                 const isCovid19 = categoryCombo
-                    ? _(categoryCombo.categories || []).some(
+                    ? _(categoryCombo.categories).some(
                           category => category.id === config.categories.covid19.id
                       )
                     : false;
@@ -42,8 +52,9 @@ export class Disaggregation {
             })
             .fromPairs()
             .value();
+        const data = this.getData(config, covidMapping);
 
-        return Disaggregation.build(config, covidMapping);
+        return new Disaggregation(config, data);
     }
 
     private getDefault(message: string): Ref {
@@ -72,21 +83,20 @@ export class Disaggregation {
             const categoryComboWithCovid19 = config.allCategoryCombos.find(cc =>
                 haveSameRefs(cc.categories, categoriesWithCovid19)
             );
-            return categoryComboWithCovid19
-                ? getRef(categoryComboWithCovid19)
-                : this.getDefault(
-                      `Category combo related with covid19 not found: ${deCategoryCombo.id}`
-                  );
+            if (!categoryComboWithCovid19)
+                console.debug(`Category combo with covid19 not found: ${deCategoryCombo.id}`);
+
+            return getRef(categoryComboWithCovid19 ? categoryComboWithCovid19 : deCategoryCombo);
         }
     }
 
     setCovid19(dataElementIds: Id[], isSet: boolean): Disaggregation {
-        const update = _(dataElementIds)
+        const mappingUpdate = _(dataElementIds)
             .filter(deId => _.has(this.data.dataElementsById, deId))
             .map(deId => [deId, isSet])
             .fromPairs()
             .value();
-        const newData = { ...this.data, mapping: { ...this.data.mapping, ...update } };
+        const newData = { ...this.data, mapping: { ...this.data.mapping, ...mappingUpdate } };
         return new Disaggregation(this.config, newData);
     }
 

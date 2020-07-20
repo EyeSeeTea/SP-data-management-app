@@ -314,7 +314,7 @@ export default class DataElementsSet {
         return _.uniqBy(relatedDataElements, de => de.id);
     }
 
-    /* Return Global -> sub and paired relations, including source data elements */
+    /* Return Sub -> Global and paired relations, including source data elements */
     getGroupForDisaggregation(sectorId: Id, dataElementIds: Id[]): DataElement[] {
         const { dataElementsAllBySector } = this.data;
         const allDataElements = dataElementsAllBySector[sectorId] || [];
@@ -331,8 +331,8 @@ export default class DataElementsSet {
 
         const relatedDataElements = _.compact(
             sourceDataElements.map(de => {
-                if (de.indicatorType === "global") {
-                    const key = ["sub", de.series].join(".");
+                if (de.indicatorType === "sub") {
+                    const key = ["global", de.series].join(".");
                     return _(allDataElementsByKey).get(key, null);
                 } else {
                     return null;
