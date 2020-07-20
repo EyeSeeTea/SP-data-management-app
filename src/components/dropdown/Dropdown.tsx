@@ -8,6 +8,7 @@ type Value = string;
 export type DropdownItem = { value: Value; text: string };
 
 export interface DropdownProps {
+    id?: string;
     items: Array<DropdownItem>;
     onChange: (value: Value | undefined) => void;
     label?: string;
@@ -16,7 +17,7 @@ export interface DropdownProps {
 }
 
 const Dropdown: React.FC<DropdownProps> = props => {
-    const { items, value, onChange, label, hideEmpty } = props;
+    const { items, value, onChange, label, hideEmpty, id } = props;
     const selectValue =
         value === undefined || !items.map(item => item.value).includes(value) ? "" : value;
 
@@ -30,6 +31,7 @@ const Dropdown: React.FC<DropdownProps> = props => {
     return (
         <SelectWrapper>
             <Select
+                data-cy={id}
                 value={selectValue}
                 onChange={ev => onChange((ev.target.value as string) || undefined)}
                 MenuProps={{

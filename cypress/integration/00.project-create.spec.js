@@ -99,7 +99,7 @@ describe("Projects - Create", () => {
         // Disaggregation
 
         cy.waitForStep("Disaggregation");
-        cy.get("[data-test=covid19-selector-B010200]")
+        cy.get("[data-cy=covid19-selector-B010200]")
             .contains("No")
             .click();
         cy.get(".MuiPopover-paper")

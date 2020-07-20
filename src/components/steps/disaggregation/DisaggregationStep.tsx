@@ -124,9 +124,13 @@ const Covid19Column: React.FC<{
     const value = project.disaggregation.isCovid19(dataElement.id);
 
     return (
-        <div data-test={`covid19-selector-${dataElement.code}`}>
-            <Dropdown onChange={setValue} items={items} value={value.toString()} hideEmpty={true} />
-        </div>
+        <Dropdown
+            onChange={setValue}
+            items={items}
+            value={value.toString()}
+            hideEmpty={true}
+            id={`covid19-selector-${dataElement.code}`}
+        />
     );
 };
 
