@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, ReactNode } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { ObjectsTable, useSnackbar, RowConfig, TableAction } from "d2-ui-components";
 import { TablePagination, TableColumn, TableState, TableSorting } from "d2-ui-components";
 import _ from "lodash";
@@ -9,13 +9,11 @@ import DataElementsSet, {
     SelectionInfo,
     DataElement as DataElement_,
 } from "../../../models/dataElementsSet";
-import { Tooltip } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
 import { Id } from "../../../types/d2-api";
-import { renderJoin } from "../../../utils/react";
+import { onTableChange, withPaired, getName } from "./table-utils";
 
 // Column names must be known to the model interface, so we need to add keys used in custom columns
-type DataElement = DataElement_ & { isCovid19?: boolean };
+export type DataElement = DataElement_ & { isCovid19?: boolean };
 
 export interface DataElementsTableProps {
     dataElementsSet: DataElementsSet;
@@ -40,22 +38,6 @@ const initialSorting: TableSorting<DataElement> = {
     order: "asc" as const,
 };
 
-const searchBoxColumns = ["name" as const, "code" as const, "search" as const];
-
-const sortableFields = [
-    "name",
-    "code",
-    "peopleOrBenefit",
-    "series",
-    "countingMethod",
-    "externals",
-] as const;
-type SortableField = typeof sortableFields[number];
-
-const getName = _.memoize(_getName, (dataElement, arePaired, showGuidance) =>
-    [dataElement.id, arePaired, showGuidance].join("-")
-);
-
 export type FieldName =
     | "name"
     | "code"
@@ -64,6 +46,19 @@ export type FieldName =
     | "countingMethod"
     | "externals"
     | "indicatorType";
+
+export const sortableFields = [
+    "name",
+    "code",
+    "peopleOrBenefit",
+    "series",
+    "countingMethod",
+    "externals",
+] as const;
+
+export type SortableField = typeof sortableFields[number];
+
+const searchBoxColumns = ["name" as const, "code" as const, "search" as const];
 
 const DataElementsTable: React.FC<DataElementsTableProps> = props => {
     const {
@@ -202,130 +197,5 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
         />
     );
 };
-
-const useStyles = makeStyles(() => ({
-    tooltip: {
-        maxWidth: 800,
-        border: "1px solid #dadde9",
-        backgroundColor: "#616161",
-    },
-    tooltipContents: {
-        padding: 2,
-        fontSize: "1.5em",
-        lineHeight: "1.3em",
-        fontWeight: "normal",
-    },
-}));
-
-function _getName(dataElement: DataElement, _paired: boolean, showGuidance: boolean): ReactNode {
-    return (
-        <NameColumn key={dataElement.name} dataElement={dataElement} showGuidance={showGuidance} />
-    );
-}
-
-const NameColumn: React.FC<{ dataElement: DataElement; showGuidance: boolean }> = ({
-    dataElement,
-    showGuidance,
-}) => {
-    const dataElements = [dataElement, ...dataElement.pairedDataElements];
-    const classes = useStyles();
-    const tooltips = renderJoin(
-        dataElements.map(dataElement =>
-            showGuidance ? (
-                <Tooltip
-                    enterDelay={500}
-                    leaveDelay={0}
-                    key={dataElement.id}
-                    title={
-                        <div className={classes.tooltipContents}>
-                            {getTooltipContents(dataElement)}
-                        </div>
-                    }
-                    classes={{ tooltip: classes.tooltip }}
-                >
-                    <span>{dataElement.name}</span>
-                </Tooltip>
-            ) : (
-                <span>{dataElement.name}</span>
-            )
-        ),
-        <br />
-    );
-
-    return <React.Fragment>{tooltips}</React.Fragment>;
-};
-
-function getTooltipContents(dataElement: DataElement) {
-    const { externalsDescription, description } = dataElement;
-    return (
-        <React.Fragment>
-            <div>
-                {dataElement.code} - {dataElement.name}
-            </div>
-            <br />
-            {externalsDescription && (
-                <div>
-                    <b>{i18n.t("Externals")}: </b>
-                    {externalsDescription}
-                </div>
-            )}
-            {description && (
-                <div>
-                    <b>{i18n.t("Guidance")}: </b>
-                    {description}
-                </div>
-            )}
-        </React.Fragment>
-    );
-}
-
-function withPaired<Field extends keyof DataElement>(
-    paired: boolean,
-    field: SortableField & Field,
-    mapper?: (val: DataElement[Field]) => string
-) {
-    const mapper_ = mapper || _.identity;
-    const render = function(dataElement: DataElement, _value: ReactNode) {
-        const pairedDes = dataElement.pairedDataElements;
-        const values = [dataElement, ...pairedDes].map(de => mapper_(de[field]) || "-");
-        // <DataTable /> uses the column node key (if present) as sorting key, so let's set it
-        // to a value that performs a composite (dataElement[FIELD], dataElement.code) ordering.
-        const value = dataElement[field];
-        const code = dataElement.code;
-        const key = value + "-" + code;
-        return <React.Fragment key={key}>{renderJoin(values, <br />)}</React.Fragment>;
-    };
-
-    return _.memoize(render, dataElement => [dataElement.id, paired].join("-"));
-}
-
-function getSelectionMessage(dataElements: DataElement[], action: string): string | null {
-    return dataElements.length === 0
-        ? null
-        : [
-              i18n.t("Those related data elements have been automatically {{action}}:", { action }),
-              "",
-              ...dataElements.map(de => `[${de.code}] ${de.name} (${de.indicatorType})`),
-          ].join("\n");
-}
-
-function showSelectionMessage(snackbar: any, selectionUpdate: SelectionInfo): void {
-    const msg = _.compact([
-        getSelectionMessage(selectionUpdate.selected || [], i18n.t("selected")),
-        ...(selectionUpdate.messages || []),
-    ]).join("\n\n");
-
-    if (msg) snackbar.info(msg);
-}
-
-function onTableChange(
-    onSelectionChange: (selectedIds: Id[]) => SelectionInfo,
-    snackbar: any,
-    state: TableState<DataElement>
-): void {
-    const selectedIds = state.selection.map(de => de.id);
-    const selectionInfo = onSelectionChange(selectedIds);
-    if (selectionInfo) showSelectionMessage(snackbar, selectionInfo);
-}
 
 export default React.memo(DataElementsTable);
