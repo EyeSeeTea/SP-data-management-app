@@ -48,8 +48,8 @@ export function getProject<K extends keyof ProjectData>(
 ): Project {
     return Project.create(api, config)
         .setObj(Object.assign({}, projectData, partialProjectData || {}))
-        .updateDataElementsSelection("mGQ5ckOTU8A", ["WS8XV4WWPE7", "ik0ICagvIjm"])
+        .updateDataElementsSelection("ieyBABjYyHO", ["WS8XV4WWPE7", "ik0ICagvIjm"])
         .project.updateDataElementsSelection("GkiSljtLcOI", ["yMqK9DKbA3X"])
-        .project.updateDataElementsMERSelection("mGQ5ckOTU8A", ["WS8XV4WWPE7"])
+        .project.updateDataElementsMERSelection("ieyBABjYyHO", ["WS8XV4WWPE7"])
         .project.updateDataElementsMERSelection("GkiSljtLcOI", ["yMqK9DKbA3X"]).project;
 }
