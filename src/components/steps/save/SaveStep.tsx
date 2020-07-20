@@ -180,6 +180,7 @@ function useSave(project: Project, action: StepProps["action"], projectInfo: Rea
             }
         } catch (err) {
             setSaving(false);
+            console.error(err);
             snackbar.error(err.message || err.toString());
         }
     }, [project, setSaving, history, snackbar, action, api, appConfig, isDev, projectInfo]);
