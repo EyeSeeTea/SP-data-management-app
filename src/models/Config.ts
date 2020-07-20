@@ -317,12 +317,18 @@ function indexObjects<Key extends IndexableKeys, RetValue = IndexedObjs<Key, Ind
 ): RetValue {
     const keyByCodes = _.invert(baseConfig[key]) as Record<string, keyof BaseConfig[Key]>;
     const objects = metadata[key];
-    return _(objects)
+    const indexedObjects = _(objects)
         .keyBy(obj => _(keyByCodes).get(obj.code))
         .pickBy()
         .value() as RetValue;
-}
+    const missingKeys = _.difference(_.values(keyByCodes) as string[], _.keys(indexedObjects));
 
+    if (!_.isEmpty(missingKeys)) {
+        throw new Error(`[Config] Missing records for ${key}: ${missingKeys.join(", ")}`);
+    } else {
+        return indexedObjects;
+    }
+}
 export async function getConfig(api: D2Api): Promise<Config> {
     return new ConfigLoader(api).get();
 }
