@@ -7,11 +7,10 @@ import { getRef, haveSameRefs } from "../utils/dhis2";
 
 - If a data element is not selected as COVID-19, simply use its category combo.
 - If a data element is selected as COVID-19:
-    - Get its category combo,
-    - Extract its categories,
-    - Add the COVID-19 category to the previous set
-    - Find a category combo containing those categories.
-    - Use that category combo as disaggregation for this data element.
+    - Get its category combo and extract its categories.
+    - Add the COVID-19 category to set of categories.
+    - Find a category combo that contains those categories.
+    - Use that category combo as the disaggregation for this data element in the data set.
 */
 
 interface Data {

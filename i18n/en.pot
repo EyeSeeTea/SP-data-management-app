@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2020-07-17T08:38:07.286Z\n"
-"PO-Revision-Date: 2020-07-17T08:38:07.286Z\n"
+"POT-Creation-Date: 2020-07-21T10:58:45.862Z\n"
+"PO-Revision-Date: 2020-07-21T10:58:45.862Z\n"
 
 msgid "Data Entry"
 msgstr ""
@@ -441,6 +441,9 @@ msgid "Global data elements with selected subs cannot be unselected"
 msgstr ""
 
 msgid "None"
+msgstr ""
+
+msgid "Unknown"
 msgstr ""
 
 msgid ""

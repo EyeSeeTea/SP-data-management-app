@@ -243,18 +243,6 @@ export default class DataElementsSet {
         });
     }
 
-    set(dataElementId: Id, data: Partial<DataElementBase>): DataElementsSet {
-        const newDataElementsBase = this.data.dataElementsBase.map(
-            (de): DataElementBase => {
-                return de.id === dataElementId ? { ...de, ...data } : de;
-            }
-        );
-        return new DataElementsSet(this.config, {
-            ...this.data,
-            dataElementsBase: newDataElementsBase,
-        });
-    }
-
     updateSelected(dataElementsBySectorId: Record<Id, Id[]>): DataElementsSet {
         return new DataElementsSet(this.config, {
             ...this.data,
@@ -546,6 +534,6 @@ function getCategoryComboName(
     if (categoryCombo) {
         return categoryCombo.code === "default" ? i18n.t("None") : categoryCombo.displayName;
     } else {
-        return "Unknown";
+        return i18n.t("Unknown");
     }
 }
