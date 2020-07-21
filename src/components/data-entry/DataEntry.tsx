@@ -245,7 +245,7 @@ const styles = {
     backgroundIframe: { backgroundColor: "white" },
     selector: { padding: "35px  10px 10px 5px", backgroundColor: "white" },
     buttons: { display: "inline", marginLeft: 20 },
-    dropdown: { marginBottom: -20 },
+    dropdown: { display: "inline-block" },
 };
 
 function isOptionInSelect(select: HTMLSelectElement, value: string): boolean {
