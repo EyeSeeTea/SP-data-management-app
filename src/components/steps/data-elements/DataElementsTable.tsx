@@ -27,10 +27,14 @@ export interface DataElementsTableProps {
     visibleFilters?: FilterKey[];
 }
 
+const paginationOptions = {
+    pageSizeOptions: [10, 20, 50],
+    pageSizeInitialValue: 20,
+};
+
 const initialPagination: Partial<TablePagination> = {
     pageSize: 20,
     page: 1,
-    pageSizeOptions: [10, 20, 50],
 };
 
 const initialSorting: TableSorting<DataElement> = {
@@ -194,6 +198,7 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
             resetKey={JSON.stringify(fullFilter)}
             filterComponents={filterComponents}
             actions={actions}
+            paginationOptions={paginationOptions}
         />
     );
 };
