@@ -564,10 +564,7 @@ msgstr ""
 msgid "Selection of MER Indicators"
 msgstr ""
 
-msgid "Username Access"
-msgstr ""
-
-msgid "Define sharing settings for metadata of the project."
+msgid "Define Sharing settings for project data."
 msgstr ""
 
 msgid "Summary and Save"

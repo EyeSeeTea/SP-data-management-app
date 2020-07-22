@@ -162,17 +162,19 @@ export default class ProjectDb {
 
     getDataSetOpenAttributes(dataSetType: DataSetType): DataSetOpenAttributes {
         const { startDate, endDate } = this.project.getDates();
+        const now = moment();
         const projectOpeningDate = startDate;
         const projectClosingDate = startDate
             .clone()
             .add(1, "month")
             .endOf("month");
+        const targetOpeningDate = moment.min(projectOpeningDate, now);
 
         switch (dataSetType) {
             case "target": {
                 const targetPeriods = getMonthsRange(startDate, endDate).map(date => ({
                     period: { id: date.format("YYYYMM") },
-                    openingDate: toISOString(projectOpeningDate),
+                    openingDate: toISOString(targetOpeningDate),
                     closingDate: toISOString(projectClosingDate),
                 }));
 

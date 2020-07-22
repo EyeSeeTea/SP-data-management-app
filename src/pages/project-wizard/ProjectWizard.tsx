@@ -152,7 +152,7 @@ class ProjectWizardImpl extends React.Component<Props, State> {
                 key: "sharing",
                 label: i18n.t("Username Access"),
                 component: SharingStep,
-                description: i18n.t("Define sharing settings for metadata of the project."),
+                description: i18n.t("Define Sharing settings for project data."),
             },
             {
                 key: "save",
