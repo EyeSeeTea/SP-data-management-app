@@ -168,7 +168,7 @@ export default class ProjectDb {
             .clone()
             .add(1, "month")
             .endOf("month");
-        const targetOpeningDate = moment.min(projectOpeningDate, now);
+        const targetOpeningDate = moment.min(projectOpeningDate, now).startOf("day");
 
         switch (dataSetType) {
             case "target": {

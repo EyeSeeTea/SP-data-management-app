@@ -68,7 +68,7 @@ const DisaggregationStep: React.FC<StepProps> = ({ project, onChange }) => {
                 },
             },
         ];
-    }, [Covid19Column, project]);
+    }, [Covid19Column, project, sectorId]);
 
     const actions = React.useMemo(() => {
         return [
