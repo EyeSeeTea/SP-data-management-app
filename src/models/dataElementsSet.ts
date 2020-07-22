@@ -6,6 +6,7 @@ import { Sector } from "./Config";
 import i18n from "../locales";
 import User from "./user";
 import { fromPairs, getKeys } from "../types/utils";
+import Project from "./Project";
 
 /*
     Abstract list of Project data element of type DataElement. Usage:
@@ -36,7 +37,7 @@ export interface DataElementBase {
     externals: string[];
     externalsDescription: string;
     pairedDataElements: Array<{ id: Id; name: string; code: string }>;
-    categoryCombo: Ref;
+    categoryCombo: { id: Id; displayName: string };
     selectable: boolean;
 }
 
@@ -57,6 +58,7 @@ interface DataElementsData {
     dataElementsAllBySector: BySector<DataElement[]>;
     dataElementsBySector: BySector<DataElement[]>;
     selected: BySector<Id[]>;
+    groupPaired: boolean;
 }
 
 export interface SelectionInfo {
@@ -64,7 +66,12 @@ export interface SelectionInfo {
     messages?: string[];
 }
 
-type GetOptions = Partial<{
+export interface ProjectSelection {
+    selectionInfo: SelectionInfo;
+    project: Project;
+}
+
+export type GetOptions = Partial<{
     sectorId: string;
     series: string;
     indicatorType: IndicatorType;
@@ -116,6 +123,7 @@ export default class DataElementsSet {
         const sectorsByDataElementId = getGroupsByDataElementId(sectorsSet);
         const seriesByDataElementId = getGroupsByDataElementId(seriesSet);
         const groupCodesByDataElementId = getGroupCodeByDataElementId(dataElementGroupSets);
+        const categoryCombosById = _.keyBy(metadata.categoryCombos, cc => cc.id);
 
         const dataElements = d2DataElements.map(d2DataElement => {
             const deId = d2DataElement.id;
@@ -144,6 +152,7 @@ export default class DataElementsSet {
                 console.error(`DataElement ${deCode} has no main sector`);
                 return null;
             } else {
+                const { categoryCombo } = d2DataElement;
                 const dataElement: DataElementBase = {
                     id: d2DataElement.id,
                     name: name,
@@ -156,7 +165,10 @@ export default class DataElementsSet {
                     pairedDataElements,
                     countingMethod: countingMethod || "",
                     externals,
-                    categoryCombo: { id: d2DataElement.categoryCombo.id },
+                    categoryCombo: {
+                        id: categoryCombo.id,
+                        displayName: getCategoryComboName(categoryCombosById, categoryCombo),
+                    },
                     selectable: isSelectable,
                 };
                 return dataElement;
@@ -177,7 +189,12 @@ export default class DataElementsSet {
             dataElementsAllBySector,
             dataElementsBySector: desBySector,
             selected: {},
+            groupPaired,
         });
+    }
+
+    get arePairedGrouped() {
+        return this.data.groupPaired;
     }
 
     updateSuperSet(superSet: DataElementsSet): DataElementsSet {
@@ -263,16 +280,17 @@ export default class DataElementsSet {
         const allDataElementsByKey = _.keyBy(allDataElements, de =>
             [de.indicatorType, de.series].join(".")
         );
-        const selectedDataElements = _(allDataElements)
+        const sourceDataElements = _(allDataElements)
             .keyBy(de => de.id)
             .at(dataElementIds)
+            .compact()
             .flatMap(de => [de, ...de.pairedDataElements])
             .uniqBy(de => de.id)
             .compact()
             .value();
 
         const relatedDataElements = _.compact(
-            selectedDataElements.map(de => {
+            sourceDataElements.map(de => {
                 if (de.indicatorType === "sub") {
                     const key = ["global", de.series].join(".");
                     return _(allDataElementsByKey).get(key, null);
@@ -283,6 +301,39 @@ export default class DataElementsSet {
         );
 
         return _.uniqBy(relatedDataElements, de => de.id);
+    }
+
+    /* Return Sub -> Global and paired relations, including source data elements */
+    getGroupForDisaggregation(sectorId: Id, dataElementIds: Id[]): DataElement[] {
+        const { dataElementsAllBySector } = this.data;
+        const allDataElements = dataElementsAllBySector[sectorId] || [];
+        const allDataElementsByKey = _.keyBy(allDataElements, de =>
+            [de.indicatorType, de.series].join(".")
+        );
+        const sourceDataElements = _(allDataElements)
+            .keyBy(de => de.id)
+            .at(dataElementIds)
+            .compact()
+            .flatMap(de => [de, ...de.pairedDataElements])
+            .uniqBy(de => de.id)
+            .compact()
+            .value();
+
+        const relatedDataElements = _.compact(
+            sourceDataElements.map(de => {
+                if (de.indicatorType === "sub") {
+                    const key = ["global", de.series].join(".");
+                    return _(allDataElementsByKey).get(key, null);
+                } else {
+                    return null;
+                }
+            })
+        );
+
+        return _(sourceDataElements)
+            .concat(relatedDataElements)
+            .uniqBy(de => de.id)
+            .value();
     }
 }
 
@@ -473,4 +524,16 @@ function getDescriptionFields(d2DataElement: { description: string }) {
         externalsDescription: externalsDescription === "-" ? "" : externalsDescription,
         description: notes.trim(),
     };
+}
+
+function getCategoryComboName(
+    categoryCombosById: Record<Id, { displayName: string; code: string }>,
+    categoryComboRef: Ref
+) {
+    const categoryCombo = _(categoryCombosById).get(categoryComboRef.id, null);
+    if (categoryCombo) {
+        return categoryCombo.code === "default" ? i18n.t("None") : categoryCombo.displayName;
+    } else {
+        return i18n.t("Unknown");
+    }
 }

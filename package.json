@@ -1,7 +1,7 @@
 {
     "name": "project-monitoring-app",
     "description": "DHIS2 Project Monitoring App",
-    "version": "0.3.1",
+    "version": "0.4.0",
     "license": "GPL-3.0",
     "author": "EyeSeeTea team",
     "homepage": ".",
@@ -27,7 +27,7 @@
         "d2": "^31.8.1",
         "d2-api": "1.0.0",
         "d2-manifest": "^1.0.0",
-        "d2-ui-components": "1.5.0",
+        "d2-ui-components": "1.5.1-beta.6",
         "exceljs": "^3.5.0",
         "font-awesome": "^4.7.0",
         "lodash": "^4.17.15",

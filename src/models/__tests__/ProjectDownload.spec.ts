@@ -48,7 +48,7 @@ describe("ProjectDownload", () => {
             ({ filename, buffer } = await project.download());
             workbook = new ExcelJS.Workbook();
             await workbook.xlsx.load(buffer);
-            // await workbook.xlsx.writeFile("test.xlsx");
+            // await workbook.xlsx.writeFile("test.xlsx"); // TO DEBUG
         });
 
         it("creates a XLSX-named file", async () => {
@@ -225,7 +225,7 @@ describe("ProjectDownload", () => {
                     undefined,
                     undefined,
                     undefined,
-                    "Recurring",
+                    "Returning",
                     12,
                     14,
                     5,
@@ -265,7 +265,7 @@ describe("ProjectDownload", () => {
                     undefined,
                     undefined,
                     undefined,
-                    "Male Recurring",
+                    "Male Returning",
                     2,
                     0,
                     0,
@@ -277,7 +277,7 @@ describe("ProjectDownload", () => {
                     undefined,
                     undefined,
                     undefined,
-                    "Female Recurring",
+                    "Female Returning",
                     6,
                     0,
                     0,
@@ -317,7 +317,7 @@ describe("ProjectDownload", () => {
                     undefined,
                     undefined,
                     undefined,
-                    "Recurring",
+                    "Returning",
                     12,
                     10,
                     6,
@@ -357,7 +357,7 @@ describe("ProjectDownload", () => {
                     undefined,
                     undefined,
                     undefined,
-                    "Male Recurring",
+                    "Male Returning",
                     9,
                     0,
                     0,
@@ -369,7 +369,7 @@ describe("ProjectDownload", () => {
                     undefined,
                     undefined,
                     undefined,
-                    "Female Recurring",
+                    "Female Returning",
                     3,
                     0,
                     0,
@@ -409,7 +409,7 @@ describe("ProjectDownload", () => {
                     undefined,
                     undefined,
                     undefined,
-                    "Recurring",
+                    "Returning",
                     0,
                     0,
                     0,
@@ -449,7 +449,7 @@ describe("ProjectDownload", () => {
                     undefined,
                     undefined,
                     undefined,
-                    "Male Recurring",
+                    "Male Returning",
                     0,
                     0,
                     0,

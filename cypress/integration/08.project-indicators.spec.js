@@ -63,9 +63,8 @@ describe("Projects - Indicators", () => {
             .expectSnackbar("Global data elements with selected subs cannot be unselected")
 
             .selectSector("Protection")
-            // Select an indicator which has a paired sub indicator, its global should be also selected
             .select("B100500")
-            .assertExactSelected(["B100500", "P100701", "P100700"])
+            .assertExactSelected(["B100500", "P100600"])
 
             .selectSector("Nutrition")
             // Select a cross-sectorial indicator which has paired sub indicators in other sectors (Food)

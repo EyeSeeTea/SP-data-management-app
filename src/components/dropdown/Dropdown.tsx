@@ -5,22 +5,33 @@ import DropdownForm from "./DropdownForm";
 
 type Value = string;
 
-interface DropdownProps {
-    items: Array<{ value: Value; text: string }>;
+export type DropdownItem = { value: Value; text: string };
+
+export interface DropdownProps {
+    id?: string;
+    items: Array<DropdownItem>;
     onChange: (value: Value | undefined) => void;
-    label: string;
+    label?: string;
     value?: Value;
     hideEmpty?: boolean;
 }
 
 const Dropdown: React.FC<DropdownProps> = props => {
-    const { items, value, onChange, label, hideEmpty } = props;
+    const { items, value, onChange, label, hideEmpty, id } = props;
     const selectValue =
         value === undefined || !items.map(item => item.value).includes(value) ? "" : value;
 
+    const SelectWrapper = (props: any) =>
+        label ? (
+            <DropdownForm label={label}>{props.children}</DropdownForm>
+        ) : (
+            <React.Fragment>{props.children}</React.Fragment>
+        );
+
     return (
-        <DropdownForm label={label}>
+        <SelectWrapper>
             <Select
+                data-cy={id}
                 value={selectValue}
                 onChange={ev => onChange((ev.target.value as string) || undefined)}
                 MenuProps={{
@@ -35,7 +46,7 @@ const Dropdown: React.FC<DropdownProps> = props => {
                     </MenuItem>
                 ))}
             </Select>
-        </DropdownForm>
+        </SelectWrapper>
     );
 };
 

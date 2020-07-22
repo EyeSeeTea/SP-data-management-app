@@ -22,6 +22,7 @@ import {
 } from "../utils/validations";
 import { getKeys, Maybe } from "../types/utils";
 import ProjectSharing, { Sharing } from "./ProjectSharing";
+import { Disaggregation } from "./Disaggregation";
 
 /*
 Project model.
@@ -91,6 +92,7 @@ export interface ProjectData {
     parentOrgUnit: OrganisationUnit | undefined;
     dataElementsSelection: DataElementsSet;
     dataElementsMER: DataElementsSet;
+    disaggregation: Disaggregation;
     dataSets: { actual: DataSet; target: DataSet } | undefined;
     dashboard: Ref | undefined;
     initialData: Omit<ProjectData, "initialData"> | undefined;
@@ -184,6 +186,7 @@ class Project {
         name: i18n.t("Name"),
         dataElementsSelection: i18n.t("Data Elements Selection"),
         dataElementsMER: i18n.t("Data Elements MER"),
+        disaggregation: i18n.t("Disaggregation"),
         description: i18n.t("Description"),
         awardNumber: i18n.t("Award Number"),
         subsequentLettering: i18n.t("Subsequent Lettering"),
@@ -313,10 +316,12 @@ class Project {
             .filter(de => sectorIds.has(de.sector.id))
             .uniqBy(de => de.id)
             .value();
+
         const orderBySectorId: _.Dictionary<string> = _(sectors)
             .map((sector, idx) => [sector.id, idx])
             .fromPairs()
             .value();
+
         const selectedDataElementsSorted = _.orderBy(
             selectedDataElements,
             [de => orderBySectorId[de.sector.id], de => de.name],
@@ -330,6 +335,7 @@ class Project {
         dataElementsInfo: Array<{
             dataElement: DataElement;
             isMER: boolean;
+            isCovid19: boolean;
             usedInDataSetSection: boolean;
         }>;
     }> {
@@ -343,6 +349,7 @@ class Project {
             const dataElementsInfo = dataElements.map(dataElement => ({
                 dataElement,
                 isMER: selectedMER.has(dataElement.id),
+                isCovid19: this.disaggregation.isCovid19(dataElement.id),
                 usedInDataSetSection: dataElementsBySectorMapping[dataElement.id] === sector.id,
             }));
 
@@ -398,6 +405,7 @@ class Project {
             id: generateUid(),
             dataElementsSelection,
             dataElementsMER,
+            disaggregation: Disaggregation.buildFromDataSetElements(config, []),
             sharing: ProjectSharing.getInitialSharing(config),
             initialData: undefined,
         };
