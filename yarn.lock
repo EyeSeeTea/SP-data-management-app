@@ -4749,10 +4749,10 @@ d2-manifest@^1.0.0:
     minimist "^1.1.0"
     readline-sync "^1.4.1"
 
-d2-ui-components@1.5.1-beta.6:
-  version "1.5.1-beta.6"
-  resolved "https://registry.npmjs.org/d2-ui-components/-/d2-ui-components-1.5.1-beta.6.tgz#98d5969025fd43be289ca4714e3b7657015ecc1b"
-  integrity sha512-EyrqohoM9PD2RAud8t3LAzn3OI56TKEKhcrXcSTNPx1zPkR7dnwg/msu9MFqNIH/bFYZw6ekaKQvTktI4CkOOQ==
+d2-ui-components@1.6.0:
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/d2-ui-components/-/d2-ui-components-1.6.0.tgz#fad967a53ec4d042a21b581a15a29f0f101da201"
+  integrity sha512-IYPYG3pVxRAy6p/dYdjT3NfzDe3ViKpjCEqNyN0OgO/tHfOA0zhzukr4K1EVrkICaC25nmqy8ACOgK/waqWFYg==
   dependencies:
     "@date-io/core" "^1.3.6"
     "@date-io/moment" "^1.0.2"
