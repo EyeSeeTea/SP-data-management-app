@@ -111,7 +111,7 @@ describe("Projects - Create", () => {
 
         cy.waitForStep("Username Access");
         cy.contains("System Admin");
-        cy.contains("Project Monitoring Admin");
+        cy.contains("Data Management Admin");
         cy.contains("Country Admin Bahamas");
         cy.contains("Next").click();
 

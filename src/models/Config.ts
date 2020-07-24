@@ -100,7 +100,7 @@ const baseConfig = {
     },
     userGroups: {
         systemAdmin: "SYSTEM_ADMIN",
-        appAdmin: "PROJECT_MONITORING_ADMIN",
+        appAdmin: "DATA_MANAGEMENT_ADMIN",
         countryAdminPrefix: "ADMIN_COUNTRY_",
     },
 };
