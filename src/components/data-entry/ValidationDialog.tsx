@@ -30,11 +30,9 @@ export const ValidationDialog: React.FC<ValidationDialogProps> = props => {
             title={i18n.t("Validation results")}
             cancelText={i18n.t("OK")}
         >
-            <div data-cy="validations">
-                <Entry texts={info} icon={InfoIcon} color="green" />
-                <Entry texts={warning} icon={WarningIcon} color="orange" />
-                <Entry texts={error} icon={ErrorIcon} color="red" />
-            </div>
+            <Entry texts={info} icon={InfoIcon} color="green" />
+            <Entry texts={warning} icon={WarningIcon} color="orange" />
+            <Entry texts={error} icon={ErrorIcon} color="red" />
         </ConfirmationDialog>
     );
 };

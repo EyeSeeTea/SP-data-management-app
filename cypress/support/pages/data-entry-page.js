@@ -24,8 +24,6 @@ export default class DataEntryPage {
 
         if (validationError) {
             this.hasValidationError(validationError);
-        } else {
-            cy.get("[data-cy=validations]").should("not.exist");
         }
 
         return this;
@@ -50,7 +48,12 @@ export default class DataEntryPage {
     }
 
     hasValidationError(text) {
-        cy.contains(text);
+        const selector = ".MuiPaper-root";
+        cy.get(selector).contains(text);
+
+        cy.get(selector)
+            .contains("OK")
+            .click();
         return this;
     }
 }

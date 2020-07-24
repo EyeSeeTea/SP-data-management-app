@@ -100,12 +100,11 @@ export class RecurringValidator {
         const dataElement = config.dataElements.find(de => de.id === dataValue.dataElementId);
         if (!dataElement) return;
 
-        const categoryComboForDataElement = _(config.categoryCombos)
-            .values()
-            .find(cc => cc.id === dataElement.categoryCombo.id);
-        if (!categoryComboForDataElement) return;
+        const allCategoryOptionCombos = _(config.allCategoryCombos)
+            .flatMap(cc => cc.categoryOptionCombos)
+            .value();
 
-        const cocForDataValueRecurring = _(categoryComboForDataElement.categoryOptionCombos).find(
+        const cocForDataValueRecurring = allCategoryOptionCombos.find(
             coc => coc.id === dataValue.categoryOptionComboId
         );
         if (!cocForDataValueRecurring) return;
@@ -117,10 +116,11 @@ export class RecurringValidator {
                 .value()
         );
 
-        const cocForRelatedNewValue = categoryComboForDataElement.categoryOptionCombos.find(coc =>
+        const cocsForRelatedNewValue = allCategoryOptionCombos.filter(coc =>
             areSetsEqual(new Set(getIds(coc.categoryOptions)), categoryOptionIdsForRelatedNew)
         );
+        if (cocsForRelatedNewValue.length > 1) console.error("Multiple cocs found for related new");
 
-        return cocForRelatedNewValue;
+        return cocsForRelatedNewValue[0];
     }
 }
