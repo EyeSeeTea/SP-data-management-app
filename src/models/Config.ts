@@ -16,6 +16,7 @@ export type Config = {
     attributes: IndexedObjs<"attributes", Attribute>;
     categories: IndexedObjs<"categories", Category>;
     categoryCombos: IndexedObjs<"categoryCombos", CategoryCombo>;
+    allCategoryCombos: CategoryCombo[];
     categoryOptions: IndexedObjs<"categoryOptions", CategoryOption>;
     legendSets: IndexedObjs<"legendSets", LegendSet>;
     indicators: Indicator[];
@@ -54,22 +55,27 @@ const baseConfig = {
         mainSector: "PM_MAIN_SECTOR",
     },
     categories: {
+        default: "default",
         targetActual: "ACTUAL_TARGET",
         gender: "GENDER",
-        newRecurring: "NEW_RECURRING",
+        newRecurring: "NEW_RETURNING",
+        covid19: "COVID19",
     },
     categoryCombos: {
-        targetActual: "ACTUAL_TARGET",
-        genderNewRecurring: "GENDER_NEW_RECURRING",
         default: "default",
+        targetActual: "ACTUAL_TARGET",
+        covid19: "COVID19",
+        genderNewRecurring: "NEW_RETURNING_GENDER",
+        genderNewRecurringCovid19: "COVID19_NEW_RETURNING_GENDER",
     },
     categoryOptions: {
         target: "TARGET",
         actual: "ACTUAL",
         new: "NEW",
-        recurring: "RECURRING",
+        recurring: "RETURNING",
         male: "MALE",
         female: "FEMALE",
+        covid19: "COVID19",
     },
     dataElementGroups: {
         global: "GLOBAL",
@@ -116,13 +122,14 @@ const metadataParams = {
         fields: {
             id: yes,
             code: yes,
+            displayName: yes,
+            categories: { id: yes },
             categoryOptionCombos: {
                 id: yes,
                 displayName: yes,
                 categoryOptions: { id: yes, displayName: yes },
             },
         },
-        filter: { code: { in: _.values(baseConfig.categoryCombos) } },
     },
     categoryOptions: {
         fields: { id: yes, code: yes, categoryOptionCombos: { id: yes } },
@@ -228,7 +235,8 @@ type IndexedObjs<Key extends keyof BaseConfig, ValueType> = Record<
 
 export type Attribute = CodedObject;
 export type CategoryOptionCombo = NamedObject & { categoryOptions: NamedObject[] };
-export type CategoryCombo = CodedObject & { categoryOptionCombos: CategoryOptionCombo[] };
+export type CategoryCombo = NamedObject &
+    CodedObject & { categories: Ref[]; categoryOptionCombos: CategoryOptionCombo[] };
 export type CategoryOption = CodedObject & { categoryOptionCombos: NamedObject[] };
 export type Category = CodedObject & { categoryOptions: CategoryOption[] };
 export type LegendSet = CodedObject;
@@ -256,6 +264,7 @@ class ConfigLoader {
             attributes: indexObjects(metadata, "attributes"),
             categories: indexObjects(metadata, "categories"),
             categoryCombos: indexObjects(metadata, "categoryCombos"),
+            allCategoryCombos: metadata.categoryCombos,
             categoryOptions: indexObjects(metadata, "categoryOptions"),
             legendSets: indexObjects(metadata, "legendSets"),
             dataApprovalWorkflows: indexObjects(metadata, "dataApprovalWorkflows"),
@@ -308,12 +317,18 @@ function indexObjects<Key extends IndexableKeys, RetValue = IndexedObjs<Key, Ind
 ): RetValue {
     const keyByCodes = _.invert(baseConfig[key]) as Record<string, keyof BaseConfig[Key]>;
     const objects = metadata[key];
-    return _(objects)
+    const indexedObjects = _(objects)
         .keyBy(obj => _(keyByCodes).get(obj.code))
         .pickBy()
         .value() as RetValue;
-}
+    const missingKeys = _.difference(_.values(keyByCodes) as string[], _.keys(indexedObjects));
 
+    if (!_.isEmpty(missingKeys)) {
+        throw new Error(`[Config] Missing records for ${key}: ${missingKeys.join(", ")}`);
+    } else {
+        return indexedObjects;
+    }
+}
 export async function getConfig(api: D2Api): Promise<Config> {
     return new ConfigLoader(api).get();
 }

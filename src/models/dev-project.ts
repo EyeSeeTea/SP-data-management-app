@@ -23,19 +23,19 @@ export function getDevProject(initialProject: Project, enabled: boolean) {
             displayName: "Bahamas",
         })
         .set("sectors", [
-            { id: "mGQ5ckOTU8A", displayName: "Agriculture", code: "SECTOR_AGRICULTURE" },
+            { id: "ieyBABjYyHO", displayName: "Agriculture", code: "SECTOR_AGRICULTURE" },
             { id: "GkiSljtLcOI", displayName: "Livelihood", code: "SECTOR_LIVELIHOOD" },
         ])
         .set(
             "dataElementsSelection",
             initialProject.dataElementsSelection
-                .updateSelectedWithRelations("mGQ5ckOTU8A", ["WS8XV4WWPE7", "ik0ICagvIjm"])
+                .updateSelectedWithRelations("ieyBABjYyHO", ["WS8XV4WWPE7", "ik0ICagvIjm"])
                 .dataElements.updateSelectedWithRelations("GkiSljtLcOI", ["We61YNYyOX0"])
                 .dataElements
         )
         .set(
             "dataElementsMER",
-            initialProject.dataElementsMER.updateSelected({ mGQ5ckOTU8A: ["ik0ICagvIjm"] })
+            initialProject.dataElementsMER.updateSelected({ ieyBABjYyHO: ["ik0ICagvIjm"] })
         )
         .set("name", "0Test1-" + awardNumber)
         .set("description", "Some description")

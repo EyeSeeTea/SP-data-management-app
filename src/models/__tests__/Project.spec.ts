@@ -120,7 +120,7 @@ describe("Project", () => {
         it("has data element sets", () => {
             expect(
                 project.dataElementsSelection.get({ onlySelected: true }).map(de => de.id)
-            ).toEqual(["u24zk6wAgFE", "yMqK9DKbA3X"]);
+            ).toEqual(["yMqK9DKbA3X", "u24zk6wAgFE"]);
             expect(project.dataElementsMER.get({ onlySelected: true }).map(de => de.id)).toEqual([
                 "u24zk6wAgFE",
             ]);
@@ -261,7 +261,7 @@ describe("Project", () => {
         it("requires at least one data element by sector", async () => {
             const project = (await getProject()).setObj({
                 sectors: [
-                    { id: "mGQ5ckOTU8A", displayName: "Agriculture", code: "SECTOR_AGRICULTURE" },
+                    { id: "ieyBABjYyHO", displayName: "Agriculture", code: "SECTOR_AGRICULTURE" },
                     { id: "GkiSljtLcOI", displayName: "Livelihood", code: "SECTOR_LIVELIHOOD" },
                 ],
             });
@@ -270,7 +270,7 @@ describe("Project", () => {
                 "The following sectors have no indicators selected: Agriculture, Livelihood",
             ]);
 
-            const { project: project2 } = project.updateDataElementsSelection("mGQ5ckOTU8A", [
+            const { project: project2 } = project.updateDataElementsSelection("ieyBABjYyHO", [
                 "qQy0N1xdwQ1",
             ]);
             const errors2 = await project2.validate(["dataElementsSelection"]);
@@ -279,7 +279,7 @@ describe("Project", () => {
             ]);
 
             const { project: project3 } = project2
-                .updateDataElementsSelection("mGQ5ckOTU8A", ["qQy0N1xdwQ1"])
+                .updateDataElementsSelection("ieyBABjYyHO", ["qQy0N1xdwQ1"])
                 .project.updateDataElementsSelection("GkiSljtLcOI", ["iyQBe9Xv7bk"]);
             const errors3 = await project3.validate(["dataElementsSelection"]);
             expect(errors3.dataElementsSelection).toEqual([]);

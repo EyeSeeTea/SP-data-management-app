@@ -1,6 +1,7 @@
 import { getMockApi } from "../../types/d2-api";
 import ProjectDb from "../ProjectDb";
 import { getProject } from "./project-data";
+import { logUnknownRequest } from "../../utils/tests";
 
 const { api, mock } = getMockApi();
 
@@ -44,10 +45,12 @@ describe("ProjectDb", () => {
 
             mock.onPut("/organisationUnits/WGC0DJ0YSis", expectedOrgUnitPut).replyOnce(200);
 
-            mock.onPost(
+            mock.onPut(
                 "/dataStore/project-monitoring-app/project-WGC0DJ0YSis",
                 expectedDataStoreMer
             ).replyOnce(200);
+
+            logUnknownRequest(mock);
 
             jest.spyOn(Date, "now").mockReturnValueOnce(new Date("2019/12/15").getTime());
 
@@ -144,7 +147,7 @@ const expectedOrgUnitPut = {
 const expectedSectionsMetadataPost = {
     sections: [
         {
-            id: "qQopuH2XmFM",
+            id: "iSeufpoED2g",
             dataSet: {
                 id: "SCS4Dusnfdd",
             },
@@ -156,10 +159,10 @@ const expectedSectionsMetadataPost = {
                     id: "WS8XV4WWPE7",
                 },
                 {
-                    id: "ik0ICagvIjm",
+                    id: "K6mAC5SiO29",
                 },
                 {
-                    id: "K6mAC5SiO29",
+                    id: "ik0ICagvIjm",
                 },
             ],
             greyedFields: [],
@@ -183,7 +186,7 @@ const expectedSectionsMetadataPost = {
             greyedFields: [],
         },
         {
-            id: "Kg4EmzighjA",
+            id: "eY8nZ7go4hl",
             dataSet: {
                 id: "CwUxT9UIX3z",
             },
@@ -195,10 +198,10 @@ const expectedSectionsMetadataPost = {
                     id: "WS8XV4WWPE7",
                 },
                 {
-                    id: "ik0ICagvIjm",
+                    id: "K6mAC5SiO29",
                 },
                 {
-                    id: "K6mAC5SiO29",
+                    id: "ik0ICagvIjm",
                 },
             ],
             greyedFields: [],
@@ -405,7 +408,7 @@ const expectedMetadataPost = {
             expiryDays: 0,
             sections: [
                 {
-                    id: "qQopuH2XmFM",
+                    id: "iSeufpoED2g",
                     code: "SECTOR_AGRICULTURE_SCS4Dusnfdd",
                 },
                 {
@@ -569,7 +572,7 @@ const expectedMetadataPost = {
             expiryDays: 11,
             sections: [
                 {
-                    id: "Kg4EmzighjA",
+                    id: "eY8nZ7go4hl",
                     code: "SECTOR_AGRICULTURE_CwUxT9UIX3z",
                 },
                 {
@@ -988,7 +991,7 @@ const expectedMetadataPost = {
                     ],
                 },
                 {
-                    code: "NEW_RECURRING",
+                    code: "NEW_RETURNING",
                     id: "a0Cy1qwUuZv",
                     categoryOptions: [
                         {
@@ -996,7 +999,7 @@ const expectedMetadataPost = {
                             id: "S2y8dcmR2kD",
                         },
                         {
-                            code: "RECURRING",
+                            code: "RETURNING",
                             id: "CyILz2yY8ey",
                         },
                     ],
@@ -1148,10 +1151,16 @@ const expectedMetadataPost = {
                             id: "S2y8dcmR2kD",
                             categoryOptionCombos: [
                                 {
-                                    id: "nwv02VfyQuz",
+                                    id: "UU2P0YSJM8A",
                                 },
                                 {
-                                    id: "UU2P0YSJM8A",
+                                    id: "bOokLlHM9no",
+                                },
+                                {
+                                    id: "kx33GL2khoi",
+                                },
+                                {
+                                    id: "nwv02VfyQuz",
                                 },
                             ],
                         },
@@ -1704,10 +1713,16 @@ const expectedMetadataPost = {
                             id: "S2y8dcmR2kD",
                             categoryOptionCombos: [
                                 {
-                                    id: "nwv02VfyQuz",
+                                    id: "UU2P0YSJM8A",
                                 },
                                 {
-                                    id: "UU2P0YSJM8A",
+                                    id: "bOokLlHM9no",
+                                },
+                                {
+                                    id: "kx33GL2khoi",
+                                },
+                                {
+                                    id: "nwv02VfyQuz",
                                 },
                             ],
                         },
