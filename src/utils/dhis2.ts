@@ -48,7 +48,7 @@ export async function postMetadataRequests(
 }
 
 export function getDataStore(api: D2Api) {
-    return api.dataStore("project-monitoring-app");
+    return api.dataStore("data-management-app");
 }
 
 // DHIS2 UID :: /^[a-zA-Z][a-zA-Z0-9]{10}$/

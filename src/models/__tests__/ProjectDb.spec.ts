@@ -46,7 +46,7 @@ describe("ProjectDb", () => {
             mock.onPut("/organisationUnits/WGC0DJ0YSis", expectedOrgUnitPut).replyOnce(200);
 
             mock.onPut(
-                "/dataStore/project-monitoring-app/project-WGC0DJ0YSis",
+                "/dataStore/data-management-app/project-WGC0DJ0YSis",
                 expectedDataStoreMer
             ).replyOnce(200);
 

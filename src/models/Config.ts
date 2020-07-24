@@ -48,7 +48,7 @@ const baseConfig = {
     },
     attributes: {
         pairedDataElement: "PM_PAIRED_DE",
-        createdByApp: "PM_CREATED_BY_PROJECT_MONITORING",
+        createdByApp: "PM_CREATED_BY_DATA_MANAGEMENT",
         orgUnitProject: "PM_ORGUNIT_PROJECT_ID",
         projectDashboard: "PM_PROJECT_DASHBOARD_ID",
         countingMethod: "PM_COUNTING_METHOD",
