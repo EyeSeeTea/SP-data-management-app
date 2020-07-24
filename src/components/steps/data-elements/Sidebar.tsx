@@ -30,9 +30,9 @@ const useStyles = makeStyles((_theme: Theme) => ({
     },
 }));
 
-type MenuItem = { id: string; text: string };
+export type MenuItem = { id: string; text: string };
 
-interface SidebarProps {
+export interface SidebarProps {
     menuItems: MenuItem[];
     currentMenuItemId?: string;
     onMenuItemClick: (menuItem: MenuItem) => void;

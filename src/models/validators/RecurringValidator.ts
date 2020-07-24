@@ -77,7 +77,7 @@ export class RecurringValidator {
         const isValid = recurringValue <= sumOfNewOnPastPeriods;
 
         const msg = i18n.t(
-            "Recurring value ({{recurringValue}}) cannot be greater than the sum of new values for past periods ({{newValuesSumFormula}})",
+            "Returning value ({{recurringValue}}) cannot be greater than the sum of new values for past periods ({{newValuesSumFormula}})",
             { recurringValue, newValuesSumFormula }
         );
 

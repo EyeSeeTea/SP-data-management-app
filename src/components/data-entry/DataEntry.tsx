@@ -203,8 +203,9 @@ const DataEntry = (props: DataEntryProps) => {
             <div style={styles.selector}>
                 {!state.dropdownHasValues && <Spinner isLoading={state.loading} />}
                 {state.dropdownHasValues && (
-                    <div style={styles.dropdown} data-cy="month-selector">
+                    <div style={styles.dropdown}>
                         <Dropdown
+                            id="month-selector"
                             items={periodItems}
                             value={state.dropdownValue}
                             onChange={value => setState({ ...state, dropdownValue: value })}
@@ -244,7 +245,7 @@ const styles = {
     backgroundIframe: { backgroundColor: "white" },
     selector: { padding: "35px  10px 10px 5px", backgroundColor: "white" },
     buttons: { display: "inline", marginLeft: 20 },
-    dropdown: { display: "inline" },
+    dropdown: { display: "inline-block" },
 };
 
 function isOptionInSelect(select: HTMLSelectElement, value: string): boolean {

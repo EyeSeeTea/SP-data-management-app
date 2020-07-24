@@ -30,7 +30,10 @@ describe("Projects - Edit", () => {
         cy.waitForStep("Selection of MER Indicators");
         cy.contains("Next").click();
 
-        cy.waitForStep("Sharing");
+        cy.waitForStep("Disaggregation");
+        cy.contains("Next").click();
+
+        cy.waitForStep("Username Access");
         cy.contains("Next").click();
 
         cy.waitForStep("Summary and Save");
