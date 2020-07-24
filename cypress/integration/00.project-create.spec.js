@@ -110,9 +110,12 @@ describe("Projects - Create", () => {
         // Sharing
 
         cy.waitForStep("Username Access");
-        cy.contains("System Admin");
-        cy.contains("Project Monitoring Admin");
-        cy.contains("Country Admin Bahamas");
+        cy.get("[data-cy='sharing']").within(() => {
+            cy.contains("admin admin");
+            cy.contains("System Admin");
+            cy.contains("Project Monitoring Admin");
+            cy.contains("Country Admin Bahamas");
+        });
         cy.contains("Next").click();
 
         // Save step
