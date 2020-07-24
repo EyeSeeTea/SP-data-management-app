@@ -22,7 +22,8 @@ import { Maybe } from "../../types/utils";
 */
 
 interface Data {
-    newDataValues: { [key: string]: Maybe<DataValueSetsDataValue[]> };
+    isFirstPeriod: boolean;
+    pastDataValuesIndexed: { [key: string]: Maybe<DataValueSetsDataValue[]> };
 }
 
 export class RecurringValidator {
@@ -38,9 +39,9 @@ export class RecurringValidator {
 
         const dataSet = project.dataSets[dataSetType];
         const categoryOptionForDataSetType = project.config.categoryOptions[dataSetType];
+        const projectPeriods = project.getPeriods();
 
-        const pastPeriods = project
-            .getPeriods()
+        const pastPeriods = projectPeriods
             .filter(projectPeriod => projectPeriod.id < period)
             .map(period => period.id);
 
@@ -50,22 +51,27 @@ export class RecurringValidator {
             period: pastPeriods,
             attributeOptionCombo: getIds(categoryOptionForDataSetType.categoryOptionCombos),
         };
-        const dataValues = _.isEmpty(pastPeriods)
+        const pastDataValues = _.isEmpty(pastPeriods)
             ? []
             : (await api.dataValues.getSet(getSetOptions).getData()).dataValues;
-        const newDataValues = _(dataValues)
+        const pastDataValuesIndexed = _(pastDataValues)
             .groupBy(dataValue => getKey(dataValue.dataElement, dataValue.categoryOptionCombo))
             .value();
 
-        return new RecurringValidator(project.config, { newDataValues });
+        const firstProjectPeriod = _(projectPeriods).get(0, null);
+        const isFirstPeriod = !firstProjectPeriod || firstProjectPeriod.id === period;
+
+        return new RecurringValidator(project.config, { pastDataValuesIndexed, isFirstPeriod });
     }
 
     validate(dataValue: DataValue): ValidationItem[] {
+        if (this.data.isFirstPeriod) return [];
+
         const cocForRelatedNewValue = this.getCategoryOptionComboForRelatedNew(dataValue);
         if (!cocForRelatedNewValue) return [];
 
         const key = getKey(dataValue.dataElementId, cocForRelatedNewValue.id);
-        const pastNewDataValues = this.data.newDataValues[key] || [];
+        const pastNewDataValues = this.data.pastDataValuesIndexed[key] || [];
         const sumOfNewOnPastPeriods = _.sum(pastNewDataValues.map(dv => toFloat(dv.value)));
         const summatory = pastNewDataValues
             .map(dv => `${formatPeriod(dv.period)} [${toFloat(dv.value)}]`)
