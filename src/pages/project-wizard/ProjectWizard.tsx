@@ -135,18 +135,18 @@ class ProjectWizardImpl extends React.Component<Props, State> {
                 help: helpTexts.indicators,
             },
             {
-                key: "mer-indicators",
-                label: i18n.t("Selection of MER Indicators"),
-                component: MerSelectionStep,
-                validationKeys: ["dataElementsMER"],
-                help: helpTexts.merIndicators,
-            },
-            {
                 key: "disaggregation",
                 label: i18n.t("Disaggregation"),
                 component: DisaggregationStep,
                 validationKeys: [],
                 help: helpTexts.disaggregation,
+            },
+            {
+                key: "mer-indicators",
+                label: i18n.t("Selection of MER Indicators"),
+                component: MerSelectionStep,
+                validationKeys: ["dataElementsMER"],
+                help: helpTexts.merIndicators,
             },
             {
                 key: "sharing",

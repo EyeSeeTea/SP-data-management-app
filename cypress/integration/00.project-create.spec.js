@@ -84,6 +84,17 @@ describe("Projects - Create", () => {
 
         cy.contains("Next").click();
 
+        // Disaggregation
+
+        cy.waitForStep("Disaggregation");
+        cy.get("[data-cy=covid19-selector-B010200]")
+            .contains("No")
+            .click();
+        cy.get(".MuiPopover-paper")
+            .contains("Yes")
+            .click();
+        cy.contains("Next").click();
+
         // Selection of MER Indicators
 
         cy.waitForStep("Selection of MER Indicators");
@@ -94,17 +105,6 @@ describe("Projects - Create", () => {
             .prev("td")
             .click();
 
-        cy.contains("Next").click();
-
-        // Disaggregation
-
-        cy.waitForStep("Disaggregation");
-        cy.get("[data-cy=covid19-selector-B010200]")
-            .contains("No")
-            .click();
-        cy.get(".MuiPopover-paper")
-            .contains("Yes")
-            .click();
         cy.contains("Next").click();
 
         // Sharing
