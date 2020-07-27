@@ -40,6 +40,6 @@ cypress/videos/
 
 # Custom
 scripts/
-data-monitoring-app.zip
+data-management-app.zip
 bak/
 src/dev
