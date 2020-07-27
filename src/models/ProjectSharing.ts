@@ -47,14 +47,18 @@ export default class ProjectSharing {
     constructor(public project: Project) {}
 
     static getInitialSharing(config: Config): Sharing {
-        const systemAdminGroup = _(config.userGroups).get(config.base.userGroups.systemAdmin, null);
-        const appAdminGroup = _(config.userGroups).get(config.base.userGroups.appAdmin, null);
+        const { currentUser, userGroups } = config;
+        const userAccesses: EntityAccess[] = [
+            { id: currentUser.id, name: currentUser.displayName },
+        ];
+        const systemAdminGroup = _(userGroups).get(config.base.userGroups.systemAdmin, null);
+        const appAdminGroup = _(userGroups).get(config.base.userGroups.appAdmin, null);
         const userGroupAccesses: EntityAccess[] = _.compact([
             systemAdminGroup && { id: systemAdminGroup.id, name: systemAdminGroup.displayName },
             appAdminGroup && { id: appAdminGroup.id, name: appAdminGroup.displayName },
         ]);
 
-        return { userAccesses: [], userGroupAccesses };
+        return { userAccesses, userGroupAccesses };
     }
 
     getBaseSharing(): Sharing {
