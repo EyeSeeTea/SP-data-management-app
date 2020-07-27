@@ -475,7 +475,13 @@ const expectedMetadataPost = {
             ],
             publicAccess: "--------",
             externalAccess: false,
-            userAccesses: [],
+            userAccesses: [
+                {
+                    id: "M5zQapPyTZI",
+                    displayName: "admin admin",
+                    access: "rwrw----",
+                },
+            ],
             userGroupAccesses: [
                 {
                     id: "ywuI2WspUUG",
@@ -639,7 +645,13 @@ const expectedMetadataPost = {
             ],
             publicAccess: "--------",
             externalAccess: false,
-            userAccesses: [],
+            userAccesses: [
+                {
+                    id: "M5zQapPyTZI",
+                    displayName: "admin admin",
+                    access: "rwrw----",
+                },
+            ],
             userGroupAccesses: [
                 {
                     id: "ywuI2WspUUG",
@@ -761,7 +773,13 @@ const expectedMetadataPost = {
             ],
             publicAccess: "--------",
             externalAccess: false,
-            userAccesses: [],
+            userAccesses: [
+                {
+                    id: "M5zQapPyTZI",
+                    displayName: "admin admin",
+                    access: "rw------",
+                },
+            ],
             userGroupAccesses: [
                 {
                     id: "ywuI2WspUUG",
@@ -876,7 +894,13 @@ const expectedMetadataPost = {
             ],
             publicAccess: "--------",
             externalAccess: false,
-            userAccesses: [],
+            userAccesses: [
+                {
+                    id: "M5zQapPyTZI",
+                    displayName: "admin admin",
+                    access: "rw------",
+                },
+            ],
             userGroupAccesses: [
                 {
                     id: "ywuI2WspUUG",
@@ -1049,7 +1073,13 @@ const expectedMetadataPost = {
             ],
             publicAccess: "--------",
             externalAccess: false,
-            userAccesses: [],
+            userAccesses: [
+                {
+                    id: "M5zQapPyTZI",
+                    displayName: "admin admin",
+                    access: "rw------",
+                },
+            ],
             userGroupAccesses: [
                 {
                     id: "ywuI2WspUUG",
@@ -1228,7 +1258,13 @@ const expectedMetadataPost = {
             ],
             publicAccess: "--------",
             externalAccess: false,
-            userAccesses: [],
+            userAccesses: [
+                {
+                    id: "M5zQapPyTZI",
+                    displayName: "admin admin",
+                    access: "rw------",
+                },
+            ],
             userGroupAccesses: [
                 {
                     id: "ywuI2WspUUG",
@@ -1313,7 +1349,13 @@ const expectedMetadataPost = {
             categoryDimensions: [],
             publicAccess: "--------",
             externalAccess: false,
-            userAccesses: [],
+            userAccesses: [
+                {
+                    id: "M5zQapPyTZI",
+                    displayName: "admin admin",
+                    access: "rw------",
+                },
+            ],
             userGroupAccesses: [
                 {
                     id: "ywuI2WspUUG",
@@ -1408,7 +1450,13 @@ const expectedMetadataPost = {
             categoryDimensions: [],
             publicAccess: "--------",
             externalAccess: false,
-            userAccesses: [],
+            userAccesses: [
+                {
+                    id: "M5zQapPyTZI",
+                    displayName: "admin admin",
+                    access: "rw------",
+                },
+            ],
             userGroupAccesses: [
                 {
                     id: "ywuI2WspUUG",
@@ -1512,7 +1560,13 @@ const expectedMetadataPost = {
             categoryDimensions: [],
             publicAccess: "--------",
             externalAccess: false,
-            userAccesses: [],
+            userAccesses: [
+                {
+                    id: "M5zQapPyTZI",
+                    displayName: "admin admin",
+                    access: "rw------",
+                },
+            ],
             userGroupAccesses: [
                 {
                     id: "ywuI2WspUUG",
@@ -1610,7 +1664,13 @@ const expectedMetadataPost = {
             categoryDimensions: [],
             publicAccess: "--------",
             externalAccess: false,
-            userAccesses: [],
+            userAccesses: [
+                {
+                    id: "M5zQapPyTZI",
+                    displayName: "admin admin",
+                    access: "rw------",
+                },
+            ],
             userGroupAccesses: [
                 {
                     id: "ywuI2WspUUG",
@@ -1757,7 +1817,13 @@ const expectedMetadataPost = {
             ],
             publicAccess: "--------",
             externalAccess: false,
-            userAccesses: [],
+            userAccesses: [
+                {
+                    id: "M5zQapPyTZI",
+                    displayName: "admin admin",
+                    access: "rw------",
+                },
+            ],
             userGroupAccesses: [
                 {
                     id: "ywuI2WspUUG",
@@ -1831,7 +1897,13 @@ const expectedMetadataPost = {
             categoryDimensions: [],
             publicAccess: "--------",
             externalAccess: false,
-            userAccesses: [],
+            userAccesses: [
+                {
+                    id: "M5zQapPyTZI",
+                    displayName: "admin admin",
+                    access: "rw------",
+                },
+            ],
             userGroupAccesses: [
                 {
                     id: "ywuI2WspUUG",
