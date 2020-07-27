@@ -48,20 +48,20 @@ const SharingStep: React.FC<StepProps> = props => {
 
     const classes = useStyles();
 
-    const unremovebleIds = React.useMemo(() => {
+    const unremovableIds = React.useMemo(() => {
         return projectSharing.getBaseSharingIds();
     }, [projectSharing]);
 
     const country = project.parentOrgUnit?.displayName || "-";
 
     return (
-        <React.Fragment>
+        <div data-cy="sharing">
             <Sharing
                 meta={sharedObject}
                 showOptions={showOptions}
                 onSearch={search}
                 onChange={setProjectSharing}
-                unremovebleIds={unremovebleIds}
+                unremovebleIds={unremovableIds}
             />
 
             <div className={classes.footer}>
@@ -70,7 +70,7 @@ const SharingStep: React.FC<StepProps> = props => {
                     { nsSeparator: false, country }
                 )}
             </div>
-        </React.Fragment>
+        </div>
     );
 };
 
