@@ -5,10 +5,10 @@
             "levelForProjects": 3
         },
         "userRoles": {
-            "feedback": ["PM Feedback"],
+            "feedback": ["DM Feedback"],
             "dataReviewer": ["Data Reviewer"],
             "dataViewer": ["Data Viewer"],
-            "admin": ["PM Admin"],
+            "admin": ["DM Admin"],
             "dataEntry": ["Data Entry"]
         },
         "dataElementGroupSets": {
@@ -19,12 +19,12 @@
             "externals": "EXTERNAL"
         },
         "attributes": {
-            "pairedDataElement": "PM_PAIRED_DE",
-            "createdByApp": "PM_CREATED_BY_DATA_MANAGEMENT",
-            "orgUnitProject": "PM_ORGUNIT_PROJECT_ID",
-            "projectDashboard": "PM_PROJECT_DASHBOARD_ID",
-            "countingMethod": "PM_COUNTING_METHOD",
-            "mainSector": "PM_MAIN_SECTOR"
+            "pairedDataElement": "DM_PAIRED_DE",
+            "createdByApp": "DM_CREATED_BY_DATA_MANAGEMENT",
+            "orgUnitProject": "DM_ORGUNIT_PROJECT_ID",
+            "projectDashboard": "DM_PROJECT_DASHBOARD_ID",
+            "countingMethod": "DM_COUNTING_METHOD",
+            "mainSector": "DM_MAIN_SECTOR"
         },
         "categories": {
             "default": "default",
@@ -68,7 +68,7 @@
             "costBenefitPrefix": "COST_BENEFIT_"
         },
         "dataApprovalWorkflows": {
-            "project": "PM_PROJECT"
+            "project": "DM_PROJECT"
         },
         "userGroups": {
             "systemAdmin": "SYSTEM_ADMIN",
@@ -83,7 +83,7 @@
             "username": "admin",
             "userRoles": [
                 {
-                    "name": "PM Admin"
+                    "name": "DM Admin"
                 },
                 {
                     "name": "Metadata Maintainer"
@@ -92,7 +92,7 @@
                     "name": "Superuser"
                 },
                 {
-                    "name": "PM Feedback"
+                    "name": "DM Feedback"
                 }
             ]
         },
@@ -180,7 +180,7 @@
         ],
         "userRoles": [
             {
-                "name": "PM Admin"
+                "name": "DM Admin"
             },
             {
                 "name": "Metadata Maintainer"
@@ -189,7 +189,7 @@
                 "name": "Superuser"
             },
             {
-                "name": "PM Feedback"
+                "name": "DM Feedback"
             }
         ],
         "username": "admin"
@@ -21056,27 +21056,27 @@
     ],
     "attributes": {
         "countingMethod": {
-            "code": "PM_COUNTING_METHOD",
+            "code": "DM_COUNTING_METHOD",
             "id": "OOi8Yw1TrmS"
         },
         "createdByApp": {
-            "code": "PM_CREATED_BY_DATA_MANAGEMENT",
+            "code": "DM_CREATED_BY_DATA_MANAGEMENT",
             "id": "mgCKcJuP5n0"
         },
         "mainSector": {
-            "code": "PM_MAIN_SECTOR",
+            "code": "DM_MAIN_SECTOR",
             "id": "qqqopVltY52"
         },
         "orgUnitProject": {
-            "code": "PM_ORGUNIT_PROJECT_ID",
+            "code": "DM_ORGUNIT_PROJECT_ID",
             "id": "qgSqj6sBF7j"
         },
         "pairedDataElement": {
-            "code": "PM_PAIRED_DE",
+            "code": "DM_PAIRED_DE",
             "id": "qeayiIiTONg"
         },
         "projectDashboard": {
-            "code": "PM_PROJECT_DASHBOARD_ID",
+            "code": "DM_PROJECT_DASHBOARD_ID",
             "id": "aywduilEjPQ"
         }
     },
@@ -21743,7 +21743,7 @@
     },
     "dataApprovalWorkflows": {
         "project": {
-            "code": "PM_PROJECT",
+            "code": "DM_PROJECT",
             "id": "CCy0oNyvlV1"
         }
     },

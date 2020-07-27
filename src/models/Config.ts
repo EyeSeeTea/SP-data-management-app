@@ -33,10 +33,10 @@ const baseConfig = {
         levelForProjects: 3,
     },
     userRoles: {
-        feedback: ["PM Feedback"],
+        feedback: ["DM Feedback"],
         dataReviewer: ["Data Reviewer"],
         dataViewer: ["Data Viewer"],
-        admin: ["PM Admin"],
+        admin: ["DM Admin"],
         dataEntry: ["Data Entry"],
     },
     dataElementGroupSets: {
@@ -47,12 +47,12 @@ const baseConfig = {
         externals: "EXTERNAL",
     },
     attributes: {
-        pairedDataElement: "PM_PAIRED_DE",
-        createdByApp: "PM_CREATED_BY_DATA_MANAGEMENT",
-        orgUnitProject: "PM_ORGUNIT_PROJECT_ID",
-        projectDashboard: "PM_PROJECT_DASHBOARD_ID",
-        countingMethod: "PM_COUNTING_METHOD",
-        mainSector: "PM_MAIN_SECTOR",
+        pairedDataElement: "DM_PAIRED_DE",
+        createdByApp: "DM_CREATED_BY_DATA_MANAGEMENT",
+        orgUnitProject: "DM_ORGUNIT_PROJECT_ID",
+        projectDashboard: "DM_PROJECT_DASHBOARD_ID",
+        countingMethod: "DM_COUNTING_METHOD",
+        mainSector: "DM_MAIN_SECTOR",
     },
     categories: {
         default: "default",
@@ -96,7 +96,7 @@ const baseConfig = {
         costBenefitPrefix: "COST_BENEFIT_",
     },
     dataApprovalWorkflows: {
-        project: "PM_PROJECT",
+        project: "DM_PROJECT",
     },
     userGroups: {
         systemAdmin: "SYSTEM_ADMIN",
