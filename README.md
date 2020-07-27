@@ -94,6 +94,6 @@ $ yarn build-webapp
 
 A project consist of these Dhis2 metadata:
 
--   1 organisation unit (level 2). attributes: `PM_PROJECT_DASHBOARD_ID`
--   2 data sets: actual and target. attributes: `PM_ORGUNIT_PROJECT_ID`
+-   1 organisation unit (level 2). attributes: `DM_PROJECT_DASHBOARD_ID`
+-   2 data sets: actual and target. attributes: `DM_ORGUNIT_PROJECT_ID`
 -   1 dashboard.
