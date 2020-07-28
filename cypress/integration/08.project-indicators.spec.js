@@ -35,20 +35,20 @@ describe("Projects - Indicators", () => {
             .select("B010301")
             .assertSelected(["B010301", "B010300", "P010401", "P010400"])
 
-            // Select a cross-sectorial -> select its series in current sector
+            // Select a cross-sectorial -> select its series in main sector
             .select("P020105")
-            .assertSelected(["P020105", "P010100"])
+            .assertSelected(["P020105"])
 
             // Finally check that only the expected indicators are selected
             .assertExactSelected([
                 ...["B010201", "B010200", "B010301", "B010300", "P010401"],
-                ...["P010400", "P020105", "P010100"],
+                ...["P010400", "P020105"],
             ])
 
             .selectSector("Livelihood")
             // Check that only the initial indicator are selected. The previous selection
             // of Agriculture->P020105 should not have modified the indicators in this section
-            .assertExactSelected(["P020100", "P020103"])
+            .assertExactSelected(["P020100", "P020103", "P020100"])
 
             // Select a global
             .select("B020200")
@@ -69,7 +69,7 @@ describe("Projects - Indicators", () => {
             .selectSector("Nutrition")
             // Select a cross-sectorial indicator which has paired sub indicators in other sectors (Food)
             .select("B050102")
-            .assertExactSelected(["B050102", "P050202", "P040100"])
+            .assertExactSelected(["B050102", "P050202"])
 
             .selectSector("Food")
             // Now check the same cross-sectorial indicator in the other sector
@@ -82,7 +82,7 @@ describe("Projects - Indicators", () => {
             .selectSector("Agriculture")
             .assertVisible([
                 ...["B010201", "B010200", "B010301", "B010300", "P010401"],
-                ...["P010400", "P020105", "P010100"],
+                ...["P010400", "P020105"],
             ])
             .selectSector("Livelihood")
             .assertVisible(["P020100"])
@@ -99,7 +99,6 @@ describe("Projects - Indicators", () => {
         cy.contains("P010401");
         cy.contains("P010400");
         cy.contains("P020105");
-        cy.contains("P010100");
 
         // Livelihood
         cy.contains("P020100 [COVID-19] [MER]");
