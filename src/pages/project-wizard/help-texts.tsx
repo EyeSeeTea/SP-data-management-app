@@ -33,7 +33,9 @@ export const helpTexts = {
         `- MER indicators must be selected in coordination with your Country Director and Regional Team.`,
         { nsSeparator: false }
     ),
-    disaggregation: i18n.t("Override default disaggregation for project indicators"),
+    disaggregation: i18n.t(
+        `For activity indicators that include a response to COVID-19 (examples: COVID-19 messaging, COVID-19 specific healthcare worker trainings, etc.), please select "yes" under the COVID-19 column. In the future, more disaggregations (in addition to new, returning, gender, and COVID-19) will be available.`
+    ),
     save: i18n.t(
         `If you need to correct an item in your project, please click the grey “Previous” button located on the bottom right side of the screen.`
     ),
