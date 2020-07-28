@@ -1,6 +1,7 @@
 import Project, { OrganisationUnit } from "./Project";
 import _ from "lodash";
 import { Config } from "./Config";
+import { D2DataSetSchema } from "../types/d2-api";
 
 type D2Access = string;
 
@@ -220,4 +221,15 @@ export function mergeSharing(sharing1: Sharing, sharing2: Sharing): Sharing {
         .value();
 
     return { userAccesses, userGroupAccesses };
+}
+
+type D2DataSetAccess = D2DataSetSchema["fields"]["access"] & {
+    data?: { read: boolean; write: boolean }; // Currently not in d2-api, add manually
+};
+
+export function hasCurrentUserFullAccessToDataSet(shareable: { access: D2DataSetAccess }): boolean {
+    const { access } = shareable;
+    const metadataAccess = access.read && access.write;
+    const dataAccess = access.data ? access.data.read && access.data.write : true;
+    return metadataAccess && dataAccess;
 }
