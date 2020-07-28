@@ -4,7 +4,7 @@ import config from "./config";
 
 describe("User permissions", () => {
     it("Admin can perform all actions", () => {
-        const adminConfig = getConfigForUserWithRole("PM Admin");
+        const adminConfig = getConfigForUserWithRole("DM Admin");
         const user = new User(adminConfig);
 
         expect(user.hasRole("admin")).toBe(true);

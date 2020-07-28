@@ -46,16 +46,16 @@ describe("Projects - Indicators", () => {
             ])
 
             .selectSector("Livelihood")
-            // Check that only the initial indicator is selected. The previous selection
+            // Check that only the initial indicator are selected. The previous selection
             // of Agriculture->P020105 should not have modified the indicators in this section
-            .assertExactSelected(["P020100"])
+            .assertExactSelected(["P020100", "P020103"])
 
             // Select a global
             .select("B020200")
-            .assertExactSelected(["P020100", "B020200", "P020300"])
+            .assertExactSelected(["P020100", "P020103", "B020200", "P020300"])
             // Unselect the global, as it has no subs selected, it should be unselected
             .unselect("B020200")
-            .assertExactSelected(["P020100"])
+            .assertExactSelected(["P020100", "P020103"])
 
             .selectSector("Agriculture")
             // A global with subs cannot be unselected
@@ -102,6 +102,6 @@ describe("Projects - Indicators", () => {
         cy.contains("P010100");
 
         // Livelihood
-        cy.contains("P020100 [MER]");
+        cy.contains("P020100 [COVID-19] [MER]");
     });
 });
