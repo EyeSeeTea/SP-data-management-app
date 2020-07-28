@@ -103,7 +103,7 @@ const getDataEntryForm = async (
     const parentSelector = `#orgUnit${parentOrgUnit.id} .toggle`;
 
     const selectDataSet = () => {
-        console.debug("[data-entry] Select project orgunit", parentSelector);
+        console.debug("[data-entry] Select project orgunit", orgUnitId);
         iframeSelection.select(orgUnitId);
         console.debug("[data-entry] Select options");
         setDataset(iframe, dataSet, onDone);
