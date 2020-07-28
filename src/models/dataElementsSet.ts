@@ -58,6 +58,7 @@ interface DataElementsData {
     dataElementsBase: DataElementBase[];
     dataElementsAllBySector: BySector<DataElement[]>;
     dataElementsBySector: BySector<DataElement[]>;
+    allDataElementsByKey: Record<string, DataElement>;
     selected: BySector<Id[]>;
     groupPaired: boolean;
 }
@@ -193,11 +194,16 @@ export default class DataElementsSet {
         const dataElementsBase = config.dataElements;
         const dataElementsAllBySector = getDataElementsBySector(config, { groupPaired });
         const desBySector = getDataElementsBySectorInSet(dataElementsAllBySector, superSet);
+        const allDataElementsByKey = _(config.sectors)
+            .flatMap(sector => dataElementsAllBySector[sector.id])
+            .keyBy(de => [de.sector.id, de.indicatorType, de.series].join("."))
+            .value();
 
         return new DataElementsSet(config, {
             dataElementsBase,
             dataElementsAllBySector,
             dataElementsBySector: desBySector,
+            allDataElementsByKey,
             selected: {},
             groupPaired,
         });
@@ -268,16 +274,28 @@ export default class DataElementsSet {
         return new DataElementsSet(this.config, { ...this.data, selected: newSelected });
     }
 
-    updateSelectedWithRelations(
-        sectorId: Id,
-        dataElementIds: string[]
-    ): { selectionInfo: SelectionInfo; dataElements: DataElementsSet } {
+    updateSelectedWithRelations(query?: {
+        sectorId: Id;
+        dataElementIds: string[];
+    }): { selectionInfo: SelectionInfo; dataElements: DataElementsSet } {
+        const firstSectorId = _.keys(this.data.selected)[0];
+        if (!query && !firstSectorId) return { selectionInfo: {}, dataElements: this };
+
+        const { sectorId, dataElementIds } = query || {
+            sectorId: firstSectorId,
+            dataElementIds: this.data.selected[firstSectorId],
+        };
         const newSelection = new Set(dataElementIds);
         const prevSelectionAll = new Set(this.get({ onlySelected: true }).map(de => de.id));
         const prevSelection = new Set(this.get({ sectorId, onlySelected: true }).map(de => de.id));
-        const newRelated = this.getRelated(sectorId, dataElementIds);
+        const newRelated = _(this.data.selected)
+            .flatMap((deIds, sectorId_) =>
+                sectorId_ !== sectorId ? this.getRelated(sectorId_, deIds) : []
+            )
+            .concat(this.getRelated(sectorId, dataElementIds))
+            .value();
         const unselectable = newRelated.filter(
-            de => prevSelection.has(de.id) && !newSelection.has(de.id)
+            de => de.sector.id === sectorId && prevSelection.has(de.id) && !newSelection.has(de.id)
         );
         const msg = i18n.t("Global data elements with selected subs cannot be unselected");
         const selectionInfo = {
@@ -291,19 +309,26 @@ export default class DataElementsSet {
             .groupBy(de => de.sector.id)
             .mapValues(group => group.map(o => o.id))
             .value();
-        const dataElementsUpdated = this.updateSelected({ [sectorId]: [], ...finalSelected });
+
+        const sectorIds = _.union(_.keys(this.data.selected), _.keys(finalSelected));
+        const newSelected = _(sectorIds)
+            .map(sId => {
+                const deIds = _(sId === sectorId ? [] : this.data.selected[sId] || [])
+                    .concat(finalSelected[sId] || [])
+                    .uniq()
+                    .value();
+                return [sId, deIds];
+            })
+            .fromPairs()
+            .value();
+        const dataElementsUpdated = this.updateSelected(newSelected);
 
         return { selectionInfo, dataElements: dataElementsUpdated };
     }
 
     getRelated(sectorId: Id, dataElementIds: Id[]): DataElement[] {
-        const { dataElementsAllBySector } = this.data;
+        const { dataElementsAllBySector, allDataElementsByKey } = this.data;
         const dataElementsInSector = dataElementsAllBySector[sectorId] || [];
-
-        const allDataElementsByKey = _(this.config.sectors)
-            .flatMap(sector => dataElementsAllBySector[sector.id])
-            .keyBy(de => [de.sector.id, de.indicatorType, de.series].join("."))
-            .value();
 
         const sourceDataElements = _(dataElementsInSector)
             .keyBy(de => de.id)

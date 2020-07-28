@@ -440,8 +440,8 @@ class Project {
 
     updateDataElementsSelection(sectorId: string, dataElementIds: string[]) {
         const { dataElementsSelection, dataElementsMER, sectors } = this.data;
-        const result = dataElementsSelection.updateSelectedWithRelations(sectorId, dataElementIds);
-        const { dataElements: dataElementsUpdate, selectionInfo } = result;
+        const res = dataElementsSelection.updateSelectedWithRelations({ sectorId, dataElementIds });
+        const { dataElements: dataElementsUpdate, selectionInfo } = res;
 
         const sectorIdsCurrent = sectors.map(sector => sector.id);
         const sectorIdsWithSelected = _(dataElementsUpdate.get({ onlySelected: true }))
