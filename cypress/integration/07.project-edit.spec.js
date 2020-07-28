@@ -27,10 +27,10 @@ describe("Projects - Edit", () => {
         cy.waitForStep("Selection of Indicators");
         cy.contains("Next").click();
 
-        cy.waitForStep("Selection of MER Indicators");
+        cy.waitForStep("Disaggregation");
         cy.contains("Next").click();
 
-        cy.waitForStep("Disaggregation");
+        cy.waitForStep("Selection of MER Indicators");
         cy.contains("Next").click();
 
         cy.waitForStep("Username Access");

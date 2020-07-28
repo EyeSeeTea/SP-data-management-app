@@ -89,18 +89,6 @@ describe("Projects - Create", () => {
 
         cy.contains("Next").click();
 
-        // Selection of MER Indicators
-
-        cy.waitForStep("Selection of MER Indicators");
-
-        cy.contains("Livelihood").click();
-        cy.contains("# of people trained in livelihood topics")
-            .parent("td")
-            .prev("td")
-            .click();
-
-        cy.contains("Next").click();
-
         // Disaggregation
 
         cy.waitForStep("Disaggregation");
@@ -119,6 +107,19 @@ describe("Projects - Create", () => {
         cy.get(".MuiPopover-paper")
             .contains("Yes")
             .click();
+
+        cy.contains("Next").click();
+
+        // Selection of MER Indicators
+
+        cy.waitForStep("Selection of MER Indicators");
+
+        cy.contains("Livelihood").click();
+        cy.contains("# of people trained in livelihood topics")
+            .parent("td")
+            .prev("td")
+            .click();
+
         cy.contains("Next").click();
 
         // Sharing
