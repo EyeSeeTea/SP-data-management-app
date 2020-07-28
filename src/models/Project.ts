@@ -443,14 +443,16 @@ class Project {
         const result = dataElementsSelection.updateSelectedWithRelations(sectorId, dataElementIds);
         const { dataElements: dataElementsUpdate, selectionInfo } = result;
 
-        const sectorIds = _(dataElementsUpdate.get({ onlySelected: true }))
+        const sectorIdsCurrent = sectors.map(sector => sector.id);
+        const sectorIdsWithSelected = _(dataElementsUpdate.get({ onlySelected: true }))
             .map(de => de.sector.id)
             .concat(sectors.map(sector => sector.id))
             .uniq()
             .value();
+        const newSectorIds = _.difference(sectorIdsWithSelected, sectorIdsCurrent);
         const newSectors = _(this.config.sectors)
             .keyBy(sector => sector.id)
-            .at(sectorIds)
+            .at([...sectorIdsCurrent, ...newSectorIds])
             .value();
         const newProject = this.setObj({
             sectors: newSectors,
