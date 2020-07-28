@@ -6,11 +6,13 @@ export default class DataEntryPage {
         cy.frameLoaded(`[data-cy="${iframeDataCy}"]`);
     }
 
-    selectInput(dataElementId, cocId, value) {
+    setInputValue(dataElementId, cocId, value, options = {}) {
+        const { validationError = null } = options;
+        const elId = `#${dataElementId}-${cocId}-val`;
+
         // eslint-disable-next-line cypress/no-unnecessary-waiting
         cy.iframe()
-            .find(`#${dataElementId}-${cocId}-val`)
-            .wait(200)
+            .find(elId)
             .focus()
             .clear({ force: true })
             .clear({ force: true })
@@ -19,6 +21,10 @@ export default class DataEntryPage {
         cy.iframe()
             .find("#tabs")
             .click();
+
+        if (validationError) {
+            this.hasValidationError(validationError);
+        }
 
         return this;
     }
@@ -42,7 +48,12 @@ export default class DataEntryPage {
     }
 
     hasValidationError(text) {
-        cy.contains(text);
+        const selector = ".MuiPaper-root";
+        cy.get(selector).contains(text);
+
+        cy.get(selector)
+            .contains("OK")
+            .click();
         return this;
     }
 }

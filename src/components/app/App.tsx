@@ -97,7 +97,7 @@ const App: React.FC<AppProps> = props => {
             const appContext = { d2, api, config, currentUser, isDev, isTest, appConfig };
             setAppContext(appContext);
 
-            Object.assign(window, { pm: appContext });
+            Object.assign(window, { dm: appContext });
 
             setShowShareButton(_(appConfig).get("appearance.showShareButton") || false);
             const isFeedbackRole =
@@ -134,7 +134,7 @@ const App: React.FC<AppProps> = props => {
             <MuiThemeProvider theme={muiTheme}>
                 <OldMuiThemeProvider muiTheme={muiThemeLegacy}>
                     <SnackbarProvider>
-                        <HeaderBar appName={"Project Monitoring"} />
+                        <HeaderBar appName={"Data Management"} />
 
                         <div id="app" className="content">
                             <ApiContext.Provider value={appContext}>

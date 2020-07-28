@@ -10,35 +10,64 @@ describe("Target Values", () => {
 
     it("can enter data values with new/returning validations", () => {
         const entryPage = new DataEntryPage("data-entry");
-        entryPage.selectInput("WS8XV4WWPE7", "GI9GyGCQwTf", 10);
+        entryPage.setInputValue("WS8XV4WWPE7", "GI9GyGCQwTf", 10);
 
-        const dataElementId = "e6wdrrz9ZS6";
+        const dataElementMicrofinanceId = "imakJ22nlwc";
+        const dataElementTopicsId = "e6wdrrz9ZS6";
+
         const cocIds = {
-            newMal: "TpxiQHEumCA",
-            returningMale: "SW9iYI4GmW2",
+            newMale: "TpxiQHEumCA",
             newFemale: "Oq364hCb4KD",
+            returningMale: "SW9iYI4GmW2",
             returningFemale: "ZbU1cop8Gzl",
         };
+        const cocCovidIds = {
+            newMale: "a0u8s8Ol11a",
+            newFemale: "AwFU3V5kWRa",
+            returningMale: "eUb9dPeFPQM",
+            returningFemale: "X0G8okU3agJ",
+        };
 
-        entryPage.selectTab("Livelihood");
-        entryPage.selectInput(dataElementId, cocIds.newMal, 1);
-        entryPage.selectInput(dataElementId, cocIds.returningMale, 0);
-        entryPage.selectInput(dataElementId, cocIds.newFemale, 2);
-        entryPage.selectInput(dataElementId, cocIds.returningFemale, 0);
+        entryPage
+            .selectTab("Livelihood")
+
+            .setInputValue(dataElementMicrofinanceId, cocIds.newMale, 1)
+            .setInputValue(dataElementMicrofinanceId, cocIds.returningMale, 5)
+            .setInputValue(dataElementMicrofinanceId, cocIds.newFemale, 2)
+            .setInputValue(dataElementMicrofinanceId, cocIds.returningFemale, 0)
+
+            .setInputValue(dataElementTopicsId, cocCovidIds.newMale, 1)
+            .setInputValue(dataElementTopicsId, cocCovidIds.returningMale, 5)
+            .setInputValue(dataElementTopicsId, cocCovidIds.newFemale, 2)
+            .setInputValue(dataElementTopicsId, cocCovidIds.returningFemale, 0);
 
         entryPage.selectMonth(1);
 
-        entryPage.selectTab("Livelihood");
-        entryPage.selectInput(dataElementId, cocIds.newMal, 2);
-        entryPage.selectInput(dataElementId, cocIds.returningMale, 1);
-        entryPage.selectInput(dataElementId, cocIds.newFemale, 3);
-        entryPage.selectInput(dataElementId, cocIds.returningFemale, 0);
+        entryPage
+            .selectTab("Livelihood")
+
+            .setInputValue(dataElementMicrofinanceId, cocIds.newMale, 2)
+            .setInputValue(dataElementMicrofinanceId, cocIds.returningMale, 1)
+            .setInputValue(dataElementMicrofinanceId, cocIds.newFemale, 3)
+            .setInputValue(dataElementMicrofinanceId, cocIds.returningFemale, 0)
+
+            .setInputValue(dataElementTopicsId, cocCovidIds.newMale, 2)
+            .setInputValue(dataElementTopicsId, cocCovidIds.returningMale, 1)
+            .setInputValue(dataElementTopicsId, cocCovidIds.newFemale, 3)
+            .setInputValue(dataElementTopicsId, cocCovidIds.returningFemale, 0);
 
         entryPage.selectMonth(2);
 
-        entryPage.selectTab("Livelihood");
-        entryPage.selectInput(dataElementId, cocIds.newMal, 3);
-        entryPage.selectInput(dataElementId, cocIds.returningMale, 4);
-        entryPage.hasValidationError("Returning value (4) cannot be greater");
+        entryPage
+            .selectTab("Livelihood")
+            .setInputValue(dataElementMicrofinanceId, cocIds.newMale, 3)
+            .setInputValue(dataElementMicrofinanceId, cocIds.returningMale, 4, {
+                validationError: "Returning value (4) cannot be greater",
+            })
+
+            .setInputValue(dataElementTopicsId, cocCovidIds.newMale, 3)
+            .setInputValue(dataElementTopicsId, cocCovidIds.returningMale, 4, {
+                validationError: "Returning value (4) cannot be greater",
+            });
     });
 });

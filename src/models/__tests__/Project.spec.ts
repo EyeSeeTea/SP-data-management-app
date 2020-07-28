@@ -95,7 +95,7 @@ describe("Project", () => {
                 },
             }).replyOnce(200, metadataForGet);
 
-            mock.onGet("/dataStore/project-monitoring-app/project-R3rGhxWbAI9").replyOnce(200, {
+            mock.onGet("/dataStore/data-management-app/project-R3rGhxWbAI9").replyOnce(200, {
                 merDataElementIds: ["u24zk6wAgFE"],
             });
 
