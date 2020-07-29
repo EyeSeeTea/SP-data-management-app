@@ -112,7 +112,7 @@ const orgUnitsMetadata = {
 };
 
 const expectedDataStoreMer = {
-    merDataElementIds: ["WS8XV4WWPE7", "yMqK9DKbA3X"],
+    merDataElementIds: ["yMqK9DKbA3X"],
 };
 
 const expectedOrgUnitPut = {
