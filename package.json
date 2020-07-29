@@ -112,7 +112,7 @@
         "wait-on": "^4.0.0"
     },
     "manifest.webapp": {
-        "name": "Data Management App",
+        "name": "Data Management App Dev",
         "description": "DHIS2 Data Management App",
         "icons": {
             "48": "icon.png"
