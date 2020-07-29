@@ -34,12 +34,12 @@ describe("Target Values", () => {
             .setInputValue(dataElementMicrofinanceId, cocIds.newMale, 1)
             .setInputValue(dataElementMicrofinanceId, cocIds.returningMale, 5)
             .setInputValue(dataElementMicrofinanceId, cocIds.newFemale, 2)
-            .setInputValue(dataElementMicrofinanceId, cocIds.returningFemale, 0)
+            .setInputValue(dataElementMicrofinanceId, cocIds.returningFemale, 3)
 
             .setInputValue(dataElementTopicsId, cocCovidIds.newMale, 1)
             .setInputValue(dataElementTopicsId, cocCovidIds.returningMale, 5)
             .setInputValue(dataElementTopicsId, cocCovidIds.newFemale, 2)
-            .setInputValue(dataElementTopicsId, cocCovidIds.returningFemale, 0);
+            .setInputValue(dataElementTopicsId, cocCovidIds.returningFemale, 3);
 
         entryPage.selectMonth(1);
 
@@ -61,13 +61,15 @@ describe("Target Values", () => {
         entryPage
             .selectTab("Livelihood")
             .setInputValue(dataElementMicrofinanceId, cocIds.newMale, 3)
-            .setInputValue(dataElementMicrofinanceId, cocIds.returningMale, 4, {
-                validationError: "Returning value (4) cannot be greater",
+            .setInputValue(dataElementMicrofinanceId, cocIds.returningMale, 9, {
+                validationError:
+                    "Returning value (9) cannot be greater than the sum of initial returning + new values for past periods: July 2020 [1] + July 2020 [5] + August 2020 [2] = 8",
             })
 
             .setInputValue(dataElementTopicsId, cocCovidIds.newMale, 3)
-            .setInputValue(dataElementTopicsId, cocCovidIds.returningMale, 4, {
-                validationError: "Returning value (4) cannot be greater",
+            .setInputValue(dataElementTopicsId, cocCovidIds.returningMale, 9, {
+                validationError:
+                    "Returning value (9) cannot be greater than the sum of initial returning + new values for past periods: July 2020 [1] + July 2020 [5] + August 2020 [2] = 8",
             });
     });
 });
