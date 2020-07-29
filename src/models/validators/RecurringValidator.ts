@@ -98,7 +98,7 @@ export class RecurringValidator {
 
         const msg = i18n.t(
             "Returning value ({{returningValue}}) cannot be greater than the sum of initial returning + new values for past periods: {{newValuesSumFormula}}",
-            { returningValue, newValuesSumFormula }
+            { returningValue, newValuesSumFormula, nsSeparator: false }
         );
 
         return isValid ? [] : [["error", msg]];
