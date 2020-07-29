@@ -123,12 +123,13 @@ const getDataEntryForm = async (
         console.debug("[data-entry] Select project orgunit", orgUnitId);
         const ouLink = iframeDocument.querySelector<HTMLAnchorElement>(ouSelector);
         if (!ouLink) {
-            console.error("Project orgunit not found");
-            return;
+            console.debug("[data-entry] Project orgunit not found, retry");
+            selectOrgUnitAndOptions();
+        } else {
+            ouLink.click();
+            console.debug("[data-entry] Select options");
+            setDataset(iframe, dataSet, onDone);
         }
-        ouLink.click();
-        console.debug("[data-entry] Select options");
-        setDataset(iframe, dataSet, onDone);
     };
 
     const selectOrgUnitAndOptions = async () => {
