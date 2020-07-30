@@ -431,11 +431,31 @@ class Project {
         return projectsList.get(filters, sorting, pagination);
     }
 
+    setSectors(sectors: Sector[]): Project {
+        return this.setObj({
+            sectors: sectors,
+            dataElementsSelection: this.data.dataElementsSelection.keepSelectionInSectors(sectors),
+        });
+    }
+
     updateDataElementsSelection(sectorId: string, dataElementIds: string[]) {
-        const { dataElementsSelection, dataElementsMER } = this.data;
-        const result = dataElementsSelection.updateSelectedWithRelations(sectorId, dataElementIds);
-        const { dataElements: dataElementsUpdate, selectionInfo } = result;
+        const { dataElementsSelection, dataElementsMER, sectors } = this.data;
+        const res = dataElementsSelection.updateSelectedWithRelations({ sectorId, dataElementIds });
+        const { dataElements: dataElementsUpdate, selectionInfo } = res;
+
+        const sectorIdsCurrent = sectors.map(sector => sector.id);
+        const sectorIdsWithSelected = _(dataElementsUpdate.get({ onlySelected: true }))
+            .map(de => de.sector.id)
+            .concat(sectors.map(sector => sector.id))
+            .uniq()
+            .value();
+        const newSectorIds = _.difference(sectorIdsWithSelected, sectorIdsCurrent);
+        const newSectors = _(this.config.sectors)
+            .keyBy(sector => sector.id)
+            .at([...sectorIdsCurrent, ...newSectorIds])
+            .value();
         const newProject = this.setObj({
+            sectors: newSectors,
             dataElementsSelection: dataElementsUpdate,
             dataElementsMER: dataElementsMER.updateSuperSet(dataElementsUpdate),
         });

@@ -29,9 +29,14 @@ export function getDevProject(initialProject: Project, enabled: boolean) {
         .set(
             "dataElementsSelection",
             initialProject.dataElementsSelection
-                .updateSelectedWithRelations("ieyBABjYyHO", ["WS8XV4WWPE7", "ik0ICagvIjm"])
-                .dataElements.updateSelectedWithRelations("GkiSljtLcOI", ["We61YNYyOX0"])
-                .dataElements
+                .updateSelectedWithRelations({
+                    sectorId: "ieyBABjYyHO",
+                    dataElementIds: ["WS8XV4WWPE7", "ik0ICagvIjm"],
+                })
+                .dataElements.updateSelectedWithRelations({
+                    sectorId: "GkiSljtLcOI",
+                    dataElementIds: ["We61YNYyOX0"],
+                }).dataElements
         )
         .set(
             "dataElementsMER",
