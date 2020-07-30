@@ -30,6 +30,7 @@ export interface DataElementBase {
     code: string;
     description: string;
     sectorsInfo: SectorInfo[];
+    isCrossSectoral: boolean;
     mainSector: Ref;
     mainSeries: string;
     indicatorType: IndicatorType;
@@ -171,6 +172,7 @@ export default class DataElementsSet {
                     sectorsInfo: sectorsInfo,
                     mainSector: { id: mainSector.id },
                     mainSeries,
+                    isCrossSectoral: sectorsInfo.length > 1,
                     indicatorType,
                     peopleOrBenefit,
                     pairedDataElements,
@@ -196,7 +198,7 @@ export default class DataElementsSet {
         const desBySector = getDataElementsBySectorInSet(dataElementsAllBySector, superSet);
         const allDataElementsByKey = _(config.sectors)
             .flatMap(sector => dataElementsAllBySector[sector.id])
-            .keyBy(de => [de.sector.id, de.indicatorType, de.series].join("."))
+            .keyBy(de => [de.sector.id, de.indicatorType, de.series, de.isCrossSectoral].join("."))
             .value();
 
         return new DataElementsSet(config, {
@@ -339,16 +341,20 @@ export default class DataElementsSet {
             .compact()
             .value();
 
-        const relatedDataElements = _.compact(
-            sourceDataElements.map(de => {
-                if (de.indicatorType === "sub") {
-                    const key = [de.mainSector.id, "global", de.mainSeries].join(".");
-                    return _(allDataElementsByKey).get(key, null);
-                } else {
-                    return null;
-                }
-            })
-        );
+        const relatedDataElements = _.flatMap(sourceDataElements, de => {
+            if (de.indicatorType === "sub") {
+                const crossSectorals = de.isCrossSectoral ? [true, false] : [false];
+                const keys = crossSectorals.map(crossSectoral =>
+                    [de.mainSector.id, "global", de.mainSeries, crossSectoral].join(".")
+                );
+                return _(allDataElementsByKey)
+                    .at(keys)
+                    .compact()
+                    .value();
+            } else {
+                return [];
+            }
+        });
 
         return _.uniqBy(relatedDataElements, de => de.id);
     }

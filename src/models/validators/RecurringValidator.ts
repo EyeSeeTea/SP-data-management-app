@@ -17,17 +17,19 @@ import { Config } from "../Config";
 import { Maybe } from "../../types/utils";
 
 /*
-    Validate only for recurring values:
-        IF recurring_value > SUM(new_values for past periods).
+    Validate only for returning values:
+        IF returning_value > SUM(new_values for past periods) + returning_value for first period.
 */
 
 interface Data {
-    isFirstPeriod: boolean;
+    project: Project;
+    config: Config;
+    period: string;
     pastDataValuesIndexed: { [key: string]: Maybe<DataValueSetsDataValue[]> };
 }
 
 export class RecurringValidator {
-    constructor(private config: Config, private data: Data) {}
+    constructor(private data: Data) {}
 
     static async build(
         api: D2Api,
@@ -36,6 +38,7 @@ export class RecurringValidator {
         period: string
     ): Promise<RecurringValidator> {
         if (!project.orgUnit || !project.dataSets) throw new Error("Cannot build validator");
+        const { config } = project;
 
         const dataSet = project.dataSets[dataSetType];
         const categoryOptionForDataSetType = project.config.categoryOptions[dataSetType];
@@ -58,47 +61,55 @@ export class RecurringValidator {
             .groupBy(dataValue => getKey(dataValue.dataElement, dataValue.categoryOptionCombo))
             .value();
 
-        const firstProjectPeriod = _(projectPeriods).get(0, null);
-        const isFirstPeriod = !firstProjectPeriod || firstProjectPeriod.id === period;
+        return new RecurringValidator({ project, config, period, pastDataValuesIndexed });
+    }
 
-        return new RecurringValidator(project.config, { pastDataValuesIndexed, isFirstPeriod });
+    isFirstPeriod(dataValue: { period: string }) {
+        const projectPeriods = this.data.project.getPeriods();
+        const firstProjectPeriod = _(projectPeriods).get(0, null);
+        return firstProjectPeriod ? firstProjectPeriod.id === dataValue.period : false;
     }
 
     validate(dataValue: DataValue): ValidationItem[] {
-        if (this.data.isFirstPeriod) return [];
+        if (this.isFirstPeriod({ period: this.data.period })) return [];
 
         const cocForRelatedNewValue = this.getCategoryOptionComboForRelatedNew(dataValue);
         if (!cocForRelatedNewValue) return [];
 
-        const key = getKey(dataValue.dataElementId, cocForRelatedNewValue.id);
-        const pastNewDataValues = this.data.pastDataValuesIndexed[key] || [];
-        const sumOfNewOnPastPeriods = _.sum(pastNewDataValues.map(dv => toFloat(dv.value)));
-        const summatory = pastNewDataValues
+        const newKey = getKey(dataValue.dataElementId, cocForRelatedNewValue.id);
+        const returningKey = getKey(dataValue.dataElementId, dataValue.categoryOptionComboId);
+
+        const newDataValues = this.data.pastDataValuesIndexed[newKey] || [];
+        const returningDataValues = _(this.data.pastDataValuesIndexed[returningKey] || [])
+            .filter(dataValue => this.isFirstPeriod(dataValue))
+            .value();
+        const pastDataValues = _.concat(newDataValues, returningDataValues);
+        const maxValue = _.sum(pastDataValues.map(dv => toFloat(dv.value)));
+
+        const summatory = _(pastDataValues)
+            .sortBy(dv => dv.period)
             .map(dv => `${formatPeriod(dv.period)} [${toFloat(dv.value)}]`)
             .join(" + ");
         const newValuesSumFormula = summatory
-            ? `${summatory} = ${sumOfNewOnPastPeriods}`
+            ? `${summatory} = ${maxValue}`
             : i18n.t("there is no data for previous periods");
-        const recurringValue = toFloat(dataValue.value);
-        const isValid = recurringValue <= sumOfNewOnPastPeriods;
+        const returningValue = toFloat(dataValue.value);
+        const isValid = returningValue <= maxValue;
 
         const msg = i18n.t(
-            "Returning value ({{recurringValue}}) cannot be greater than the sum of new values for past periods ({{newValuesSumFormula}})",
-            { recurringValue, newValuesSumFormula }
+            "Returning value ({{returningValue}}) cannot be greater than the sum of initial returning + new values for past periods: {{newValuesSumFormula}}",
+            { returningValue, newValuesSumFormula, nsSeparator: false }
         );
 
         return isValid ? [] : [["error", msg]];
     }
 
     getCategoryOptionComboForRelatedNew(dataValue: DataValue): CategoryOptionCombo | undefined {
-        const { config } = this;
+        const { config } = this.data;
         const categoryOptionRecurring = config.categoryOptions.recurring;
         const recurringCocIds = getIds(categoryOptionRecurring.categoryOptionCombos);
         const dataValueIsRecurring = recurringCocIds.includes(dataValue.categoryOptionComboId);
         if (!dataValueIsRecurring) return;
-
-        const dataElement = config.dataElements.find(de => de.id === dataValue.dataElementId);
-        if (!dataElement) return;
 
         const allCategoryOptionCombos = _(config.allCategoryCombos)
             .flatMap(cc => cc.categoryOptionCombos)
