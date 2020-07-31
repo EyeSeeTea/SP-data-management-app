@@ -290,12 +290,15 @@ export default class DataElementsSet {
         const newSelection = new Set(dataElementIds);
         const prevSelectionAll = new Set(this.get({ onlySelected: true }).map(de => de.id));
         const prevSelection = new Set(this.get({ sectorId, onlySelected: true }).map(de => de.id));
+
+        // Get related from other sectors and related from current sector selection
         const newRelated = _(this.data.selected)
             .flatMap((deIds, sectorId_) =>
                 sectorId_ !== sectorId ? this.getRelated(sectorId_, deIds) : []
             )
             .concat(this.getRelated(sectorId, dataElementIds))
             .value();
+
         const unselectable = newRelated.filter(
             de => de.sector.id === sectorId && prevSelection.has(de.id) && !newSelection.has(de.id)
         );
@@ -328,7 +331,12 @@ export default class DataElementsSet {
         return { selectionInfo, dataElements: dataElementsUpdated };
     }
 
-    getRelated(sectorId: Id, dataElementIds: Id[]): DataElement[] {
+    getRelated(
+        sectorId: Id,
+        dataElementIds: Id[],
+        options: { includeSource?: boolean } = {}
+    ): DataElement[] {
+        const { includeSource = false } = options;
         const { dataElementsAllBySector, allDataElementsByKey } = this.data;
         const dataElementsInSector = dataElementsAllBySector[sectorId] || [];
 
@@ -347,47 +355,14 @@ export default class DataElementsSet {
                 const keys = crossSectorals.map(crossSectoral =>
                     [de.mainSector.id, "global", de.mainSeries, crossSectoral].join(".")
                 );
-                return _(allDataElementsByKey)
-                    .at(keys)
-                    .compact()
-                    .value();
+                return _.compact(_.at(allDataElementsByKey, keys));
             } else {
                 return [];
             }
         });
 
-        return _.uniqBy(relatedDataElements, de => de.id);
-    }
-
-    /* Return Sub -> Global and paired relations, including source data elements */
-    getGroupForDisaggregation(sectorId: Id, dataElementIds: Id[]): DataElement[] {
-        const { dataElementsAllBySector } = this.data;
-        const allDataElements = dataElementsAllBySector[sectorId] || [];
-        const allDataElementsByKey = _.keyBy(allDataElements, de =>
-            [de.indicatorType, de.series].join(".")
-        );
-        const sourceDataElements = _(allDataElements)
-            .keyBy(de => de.id)
-            .at(dataElementIds)
-            .compact()
-            .flatMap(de => [de, ...de.pairedDataElements])
-            .uniqBy(de => de.id)
-            .compact()
-            .value();
-
-        const relatedDataElements = _.compact(
-            sourceDataElements.map(de => {
-                if (de.indicatorType === "sub") {
-                    const key = ["global", de.series].join(".");
-                    return _(allDataElementsByKey).get(key, null);
-                } else {
-                    return null;
-                }
-            })
-        );
-
-        return _(sourceDataElements)
-            .concat(relatedDataElements)
+        return _(relatedDataElements)
+            .concat(includeSource ? sourceDataElements : [])
             .uniqBy(de => de.id)
             .value();
     }

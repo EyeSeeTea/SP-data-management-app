@@ -27,7 +27,9 @@ const DisaggregationStep: React.FC<StepProps> = ({ project, onChange }) => {
 
     const setValues = React.useCallback(
         (dataElementIds: Id[], isSet: boolean) => {
-            const related = dataElementsSet.getGroupForDisaggregation(sectorId, dataElementIds);
+            const related = dataElementsSet.getRelated(sectorId, dataElementIds, {
+                includeSource: true,
+            });
             const newDisaggregation = project.disaggregation.setCovid19(getIds(related), isSet);
             const newProject = project.setObj({ disaggregation: newDisaggregation });
             onChange(newProject);
