@@ -198,7 +198,7 @@ export default class DataElementsSet {
         const desBySector = getDataElementsBySectorInSet(dataElementsAllBySector, superSet);
         const allDataElementsByKey = _(config.sectors)
             .flatMap(sector => dataElementsAllBySector[sector.id])
-            .keyBy(de => [de.sector.id, de.indicatorType, de.series, de.isCrossSectoral].join("."))
+            .keyBy(de => getDataElementKey(de.sector, de.indicatorType, de.series || ""))
             .value();
 
         return new DataElementsSet(config, {
@@ -342,13 +342,10 @@ export default class DataElementsSet {
             .value();
 
         const relatedDataElements = _.flatMap(sourceDataElements, de => {
-            if (de.indicatorType === "sub") {
-                const crossSectorals = de.isCrossSectoral ? [true, false] : [false];
-                const keys = crossSectorals.map(crossSectoral =>
-                    [de.mainSector.id, "global", de.mainSeries, crossSectoral].join(".")
-                );
+            if (de.indicatorType === "sub" && !de.mainSeries.endsWith("00")) {
+                const key = getDataElementKey(de.mainSector, "global", de.mainSeries);
                 return _(allDataElementsByKey)
-                    .at(keys)
+                    .at([key])
                     .compact()
                     .value();
             } else {
@@ -592,4 +589,8 @@ function getCategoryComboName(
     } else {
         return i18n.t("Unknown");
     }
+}
+
+function getDataElementKey(sector: Ref, indicatorType: IndicatorType, series: string): string {
+    return [sector.id, indicatorType, series].join(".");
 }
