@@ -32,7 +32,7 @@ export interface DataElementBase {
     sectorsInfo: SectorInfo[];
     isCrossSectoral: boolean;
     mainSector: Ref;
-    mainSeries: string;
+    mainSeries?: string;
     indicatorType: IndicatorType;
     peopleOrBenefit: PeopleOrBenefit;
     countingMethod: string;
@@ -147,7 +147,7 @@ export default class DataElementsSet {
             const mainSector = mainSectorCode ? _(sectorsByCode).get(mainSectorCode, null) : null;
             const mainSeries = mainSector
                 ? sectorsInfo.find(si => si.id === mainSector.id)?.series
-                : null;
+                : undefined;
 
             if (!indicatorType) {
                 console.error(`DataElement ${deCode} has no indicator type`);
@@ -157,9 +157,6 @@ export default class DataElementsSet {
                 return null;
             } else if (!mainSector) {
                 console.error(`DataElement ${deCode} has no main sector`);
-                return null;
-            } else if (!mainSeries) {
-                console.error(`DataElement ${deCode} has no main series`);
                 return null;
             } else {
                 const { categoryCombo } = d2DataElement;
@@ -342,7 +339,7 @@ export default class DataElementsSet {
             .value();
 
         const relatedDataElements = _.flatMap(sourceDataElements, de => {
-            if (de.indicatorType === "sub" && !de.mainSeries.endsWith("00")) {
+            if (de.indicatorType === "sub" && de.mainSeries && !de.mainSeries.endsWith("00")) {
                 const key = getDataElementKey(de.mainSector, "global", de.mainSeries);
                 return _(allDataElementsByKey)
                     .at([key])
