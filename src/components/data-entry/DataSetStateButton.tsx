@@ -56,14 +56,18 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
         onConfirm: reopen,
     });
 
-    if (!currentUser.can("reopen")) return null;
+    const userCanReopen = currentUser.can("reopen");
     if (!dataSetInfo) return <LinearProgress />;
 
     return (
         <React.Fragment>
             {reopenConfirmation.render()}
 
-            {!dataSetInfo.isOpen && (
+            {!dataSetInfo.isOpen && !userCanReopen
+                ? i18n.t("Project closed for this period, please contact the administrators")
+                : null}
+
+            {!dataSetInfo.isOpen && userCanReopen && (
                 <Button
                     disabled={isActive}
                     className={classes.button}
@@ -74,7 +78,7 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
                 </Button>
             )}
 
-            {dataSetInfo.isOpen && dataSetInfo.isReopened && (
+            {dataSetInfo.isOpen && dataSetInfo.isReopened && userCanReopen && (
                 <Button
                     disabled={isActive}
                     className={classes.button}

@@ -6,6 +6,7 @@ import { getProject } from "./project-data";
 import moment from "moment";
 import analyticsPeopleResponse from "./data/project-download-people-analytics.json";
 import analyticsBenefitsResponse from "./data/project-download-benefits-analytics.json";
+import { logUnknownRequest } from "../../utils/tests";
 
 const { api, mock } = getMockApi();
 
@@ -24,7 +25,7 @@ describe("ProjectDownload", () => {
                         "pe:202001;202002;202003;202004",
                         "dx:WS8XV4WWPE7;K6mAC5SiO29;ik0ICagvIjm;yMqK9DKbA3X;GQyudNlGzkI",
                         "GIIHAr9BzzO",
-                        "a0Cy1qwUuZv",
+                        "uSMHdwhxFSV",
                         "Kyg1O6YEGa9",
                     ],
                 },
@@ -40,6 +41,8 @@ describe("ProjectDownload", () => {
                     ],
                 },
             }).replyOnce(200, analyticsBenefitsResponse);
+
+            logUnknownRequest(mock);
 
             project = getProject(api, {
                 startDate: moment("2020-01-01"),

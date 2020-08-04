@@ -30,7 +30,9 @@ export interface DataElementBase {
     code: string;
     description: string;
     sectorsInfo: SectorInfo[];
+    isCrossSectoral: boolean;
     mainSector: Ref;
+    mainSeries?: string;
     indicatorType: IndicatorType;
     peopleOrBenefit: PeopleOrBenefit;
     countingMethod: string;
@@ -41,9 +43,9 @@ export interface DataElementBase {
     selectable: boolean;
 }
 
-export interface DataElement extends Omit<DataElementBase, "sectors" | "mainSector"> {
+export interface DataElement extends DataElementBase {
     base: DataElementBase;
-    sector: Ref;
+    sector: { id: Id; name: string };
     isMainSector: boolean;
     series?: string;
     pairedDataElements: DataElement[];
@@ -57,6 +59,7 @@ interface DataElementsData {
     dataElementsBase: DataElementBase[];
     dataElementsAllBySector: BySector<DataElement[]>;
     dataElementsBySector: BySector<DataElement[]>;
+    allDataElementsByKey: Record<string, DataElement>;
     selected: BySector<Id[]>;
     groupPaired: boolean;
 }
@@ -129,7 +132,7 @@ export default class DataElementsSet {
             const deId = d2DataElement.id;
             const sectorsInfo = getSectorsInfo(deId, sectorsByDataElementId, seriesByDataElementId);
             const attrsMap = getAttrsMap(baseConfig.attributes, d2DataElement.attributeValues);
-            const { mainSector, countingMethod, pairedDataElement } = attrsMap;
+            const { mainSector: mainSectorCode, countingMethod, pairedDataElement } = attrsMap;
             const groupCodes = groupCodesByDataElementId[deId] || new Set();
             const indicatorType = getGroupKey(groupCodes, degCodes, indicatorTypes);
             const peopleOrBenefit = getGroupKey(groupCodes, degCodes, peopleOrBenefitList);
@@ -141,6 +144,10 @@ export default class DataElementsSet {
                 d2DataElement.displayName +
                 (isSelectable ? "" : ` ${i18n.t("[only for admin users]")}`);
             const pairedDataElements = getPairedDataElements(pairedDataElement, dataElementsByCode);
+            const mainSector = mainSectorCode ? _(sectorsByCode).get(mainSectorCode, null) : null;
+            const mainSeries = mainSector
+                ? sectorsInfo.find(si => si.id === mainSector.id)?.series
+                : undefined;
 
             if (!indicatorType) {
                 console.error(`DataElement ${deCode} has no indicator type`);
@@ -153,13 +160,16 @@ export default class DataElementsSet {
                 return null;
             } else {
                 const { categoryCombo } = d2DataElement;
+
                 const dataElement: DataElementBase = {
                     id: d2DataElement.id,
                     name: name,
                     code: d2DataElement.code,
                     ...getDescriptionFields(d2DataElement),
                     sectorsInfo: sectorsInfo,
-                    mainSector: { id: _(sectorsByCode).getOrFail(mainSector).id },
+                    mainSector: { id: mainSector.id },
+                    mainSeries,
+                    isCrossSectoral: sectorsInfo.length > 1,
                     indicatorType,
                     peopleOrBenefit,
                     pairedDataElements,
@@ -183,11 +193,16 @@ export default class DataElementsSet {
         const dataElementsBase = config.dataElements;
         const dataElementsAllBySector = getDataElementsBySector(config, { groupPaired });
         const desBySector = getDataElementsBySectorInSet(dataElementsAllBySector, superSet);
+        const allDataElementsByKey = _(config.sectors)
+            .flatMap(sector => dataElementsAllBySector[sector.id])
+            .keyBy(de => getDataElementKey(de.sector, de.indicatorType, de.series || ""))
+            .value();
 
         return new DataElementsSet(config, {
             dataElementsBase,
             dataElementsAllBySector,
             dataElementsBySector: desBySector,
+            allDataElementsByKey,
             selected: {},
             groupPaired,
         });
@@ -250,37 +265,71 @@ export default class DataElementsSet {
         });
     }
 
-    updateSelectedWithRelations(
-        sectorId: Id,
-        dataElementIds: string[]
-    ): { selectionInfo: SelectionInfo; dataElements: DataElementsSet } {
+    keepSelectionInSectors(sector: Ref[]): DataElementsSet {
+        const newSelected = _.pick(
+            this.data.selected,
+            sector.map(sector => sector.id)
+        );
+        return new DataElementsSet(this.config, { ...this.data, selected: newSelected });
+    }
+
+    updateSelectedWithRelations(query?: {
+        sectorId: Id;
+        dataElementIds: string[];
+    }): { selectionInfo: SelectionInfo; dataElements: DataElementsSet } {
+        const firstSectorId = _.keys(this.data.selected)[0];
+        if (!query && !firstSectorId) return { selectionInfo: {}, dataElements: this };
+
+        const { sectorId, dataElementIds } = query || {
+            sectorId: firstSectorId,
+            dataElementIds: this.data.selected[firstSectorId],
+        };
         const newSelection = new Set(dataElementIds);
+        const prevSelectionAll = new Set(this.get({ onlySelected: true }).map(de => de.id));
         const prevSelection = new Set(this.get({ sectorId, onlySelected: true }).map(de => de.id));
-        const newRelated = this.getRelated(sectorId, dataElementIds);
+        const newRelated = _(this.data.selected)
+            .flatMap((deIds, sectorId_) =>
+                sectorId_ !== sectorId ? this.getRelated(sectorId_, deIds) : []
+            )
+            .concat(this.getRelated(sectorId, dataElementIds))
+            .value();
         const unselectable = newRelated.filter(
-            de => prevSelection.has(de.id) && !newSelection.has(de.id)
+            de => de.sector.id === sectorId && prevSelection.has(de.id) && !newSelection.has(de.id)
         );
         const msg = i18n.t("Global data elements with selected subs cannot be unselected");
         const selectionInfo = {
-            selected: newRelated.filter(de => !prevSelection.has(de.id)),
+            selected: newRelated.filter(de => !prevSelectionAll.has(de.id)),
             messages: _.isEmpty(unselectable) ? undefined : [msg],
         };
         const finalSelected = _(dataElementIds)
-            .union(selectionInfo.selected.map(de => de.id))
-            .union(unselectable.map(de => de.id))
+            .map(deId => ({ id: deId, sector: { id: sectorId } }))
+            .union(selectionInfo.selected.map(de => de))
+            .union(unselectable.map(de => de))
+            .groupBy(de => de.sector.id)
+            .mapValues(group => group.map(o => o.id))
             .value();
-        const dataElementsUpdated = this.updateSelected({ [sectorId]: finalSelected });
+
+        const sectorIds = _.union(_.keys(this.data.selected), _.keys(finalSelected));
+        const newSelected = _(sectorIds)
+            .map(sId => {
+                const deIds = _(sId === sectorId ? [] : this.data.selected[sId] || [])
+                    .concat(finalSelected[sId] || [])
+                    .uniq()
+                    .value();
+                return [sId, deIds];
+            })
+            .fromPairs()
+            .value();
+        const dataElementsUpdated = this.updateSelected(newSelected);
 
         return { selectionInfo, dataElements: dataElementsUpdated };
     }
 
     getRelated(sectorId: Id, dataElementIds: Id[]): DataElement[] {
-        const { dataElementsAllBySector } = this.data;
-        const allDataElements = dataElementsAllBySector[sectorId] || [];
-        const allDataElementsByKey = _.keyBy(allDataElements, de =>
-            [de.indicatorType, de.series].join(".")
-        );
-        const sourceDataElements = _(allDataElements)
+        const { dataElementsAllBySector, allDataElementsByKey } = this.data;
+        const dataElementsInSector = dataElementsAllBySector[sectorId] || [];
+
+        const sourceDataElements = _(dataElementsInSector)
             .keyBy(de => de.id)
             .at(dataElementIds)
             .compact()
@@ -289,16 +338,17 @@ export default class DataElementsSet {
             .compact()
             .value();
 
-        const relatedDataElements = _.compact(
-            sourceDataElements.map(de => {
-                if (de.indicatorType === "sub") {
-                    const key = ["global", de.series].join(".");
-                    return _(allDataElementsByKey).get(key, null);
-                } else {
-                    return null;
-                }
-            })
-        );
+        const relatedDataElements = _.flatMap(sourceDataElements, de => {
+            if (de.indicatorType === "sub" && de.mainSeries && !de.mainSeries.endsWith("00")) {
+                const key = getDataElementKey(de.mainSector, "global", de.mainSeries);
+                return _(allDataElementsByKey)
+                    .at([key])
+                    .compact()
+                    .value();
+            } else {
+                return [];
+            }
+        });
 
         return _.uniqBy(relatedDataElements, de => de.id);
     }
@@ -455,7 +505,7 @@ function getDataElementsBySector(
                 else
                     return {
                         ...dataElement,
-                        sector: { id: sector.id },
+                        sector: { id: sector.id, name: sector.displayName },
                         base: dataElement,
                         isMainSector: sectorInfo.id === dataElement.mainSector.id,
                         series: sectorInfo.series,
@@ -536,4 +586,8 @@ function getCategoryComboName(
     } else {
         return i18n.t("Unknown");
     }
+}
+
+function getDataElementKey(sector: Ref, indicatorType: IndicatorType, series: string): string {
+    return [sector.id, indicatorType, series].join(".");
 }
