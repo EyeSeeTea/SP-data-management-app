@@ -5,6 +5,7 @@ import Project from "../Project";
 import { Config } from "../Config";
 import configJson from "./config.json";
 import moment from "moment";
+import { logUnknownRequest } from "../../utils/tests";
 
 const { api, mock } = getMockApi();
 const config = (configJson as unknown) as Config;
@@ -18,6 +19,21 @@ async function expectFieldPresence(field: ValidationKey) {
     const errors = await project.validate([field]);
     expect(errors[field] !== undefined && (errors[field] || []).length > 0).toBeTruthy();
 }
+
+const metadataAccess = {
+    read: true,
+    update: true,
+    externalize: false,
+    delete: true,
+    write: true,
+    manage: true,
+    data: { read: false, write: true },
+};
+
+const fullAccess = {
+    ...metadataAccess,
+    data: { read: true, write: true },
+};
 
 describe("Project", () => {
     describe("set", () => {
@@ -79,7 +95,7 @@ describe("Project", () => {
                 },
             }).replyOnce(200, metadataForGet);
 
-            mock.onGet("/dataStore/project-monitoring-app/project-R3rGhxWbAI9").replyOnce(200, {
+            mock.onGet("/dataStore/data-management-app/project-R3rGhxWbAI9").replyOnce(200, {
                 merDataElementIds: ["u24zk6wAgFE"],
             });
 
@@ -357,14 +373,27 @@ describe("Project", () => {
             mock.onGet("/metadata", {
                 params: {
                     "dataSets:fields":
-                        "code,sections[code],userAccesses[access,displayName,id],userGroupAccesses[access,displayName,id]",
+                        "access,code,sections[code],userAccesses[access,displayName,id],userGroupAccesses[access,displayName,id]",
                     "dataSets:filter": ["code:in:[3_ACTUAL,5_ACTUAL]"],
                 },
             }).replyOnce(200, {
                 dataSets: [
-                    { id: "ds3", code: "3_ACTUAL", sections: [{ code: "SECTOR_AGRICULTURE_ds3" }] },
+                    {
+                        id: "ds3",
+                        code: "3_ACTUAL",
+                        sections: [{ code: "SECTOR_AGRICULTURE_ds3" }],
+                        access: fullAccess,
+                    },
+                    {
+                        id: "ds5",
+                        code: "5_ACTUAL",
+                        sections: [{ code: "SECTOR_AGRICULTURE_ds5" }],
+                        access: metadataAccess,
+                    },
                 ],
             });
+
+            logUnknownRequest(mock);
 
             const { objects, pager: pagination } = await Project.getList(
                 api,
@@ -382,13 +411,6 @@ describe("Project", () => {
             expect(pagination).toEqual({ page: 1, pageSize: 2, total: 3 });
             const emptySharing = { userAccesses: [], userGroupAccesses: [] };
             expect(objects).toEqual([
-                {
-                    id: "5",
-                    code: "code5",
-                    displayName: "NAME5",
-                    sectors: [],
-                    sharing: emptySharing,
-                },
                 {
                     id: "3",
                     code: "CODE3",

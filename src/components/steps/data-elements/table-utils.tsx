@@ -60,7 +60,7 @@ export function withPaired<Field extends keyof DataElement>(
         return <React.Fragment key={key}>{renderJoin(values, <br />)}</React.Fragment>;
     };
 
-    return _.memoize(render, dataElement => [dataElement.id, paired].join("-"));
+    return _.memoize(render, (de: DataElement) => [de.id, de.sector.id, paired].join("-"));
 }
 
 export function getSelectionMessage(dataElements: DataElement[], action: string): string | null {
@@ -69,7 +69,9 @@ export function getSelectionMessage(dataElements: DataElement[], action: string)
         : [
               i18n.t("Those related data elements have been automatically {{action}}:", { action }),
               "",
-              ...dataElements.map(de => `[${de.code}] ${de.name} (${de.indicatorType})`),
+              ...dataElements.map(
+                  de => `${de.sector.name}: [${de.code}] ${de.name} (${de.indicatorType})`
+              ),
           ].join("\n");
 }
 

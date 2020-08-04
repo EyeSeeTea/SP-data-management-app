@@ -57,6 +57,11 @@ function setEntryStyling(iframe: HTMLIFrameElement) {
     on(iframeDocument, "#moduleHeader", el => el.remove());
 }
 
+export function wait(timeSecs: number) {
+    console.debug(`[data-entry] Wait ${timeSecs} seconds`);
+    return new Promise(resolve => setTimeout(resolve, 1000 * timeSecs));
+}
+
 function waitForOption(el: HTMLSelectElement, predicate: (option: HTMLOptionElement) => boolean) {
     return new Promise(resolve => {
         const check = () => {
@@ -72,17 +77,28 @@ function waitForOption(el: HTMLSelectElement, predicate: (option: HTMLOptionElem
 }
 
 async function setDataset(iframe: HTMLIFrameElement, dataSet: DataSet, onDone: () => void) {
-    if (!iframe.contentWindow) return;
+    const contentWindow = iframe.contentWindow as (Window & DataEntryWindow) | null;
+    if (!contentWindow) return;
 
-    const iframeDocument = iframe.contentWindow.document;
+    const iframeDocument = contentWindow.document;
     const dataSetSelector = iframeDocument.querySelector<HTMLSelectElement>("#selectedDataSetId");
     if (!dataSetSelector) return;
+
+    // Avoid database errors
+    try {
+        const formExists = await contentWindow.dhis2.de.storageManager.formExists(dataSet.id);
+        console.log("[data-entry", { formExists });
+    } catch (err) {
+        console.log("[data-entry] error", err);
+        setTimeout(() => setDataset(iframe, dataSet, onDone), 500);
+    }
 
     await waitForOption(
         dataSetSelector,
         // data-multiorg is set when the country org unit is still selected
         option => option.value === dataSet.id && !option.getAttribute("data-multiorg")
     );
+    await wait(1);
     selectOption(dataSetSelector, dataSet.id);
 
     onDone();
@@ -101,28 +117,34 @@ const getDataEntryForm = async (
     const iframeSelection = contentWindow ? contentWindow.selection : null;
     if (!contentWindow || !iframeDocument || !iframeSelection || !parentOrgUnit) return;
     const parentSelector = `#orgUnit${parentOrgUnit.id} .toggle`;
+    const ouSelector = `#orgUnit${orgUnitId} a`;
 
-    const selectDataSet = () => {
-        console.debug("[data-entry] Select project orgunit", parentSelector);
-        iframeSelection.select(orgUnitId);
-        console.debug("[data-entry] Select options");
-        setDataset(iframe, dataSet, onDone);
+    const selectDataSet = async () => {
+        console.debug("[data-entry] Select project orgunit", orgUnitId);
+        const ouLink = iframeDocument.querySelector<HTMLAnchorElement>(ouSelector);
+        if (!ouLink) {
+            console.debug("[data-entry] Project orgunit not found, retry");
+            selectOrgUnitAndOptions();
+        } else {
+            ouLink.click();
+            console.debug("[data-entry] Select options");
+            setDataset(iframe, dataSet, onDone);
+        }
     };
 
     const selectOrgUnitAndOptions = async () => {
-        const ouSelector = "orgUnit" + orgUnitId;
         const ouEl = iframeDocument.querySelector(ouSelector);
         if (ouEl) {
-            setTimeout(selectDataSet, 10);
+            setTimeout(selectDataSet, 100);
         } else {
             const parentEl = iframeDocument.querySelector<HTMLSpanElement>(parentSelector);
             if (parentEl) {
                 console.debug("[data-entry] Click country", parentSelector);
                 parentEl.click();
-                setTimeout(selectDataSet, 10);
+                setTimeout(selectOrgUnitAndOptions, 100);
             } else {
-                console.debug("[data-entry] wait");
-                setTimeout(selectOrgUnitAndOptions, 1000);
+                console.debug("[data-entry] Country orgunit not found, wait");
+                setTimeout(selectOrgUnitAndOptions, 100);
             }
         }
     };
@@ -264,7 +286,10 @@ function selectOption(select: HTMLSelectElement, value: string) {
 /* Globals variables used to interact with the data-entry form */
 interface DataEntryWindow {
     dhis2: {
-        de: { currentPeriodOffset: number };
+        de: {
+            currentPeriodOffset: number;
+            storageManager: { formExists: (dataSetId: string) => boolean };
+        };
         util: { on: Function };
     };
     displayPeriods: () => void;

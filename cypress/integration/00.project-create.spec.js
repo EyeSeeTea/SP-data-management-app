@@ -82,14 +82,7 @@ describe("Projects - Create", () => {
             .prev("td")
             .click();
 
-        cy.contains("Next").click();
-
-        // Selection of MER Indicators
-
-        cy.waitForStep("Selection of MER Indicators");
-
-        cy.contains("Livelihood").click();
-        cy.contains("# of people trained in livelihood topics")
+        cy.contains("# of people trained on microfinance")
             .parent("td")
             .prev("td")
             .click();
@@ -105,14 +98,39 @@ describe("Projects - Create", () => {
         cy.get(".MuiPopover-paper")
             .contains("Yes")
             .click();
+
+        cy.contains("Livelihood").click();
+
+        cy.get("[data-cy=covid19-selector-P020100]")
+            .contains("No")
+            .click();
+        cy.get(".MuiPopover-paper")
+            .contains("Yes")
+            .click();
+
+        cy.contains("Next").click();
+
+        // Selection of MER Indicators
+
+        cy.waitForStep("Selection of MER Indicators");
+
+        cy.contains("Livelihood").click();
+        cy.contains("# of people trained in livelihood topics")
+            .parent("td")
+            .prev("td")
+            .click();
+
         cy.contains("Next").click();
 
         // Sharing
 
         cy.waitForStep("Username Access");
-        cy.contains("System Admin");
-        cy.contains("Project Monitoring Admin");
-        cy.contains("Country Admin Bahamas");
+        cy.get("[data-cy='sharing']").within(() => {
+            cy.contains("admin admin");
+            cy.contains("System Admin");
+            cy.contains("Data Management Admin");
+            cy.contains("Country Admin Bahamas");
+        });
         cy.contains("Next").click();
 
         // Save step
@@ -144,7 +162,8 @@ describe("Projects - Create", () => {
         cy.contains(
             "# of agriculture groups receiving support for improved livelihoods - B010200 [COVID-19]"
         );
-        cy.contains("# of people trained in livelihood topics - P020100 [MER]");
+        cy.contains("# of people trained in livelihood topics - P020100 [COVID-19] [MER]");
+        cy.contains("# of people trained on microfinance - P020103");
 
         cy.server()
             .route({ method: "post", url: "/api/email/notification*" })

@@ -46,7 +46,7 @@ describe("ProjectDb", () => {
             mock.onPut("/organisationUnits/WGC0DJ0YSis", expectedOrgUnitPut).replyOnce(200);
 
             mock.onPut(
-                "/dataStore/project-monitoring-app/project-WGC0DJ0YSis",
+                "/dataStore/data-management-app/project-WGC0DJ0YSis",
                 expectedDataStoreMer
             ).replyOnce(200);
 
@@ -112,7 +112,7 @@ const orgUnitsMetadata = {
 };
 
 const expectedDataStoreMer = {
-    merDataElementIds: ["WS8XV4WWPE7", "yMqK9DKbA3X"],
+    merDataElementIds: ["yMqK9DKbA3X"],
 };
 
 const expectedOrgUnitPut = {
@@ -332,7 +332,7 @@ const expectedMetadataPost = {
             dataElementDecoration: true,
             renderAsTabs: true,
             categoryCombo: {
-                id: "pQjIEZS8Sx7",
+                id: "qAgB0mD1wC6",
             },
             organisationUnits: [
                 {
@@ -358,7 +358,7 @@ const expectedMetadataPost = {
                 },
             ],
             workflow: {
-                id: "SXvbJzbogqj",
+                id: "CCy0oNyvlV1",
             },
             dataInputPeriods: [
                 {
@@ -436,7 +436,7 @@ const expectedMetadataPost = {
                         id: "K6mAC5SiO29",
                     },
                     categoryCombo: {
-                        id: "GKWiemQPU5U",
+                        id: "S0GIshZAqgK",
                     },
                 },
                 {
@@ -447,7 +447,7 @@ const expectedMetadataPost = {
                         id: "ik0ICagvIjm",
                     },
                     categoryCombo: {
-                        id: "GKWiemQPU5U",
+                        id: "S0GIshZAqgK",
                     },
                 },
                 {
@@ -469,13 +469,19 @@ const expectedMetadataPost = {
                         id: "GQyudNlGzkI",
                     },
                     categoryCombo: {
-                        id: "GKWiemQPU5U",
+                        id: "S0GIshZAqgK",
                     },
                 },
             ],
             publicAccess: "--------",
             externalAccess: false,
-            userAccesses: [],
+            userAccesses: [
+                {
+                    id: "M5zQapPyTZI",
+                    displayName: "admin admin",
+                    access: "rwrw----",
+                },
+            ],
             userGroupAccesses: [
                 {
                     id: "ywuI2WspUUG",
@@ -483,8 +489,8 @@ const expectedMetadataPost = {
                     access: "rwrw----",
                 },
                 {
-                    id: "KAQv2ZlGCLn",
-                    displayName: "Project Monitoring Admin",
+                    id: "mKKNXzeIAJs",
+                    displayName: "Data Management Admin",
                     access: "rwrw----",
                 },
             ],
@@ -496,7 +502,7 @@ const expectedMetadataPost = {
             dataElementDecoration: true,
             renderAsTabs: true,
             categoryCombo: {
-                id: "pQjIEZS8Sx7",
+                id: "qAgB0mD1wC6",
             },
             organisationUnits: [
                 {
@@ -522,7 +528,7 @@ const expectedMetadataPost = {
                 },
             ],
             workflow: {
-                id: "SXvbJzbogqj",
+                id: "CCy0oNyvlV1",
             },
             dataInputPeriods: [
                 {
@@ -600,7 +606,7 @@ const expectedMetadataPost = {
                         id: "K6mAC5SiO29",
                     },
                     categoryCombo: {
-                        id: "GKWiemQPU5U",
+                        id: "S0GIshZAqgK",
                     },
                 },
                 {
@@ -611,7 +617,7 @@ const expectedMetadataPost = {
                         id: "ik0ICagvIjm",
                     },
                     categoryCombo: {
-                        id: "GKWiemQPU5U",
+                        id: "S0GIshZAqgK",
                     },
                 },
                 {
@@ -633,13 +639,19 @@ const expectedMetadataPost = {
                         id: "GQyudNlGzkI",
                     },
                     categoryCombo: {
-                        id: "GKWiemQPU5U",
+                        id: "S0GIshZAqgK",
                     },
                 },
             ],
             publicAccess: "--------",
             externalAccess: false,
-            userAccesses: [],
+            userAccesses: [
+                {
+                    id: "M5zQapPyTZI",
+                    displayName: "admin admin",
+                    access: "rwrw----",
+                },
+            ],
             userGroupAccesses: [
                 {
                     id: "ywuI2WspUUG",
@@ -647,8 +659,8 @@ const expectedMetadataPost = {
                     access: "rwrw----",
                 },
                 {
-                    id: "KAQv2ZlGCLn",
-                    displayName: "Project Monitoring Admin",
+                    id: "mKKNXzeIAJs",
+                    displayName: "Data Management Admin",
                     access: "rwrw----",
                 },
             ],
@@ -761,7 +773,13 @@ const expectedMetadataPost = {
             ],
             publicAccess: "--------",
             externalAccess: false,
-            userAccesses: [],
+            userAccesses: [
+                {
+                    id: "M5zQapPyTZI",
+                    displayName: "admin admin",
+                    access: "rw------",
+                },
+            ],
             userGroupAccesses: [
                 {
                     id: "ywuI2WspUUG",
@@ -769,8 +787,8 @@ const expectedMetadataPost = {
                     access: "rw------",
                 },
                 {
-                    id: "KAQv2ZlGCLn",
-                    displayName: "Project Monitoring Admin",
+                    id: "mKKNXzeIAJs",
+                    displayName: "Data Management Admin",
                     access: "rw------",
                 },
             ],
@@ -876,7 +894,13 @@ const expectedMetadataPost = {
             ],
             publicAccess: "--------",
             externalAccess: false,
-            userAccesses: [],
+            userAccesses: [
+                {
+                    id: "M5zQapPyTZI",
+                    displayName: "admin admin",
+                    access: "rw------",
+                },
+            ],
             userGroupAccesses: [
                 {
                     id: "ywuI2WspUUG",
@@ -884,8 +908,8 @@ const expectedMetadataPost = {
                     access: "rw------",
                 },
                 {
-                    id: "KAQv2ZlGCLn",
-                    displayName: "Project Monitoring Admin",
+                    id: "mKKNXzeIAJs",
+                    displayName: "Data Management Admin",
                     access: "rw------",
                 },
             ],
@@ -992,20 +1016,20 @@ const expectedMetadataPost = {
                 },
                 {
                     code: "NEW_RETURNING",
-                    id: "a0Cy1qwUuZv",
+                    id: "uSMHdwhxFSV",
                     categoryOptions: [
                         {
                             code: "NEW",
-                            id: "S2y8dcmR2kD",
+                            id: "KiK0FMExoqh",
                         },
                         {
                             code: "RETURNING",
-                            id: "CyILz2yY8ey",
+                            id: "a6AJLXQy8vO",
                         },
                     ],
                 },
             ],
-            rowDimensions: ["dx", "GIIHAr9BzzO", "a0Cy1qwUuZv"],
+            rowDimensions: ["dx", "GIIHAr9BzzO", "uSMHdwhxFSV"],
             categoryDimensions: [
                 {
                     category: {
@@ -1035,21 +1059,27 @@ const expectedMetadataPost = {
                 },
                 {
                     category: {
-                        id: "a0Cy1qwUuZv",
+                        id: "uSMHdwhxFSV",
                     },
                     categoryOptions: [
                         {
-                            id: "S2y8dcmR2kD",
+                            id: "KiK0FMExoqh",
                         },
                         {
-                            id: "CyILz2yY8ey",
+                            id: "a6AJLXQy8vO",
                         },
                     ],
                 },
             ],
             publicAccess: "--------",
             externalAccess: false,
-            userAccesses: [],
+            userAccesses: [
+                {
+                    id: "M5zQapPyTZI",
+                    displayName: "admin admin",
+                    access: "rw------",
+                },
+            ],
             userGroupAccesses: [
                 {
                     id: "ywuI2WspUUG",
@@ -1057,8 +1087,8 @@ const expectedMetadataPost = {
                     access: "rw------",
                 },
                 {
-                    id: "KAQv2ZlGCLn",
-                    displayName: "Project Monitoring Admin",
+                    id: "mKKNXzeIAJs",
+                    displayName: "Data Management Admin",
                     access: "rw------",
                 },
             ],
@@ -1144,30 +1174,30 @@ const expectedMetadataPost = {
                     id: "ou",
                 },
                 {
-                    id: "a0Cy1qwUuZv",
+                    id: "uSMHdwhxFSV",
                     categoryOptions: [
                         {
                             code: "NEW",
-                            id: "S2y8dcmR2kD",
+                            id: "KiK0FMExoqh",
                             categoryOptionCombos: [
                                 {
-                                    id: "UU2P0YSJM8A",
+                                    id: "aoRpDH3cNkD",
                                 },
                                 {
-                                    id: "bOokLlHM9no",
+                                    id: "kYnK9rhdUYO",
                                 },
                                 {
-                                    id: "kx33GL2khoi",
+                                    id: "KB5Mfe7zpOw",
                                 },
                                 {
-                                    id: "nwv02VfyQuz",
+                                    id: "RZeJX0Tg9Tx",
                                 },
                             ],
                         },
                     ],
                 },
             ],
-            filterDimensions: ["ou", "a0Cy1qwUuZv"],
+            filterDimensions: ["ou", "uSMHdwhxFSV"],
             rows: [
                 {
                     id: "dx",
@@ -1217,18 +1247,24 @@ const expectedMetadataPost = {
                 },
                 {
                     category: {
-                        id: "a0Cy1qwUuZv",
+                        id: "uSMHdwhxFSV",
                     },
                     categoryOptions: [
                         {
-                            id: "S2y8dcmR2kD",
+                            id: "KiK0FMExoqh",
                         },
                     ],
                 },
             ],
             publicAccess: "--------",
             externalAccess: false,
-            userAccesses: [],
+            userAccesses: [
+                {
+                    id: "M5zQapPyTZI",
+                    displayName: "admin admin",
+                    access: "rw------",
+                },
+            ],
             userGroupAccesses: [
                 {
                     id: "ywuI2WspUUG",
@@ -1236,8 +1272,8 @@ const expectedMetadataPost = {
                     access: "rw------",
                 },
                 {
-                    id: "KAQv2ZlGCLn",
-                    displayName: "Project Monitoring Admin",
+                    id: "mKKNXzeIAJs",
+                    displayName: "Data Management Admin",
                     access: "rw------",
                 },
             ],
@@ -1313,7 +1349,13 @@ const expectedMetadataPost = {
             categoryDimensions: [],
             publicAccess: "--------",
             externalAccess: false,
-            userAccesses: [],
+            userAccesses: [
+                {
+                    id: "M5zQapPyTZI",
+                    displayName: "admin admin",
+                    access: "rw------",
+                },
+            ],
             userGroupAccesses: [
                 {
                     id: "ywuI2WspUUG",
@@ -1321,8 +1363,8 @@ const expectedMetadataPost = {
                     access: "rw------",
                 },
                 {
-                    id: "KAQv2ZlGCLn",
-                    displayName: "Project Monitoring Admin",
+                    id: "mKKNXzeIAJs",
+                    displayName: "Data Management Admin",
                     access: "rw------",
                 },
             ],
@@ -1408,7 +1450,13 @@ const expectedMetadataPost = {
             categoryDimensions: [],
             publicAccess: "--------",
             externalAccess: false,
-            userAccesses: [],
+            userAccesses: [
+                {
+                    id: "M5zQapPyTZI",
+                    displayName: "admin admin",
+                    access: "rw------",
+                },
+            ],
             userGroupAccesses: [
                 {
                     id: "ywuI2WspUUG",
@@ -1416,8 +1464,8 @@ const expectedMetadataPost = {
                     access: "rw------",
                 },
                 {
-                    id: "KAQv2ZlGCLn",
-                    displayName: "Project Monitoring Admin",
+                    id: "mKKNXzeIAJs",
+                    displayName: "Data Management Admin",
                     access: "rw------",
                 },
             ],
@@ -1512,7 +1560,13 @@ const expectedMetadataPost = {
             categoryDimensions: [],
             publicAccess: "--------",
             externalAccess: false,
-            userAccesses: [],
+            userAccesses: [
+                {
+                    id: "M5zQapPyTZI",
+                    displayName: "admin admin",
+                    access: "rw------",
+                },
+            ],
             userGroupAccesses: [
                 {
                     id: "ywuI2WspUUG",
@@ -1520,8 +1574,8 @@ const expectedMetadataPost = {
                     access: "rw------",
                 },
                 {
-                    id: "KAQv2ZlGCLn",
-                    displayName: "Project Monitoring Admin",
+                    id: "mKKNXzeIAJs",
+                    displayName: "Data Management Admin",
                     access: "rw------",
                 },
             ],
@@ -1610,7 +1664,13 @@ const expectedMetadataPost = {
             categoryDimensions: [],
             publicAccess: "--------",
             externalAccess: false,
-            userAccesses: [],
+            userAccesses: [
+                {
+                    id: "M5zQapPyTZI",
+                    displayName: "admin admin",
+                    access: "rw------",
+                },
+            ],
             userGroupAccesses: [
                 {
                     id: "ywuI2WspUUG",
@@ -1618,8 +1678,8 @@ const expectedMetadataPost = {
                     access: "rw------",
                 },
                 {
-                    id: "KAQv2ZlGCLn",
-                    displayName: "Project Monitoring Admin",
+                    id: "mKKNXzeIAJs",
+                    displayName: "Data Management Admin",
                     access: "rw------",
                 },
             ],
@@ -1706,38 +1766,38 @@ const expectedMetadataPost = {
                     id: "pe",
                 },
                 {
-                    id: "a0Cy1qwUuZv",
+                    id: "uSMHdwhxFSV",
                     categoryOptions: [
                         {
                             code: "NEW",
-                            id: "S2y8dcmR2kD",
+                            id: "KiK0FMExoqh",
                             categoryOptionCombos: [
                                 {
-                                    id: "UU2P0YSJM8A",
+                                    id: "aoRpDH3cNkD",
                                 },
                                 {
-                                    id: "bOokLlHM9no",
+                                    id: "kYnK9rhdUYO",
                                 },
                                 {
-                                    id: "kx33GL2khoi",
+                                    id: "KB5Mfe7zpOw",
                                 },
                                 {
-                                    id: "nwv02VfyQuz",
+                                    id: "RZeJX0Tg9Tx",
                                 },
                             ],
                         },
                     ],
                 },
             ],
-            filterDimensions: ["ou", "pe", "a0Cy1qwUuZv"],
+            filterDimensions: ["ou", "pe", "uSMHdwhxFSV"],
             categoryDimensions: [
                 {
                     category: {
-                        id: "a0Cy1qwUuZv",
+                        id: "uSMHdwhxFSV",
                     },
                     categoryOptions: [
                         {
-                            id: "S2y8dcmR2kD",
+                            id: "KiK0FMExoqh",
                         },
                     ],
                 },
@@ -1757,7 +1817,13 @@ const expectedMetadataPost = {
             ],
             publicAccess: "--------",
             externalAccess: false,
-            userAccesses: [],
+            userAccesses: [
+                {
+                    id: "M5zQapPyTZI",
+                    displayName: "admin admin",
+                    access: "rw------",
+                },
+            ],
             userGroupAccesses: [
                 {
                     id: "ywuI2WspUUG",
@@ -1765,8 +1831,8 @@ const expectedMetadataPost = {
                     access: "rw------",
                 },
                 {
-                    id: "KAQv2ZlGCLn",
-                    displayName: "Project Monitoring Admin",
+                    id: "mKKNXzeIAJs",
+                    displayName: "Data Management Admin",
                     access: "rw------",
                 },
             ],
@@ -1831,7 +1897,13 @@ const expectedMetadataPost = {
             categoryDimensions: [],
             publicAccess: "--------",
             externalAccess: false,
-            userAccesses: [],
+            userAccesses: [
+                {
+                    id: "M5zQapPyTZI",
+                    displayName: "admin admin",
+                    access: "rw------",
+                },
+            ],
             userGroupAccesses: [
                 {
                     id: "ywuI2WspUUG",
@@ -1839,8 +1911,8 @@ const expectedMetadataPost = {
                     access: "rw------",
                 },
                 {
-                    id: "KAQv2ZlGCLn",
-                    displayName: "Project Monitoring Admin",
+                    id: "mKKNXzeIAJs",
+                    displayName: "Data Management Admin",
                     access: "rw------",
                 },
             ],

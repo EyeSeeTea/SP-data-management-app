@@ -16,7 +16,7 @@ export function mockApiForMerReportEmpty(mock: MockAdapter) {
 
 export function mockApiForMerReportWithData(mock: MockAdapter) {
     mock.reset();
-    mock.onGet("/dataStore/project-monitoring-app/mer-PJb0RtEnqlf").replyOnce(200, {
+    mock.onGet("/dataStore/data-management-app/mer-PJb0RtEnqlf").replyOnce(200, {
         reports: {
             201912: {
                 created: "2019-12-17T17:21:23",
@@ -44,10 +44,10 @@ export function mockApiForMerReportWithData(mock: MockAdapter) {
             },
         },
     });
-    mock.onGet("/dataStore/project-monitoring-app/project-uWuM0QT2pVl").replyOnce(200, {
+    mock.onGet("/dataStore/data-management-app/project-uWuM0QT2pVl").replyOnce(200, {
         merDataElementIds: ["WS8XV4WWPE7", "We61YNYyOX0"],
     });
-    mock.onGet("/dataStore/project-monitoring-app/project-SKuiiu7Vbwv").replyOnce(200, {
+    mock.onGet("/dataStore/data-management-app/project-SKuiiu7Vbwv").replyOnce(200, {
         merDataElementIds: ["yUGuwPFkBrj"],
     });
     mock.onGet("/metadata", {

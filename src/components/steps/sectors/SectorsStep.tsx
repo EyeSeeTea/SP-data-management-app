@@ -11,7 +11,7 @@ const SectorsStep: React.FC<StepProps> = ({ project, onChange }) => {
 
     function setSectors(selected: string[]) {
         const newValue = getValuesFromSelection(config.sectors, selected);
-        const newProject = project.set("sectors", newValue);
+        const newProject = project.setSectors(newValue);
         onChange(newProject);
     }
 
