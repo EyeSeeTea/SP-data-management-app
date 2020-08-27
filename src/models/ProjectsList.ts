@@ -2,7 +2,7 @@ import _ from "lodash";
 import { TableSorting, TablePagination } from "d2-ui-components";
 import { D2Api, D2OrganisationUnitSchema, SelectedPick, Id } from "../types/d2-api";
 import { Config } from "./Config";
-import moment from "moment";
+import moment, { Moment } from "moment";
 import { Sector, getOrgUnitDatesFromProject, getProjectFromOrgUnit } from "./Project";
 import { getSectorCodeFromSectionCode } from "./ProjectDb";
 import User from "./user";
@@ -15,6 +15,7 @@ export type FiltersForList = Partial<{
     countryIds: string[];
     sectorIds: string[];
     onlyActive: boolean;
+    dateInProject: Moment;
     createdByAppOnly: boolean;
     userCountriesOnly: boolean;
 }>;
@@ -224,15 +225,27 @@ function paginate<Obj>(objects: Obj[], pagination: Pagination) {
 function getDateFilter(filters: FiltersForList) {
     const now = moment();
     const dateFormat = "YYYY-MM-DD";
-    const { openingDate, closedDate } = getOrgUnitDatesFromProject(now, now);
+    const { onlyActive, dateInProject } = filters;
 
-    if (filters.onlyActive) {
-        return {
-            openingDate: { le: moment(openingDate).format(dateFormat) },
-            closedDate: { ge: moment(closedDate).format(dateFormat) },
-        };
-    } else {
+    // Merge dates for both filters (using the intersection of periods)
+
+    const dates = _.compact([
+        onlyActive ? getOrgUnitDatesFromProject(now, now) : null,
+        dateInProject ? getOrgUnitDatesFromProject(dateInProject, dateInProject) : null,
+    ]);
+
+    const [openingDates, closedDates] = _(dates)
+        .map(({ openingDate, closedDate }) => [moment(openingDate), moment(closedDate)])
+        .unzip()
+        .value();
+
+    if (_(openingDates).isEmpty() || _(closedDates).isEmpty()) {
         return {};
+    } else {
+        return {
+            openingDate: { le: moment.min(openingDates).format(dateFormat) },
+            closedDate: { ge: moment.max(closedDates).format(dateFormat) },
+        };
     }
 }
 
