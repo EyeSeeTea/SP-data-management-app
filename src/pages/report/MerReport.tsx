@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import _ from "lodash";
 import { useHistory } from "react-router";
 import { History } from "history";
 import { makeStyles } from "@material-ui/core/styles";
@@ -164,11 +165,23 @@ const MerReportComponent: React.FC = () => {
                     <ReportDataTable merReport={merReport} onChange={setMerReport} />
 
                     <Paper>
-                        <ReportTextField
-                            title={i18n.t("Executive Summary")}
-                            value={merReport.data.executiveSummary}
-                            onBlurChange={value => onChange("executiveSummary", value)}
-                        />
+                        {_.map(merReport.data.executiveSummaries, (value, sectorId) => {
+                            const sectorName = merReport.getSectorName(sectorId);
+                            if (!sectorName) return;
+                            return (
+                                <ReportTextField
+                                    key={sectorId}
+                                    title={i18n.t("Executive Summary") + " - " + sectorName}
+                                    value={value || ""}
+                                    onBlurChange={value =>
+                                        onChange("executiveSummaries", {
+                                            ...merReport.data.executiveSummaries,
+                                            [sectorId]: value,
+                                        })
+                                    }
+                                />
+                            );
+                        })}
 
                         <ReportTextField
                             title={i18n.t("Ministry Summary")}

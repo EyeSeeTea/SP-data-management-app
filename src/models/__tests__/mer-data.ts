@@ -1,4 +1,5 @@
 import MockAdapter from "axios-mock-adapter/types";
+import { logUnknownRequest } from "../../utils/tests";
 
 export function mockApiForMerReportEmpty(mock: MockAdapter) {
     mock.reset();
@@ -12,10 +13,35 @@ export function mockApiForMerReportEmpty(mock: MockAdapter) {
             ],
         },
     }).replyOnce(200, {});
+
+    mockProjectListGet(mock);
+
+    mock.onGet("/dataStore/data-management-app/mer-PJb0RtEnqlf").replyOnce(200, undefined);
+
+    logUnknownRequest(mock);
+}
+
+function mockProjectListGet(mock: MockAdapter) {
+    mock.onGet("/organisationUnits", {
+        paging: false,
+        fields:
+            "attributeValues[attribute[id],value],code~rename(c),displayName~rename(n),id~rename(i)",
+        order: "displayName:iasc",
+        filter: [
+            "attributeValues.attribute.id:eq:mgCKcJuP5n0",
+            "closedDate:ge:2020-09-30",
+            "level:eq:3",
+            "openingDate:le:2020-07-27",
+            "parent.id:in:[eu2XF73JOzl,iiqkef8z9uo,iwiydbbuiUs,aSgRoxyXeX8,WOUvEv46NeR,Sm8vKiwUPie,ugQ7vNtTtdY,OIjEJaV8fWc,So8QA5eT1Oy,S6mKzbkq02p,muOqfsK4cMw,WmczKCGK8FQ,OKQDUzFwGoC,Ww8TTOdRxf7,uAsAoB72yOf,aqWKqMN5pUb]",
+        ],
+    }).replyOnce(200, { organisationUnits: [] });
 }
 
 export function mockApiForMerReportWithData(mock: MockAdapter) {
     mock.reset();
+
+    mockProjectListGet(mock);
+
     mock.onGet("/dataStore/data-management-app/mer-PJb0RtEnqlf").replyOnce(200, {
         reports: {
             201912: {
@@ -169,4 +195,6 @@ export function mockApiForMerReportWithData(mock: MockAdapter) {
         height: 8,
         headerWidth: 5,
     });
+
+    logUnknownRequest(mock);
 }

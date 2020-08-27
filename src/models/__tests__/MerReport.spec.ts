@@ -37,7 +37,7 @@ describe("MerReport", () => {
             expect(report.data).toEqual(
                 expect.objectContaining({
                     countryDirector: "",
-                    executiveSummary: "",
+                    executiveSummaries: {},
                     ministrySummary: "",
                     projectedActivitiesNextMonth: "",
                 })
@@ -87,7 +87,7 @@ describe("MerReport", () => {
             expect(report.data).toEqual(
                 expect.objectContaining({
                     countryDirector: "Country Director",
-                    executiveSummary: "Executive Summary",
+                    executiveSummaries: {},
                     ministrySummary: "Ministry Summary",
                     projectedActivitiesNextMonth: "Projected",
                 })

@@ -72,7 +72,7 @@ class MerReportSpreadsheet {
             [text(now.format("LL"))],
             [],
             [bold(i18n.t("Executive Summary"))],
-            [text(merReport.data.executiveSummary, { height: 50 })],
+            //[text(merReport.data.executiveSummary, { height: 50 })],
             [],
             [bold(i18n.t("Ministry Summary"))],
             [text(merReport.data.ministrySummary, { height: 50 })],

@@ -2,13 +2,14 @@ import { GetItemType } from "./../types/utils";
 import moment, { Moment } from "moment";
 import _ from "lodash";
 import { Id, Ref, D2Api, D2OrganisationUnit, DataStore } from "../types/d2-api";
-import { Config } from "./Config";
+import { Config, Sector } from "./Config";
 import { getDataStore } from "../utils/dhis2";
 import { runPromises } from "../utils/promises";
 import { getProjectFromOrgUnit, getOrgUnitDatesFromProject } from "./Project";
 import { toISOString, getMonthsRange } from "../utils/date";
 import i18n from "../locales";
 import { DataElementBase } from "./dataElementsSet";
+import ProjectsList, { ProjectForList } from "./ProjectsList";
 
 export const staffKeys = [
     "nationalStaff" as const,
@@ -32,15 +33,20 @@ interface OrganisationUnit {
 }
 
 interface Data {
+    projects: ProjectForList[];
+    sectors: Record<SectorId, Sector>;
     date: Moment;
     organisationUnit: OrganisationUnit;
     projectsData: ProjectsData;
     countryDirector: string;
-    executiveSummary: string;
+    executiveSummaries: ExecutiveSummaries;
     ministrySummary: string;
     projectedActivitiesNextMonth: string;
     staffSummary: StaffSummary;
 }
+
+type SectorId = Id;
+type ExecutiveSummaries = Record<SectorId, string | undefined>;
 
 interface Row {
     deId: string;
@@ -54,13 +60,22 @@ interface Row {
 
 const emptyStaffSummary: StaffSummary = {};
 
-const initialData = {
-    countryDirector: "",
-    executiveSummary: "",
-    ministrySummary: "",
-    projectedActivitiesNextMonth: "",
-    staffSummary: emptyStaffSummary,
-};
+function getInitialData(projects: ProjectForList[]) {
+    const executiveSummaries = _(projects)
+        .flatMap(project => project.sectors)
+        .uniqBy(sector => sector.id)
+        .map(sector => [sector.id, ""] as [SectorId, string])
+        .fromPairs()
+        .value();
+
+    return {
+        countryDirector: "",
+        executiveSummaries,
+        ministrySummary: "",
+        projectedActivitiesNextMonth: "",
+        staffSummary: emptyStaffSummary,
+    };
+}
 
 export interface ProjectInfo {
     merDataElementIds: string[];
@@ -76,7 +91,7 @@ interface Report {
     updated: string;
     updatedBy: Id;
     countryDirector: string;
-    executiveSummary: string;
+    executiveSummaries: ExecutiveSummaries;
     ministrySummary: string;
     projectedActivitiesNextMonth: string;
     staffSummary: StaffSummary;
@@ -122,16 +137,21 @@ class MerReport {
         const { report } = reportData;
         const comments = report ? report.comments : {};
         const projectsData = await MerReport.getProjectsData(api, config, selectData, comments);
+        const projects = await getProjects(api, config, date);
 
         const data: Data = {
+            projects,
+            sectors: _.keyBy(config.sectors, sector => sector.id),
             ...selectData,
-            ...initialData,
-            ..._.pick(report, [
-                "countryDirector",
-                "executiveSummary",
-                "ministrySummary",
-                "projectedActivitiesNextMonth",
-            ]),
+            ..._.merge(
+                getInitialData(projects),
+                _.pick(report, [
+                    "countryDirector",
+                    "executiveSummaries",
+                    "ministrySummary",
+                    "projectedActivitiesNextMonth",
+                ])
+            ),
             staffSummary: reportData.staffSummaryCurrent,
             projectsData,
         };
@@ -140,6 +160,10 @@ class MerReport {
 
     public set<K extends keyof Data>(field: K, value: Data[K]): MerReport {
         return new MerReport(this.api, this.config, { ...this.data, [field]: value });
+    }
+
+    public getSectorName(sectorId: Id): Maybe<string> {
+        return _(this.data.sectors).get(sectorId, null)?.displayName;
     }
 
     hasProjects(): boolean {
@@ -186,7 +210,7 @@ class MerReport {
     async save(): Promise<void> {
         const { dataStore, config, api } = this;
         const { projectsData, organisationUnit, date, staffSummary } = this.data;
-        const { countryDirector, executiveSummary } = this.data;
+        const { countryDirector, executiveSummaries } = this.data;
         const { ministrySummary, projectedActivitiesNextMonth } = this.data;
         const now = moment();
         const storeReportKey = getReportStorageKey(organisationUnit);
@@ -210,7 +234,7 @@ class MerReport {
             updated: toISOString(now),
             updatedBy: config.currentUser.id,
             countryDirector,
-            executiveSummary,
+            executiveSummaries,
             ministrySummary,
             projectedActivitiesNextMonth,
             staffSummary: newStaffSummary,
@@ -538,6 +562,19 @@ function getDataElementsById(config: Config) {
         .uniqBy(de => de.id)
         .value();
     return _.keyBy(allDataElements, "id");
+}
+
+async function getProjects(
+    api: D2Api,
+    config: Config,
+    dateInProject: Moment
+): Promise<ProjectForList[]> {
+    const { objects: projects } = await new ProjectsList(api, config).get(
+        { dateInProject, createdByAppOnly: true, userCountriesOnly: true },
+        { field: "displayName", order: "asc" },
+        { page: 1, pageSize: 1000 }
+    );
+    return projects;
 }
 
 export type MerReportData = Data;
