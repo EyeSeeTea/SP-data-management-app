@@ -162,7 +162,11 @@ function getComponentConfig(
         },
     };
 
-    const actionsByRole = _.compact(_.at(allActions, currentUser.actions));
+    const actionsByRole = _(allActions)
+        .at(currentUser.actions as ContextualAction[])
+        .compact()
+        .uniqBy(action => action.name)
+        .value();
     const actions = [allActions.details, ...actionsByRole];
 
     return { columns, initialSorting, details, actions, initialPagination };
