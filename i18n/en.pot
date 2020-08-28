@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2020-08-28T10:28:33.864Z\n"
-"PO-Revision-Date: 2020-08-28T10:28:33.864Z\n"
+"POT-Creation-Date: 2020-08-28T12:58:11.121Z\n"
+"PO-Revision-Date: 2020-08-28T12:58:11.121Z\n"
 
 msgid "Data Entry"
 msgstr ""
@@ -232,12 +232,6 @@ msgid "Prepared by"
 msgstr ""
 
 msgid "Executive Summary"
-msgstr ""
-
-msgid "SECTOR"
-msgstr ""
-
-msgid "Bullet-Point Info"
 msgstr ""
 
 msgid "Ministry Summary"

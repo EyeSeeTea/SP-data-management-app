@@ -7,7 +7,7 @@ export function mockApiForMerReportEmpty(mock: MockAdapter) {
         params: {
             "organisationUnits:fields": "closedDate,displayName,id,openingDate",
             "organisationUnits:filter": [
-                "closedDate:ge:2020-01-31T23:59:59",
+                "closedDate:ge:2020-01-31T00:00:00",
                 "openingDate:le:2019-11-01T00:00:00",
                 "parent.id:eq:PJb0RtEnqlf",
             ],
@@ -81,7 +81,7 @@ export function mockApiForMerReportWithData(mock: MockAdapter) {
         params: {
             "organisationUnits:fields": "closedDate,displayName,id,openingDate",
             "organisationUnits:filter": [
-                "closedDate:ge:2020-01-31T23:59:59",
+                "closedDate:ge:2020-01-31T00:00:00",
                 "openingDate:le:2019-11-01T00:00:00",
                 "parent.id:eq:PJb0RtEnqlf",
             ],
