@@ -140,14 +140,11 @@ class MerReportSpreadsheet {
     }
 }
 
-function header(
-    name: string,
-    {
-        width,
-        isNumber = false,
-        center = false,
-    }: { width: number; isNumber?: boolean; center?: boolean }
-): Partial<Column> {
+type HeaderOptions = { width: number; isNumber?: boolean; center?: boolean };
+
+function header(name: string | string[], headerOptions: HeaderOptions): Partial<Column> {
+    const { width, isNumber = false, center = false } = headerOptions;
+
     return {
         header: name,
         width,
@@ -255,20 +252,20 @@ function getStaffSummary(report: MerReport): Row[] {
     ];
 }
 
-function formula(value: GetFormulaValue): FormulaValue {
-    return { type: "formula", value };
-}
-
-function float(n: number | null | undefined): Value {
-    return { type: "number", value: _.isNil(n) ? "" : n };
-}
-
 function insertColumns(rows: Row[], count: number): Row[] {
     const newColumns = _.times(count).map(_i => text(""));
     return rows.map(row => [...newColumns, ...row]);
 }
 
 type Options = Omit<TextValue, "type" | "value">;
+
+function formula(value: GetFormulaValue, options: Options = {}): FormulaValue {
+    return { type: "formula", value, ...options };
+}
+
+function float(n: number | null | undefined, options: Options = {}): Value {
+    return { type: "number", value: _.isNil(n) ? "" : n, ...options };
+}
 
 function text(s: string, options: Options = {}): Value {
     return { type: "text", value: s, ...options };
