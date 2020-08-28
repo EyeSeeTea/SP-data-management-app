@@ -120,6 +120,8 @@ class MerReportSpreadsheet {
                     text(de.name),
                     float(de.target),
                     float(de.actual),
+                    float(de.targetAchieved),
+                    float(de.actualAchieved),
                     float(de.achieved),
                     text(de.comment),
                 ];
@@ -128,9 +130,11 @@ class MerReportSpreadsheet {
         const columns = [
             header(i18n.t("Project"), { width: 40 }),
             header(i18n.t("Indicators"), { width: 60 }),
-            header(i18n.t("Target"), { width: 10, isNumber: true }),
-            header(i18n.t("Actual"), { width: 10, isNumber: true }),
-            header(i18n.t("Achieved to date (%)"), { width: 10, isNumber: true }),
+            header(i18n.t("Target"), { width: 12, isNumber: true }),
+            header(i18n.t("Actual"), { width: 12, isNumber: true }),
+            header(i18n.t("Target") + " " + i18n.t("to date"), { width: 12, isNumber: true }),
+            header(i18n.t("Actual") + " " + i18n.t("to date"), { width: 12, isNumber: true }),
+            header(i18n.t("Achieved to date (%)"), { width: 12, isNumber: true }),
             header(i18n.t("Comment"), { width: 50 }),
         ];
 
