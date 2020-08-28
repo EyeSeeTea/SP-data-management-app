@@ -165,23 +165,19 @@ const MerReportComponent: React.FC = () => {
                     <ReportDataTable merReport={merReport} onChange={setMerReport} />
 
                     <Paper>
-                        {_.map(merReport.data.executiveSummaries, (value, sectorId) => {
-                            const sectorName = merReport.getSectorName(sectorId);
-                            if (!sectorName) return;
-                            return (
-                                <ReportTextField
-                                    key={sectorId}
-                                    title={i18n.t("Executive Summary") + " - " + sectorName}
-                                    value={value || ""}
-                                    onBlurChange={value =>
-                                        onChange("executiveSummaries", {
-                                            ...merReport.data.executiveSummaries,
-                                            [sectorId]: value,
-                                        })
-                                    }
-                                />
-                            );
-                        })}
+                        {merReport.getExecutiveSummaries().map(({ sector, value }) => (
+                            <ReportTextField
+                                key={sector.id}
+                                title={i18n.t("Executive Summary") + " - " + sector.displayName}
+                                value={value || ""}
+                                onBlurChange={newValue =>
+                                    onChange("executiveSummaries", {
+                                        ...merReport.data.executiveSummaries,
+                                        [sector.id]: newValue,
+                                    })
+                                }
+                            />
+                        ))}
 
                         <ReportTextField
                             title={i18n.t("Ministry Summary")}

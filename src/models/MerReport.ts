@@ -34,7 +34,7 @@ interface OrganisationUnit {
 
 interface Data {
     projects: ProjectForList[];
-    sectors: Record<SectorId, Sector>;
+    sectors: Sector[];
     date: Moment;
     organisationUnit: OrganisationUnit;
     projectsData: ProjectsData;
@@ -60,10 +60,16 @@ interface Row {
 
 const emptyStaffSummary: StaffSummary = {};
 
-function getInitialData(projects: ProjectForList[]) {
-    const executiveSummaries = _(projects)
+function getSectors(projects: ProjectForList[]): Sector[] {
+    return _(projects)
         .flatMap(project => project.sectors)
         .uniqBy(sector => sector.id)
+        .sortBy(sector => sector.displayName)
+        .value();
+}
+
+function getInitialData(sectors: Sector[]) {
+    const executiveSummaries = _(sectors)
         .map(sector => [sector.id, ""] as [SectorId, string])
         .fromPairs()
         .value();
@@ -138,13 +144,14 @@ class MerReport {
         const comments = report ? report.comments : {};
         const projectsData = await MerReport.getProjectsData(api, config, selectData, comments);
         const projects = await getProjects(api, config, date);
+        const sectors = getSectors(projects);
 
         const data: Data = {
             projects,
-            sectors: _.keyBy(config.sectors, sector => sector.id),
+            sectors,
             ...selectData,
             ..._.merge(
-                getInitialData(projects),
+                getInitialData(sectors),
                 _.pick(report, [
                     "countryDirector",
                     "executiveSummaries",
@@ -162,8 +169,11 @@ class MerReport {
         return new MerReport(this.api, this.config, { ...this.data, [field]: value });
     }
 
-    public getSectorName(sectorId: Id): Maybe<string> {
-        return _(this.data.sectors).get(sectorId, null)?.displayName;
+    public getExecutiveSummaries(): Array<{ sector: Sector; value: string }> {
+        return this.data.sectors.map(sector => ({
+            sector,
+            value: _(this.data.executiveSummaries).get(sector.id, ""),
+        }));
     }
 
     hasProjects(): boolean {
