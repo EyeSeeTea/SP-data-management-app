@@ -80,7 +80,6 @@ class MerReportSpreadsheet {
             [text(now.format("LL"), { colspan: 6 })],
             [],
             [bold(i18n.t("Executive Summary"), { colspan: 6 })],
-            [text(i18n.t("SECTOR")), text(i18n.t("Bullet-Point Info"), { colspan: 5 })],
             ...merReport
                 .getExecutiveSummaries()
                 .map(({ sector, value }) => [
@@ -129,12 +128,12 @@ class MerReportSpreadsheet {
         });
         const columns = [
             header(i18n.t("Project"), { width: 40 }),
-            header(i18n.t("Indicators"), { width: 60 }),
+            header(i18n.t("Indicators"), { width: 50 }),
             header(i18n.t("Target"), { width: 12, isNumber: true }),
             header(i18n.t("Actual"), { width: 12, isNumber: true }),
-            header(i18n.t("Target") + " " + i18n.t("to date"), { width: 12, isNumber: true }),
-            header(i18n.t("Actual") + " " + i18n.t("to date"), { width: 12, isNumber: true }),
-            header(i18n.t("Achieved to date (%)"), { width: 12, isNumber: true }),
+            header(i18n.t("Target") + " " + i18n.t("to date"), { width: 16, isNumber: true }),
+            header(i18n.t("Actual") + " " + i18n.t("to date"), { width: 16, isNumber: true }),
+            header(i18n.t("Achieved to date (%)"), { width: 23, isNumber: true }),
             header(i18n.t("Comment"), { width: 50 }),
         ];
 
