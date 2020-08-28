@@ -194,6 +194,12 @@ const MerReportComponent: React.FC = () => {
                         />
 
                         <ReportTextField
+                            title={i18n.t("Additional comments")}
+                            value={merReport.data.additionalComments}
+                            onBlurChange={value => onChange("additionalComments", value)}
+                        />
+
+                        <ReportTextField
                             title={i18n.t("Country Director")}
                             value={merReport.data.countryDirector}
                             onBlurChange={value => onChange("countryDirector", value)}

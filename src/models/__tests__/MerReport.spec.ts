@@ -38,6 +38,7 @@ describe("MerReport", () => {
                 expect.objectContaining({
                     countryDirector: "",
                     executiveSummaries: {},
+                    additionalComments: "",
                     ministrySummary: "",
                     projectedActivitiesNextMonth: "",
                 })

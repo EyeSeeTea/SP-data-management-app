@@ -43,6 +43,7 @@ interface Data {
     ministrySummary: string;
     projectedActivitiesNextMonth: string;
     staffSummary: StaffSummary;
+    additionalComments: string;
 }
 
 type SectorId = Id;
@@ -79,6 +80,7 @@ function getInitialData(sectors: Sector[]) {
         executiveSummaries,
         ministrySummary: "",
         projectedActivitiesNextMonth: "",
+        additionalComments: "",
         staffSummary: emptyStaffSummary,
     };
 }
