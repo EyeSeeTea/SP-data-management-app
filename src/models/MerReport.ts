@@ -273,9 +273,7 @@ class MerReport {
         commentsByProjectAndDe: _.Dictionary<string>
     ): Promise<ProjectsData> {
         const { date, organisationUnit } = selectData;
-        const startOfMonth = date.clone().startOf("month");
-        const dates = getOrgUnitDatesFromProject(startOfMonth, startOfMonth);
-        const orgUnits = await getOrgUnits(api, organisationUnit, dates);
+        const orgUnits = await getOrgUnits(api, organisationUnit, date);
         if (_.isEmpty(orgUnits)) return [];
 
         const projectInfoByOrgUnitId = await getProjectInfoByOrgUnitId(api, orgUnits);
@@ -353,15 +351,19 @@ class MerReport {
     }
 }
 
-async function getOrgUnits(
-    api: D2Api,
-    organisationUnit: OrganisationUnit,
-    dates: Pick<D2OrganisationUnit, "openingDate" | "closedDate">
-) {
+async function getOrgUnits(api: D2Api, organisationUnit: OrganisationUnit, date: Moment) {
+    const startOfMonth = date.clone().startOf("month");
+    const dates = getOrgUnitDatesFromProject(startOfMonth, startOfMonth);
+
     const { organisationUnits } = await api.metadata
         .get({
             organisationUnits: {
-                fields: { id: true, displayName: true, openingDate: true, closedDate: true },
+                fields: {
+                    id: true,
+                    displayName: true,
+                    openingDate: true,
+                    closedDate: true,
+                },
                 filter: {
                     "parent.id": { eq: organisationUnit.id },
                     openingDate: { le: dates.openingDate },
