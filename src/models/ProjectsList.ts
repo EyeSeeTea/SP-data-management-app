@@ -42,6 +42,7 @@ type BaseProject = SelectedPick<D2OrganisationUnitSchema, typeof orgUnitFields>;
 export interface ProjectForList extends BaseProject {
     sectors: Sector[];
     sharing: Sharing;
+    dataElementIdsBySectorId: Record<Id, Id[]>;
 }
 
 export default class ProjectsList {
@@ -83,7 +84,7 @@ export default class ProjectsList {
                       dataSets: {
                           fields: {
                               code: true,
-                              sections: { code: true },
+                              sections: { code: true, dataElements: { id: true } },
                               userAccesses: { id: true, displayName: true, access: true },
                               userGroupAccesses: { id: true, displayName: true, access: true },
                               access: true,
@@ -96,7 +97,7 @@ export default class ProjectsList {
         const dataSetByOrgUnitId = _.keyBy(dataSets, dataSet => (dataSet.code || "").split("_")[0]);
         const sectorsByCode = _.keyBy(config.sectors, sector => sector.code);
 
-        const projectsWithSectors: Array<ProjectForList | null> = projects.map(orgUnit => {
+        const projectsWithSectors = projects.map(orgUnit => {
             const dataSet = _(dataSetByOrgUnitId).get(orgUnit.id, null);
             if (!dataSet || !hasCurrentUserFullAccessToDataSet(dataSet)) return null;
 
@@ -106,7 +107,23 @@ export default class ProjectsList {
                 .compact()
                 .value();
 
-            return { ...orgUnit, sectors, sharing } as ProjectForList;
+            const dataElementIdsBySectorId = _(dataSet.sections || [])
+                .map(section => ({
+                    sector: sectorsByCode[getSectorCodeFromSectionCode(section.code)],
+                    section,
+                }))
+                .filter(({ sector }) => !!sector)
+                .map(({ sector, section }) => [sector.id, section.dataElements.map(de => de.id)])
+                .fromPairs()
+                .value();
+
+            const project: ProjectForList = {
+                ...orgUnit,
+                sectors,
+                sharing,
+                dataElementIdsBySectorId,
+            };
+            return project;
         });
 
         return { pager: pager, objects: _.compact(projectsWithSectors) };

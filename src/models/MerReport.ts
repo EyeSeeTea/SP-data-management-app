@@ -1,7 +1,7 @@
 import { GetItemType } from "./../types/utils";
 import moment, { Moment } from "moment";
 import _ from "lodash";
-import { Id, Ref, D2Api, D2OrganisationUnit, DataStore } from "../types/d2-api";
+import { Id, Ref, D2Api, DataStore } from "../types/d2-api";
 import { Config, Sector } from "./Config";
 import { getDataStore } from "../utils/dhis2";
 import { runPromises } from "../utils/promises";
@@ -69,10 +69,33 @@ interface Row {
 
 const emptyStaffSummary: StaffSummary = {};
 
-function getSectors(projects: ProjectForList[]): Sector[] {
-    return _(projects)
-        .flatMap(project => project.sectors)
-        .uniqBy(sector => sector.id)
+/* Return only sectors containing MER indicators */
+
+function getSectors(
+    config: Config,
+    projects: ProjectForList[],
+    projectsData: ProjectsData
+): Sector[] {
+    const merDataElementIds = _.flatMap(projectsData, data => data.dataElements.map(de => de.id));
+    const sectorsById = _.keyBy(config.sectors, sector => sector.id);
+
+    const sectorIdByDataElementId: Record<Id, Id> = _(projects)
+        .flatMap(project =>
+            _.flatMap(project.dataElementIdsBySectorId, (deIds, sectorId) =>
+                deIds.map(deId => [deId, sectorId])
+            )
+        )
+        .fromPairs()
+        .value();
+
+    const sectorIds = _(sectorIdByDataElementId)
+        .at(merDataElementIds)
+        .uniq()
+        .value();
+
+    return _(sectorsById)
+        .at(sectorIds)
+        .compact()
         .sortBy(sector => sector.displayName)
         .value();
 }
@@ -128,14 +151,14 @@ export interface DataElementInfo {
     comment: string;
 }
 
-export interface Project {
+export interface ProjectForMer {
     id: string;
     dateInfo: string;
     name: string;
-    dataElements: Array<DataElementInfo>;
+    dataElements: DataElementInfo[];
 }
 
-export type ProjectsData = Array<Project>;
+export type ProjectsData = ProjectForMer[];
 
 class MerReport {
     dataStore: DataStore;
@@ -155,7 +178,7 @@ class MerReport {
         const comments = report ? report.comments : {};
         const projectsData = await MerReport.getProjectsData(api, config, selectData, comments);
         const projects = await getProjects(api, config, date);
-        const sectors = getSectors(projects);
+        const sectors = getSectors(config, projects, projectsData);
 
         const data: Data = {
             projects,
@@ -190,7 +213,7 @@ class MerReport {
         return { partTime, fullTime, total: partTime + fullTime };
     }
 
-    setComment(project: Project, dataElement: DataElementInfo, comment: string): MerReport {
+    setComment(project: ProjectForMer, dataElement: DataElementInfo, comment: string): MerReport {
         if (!this.data.projectsData) return this;
 
         const projectDataUpdated = this.data.projectsData.map(project_ => {
@@ -295,7 +318,7 @@ class MerReport {
 
         const rows = await getAnalyticRows(config, api, orgUnits, periods, merDataElements);
 
-        const projectsData: Array<Project | null> = orgUnits.map(orgUnit => {
+        const projectsData: Array<ProjectForMer | null> = orgUnits.map(orgUnit => {
             const project = getProjectFromOrgUnit(orgUnit);
             const formatDate = (dateStr: string): string => moment(dateStr).format("MMM YYYY");
             const projectInfo = projectInfoByOrgUnitId[orgUnit.id];
@@ -339,12 +362,14 @@ class MerReport {
 
             if (_.isEmpty(dataElementIds)) return null;
 
-            return {
+            const projectForMer: ProjectForMer = {
                 id: orgUnit.id,
                 name: project.displayName,
                 dateInfo: `${formatDate(project.openingDate)} -> ${formatDate(project.closedDate)}`,
                 dataElements: _.compact(dataElementIds.map(getDataElementInfo)),
             };
+
+            return projectForMer;
         });
 
         return _.compact(projectsData);
