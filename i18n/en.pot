@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2020-07-30T11:25:35.365Z\n"
-"PO-Revision-Date: 2020-07-30T11:25:35.365Z\n"
+"POT-Creation-Date: 2020-08-28T09:26:16.494Z\n"
+"PO-Revision-Date: 2020-08-28T09:26:16.494Z\n"
 
 msgid "Data Entry"
 msgstr ""
@@ -234,6 +234,12 @@ msgstr ""
 msgid "Executive Summary"
 msgstr ""
 
+msgid "SECTOR"
+msgstr ""
+
+msgid "Bullet-Point Info"
+msgstr ""
+
 msgid "Ministry Summary"
 msgstr ""
 
@@ -241,6 +247,9 @@ msgid "Staff Summary"
 msgstr ""
 
 msgid "Projected Activities for the Next Month"
+msgstr ""
+
+msgid "Additional comments"
 msgstr ""
 
 msgid "Narrative"

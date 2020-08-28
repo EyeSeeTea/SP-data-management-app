@@ -88,9 +88,10 @@ describe("MerReport", () => {
             expect(report.data).toEqual(
                 expect.objectContaining({
                     countryDirector: "Country Director",
-                    executiveSummaries: {},
+                    executiveSummaries: { ieyBABjYyHO: "Executive Summary for Agriculture" },
                     ministrySummary: "Ministry Summary",
                     projectedActivitiesNextMonth: "Projected",
+                    additionalComments: "Some additional comments",
                 })
             );
         });

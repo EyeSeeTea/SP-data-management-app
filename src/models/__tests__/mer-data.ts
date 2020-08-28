@@ -50,8 +50,9 @@ export function mockApiForMerReportWithData(mock: MockAdapter) {
                 updated: "2019-12-18T10:17:18",
                 updatedBy: "M5zQapPyTZI",
                 countryDirector: "Country Director",
-                executiveSummary: "Executive Summary",
+                executiveSummaries: { ieyBABjYyHO: "Executive Summary for Agriculture" },
                 ministrySummary: "Ministry Summary",
+                additionalComments: "Some additional comments",
                 projectedActivitiesNextMonth: "Projected",
                 staffSummary: {
                     ifs: { fullTime: 1, partTime: 2 },

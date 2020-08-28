@@ -20,6 +20,14 @@ export const staffKeys = [
     "interns" as const,
 ];
 
+const textFields: Array<keyof Data> = [
+    "countryDirector",
+    "executiveSummaries",
+    "ministrySummary",
+    "projectedActivitiesNextMonth",
+    "additionalComments",
+];
+
 export type StaffKey = GetItemType<typeof staffKeys>;
 
 export type StaffSummary = Partial<Record<StaffKey, StaffInfo>>;
@@ -102,6 +110,7 @@ interface Report {
     executiveSummaries: ExecutiveSummaries;
     ministrySummary: string;
     projectedActivitiesNextMonth: string;
+    additionalComments: string;
     staffSummary: StaffSummary;
     comments: {
         [orgUnitCountryAndDataElementId: string]: string;
@@ -152,15 +161,7 @@ class MerReport {
             projects,
             sectors,
             ...selectData,
-            ..._.merge(
-                getInitialData(sectors),
-                _.pick(report, [
-                    "countryDirector",
-                    "executiveSummaries",
-                    "ministrySummary",
-                    "projectedActivitiesNextMonth",
-                ])
-            ),
+            ..._.merge(getInitialData(sectors), _.pick(report, textFields)),
             staffSummary: reportData.staffSummaryCurrent,
             projectsData,
         };
@@ -223,7 +224,7 @@ class MerReport {
         const { dataStore, config, api } = this;
         const { projectsData, organisationUnit, date, staffSummary } = this.data;
         const { countryDirector, executiveSummaries } = this.data;
-        const { ministrySummary, projectedActivitiesNextMonth } = this.data;
+        const { ministrySummary, projectedActivitiesNextMonth, additionalComments } = this.data;
         const now = moment();
         const storeReportKey = getReportStorageKey(organisationUnit);
         const reportData = await getReportData(api, organisationUnit, date);
@@ -249,6 +250,7 @@ class MerReport {
             executiveSummaries,
             ministrySummary,
             projectedActivitiesNextMonth,
+            additionalComments,
             staffSummary: newStaffSummary,
             comments,
         };

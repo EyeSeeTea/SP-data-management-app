@@ -76,10 +76,11 @@ const MerReportComponent: React.FC = () => {
         }
     }
 
-    async function download() {
-        if (!merReport) return;
-        downloadFile(await new MerReportSpreadsheet(merReport).generate());
-    }
+    const download = React.useCallback(() => {
+        if (merReport) {
+            new MerReportSpreadsheet(merReport).generate().then(downloadFile);
+        }
+    }, [merReport, downloadFile]);
 
     async function save() {
         if (!merReport) return;
