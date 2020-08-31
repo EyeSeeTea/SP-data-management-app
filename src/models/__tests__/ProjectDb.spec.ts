@@ -1177,22 +1177,7 @@ const expectedMetadataPost = {
                     id: "uSMHdwhxFSV",
                     categoryOptions: [
                         {
-                            code: "NEW",
                             id: "KiK0FMExoqh",
-                            categoryOptionCombos: [
-                                {
-                                    id: "aoRpDH3cNkD",
-                                },
-                                {
-                                    id: "kYnK9rhdUYO",
-                                },
-                                {
-                                    id: "KB5Mfe7zpOw",
-                                },
-                                {
-                                    id: "RZeJX0Tg9Tx",
-                                },
-                            ],
                         },
                     ],
                 },
@@ -1439,15 +1424,34 @@ const expectedMetadataPost = {
                 {
                     id: "ou",
                 },
+                {
+                    id: "uSMHdwhxFSV",
+                    categoryOptions: [
+                        {
+                            id: "KiK0FMExoqh",
+                        },
+                    ],
+                },
             ],
-            filterDimensions: ["ou"],
+            filterDimensions: ["ou", "uSMHdwhxFSV"],
             rows: [
                 {
                     id: "dx",
                 },
             ],
             rowDimensions: ["dx"],
-            categoryDimensions: [],
+            categoryDimensions: [
+                {
+                    category: {
+                        id: "uSMHdwhxFSV",
+                    },
+                    categoryOptions: [
+                        {
+                            id: "KiK0FMExoqh",
+                        },
+                    ],
+                },
+            ],
             publicAccess: "--------",
             externalAccess: false,
             userAccesses: [
@@ -1769,22 +1773,7 @@ const expectedMetadataPost = {
                     id: "uSMHdwhxFSV",
                     categoryOptions: [
                         {
-                            code: "NEW",
                             id: "KiK0FMExoqh",
-                            categoryOptionCombos: [
-                                {
-                                    id: "aoRpDH3cNkD",
-                                },
-                                {
-                                    id: "kYnK9rhdUYO",
-                                },
-                                {
-                                    id: "KB5Mfe7zpOw",
-                                },
-                                {
-                                    id: "RZeJX0Tg9Tx",
-                                },
-                            ],
                         },
                     ],
                 },

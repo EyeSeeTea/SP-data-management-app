@@ -24,7 +24,7 @@ export default class ProjectDashboard {
 
         this.categoryOnlyNew = {
             id: config.categories.newRecurring.id,
-            categoryOptions: [config.categoryOptions.new],
+            categoryOptions: [{ id: config.categoryOptions.new.id }],
         };
     }
 
@@ -134,7 +134,7 @@ export default class ProjectDashboard {
             key: "reportTable-indicators-people",
             name: i18n.t("Achieved (%) - People"),
             items: project.getActualTargetIndicators(dataElements.people),
-            reportFilter: [dimensions.orgUnit],
+            reportFilter: [dimensions.orgUnit, this.categoryOnlyNew],
             columnDimensions: [dimensions.period],
             rowDimensions: [dimensions.data],
             extra: { legendSet: project.config.legendSets.achieved },
