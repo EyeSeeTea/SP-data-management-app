@@ -148,7 +148,7 @@ export default class ProjectDashboard {
             key: "chart-achieved-monthly",
             name: i18n.t("Achieved monthly (%)"),
             items: project.getActualTargetIndicators(dataElements.all),
-            reportFilter: [dimensions.orgUnit],
+            reportFilter: [dimensions.orgUnit, this.categoryOnlyNew],
             seriesDimension: dimensions.period,
             categoryDimension: dimensions.data,
         });
@@ -161,7 +161,7 @@ export default class ProjectDashboard {
             key: "chart-achieved",
             name: i18n.t("Achieved (%)"),
             items: project.getActualTargetIndicators(dataElements.all),
-            reportFilter: [dimensions.period],
+            reportFilter: [dimensions.period, this.categoryOnlyNew],
             seriesDimension: dimensions.orgUnit,
             categoryDimension: dimensions.data,
         });
