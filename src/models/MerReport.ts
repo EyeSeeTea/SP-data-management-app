@@ -41,7 +41,6 @@ interface OrganisationUnit {
 }
 
 interface Data {
-    projects: ProjectForList[];
     sectors: Sector[];
     date: Moment;
     organisationUnit: OrganisationUnit;
@@ -69,9 +68,8 @@ interface Row {
 
 const emptyStaffSummary: StaffSummary = {};
 
-/* Return only sectors containing MER indicators */
-
-function getSectors(
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function getSectorsWithMerDataElements(
     config: Config,
     projects: ProjectForList[],
     projectsData: ProjectsData
@@ -96,6 +94,14 @@ function getSectors(
     return _(sectorsById)
         .at(sectorIds)
         .compact()
+        .sortBy(sector => sector.displayName)
+        .value();
+}
+
+function getProjectSectors(projects: ProjectForList[]): Sector[] {
+    return _(projects)
+        .flatMap(project => project.sectors)
+        .uniqBy(sector => sector.id)
         .sortBy(sector => sector.displayName)
         .value();
 }
@@ -160,6 +166,8 @@ export interface ProjectForMer {
 
 export type ProjectsData = ProjectForMer[];
 
+type SelectData = Pick<Data, "date" | "organisationUnit">;
+
 class MerReport {
     dataStore: DataStore;
 
@@ -167,21 +175,16 @@ class MerReport {
         this.dataStore = getDataStore(this.api);
     }
 
-    static async create(
-        api: D2Api,
-        config: Config,
-        selectData: Pick<Data, "date" | "organisationUnit">
-    ): Promise<MerReport> {
+    static async create(api: D2Api, config: Config, selectData: SelectData): Promise<MerReport> {
         const { organisationUnit, date } = selectData;
         const reportData = await getReportData(api, organisationUnit, date);
         const { report } = reportData;
         const comments = report ? report.comments : {};
         const projectsData = await MerReport.getProjectsData(api, config, selectData, comments);
-        const projects = await getProjects(api, config, date);
-        const sectors = getSectors(config, projects, projectsData);
+        const projects = await getProjects(api, config, selectData);
+        const sectors = getProjectSectors(projects);
 
         const data: Data = {
-            projects,
             sectors,
             ...selectData,
             ..._.merge(getInitialData(sectors), _.pick(report, textFields)),
@@ -292,7 +295,7 @@ class MerReport {
     static async getProjectsData(
         api: D2Api,
         config: Config,
-        selectData: Pick<Data, "date" | "organisationUnit">,
+        selectData: SelectData,
         commentsByProjectAndDe: _.Dictionary<string>
     ): Promise<ProjectsData> {
         const { date, organisationUnit } = selectData;
@@ -608,10 +611,16 @@ function getDataElementsById(config: Config) {
 async function getProjects(
     api: D2Api,
     config: Config,
-    dateInProject: Moment
+    selectData: SelectData
 ): Promise<ProjectForList[]> {
+    const { date, organisationUnit } = selectData;
     const { objects: projects } = await new ProjectsList(api, config).get(
-        { dateInProject, createdByAppOnly: true, userCountriesOnly: true },
+        {
+            countryIds: [organisationUnit.id],
+            dateInProject: date,
+            createdByAppOnly: true,
+            userCountriesOnly: true,
+        },
         { field: "displayName", order: "asc" },
         { page: 1, pageSize: 1000 }
     );
