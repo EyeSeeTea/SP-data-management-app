@@ -377,10 +377,9 @@ class MerReport {
         const richDataElements = _.flatMap(this.data.projectsData, project =>
             project.dataElements.map<DataElementMER>(dataElementInfo => {
                 return {
-                    id: dataElementInfo.id,
+                    ...dataElementInfo,
                     locations: project.locations,
                     project,
-                    ...dataElementInfo,
                 };
             })
         );
