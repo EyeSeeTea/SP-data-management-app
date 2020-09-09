@@ -17,8 +17,8 @@ declare module "lodash" {
         ): TObject[TKey];
     }
 
-    interface Collection<TValue> {
-        groupConsecutiveBy<Key>(mapper: (obj: TValue) => Key): Collection<[Key, TValue[]]>;
+    interface Collection<T> {
+        groupConsecutiveBy<Key>(mapper: (obj: T) => Key): Collection<[Key, T[]]>;
     }
 }
 
