@@ -38,7 +38,7 @@ const ReportDataTable: React.FC<ReportDataTableProps> = props => {
             },
             {
                 name: "indicator",
-                getId: dataElementMER => dataElementMER.id,
+                getId: dataElementMER => [dataElementMER.project.id, dataElementMER.id].join("-"),
                 component: function DataElementCellsForIndicator({ row: dataElementMER }) {
                     return (
                         <DataElementCells dataElement={dataElementMER} onChange={onCommentChange} />
