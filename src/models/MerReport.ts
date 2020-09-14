@@ -1,3 +1,4 @@
+import { Disaggregation } from "./Disaggregation";
 import { GetItemType, Maybe } from "./../types/utils";
 import moment, { Moment } from "moment";
 import _ from "lodash";
@@ -116,6 +117,7 @@ export interface DataElementInfo {
     actualAchieved: number;
     achieved: Maybe<number>;
     comment: string;
+    isCovid19: boolean;
 }
 
 export interface ProjectForMer {
@@ -288,6 +290,8 @@ class MerReport {
     ): Promise<ProjectsData> {
         const { date, organisationUnit } = selectData;
         const orgUnits = await getOrgUnits(api, organisationUnit, date);
+        const disaggregationsByProject = await getDisaggregationsByProject(api, config, orgUnits);
+
         if (_.isEmpty(orgUnits)) return [];
 
         const projectInfoByOrgUnitId = await getProjectInfoByOrgUnitId(api, orgUnits);
@@ -320,7 +324,7 @@ class MerReport {
             const formatDate = (dateStr: string): string => moment(dateStr).format("MMM YYYY");
             const projectInfo = projectInfoByOrgUnitId[orgUnit.id];
             const dataElementIds = _.uniq(projectInfo ? projectInfo.merDataElementIds : []);
-            const getDataElementInfo = (deId: Id) => {
+            const getDataElementInfo = (deId: Id): Maybe<DataElementInfo> => {
                 const dataElement = _(dataElementsById).get(deId, null);
                 if (!dataElement) {
                     console.error(`Cannot found data element: ${deId}`);
@@ -344,6 +348,7 @@ class MerReport {
                 );
                 const achieved = targetAchieved ? (100 * actualAchieved) / targetAchieved : null;
                 const rowsForDeOrgUnitPeriod = rowsForDeOU.filter(r => r.periodId === reportPeriod);
+                const disaggregation = _(disaggregationsByProject).get(project.id, null);
 
                 return {
                     id: dataElement.id,
@@ -354,7 +359,8 @@ class MerReport {
                     targetAchieved,
                     achieved,
                     comment: commentsByProjectAndDe[getKey([project.id, dataElement.id])] || "",
-                } as DataElementInfo;
+                    isCovid19: disaggregation ? disaggregation.isCovid19(dataElement.id) : false,
+                };
             };
 
             if (_.isEmpty(dataElementIds)) return null;
@@ -640,6 +646,34 @@ async function getProjects(
         { page: 1, pageSize: 1000 }
     );
     return projects;
+}
+
+async function getDisaggregationsByProject(
+    api: D2Api,
+    config: Config,
+    orgUnits: Ref[]
+): Promise<Record<string /* project.id */, Disaggregation>> {
+    const { dataSets } = await api.metadata
+        .get({
+            dataSets: {
+                filter: { code: { in: orgUnits.map(ou => `${ou.id}_ACTUAL`) } },
+                fields: {
+                    code: true,
+                    dataSetElements: { dataElement: { id: true }, categoryCombo: { id: true } },
+                },
+            },
+        })
+        .getData();
+
+    return _(dataSets)
+        .map(dataSet => {
+            const { dataSetElements, code } = dataSet;
+            const projectId = code.split("_")[0];
+            const disaggregation = Disaggregation.buildFromDataSetElements(config, dataSetElements);
+            return [projectId, disaggregation] as [string, Disaggregation];
+        })
+        .fromPairs()
+        .value();
 }
 
 export default MerReport;

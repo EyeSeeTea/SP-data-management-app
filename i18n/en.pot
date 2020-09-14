@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2020-08-28T12:58:11.121Z\n"
-"PO-Revision-Date: 2020-08-28T12:58:11.121Z\n"
+"POT-Creation-Date: 2020-09-14T10:11:00.623Z\n"
+"PO-Revision-Date: 2020-09-14T10:11:00.623Z\n"
 
 msgid "Data Entry"
 msgstr ""
@@ -690,6 +690,9 @@ msgid "Countries"
 msgstr ""
 
 msgid "Active"
+msgstr ""
+
+msgid "[COVID-19]"
 msgstr ""
 
 msgid "Monthly Executive Reports"

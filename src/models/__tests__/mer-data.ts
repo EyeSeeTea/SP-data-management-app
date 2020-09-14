@@ -1,8 +1,18 @@
 import MockAdapter from "axios-mock-adapter/types";
 import { logUnknownRequest } from "../../utils/tests";
 
+function mockApiMerDataSets(mock: MockAdapter, orgUnitIds: string[]) {
+    mock.onGet("/metadata", {
+        params: {
+            "dataSets:fields": "code,dataSetElements[categoryCombo[id],dataElement[id]]",
+            "dataSets:filter": [`code:in:[${orgUnitIds.map(ou => `${ou}_ACTUAL`).join(",")}]`],
+        },
+    }).replyOnce(200, {});
+}
+
 export function mockApiForMerReportEmpty(mock: MockAdapter) {
     mock.reset();
+    mockApiMerDataSets(mock, []);
     mock.onGet("/metadata", {
         params: {
             "organisationUnits:fields":
@@ -106,6 +116,8 @@ export function mockApiForMerReportWithData(mock: MockAdapter) {
             },
         ],
     });
+
+    mockApiMerDataSets(mock, ["uWuM0QT2pVl", "SKuiiu7Vbwv"]);
 
     mock.onGet("/analytics", {
         params: {

@@ -132,6 +132,7 @@ describe("MerReport", () => {
                             targetAchieved: 5,
                             achieved: 40,
                             comment: "comment1",
+                            isCovid19: false,
                         },
                         {
                             id: "We61YNYyOX0",
@@ -142,6 +143,7 @@ describe("MerReport", () => {
                             targetAchieved: 7,
                             achieved: 85.71428571428571,
                             comment: "comment2",
+                            isCovid19: false,
                         },
                     ],
                 },
@@ -163,6 +165,7 @@ describe("MerReport", () => {
                             targetAchieved: 0,
                             achieved: null,
                             comment: "",
+                            isCovid19: false,
                         },
                     ],
                 },
