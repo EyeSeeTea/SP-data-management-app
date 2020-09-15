@@ -167,7 +167,7 @@ export default class DataElementsSet {
                     id: d2DataElement.id,
                     name: name,
                     code: d2DataElement.code,
-                    ...getDescriptionFields(d2DataElement),
+                    ...getDescriptionFields(attrsMap.extraDataElement || ""),
                     sectorsInfo: sectorsInfo,
                     mainSector: { id: mainSector.id },
                     mainSeries,
@@ -567,14 +567,13 @@ function getGroupsByDataElementId<Group extends { dataElements: Array<Ref> }>(de
     return res;
 }
 
-function getDescriptionFields(d2DataElement: { description: string }) {
-    const { description } = d2DataElement;
-    const [externals = "", notes = ""] = description.split("\n", 2);
+function getDescriptionFields(extraInfo: string) {
+    const [externals = "", guidance = ""] = extraInfo.split("\n", 2);
     const externalsDescription = externals.split("Externals: ", 2)[1] || "";
 
     return {
         externalsDescription: externalsDescription === "-" ? "" : externalsDescription,
-        description: notes.trim(),
+        description: guidance.trim(),
     };
 }
 
