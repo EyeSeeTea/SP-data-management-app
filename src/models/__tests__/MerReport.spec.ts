@@ -121,6 +121,7 @@ describe("MerReport", () => {
                     id: "uWuM0QT2pVl",
                     name: "0Test1-25236",
                     dateInfo: "Nov 2019 -> Mar 2020",
+                    locations: [],
                     dataElements: [
                         {
                             id: "WS8XV4WWPE7",
@@ -148,6 +149,10 @@ describe("MerReport", () => {
                     id: "SKuiiu7Vbwv",
                     name: "0Test1-48852",
                     dateInfo: "Nov 2019 -> Mar 2020",
+                    locations: [
+                        { id: "GG0k0oNhgS7", name: "loc-GG0k0oNhgS7" },
+                        { id: "uKgHpYUmD87", name: "loc-uKgHpYUmD87" },
+                    ],
                     dataElements: [
                         {
                             id: "yUGuwPFkBrj",

@@ -111,22 +111,24 @@ class MerReportSpreadsheet {
 
     addActivitesSheet(workbook: Workbook) {
         const { merReport } = this;
+        const dataElementsMER = merReport.getData();
 
-        const dataRows: Row[] = _.flatMap(merReport.data.projectsData, project => {
-            return project.dataElements.map(de => {
-                return [
-                    text(`${project.name} (${project.dateInfo})`),
-                    text(de.name),
-                    float(de.target),
-                    float(de.actual),
-                    float(de.targetAchieved),
-                    float(de.actualAchieved),
-                    float(de.achieved),
-                    text(de.comment),
-                ];
-            });
+        const dataRows: Row[] = dataElementsMER.map(de => {
+            const { project } = de;
+            return [
+                text(de.locations.map(location => location.name).join(", ")),
+                text(`${project.name} (${project.dateInfo})`),
+                text(de.name),
+                float(de.target),
+                float(de.actual),
+                float(de.targetAchieved),
+                float(de.actualAchieved),
+                float(de.achieved),
+                text(de.comment),
+            ];
         });
         const columns = [
+            header(i18n.t("Locations"), { width: 40 }),
             header(i18n.t("Project"), { width: 40 }),
             header(i18n.t("Indicators"), { width: 50 }),
             header(i18n.t("Target"), { width: 12, isNumber: true }),
