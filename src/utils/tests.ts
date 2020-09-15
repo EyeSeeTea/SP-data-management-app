@@ -5,7 +5,7 @@ export function logUnknownRequest(mock: MockAdapter) {
     mock.onAny().reply(args => {
         const { method, url, params, data } = args;
         const msgs: string[] = [];
-        msgs.push(`Error:  ${method?.toUpperCase()} ${url}`);
+        msgs.push(`Error: \n${method?.toUpperCase()} ${url}`);
         if (params) msgs.push(`Params: ${JSON.stringify(params)}`);
         if (data) {
             const json = JSON.stringify(JSON.parse(data), null, 2);
