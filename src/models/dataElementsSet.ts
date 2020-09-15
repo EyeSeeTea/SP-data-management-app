@@ -114,12 +114,13 @@ export default class DataElementsSet {
     ): Promise<DataElementBase[]> {
         const { dataElementGroupSets } = metadata;
         const degsCodes = baseConfig.dataElementGroupSets;
+        const user = new User({ base: baseConfig, currentUser });
+
         const sectorsSet = getBy(dataElementGroupSets, "code", degsCodes.sector);
         const seriesSet = getBy(dataElementGroupSets, "code", degsCodes.series);
         const externalsSet = getBy(dataElementGroupSets, "code", degsCodes.externals);
         const degCodes = baseConfig.dataElementGroups;
         const dataElementsByCode = _.keyBy(metadata.dataElements, de => de.code);
-        const userIsAdmin = new User({ base: baseConfig, currentUser }).hasRole("admin");
         const sectorsByCode = _.keyBy(sectorsSet.dataElementGroups, deg => deg.code);
         const d2DataElements = getDataElementsFromSet(metadata, sectorsSet);
         const externalsByDataElementId = getGroupsByDataElementId(externalsSet);
@@ -139,7 +140,8 @@ export default class DataElementsSet {
             const externalGroups = externalsByDataElementId[d2DataElement.id] || [];
             const externals = _.sortBy(externalGroups.map(group => group.displayName));
             const deCode = d2DataElement.code;
-            const isSelectable = indicatorType !== "custom" || userIsAdmin;
+            const isSelectable =
+                indicatorType !== "custom" || user.hasRole("admin") || user.hasRole("dataReviewer");
             const name =
                 d2DataElement.displayName +
                 (isSelectable ? "" : ` ${i18n.t("[only for admin users]")}`);
@@ -165,7 +167,7 @@ export default class DataElementsSet {
                     id: d2DataElement.id,
                     name: name,
                     code: d2DataElement.code,
-                    ...getDescriptionFields(d2DataElement),
+                    ...getDescriptionFields(attrsMap.extraDataElement || ""),
                     sectorsInfo: sectorsInfo,
                     mainSector: { id: mainSector.id },
                     mainSeries,
@@ -565,14 +567,13 @@ function getGroupsByDataElementId<Group extends { dataElements: Array<Ref> }>(de
     return res;
 }
 
-function getDescriptionFields(d2DataElement: { description: string }) {
-    const { description } = d2DataElement;
-    const [externals = "", notes = ""] = description.split("\n", 2);
+function getDescriptionFields(extraInfo: string) {
+    const [externals = "", guidance = ""] = extraInfo.split("\n", 2);
     const externalsDescription = externals.split("Externals: ", 2)[1] || "";
 
     return {
         externalsDescription: externalsDescription === "-" ? "" : externalsDescription,
-        description: notes.trim(),
+        description: guidance.trim(),
     };
 }
 

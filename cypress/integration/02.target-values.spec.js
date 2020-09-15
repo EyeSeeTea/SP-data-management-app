@@ -8,7 +8,7 @@ describe("Target Values", () => {
         cy.contains("Add Target Values").click();
     });
 
-    it.skip("can enter data values with new/returning validations", () => {
+    it("can enter data values with new/returning validations", () => {
         const entryPage = new DataEntryPage("data-entry");
         entryPage.setInputValue("WS8XV4WWPE7", "GI9GyGCQwTf", 10);
 
@@ -63,13 +63,13 @@ describe("Target Values", () => {
             .setInputValue(dataElementMicrofinanceId, cocIds.newMale, 3)
             .setInputValue(dataElementMicrofinanceId, cocIds.returningMale, 9, {
                 validationError:
-                    "Returning value (9) cannot be greater than the sum of initial returning + new values for past periods: July 2020 [1] + July 2020 [5] + August 2020 [2] = 8",
+                    "Returning value (9) cannot be greater than the sum of initial returning + new values for past periods",
             })
 
             .setInputValue(dataElementTopicsId, cocCovidIds.newMale, 3)
             .setInputValue(dataElementTopicsId, cocCovidIds.returningMale, 9, {
                 validationError:
-                    "Returning value (9) cannot be greater than the sum of initial returning + new values for past periods: July 2020 [1] + July 2020 [5] + August 2020 [2] = 8",
+                    "Returning value (9) cannot be greater than the sum of initial returning + new values for past periods",
             });
     });
 });
