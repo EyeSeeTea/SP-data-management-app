@@ -29,7 +29,6 @@ export interface DataElementsTableProps {
 
 const paginationOptions = {
     pageSizeOptions: [10, 20, 50],
-    pageSizeInitialValue: 20,
 };
 
 const initialPagination: Partial<TablePagination> = {

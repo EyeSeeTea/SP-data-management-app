@@ -35,12 +35,7 @@ function getComponentConfig(
     setProjectIdsToDelete: (state: React.SetStateAction<Id[] | undefined>) => void,
     currentUser: CurrentUser
 ) {
-    const initialPagination = {
-        page: 1,
-        pageSize: 20,
-        pageSizeOptions: [10, 20, 50],
-    };
-
+    const initialPagination = { page: 1, pageSize: 10 };
     const initialSorting = { field: "displayName" as const, order: "asc" as const };
 
     const columns: TableColumn<ProjectForList>[] = [
@@ -248,6 +243,7 @@ const ProjectsList: React.FC = () => {
                     searchBoxLabel={i18n.t("Search by name or code")}
                     onChangeSearch={setSearch}
                     pagination={pagination}
+                    paginationOptions={paginationOptions}
                     onChange={onStateChange}
                     columns={componentConfig.columns}
                     details={componentConfig.details}
@@ -338,5 +334,9 @@ function getSharingInfo(project: ProjectForList) {
         </React.Fragment>
     );
 }
+
+const paginationOptions = {
+    pageSizeOptions: [10, 20, 50],
+};
 
 export default React.memo(ProjectsList);
