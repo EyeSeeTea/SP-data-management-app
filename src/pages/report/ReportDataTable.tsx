@@ -9,7 +9,7 @@ import {
     LinearProgress,
 } from "@material-ui/core";
 
-import MerReport, { DataElementInfo, Project } from "../../models/MerReport";
+import MerReport, { DataElementInfo, ProjectForMer } from "../../models/MerReport";
 import i18n from "../../locales";
 import { getMultilineRows } from "./utils";
 import TextFieldOnBlur from "./TextFieldOnBlur";
@@ -27,7 +27,7 @@ const ReportDataTable: React.FC<ReportDataTableProps> = props => {
     if (!date || !organisationUnit) return null;
 
     function onCommentChange(
-        project: Project,
+        project: ProjectForMer,
         dataElement: DataElementInfo,
         comment: string
     ): void {
@@ -101,9 +101,9 @@ function formatNumber(n: number | null | undefined, suffix?: string): string {
 }
 
 interface DataElementCellsProps {
-    project: Project;
+    project: ProjectForMer;
     dataElement: DataElementInfo;
-    onChange(project: Project, dataElement: DataElementInfo, value: string): void;
+    onChange(project: ProjectForMer, dataElement: DataElementInfo, value: string): void;
 }
 
 const DataElementCells: React.FC<DataElementCellsProps> = ({ project, dataElement, onChange }) => (

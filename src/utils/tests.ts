@@ -20,8 +20,7 @@ export function logUnknownRequest(mockAdapter: MockAdapter) {
         if (!method) return [500, {}];
 
         const msgs: string[] = [];
-        msgs.push(`Error:  ${method?.toUpperCase()} ${url}`);
-
+        msgs.push(`Error: \n${method?.toUpperCase()} ${url}`);
         if (params) msgs.push(`Params: ${JSON.stringify(params)}`);
 
         if (data) {
