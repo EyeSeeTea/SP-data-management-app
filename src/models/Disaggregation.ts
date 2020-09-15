@@ -1,7 +1,8 @@
 import _ from "lodash";
 import { Id, Ref } from "../types/d2-api";
 import { Config } from "./Config";
-import { getRef, haveSameRefs } from "../utils/dhis2";
+import { getRef, haveSameRefs, getIds } from "../utils/dhis2";
+import DataElementsSet, { SelectionInfo } from "./dataElementsSet";
 
 /* Custom disaggregation for data elements in target/actual data sets.
 
@@ -23,6 +24,13 @@ interface DataSetElement {
     dataElement: Ref;
     categoryCombo?: Ref;
 }
+
+export type SetCovid19WithRelationsOptions = {
+    dataElementsSet: DataElementsSet;
+    sectorId: Id;
+    dataElementIds: Id[];
+    isSet: boolean;
+};
 
 export class Disaggregation {
     constructor(private config: Config, private data: Data) {}
@@ -101,5 +109,28 @@ export class Disaggregation {
 
     isCovid19(dataElementId: Id): boolean {
         return !!this.data.mapping[dataElementId];
+    }
+
+    setCovid19WithRelations(
+        options: SetCovid19WithRelationsOptions
+    ): { selectionInfo: SelectionInfo; disaggregation: Disaggregation } {
+        const { dataElementsSet, sectorId, dataElementIds, isSet } = options;
+        const isCovid = this.isCovid19.bind(this);
+
+        const selectedIds = dataElementsSet
+            .get({ sectorId, onlySelected: true })
+            .filter(de => (dataElementIds.includes(de.id) ? isSet : isCovid(de.id)))
+            .map(de => de.id);
+
+        const res = dataElementsSet.getSelectionInfo(selectedIds, sectorId, { filter: isCovid });
+        const { selected, unselectable, selectionInfo } = res;
+
+        const deIdsToUpdate = _(dataElementIds)
+            .concat(getIds(selected))
+            .difference(unselectable.map(de => de.id))
+            .value();
+        const newDisaggregation = this.setCovid19(deIdsToUpdate, isSet);
+
+        return { selectionInfo, disaggregation: newDisaggregation };
     }
 }

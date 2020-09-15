@@ -10,11 +10,13 @@ import LocalHospitalIcon from "@material-ui/icons/LocalHospital";
 import NotInterestedIcon from "@material-ui/icons/NotInterested";
 import Project from "../../../models/Project";
 import { renderJoin } from "../../../utils/react";
-import { getIds } from "../../../utils/dhis2";
 import { useSectionsSidebar } from "../../sections-sidebar/sections-sidebar-hooks";
 import SectionsSidebar from "../../sections-sidebar/SectionsSidebar";
+import { useSnackbar } from "d2-ui-components";
+import { showSelectionMessage } from "../data-elements/table-utils";
 
 const DisaggregationStep: React.FC<StepProps> = ({ project, onChange }) => {
+    const snackbar = useSnackbar();
     const { items: sectorItems, sectorId, setSector } = useSectionsSidebar(project);
     const dataElementsSet = project.dataElementsSelection;
 
@@ -27,14 +29,12 @@ const DisaggregationStep: React.FC<StepProps> = ({ project, onChange }) => {
 
     const setValues = React.useCallback(
         (dataElementIds: Id[], isSet: boolean) => {
-            const related = dataElementsSet.getRelated(sectorId, dataElementIds, {
-                includeSource: true,
-            });
-            const newDisaggregation = project.disaggregation.setCovid19(getIds(related), isSet);
-            const newProject = project.setObj({ disaggregation: newDisaggregation });
+            const options = { dataElementsSet, sectorId, dataElementIds, isSet };
+            const { selectionInfo, project: newProject } = project.setCovid19(options);
+            showSelectionMessage(snackbar, selectionInfo);
             onChange(newProject);
         },
-        [onChange, project, sectorId]
+        [onChange, project, sectorId, dataElementsSet]
     );
 
     const customColumns = React.useMemo(() => {
@@ -136,7 +136,7 @@ const Covid19Column: React.FC<{
     );
 };
 
-const initialColumns: FieldName[] = ["name", "code", "indicatorType", "peopleOrBenefit"];
+const initialColumns: FieldName[] = ["name", "code", "indicatorType", "peopleOrBenefit", "series"];
 const visibleFilters: FilterKey[] = ["indicatorType"];
 
 export default React.memo(DisaggregationStep);

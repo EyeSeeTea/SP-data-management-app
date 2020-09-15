@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2020-07-30T11:25:35.365Z\n"
-"PO-Revision-Date: 2020-07-30T11:25:35.365Z\n"
+"POT-Creation-Date: 2020-09-15T09:46:03.584Z\n"
+"PO-Revision-Date: 2020-09-15T09:46:03.584Z\n"
 
 msgid "Data Entry"
 msgstr ""
@@ -102,9 +102,6 @@ msgid "Search by name / code"
 msgstr ""
 
 msgid "Guidance"
-msgstr ""
-
-msgid "selected"
 msgstr ""
 
 msgid "No"
@@ -440,7 +437,7 @@ msgstr ""
 msgid "[only for admin users]"
 msgstr ""
 
-msgid "Global data elements with selected subs cannot be unselected"
+msgid "Global indicators with selected subs cannot be unselected"
 msgstr ""
 
 msgid "None"
