@@ -1,9 +1,9 @@
-import { GetItemType } from "./../types/utils";
+import { GetItemType, Maybe } from "./../types/utils";
 import moment, { Moment } from "moment";
 import _ from "lodash";
 import { Id, Ref, D2Api, DataStore } from "../types/d2-api";
 import { Config, Sector } from "./Config";
-import { getDataStore } from "../utils/dhis2";
+import { getDataStore, getId, getIds } from "../utils/dhis2";
 import { runPromises } from "../utils/promises";
 import { getProjectFromOrgUnit, getOrgUnitDatesFromProject } from "./Project";
 import { toISOString, getMonthsRange } from "../utils/date";
@@ -53,6 +53,8 @@ interface Data {
     additionalComments: string;
 }
 
+export type MerReportData = Data;
+
 type SectorId = Id;
 type ExecutiveSummaries = Record<SectorId, string | undefined>;
 
@@ -66,60 +68,19 @@ interface Row {
     value: number;
 }
 
-const emptyStaffSummary: StaffSummary = {};
+type Location = { id: Id; name: string };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function getSectorsWithMerDataElements(
-    config: Config,
-    projects: ProjectForList[],
-    projectsData: ProjectsData
-): Sector[] {
-    const merDataElementIds = _.flatMap(projectsData, data => data.dataElements.map(de => de.id));
-    const sectorsById = _.keyBy(config.sectors, sector => sector.id);
-
-    const sectorIdByDataElementId: Record<Id, Id> = _(projects)
-        .flatMap(project =>
-            _.flatMap(project.dataElementIdsBySectorId, (deIds, sectorId) =>
-                deIds.map(deId => [deId, sectorId])
-            )
-        )
-        .fromPairs()
-        .value();
-
-    const sectorIds = _(sectorIdByDataElementId)
-        .at(merDataElementIds)
-        .uniq()
-        .value();
-
-    return _(sectorsById)
-        .at(sectorIds)
-        .compact()
-        .sortBy(sector => sector.displayName)
-        .value();
+export interface DataElementMER extends DataElementInfo {
+    locations: Location[];
+    project: ProjectForMer;
 }
 
-function getProjectSectors(projects: ProjectForList[]): Sector[] {
-    return _(projects)
-        .flatMap(project => project.sectors)
-        .uniqBy(sector => sector.id)
-        .sortBy(sector => sector.displayName)
-        .value();
-}
-
-function getInitialData(sectors: Sector[]) {
-    const executiveSummaries = _(sectors)
-        .map(sector => [sector.id, ""] as [SectorId, string])
-        .fromPairs()
-        .value();
-
-    return {
-        countryDirector: "",
-        executiveSummaries,
-        ministrySummary: "",
-        projectedActivitiesNextMonth: "",
-        additionalComments: "",
-        staffSummary: emptyStaffSummary,
-    };
+interface OrgUnit {
+    id: Id;
+    displayName: string;
+    openingDate: string;
+    closedDate: string;
+    organisationUnitGroups: Ref[];
 }
 
 export interface ProjectInfo {
@@ -162,11 +123,38 @@ export interface ProjectForMer {
     dateInfo: string;
     name: string;
     dataElements: DataElementInfo[];
+    locations: Array<{ id: Id; name: string }>;
 }
 
 export type ProjectsData = ProjectForMer[];
 
 type SelectData = Pick<Data, "date" | "organisationUnit">;
+
+const emptyStaffSummary: StaffSummary = {};
+
+function getProjectSectors(projects: ProjectForList[]): Sector[] {
+    return _(projects)
+        .flatMap(project => project.sectors)
+        .uniqBy(sector => sector.id)
+        .sortBy(sector => sector.displayName)
+        .value();
+}
+
+function getInitialData(sectors: Sector[]) {
+    const executiveSummaries = _(sectors)
+        .map(sector => [sector.id, ""] as [SectorId, string])
+        .fromPairs()
+        .value();
+
+    return {
+        countryDirector: "",
+        executiveSummaries,
+        ministrySummary: "",
+        projectedActivitiesNextMonth: "",
+        additionalComments: "",
+        staffSummary: emptyStaffSummary,
+    };
+}
 
 class MerReport {
     dataStore: DataStore;
@@ -322,6 +310,12 @@ class MerReport {
         const rows = await getAnalyticRows(config, api, orgUnits, periods, merDataElements);
 
         const projectsData: Array<ProjectForMer | null> = orgUnits.map(orgUnit => {
+            const locations = _(config.locations)
+                .keyBy(getId)
+                .at(getIds(orgUnit.organisationUnitGroups))
+                .compact()
+                .sortBy(location => location.displayName)
+                .value();
             const project = getProjectFromOrgUnit(orgUnit);
             const formatDate = (dateStr: string): string => moment(dateStr).format("MMM YYYY");
             const projectInfo = projectInfoByOrgUnitId[orgUnit.id];
@@ -368,6 +362,7 @@ class MerReport {
             const projectForMer: ProjectForMer = {
                 id: orgUnit.id,
                 name: project.displayName,
+                locations: locations.map(({ id, displayName }) => ({ id, name: displayName })),
                 dateInfo: `${formatDate(project.openingDate)} -> ${formatDate(project.closedDate)}`,
                 dataElements: _.compact(dataElementIds.map(getDataElementInfo)),
             };
@@ -377,9 +372,31 @@ class MerReport {
 
         return _.compact(projectsData);
     }
+
+    getData(): DataElementMER[] {
+        const richDataElements = _.flatMap(this.data.projectsData, project =>
+            project.dataElements.map<DataElementMER>(dataElementInfo => {
+                return {
+                    ...dataElementInfo,
+                    locations: project.locations,
+                    project,
+                };
+            })
+        );
+
+        return _.orderBy(richDataElements, [
+            item => item.locations.length,
+            item => item.project.name,
+            item => item.name,
+        ]);
+    }
 }
 
-async function getOrgUnits(api: D2Api, organisationUnit: OrganisationUnit, date: Moment) {
+async function getOrgUnits(
+    api: D2Api,
+    organisationUnit: OrganisationUnit,
+    date: Moment
+): Promise<OrgUnit[]> {
     const startOfMonth = date.clone().startOf("month");
     const dates = getOrgUnitDatesFromProject(startOfMonth, startOfMonth);
 
@@ -391,6 +408,7 @@ async function getOrgUnits(api: D2Api, organisationUnit: OrganisationUnit, date:
                     displayName: true,
                     openingDate: true,
                     closedDate: true,
+                    organisationUnitGroups: { id: true },
                 },
                 filter: {
                     "parent.id": { eq: organisationUnit.id },
@@ -531,8 +549,6 @@ async function getAnalyticRows(
     return rows;
 }
 
-type Maybe<T> = T | undefined | null;
-
 async function getReportData<OU extends Ref>(
     api: D2Api,
     organisationUnit: OU,
@@ -613,11 +629,10 @@ async function getProjects(
     config: Config,
     selectData: SelectData
 ): Promise<ProjectForList[]> {
-    const { date, organisationUnit } = selectData;
     const { objects: projects } = await new ProjectsList(api, config).get(
         {
-            countryIds: [organisationUnit.id],
-            dateInProject: date,
+            countryIds: [selectData.organisationUnit.id],
+            dateInProject: selectData.date,
             createdByAppOnly: true,
             userCountriesOnly: true,
         },
@@ -626,7 +641,5 @@ async function getProjects(
     );
     return projects;
 }
-
-export type MerReportData = Data;
 
 export default MerReport;

@@ -33,6 +33,11 @@ interface FormulaValue extends ValueBase {
     value: GetFormulaValue;
 }
 
+const defaultFont: Partial<Font> = {
+    name: "Times New Roman",
+    size: 12,
+};
+
 class MerReportSpreadsheet {
     constructor(public merReport: MerReport) {}
 
@@ -70,7 +75,7 @@ class MerReportSpreadsheet {
             [
                 text(title, {
                     colspan: 6,
-                    font: { bold: true, size: 12 },
+                    font: { bold: true, size: 13 },
                     alignment: { horizontal: "center" },
                 }),
             ],
@@ -111,22 +116,24 @@ class MerReportSpreadsheet {
 
     addActivitesSheet(workbook: Workbook) {
         const { merReport } = this;
+        const dataElementsMER = merReport.getData();
 
-        const dataRows: Row[] = _.flatMap(merReport.data.projectsData, project => {
-            return project.dataElements.map(de => {
-                return [
-                    text(`${project.name} (${project.dateInfo})`),
-                    text(de.name),
-                    float(de.target),
-                    float(de.actual),
-                    float(de.targetAchieved),
-                    float(de.actualAchieved),
-                    float(de.achieved),
-                    text(de.comment),
-                ];
-            });
+        const dataRows: Row[] = dataElementsMER.map(de => {
+            const { project } = de;
+            return [
+                text(de.locations.map(location => location.name).join(", ")),
+                text(`${project.name} (${project.dateInfo})`),
+                text(de.name),
+                float(de.target),
+                float(de.actual),
+                float(de.targetAchieved),
+                float(de.actualAchieved),
+                float(de.achieved),
+                text(de.comment),
+            ];
         });
         const columns = [
+            header(i18n.t("Locations"), { width: 40 }),
             header(i18n.t("Project"), { width: 40 }),
             header(i18n.t("Indicators"), { width: 50 }),
             header(i18n.t("Target"), { width: 12, isNumber: true }),
@@ -138,7 +145,8 @@ class MerReportSpreadsheet {
         ];
 
         const sheet = addWorkSheet(workbook, i18n.t("Activities"), dataRows, { columns });
-        sheet.getRow(1).font = { bold: true };
+        sheet.getRow(1).font = { bold: true, ...defaultFont };
+
         return sheet;
     }
 }
@@ -197,7 +205,7 @@ function applyStyles(sheet: Worksheet, rows: Row[]): void {
             if (cell.type === "text") {
                 const nLines = cell.value.trim().split(/\n/).length;
                 if (nLines > 1) {
-                    cell.height = 12 * nLines;
+                    cell.height = 14 * nLines;
                 }
             }
 
@@ -206,6 +214,8 @@ function applyStyles(sheet: Worksheet, rows: Row[]): void {
             if (cell.font) {
                 sheetCell.font = cell.font;
             }
+
+            sheetCell.font = { ...defaultFont, ...sheetCell.font };
         });
 
         const maxHeight = _(row)
@@ -275,11 +285,11 @@ function text(s: string, options: Options = {}): Value {
 }
 
 function bold(s: string, options: Options = {}): Value {
-    return text(s, { font: { bold: true, size: 10 }, ...options });
+    return text(s, { font: { bold: true }, ...options });
 }
 
 function italic(s: string, options: Options = {}): Value {
-    return text(s, { font: { italic: true, size: 10 }, ...options });
+    return text(s, { font: { italic: true }, ...options });
 }
 
 export default MerReportSpreadsheet;
