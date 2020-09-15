@@ -579,12 +579,18 @@ export function getProjectFromOrgUnit<OU extends OrgUnitWithDates>(orgUnit: OU):
 
 export function getOrgUnitDatesFromProject(startDate: Moment, endDate: Moment): OrgUnitWithDates {
     return {
-        openingDate: toISOString(startDate.clone().subtract(1, "month")),
+        openingDate: toISOString(
+            startDate
+                .clone()
+                .subtract(1, "month")
+                .startOf("day")
+        ),
         closedDate: toISOString(
             endDate
                 .clone()
                 .add(1, "month")
                 .endOf("month")
+                .startOf("day")
         ),
     };
 }
