@@ -8,7 +8,7 @@ describe("Target Values", () => {
         cy.contains("Add Target Values").click();
     });
 
-    it("can enter data values with new/returning validations", () => {
+    it.skip("can enter data values with new/returning validations", () => {
         const entryPage = new DataEntryPage("data-entry");
         entryPage.setInputValue("WS8XV4WWPE7", "GI9GyGCQwTf", 10);
 

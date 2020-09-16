@@ -217,10 +217,13 @@ const ProjectsList: React.FC = () => {
         setLoading(false);
     }
 
-    const onStateChange = useCallback((newState: TableState<ProjectForList>) => {
-        const { pagination, sorting } = newState;
-        getProjects(sorting, pagination);
-    }, []);
+    const onStateChange = useCallback(
+        (newState: TableState<ProjectForList>) => {
+            const { pagination, sorting } = newState;
+            getProjects(sorting, pagination);
+        },
+        [search, filter, objectsTableKey]
+    );
 
     const closeDeleteDialog = useCallback(() => {
         setProjectIdsToDelete(undefined);
