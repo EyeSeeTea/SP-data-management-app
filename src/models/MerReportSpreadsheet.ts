@@ -132,6 +132,7 @@ class MerReportSpreadsheet {
                 text(de.comment),
             ];
         });
+
         const columns = [
             header(i18n.t("Locations"), { width: 40 }),
             header(i18n.t("Project"), { width: 40 }),
@@ -145,7 +146,6 @@ class MerReportSpreadsheet {
         ];
 
         const sheet = addWorkSheet(workbook, i18n.t("Activities"), dataRows, { columns });
-        sheet.getRow(1).font = { bold: true, ...defaultFont };
 
         return sheet;
     }
@@ -183,21 +183,24 @@ function addWorkSheet(
         )
     );
     sheet.addRows(sheetRows);
-    applyStyles(sheet, rows);
+    applyStyles(sheet, rows, { hasColumns: !!options.columns });
     return sheet;
 }
 
-function applyStyles(sheet: Worksheet, rows: Row[]): void {
+function applyStyles(sheet: Worksheet, rows: Row[], options: { hasColumns: boolean }): void {
+    const rowOffset = options.hasColumns ? 2 : 1;
+
     rows.forEach((row, rowIndex) => {
         row.forEach((cell, columnIndex) => {
-            const sheetCell = sheet.getCell(rowIndex + 1, columnIndex + 1);
+            const iRow = rowIndex + rowOffset;
+            const sheetCell = sheet.getCell(iRow, columnIndex + 1);
 
             if (cell.colspan) {
                 const left = columnIndex + 1;
                 sheet.mergeCells({
-                    top: rowIndex + 1,
+                    top: iRow,
                     left,
-                    bottom: rowIndex + 1,
+                    bottom: iRow,
                     right: left + cell.colspan - 1,
                 });
             }
@@ -222,7 +225,10 @@ function applyStyles(sheet: Worksheet, rows: Row[]): void {
             .map(cell => cell.height)
             .compact()
             .max();
+
         if (maxHeight) sheet.getRow(rowIndex + 1).height = maxHeight;
+
+        if (options.hasColumns) sheet.getRow(1).font = { bold: true, ...defaultFont };
     });
 }
 
