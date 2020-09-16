@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2020-09-15T09:46:03.584Z\n"
-"PO-Revision-Date: 2020-09-15T09:46:03.584Z\n"
+"POT-Creation-Date: 2020-09-16T08:28:13.061Z\n"
+"PO-Revision-Date: 2020-09-16T08:28:13.061Z\n"
 
 msgid "Data Entry"
 msgstr ""
@@ -199,6 +199,11 @@ msgid ""
 msgstr ""
 
 msgid "Data Approval"
+msgstr ""
+
+msgid ""
+"Global indicators with COVID-19 sub-indicators cannot be have the COVID-19 "
+"disaggregation disabled"
 msgstr ""
 
 msgid "National Staff"
@@ -443,7 +448,7 @@ msgstr ""
 msgid "[only for admin users]"
 msgstr ""
 
-msgid "Global indicators with selected subs cannot be unselected"
+msgid "Global indicators with selected sub-indicators cannot be unselected"
 msgstr ""
 
 msgid "None"

@@ -3,6 +3,7 @@ import { Id, Ref } from "../types/d2-api";
 import { Config } from "./Config";
 import { getRef, haveSameRefs, getIds } from "../utils/dhis2";
 import DataElementsSet, { SelectionInfo } from "./dataElementsSet";
+import i18n from "../locales";
 
 /* Custom disaggregation for data elements in target/actual data sets.
 
@@ -122,7 +123,15 @@ export class Disaggregation {
             .filter(de => (dataElementIds.includes(de.id) ? isSet : isCovid(de.id)))
             .map(de => de.id);
 
-        const res = dataElementsSet.getSelectionInfo(selectedIds, sectorId, { filter: isCovid });
+        const res = dataElementsSet.getSelectionInfo(selectedIds, sectorId, {
+            filter: isCovid,
+            autoselectionMessage: i18n.t(
+                "Those related global indicators have been automatically selected as COVID-19:"
+            ),
+            unselectionWarningMessage: i18n.t(
+                "Global indicators with COVID-19 sub-indicators cannot be have the COVID-19 disaggregation disabled"
+            ),
+        });
         const { selected, unselectable, selectionInfo } = res;
 
         const deIdsToUpdate = _(dataElementIds)

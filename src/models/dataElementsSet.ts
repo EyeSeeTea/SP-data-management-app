@@ -318,17 +318,29 @@ export default class DataElementsSet {
 
             - Data elements that must be automatically selected bacause of enforced relationships.
             - Data elements that cannot be unselected because of those same relationships.
-            - Some messages about the operation (useful to give feedback to the user).
+            - Some info messages about the operation (useful to give feedback to the user).
 
-        Pass an optional filter predicate to act only on a subset of data elements in this set.
+        Pass an optional filter predicate to act on a subset of data elements.
     */
     getSelectionInfo(
         selectedIds: string[],
         sectorId: string,
-        options: { filter?: (dataElementId: string) => boolean } = {}
+        options: {
+            filter?: (dataElementId: string) => boolean;
+            autoselectionMessage?: string;
+            unselectionWarningMessage?: string;
+        } = {}
     ): { selected: DataElement[]; unselectable: DataElement[]; selectionInfo: SelectionInfo } {
         const newSelection = new Set(selectedIds);
-        const { filter = (_dataElementId: string) => true } = options;
+        const {
+            filter = (_dataElementId: string) => true,
+            autoselectionMessage = i18n.t(
+                "Those related global indicators have been automatically selected:"
+            ),
+            unselectionWarningMessage = i18n.t(
+                "Global indicators with selected sub-indicators cannot be unselected"
+            ),
+        } = options;
 
         const prevSelectionAll = new Set(
             this.get({ onlySelected: true })
@@ -353,13 +365,8 @@ export default class DataElementsSet {
         const selected = newRelated.filter(de => !prevSelectionAll.has(de.id));
         const selectionInfo = {
             messages: [
-                ...getSelectionMessage(
-                    selected,
-                    i18n.t("Those related indicators have been automatically selected:")
-                ),
-                ...(_.isEmpty(unselectable)
-                    ? []
-                    : [i18n.t("Global indicators with selected subs cannot be unselected")]),
+                ...getSelectionMessage(selected, autoselectionMessage),
+                ...(_.isEmpty(unselectable) ? [] : [unselectionWarningMessage]),
             ],
         };
 
