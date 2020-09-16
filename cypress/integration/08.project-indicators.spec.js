@@ -60,7 +60,7 @@ describe("Projects - Indicators", () => {
             .selectSector("Agriculture")
             // A global with subs cannot be unselected
             .unselect("B010200")
-            .expectSnackbar("Global data elements with selected subs cannot be unselected")
+            .expectSnackbar("Global indicators with selected sub-indicators cannot be unselected")
 
             .selectSector("Protection")
             .select("B100500")
