@@ -335,7 +335,7 @@ export default class DataElementsSet {
         const {
             filter = (_dataElementId: string) => true,
             autoselectionMessage = i18n.t(
-                "Those related global indicators have been automatically selected:"
+                "These related global indicators have been automatically selected:"
             ),
             unselectionWarningMessage = i18n.t(
                 "Global indicators with selected sub-indicators cannot be unselected"

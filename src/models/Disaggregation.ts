@@ -126,10 +126,10 @@ export class Disaggregation {
         const res = dataElementsSet.getSelectionInfo(selectedIds, sectorId, {
             filter: isCovid,
             autoselectionMessage: i18n.t(
-                "Those related global indicators have been automatically selected as COVID-19:"
+                "These related global indicators have been automatically selected as COVID-19:"
             ),
             unselectionWarningMessage: i18n.t(
-                "Global indicators with COVID-19 sub-indicators cannot be have the COVID-19 disaggregation disabled"
+                "Global indicators with COVID-19 sub-indicators cannot have the COVID-19 disaggregation disabled"
             ),
         });
         const { selected, unselectable, selectionInfo } = res;
