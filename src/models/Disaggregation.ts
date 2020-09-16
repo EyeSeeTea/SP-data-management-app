@@ -9,7 +9,7 @@ import DataElementsSet, { SelectionInfo } from "./dataElementsSet";
 - If a data element is not selected as COVID-19, simply use its category combo.
 - If a data element is selected as COVID-19:
     - Get its category combo and extract its categories.
-    - Add the COVID-19 category to set of categories.
+    - Add the COVID-19 category to the set of categories.
     - Find a category combo that contains those categories.
     - Use that category combo as the disaggregation for this data element in the data set.
 */

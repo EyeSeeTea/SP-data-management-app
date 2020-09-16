@@ -38,6 +38,11 @@ interface FormulaValue extends ValueBase {
 
 type Period = { id: string; date: Moment };
 
+const defaultFont: Partial<Font> = {
+    name: "Times New Roman",
+    size: 12,
+};
+
 const percentage = "0.00%";
 
 const baseStyle: Fill = {
@@ -151,7 +156,7 @@ class ProjectDownload {
             [
                 text(title, {
                     merge: [periods.length + 5, 1],
-                    font: { bold: true, size: 12 },
+                    font: { bold: true, size: 13 },
                     alignment: { horizontal: "center" },
                 }),
             ],
@@ -321,7 +326,7 @@ class ProjectDownload {
             [
                 text(title, {
                     merge: [periods.length + 5, 1],
-                    font: { bold: true, size: 12 },
+                    font: { bold: true, size: 13 },
                     alignment: { horizontal: "center" },
                 }),
             ],
@@ -361,6 +366,7 @@ function addWorkSheet(
 ): Worksheet {
     const sheet = workbook.addWorksheet(name);
     if (options.columns) sheet.columns = options.columns;
+
     const sheetRows: CellValue[][] = rows.map((row, rowIdx) =>
         row.map((cell, colIdx) =>
             cell.type === "formula"
@@ -370,6 +376,7 @@ function addWorkSheet(
     );
     sheet.addRows(sheetRows);
     applyStyles(sheet, rows);
+
     return sheet;
 }
 
@@ -377,6 +384,7 @@ function applyStyles(sheet: Worksheet, rows: Row[]): void {
     rows.forEach((row, rowIndex) => {
         row.forEach((cellValue, columnIndex) => {
             const cell = sheet.getCell(rowIndex + 1, columnIndex + 1);
+
             if (cellValue.merge) {
                 sheet.mergeCells({
                     top: 1 + rowIndex,
@@ -389,6 +397,8 @@ function applyStyles(sheet: Worksheet, rows: Row[]): void {
             if (cellValue.font) cell.font = cellValue.font;
             if (cellValue.numFmt) cell.numFmt = cellValue.numFmt;
             if (cellValue.fill) cell.fill = cellValue.fill;
+
+            cell.font = { ...defaultFont, ...cell.font };
         });
 
         const maxHeight = _(row)

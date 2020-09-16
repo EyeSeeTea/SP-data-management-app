@@ -16,15 +16,13 @@ const selector = {
     },
 };
 
-let report: MerReport;
-
 describe("create with no data", () => {
     beforeAll(async () => {
         mockApiForMerReportEmpty(mock);
-        report = await MerReport.create(api, config, selector);
     });
 
     it("builds xlsx file", async () => {
+        const report = await MerReport.create(api, config, selector);
         const { filename } = await new MerReportSpreadsheet(report).generate();
         expect(filename).toBe("MER-Sierra Leona-2019_12.xlsx");
     });

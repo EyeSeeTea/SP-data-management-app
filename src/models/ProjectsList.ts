@@ -2,7 +2,7 @@ import _ from "lodash";
 import { TableSorting, TablePagination } from "d2-ui-components";
 import { D2Api, D2OrganisationUnitSchema, SelectedPick, Id } from "../types/d2-api";
 import { Config } from "./Config";
-import moment from "moment";
+import moment, { Moment } from "moment";
 import { Sector, getOrgUnitDatesFromProject, getProjectFromOrgUnit } from "./Project";
 import { getSectorCodeFromSectionCode } from "./ProjectDb";
 import User from "./user";
@@ -15,6 +15,7 @@ export type FiltersForList = Partial<{
     countryIds: string[];
     sectorIds: string[];
     onlyActive: boolean;
+    dateInProject: Moment;
     createdByAppOnly: boolean;
     userCountriesOnly: boolean;
 }>;
@@ -41,6 +42,7 @@ type BaseProject = SelectedPick<D2OrganisationUnitSchema, typeof orgUnitFields>;
 export interface ProjectForList extends BaseProject {
     sectors: Sector[];
     sharing: Sharing;
+    dataElementIdsBySectorId: Record<Id, Id[]>;
 }
 
 export default class ProjectsList {
@@ -82,7 +84,7 @@ export default class ProjectsList {
                       dataSets: {
                           fields: {
                               code: true,
-                              sections: { code: true },
+                              sections: { code: true, dataElements: { id: true } },
                               userAccesses: { id: true, displayName: true, access: true },
                               userGroupAccesses: { id: true, displayName: true, access: true },
                               access: true,
@@ -95,7 +97,7 @@ export default class ProjectsList {
         const dataSetByOrgUnitId = _.keyBy(dataSets, dataSet => (dataSet.code || "").split("_")[0]);
         const sectorsByCode = _.keyBy(config.sectors, sector => sector.code);
 
-        const projectsWithSectors: Array<ProjectForList | null> = projects.map(orgUnit => {
+        const projectsWithSectors = projects.map(orgUnit => {
             const dataSet = _(dataSetByOrgUnitId).get(orgUnit.id, null);
             if (!dataSet || !hasCurrentUserFullAccessToDataSet(dataSet)) return null;
 
@@ -105,7 +107,23 @@ export default class ProjectsList {
                 .compact()
                 .value();
 
-            return { ...orgUnit, sectors, sharing } as ProjectForList;
+            const dataElementIdsBySectorId = _(dataSet.sections || [])
+                .map(section => ({
+                    sector: sectorsByCode[getSectorCodeFromSectionCode(section.code)],
+                    section,
+                }))
+                .filter(({ sector }) => !!sector)
+                .map(({ sector, section }) => [sector.id, section.dataElements.map(de => de.id)])
+                .fromPairs()
+                .value();
+
+            const project: ProjectForList = {
+                ...orgUnit,
+                sectors,
+                sharing,
+                dataElementIdsBySectorId,
+            };
+            return project;
         });
 
         return { pager: pager, objects: _.compact(projectsWithSectors) };
@@ -224,15 +242,27 @@ function paginate<Obj>(objects: Obj[], pagination: Pagination) {
 function getDateFilter(filters: FiltersForList) {
     const now = moment();
     const dateFormat = "YYYY-MM-DD";
-    const { openingDate, closedDate } = getOrgUnitDatesFromProject(now, now);
+    const { onlyActive, dateInProject } = filters;
 
-    if (filters.onlyActive) {
-        return {
-            openingDate: { le: moment(openingDate).format(dateFormat) },
-            closedDate: { ge: moment(closedDate).format(dateFormat) },
-        };
-    } else {
+    // Merge dates for both filters (using the intersection of periods)
+
+    const dates = _.compact([
+        onlyActive ? getOrgUnitDatesFromProject(now, now) : null,
+        dateInProject ? getOrgUnitDatesFromProject(dateInProject, dateInProject) : null,
+    ]);
+
+    const [openingDates, closedDates] = _(dates)
+        .map(({ openingDate, closedDate }) => [moment(openingDate), moment(closedDate)])
+        .unzip()
+        .value();
+
+    if (_(openingDates).isEmpty() || _(closedDates).isEmpty()) {
         return {};
+    } else {
+        return {
+            openingDate: { le: moment.min(openingDates).format(dateFormat) },
+            closedDate: { ge: moment.max(closedDates).format(dateFormat) },
+        };
     }
 }
 

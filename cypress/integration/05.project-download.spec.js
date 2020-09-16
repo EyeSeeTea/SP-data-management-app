@@ -9,6 +9,7 @@ describe("Download project", () => {
         cy.contains("Download").click();
     });
 
+    // eslint-disable-next-line cypress/no-async-tests
     it("should download xlsx file with tabs", async () => {
         const anchor = await cy.get("a#download-file");
 
