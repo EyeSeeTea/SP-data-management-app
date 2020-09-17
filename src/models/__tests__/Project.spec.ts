@@ -373,7 +373,7 @@ describe("Project", () => {
             mock.onGet("/metadata", {
                 params: {
                     "dataSets:fields":
-                        "access,code,sections[code],userAccesses[access,displayName,id],userGroupAccesses[access,displayName,id]",
+                        "access,code,sections[code,dataElements[id]],userAccesses[access,displayName,id],userGroupAccesses[access,displayName,id]",
                     "dataSets:filter": ["code:in:[3_ACTUAL,5_ACTUAL]"],
                 },
             }).replyOnce(200, {
@@ -381,13 +381,17 @@ describe("Project", () => {
                     {
                         id: "ds3",
                         code: "3_ACTUAL",
-                        sections: [{ code: "SECTOR_AGRICULTURE_ds3" }],
+                        sections: [
+                            { code: "SECTOR_AGRICULTURE_ds3", dataElements: [{ id: "de1" }] },
+                        ],
                         access: fullAccess,
                     },
                     {
                         id: "ds5",
                         code: "5_ACTUAL",
-                        sections: [{ code: "SECTOR_AGRICULTURE_ds5" }],
+                        sections: [
+                            { code: "SECTOR_AGRICULTURE_ds5", dataElements: [{ id: "de2" }] },
+                        ],
                         access: metadataAccess,
                     },
                 ],
@@ -419,6 +423,9 @@ describe("Project", () => {
                         expect.objectContaining({ code: "SECTOR_AGRICULTURE" }),
                     ]),
                     sharing: emptySharing,
+                    dataElementIdsBySectorId: {
+                        ieyBABjYyHO: ["de1"],
+                    },
                 },
             ]);
         });

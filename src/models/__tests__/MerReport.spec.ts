@@ -37,7 +37,8 @@ describe("MerReport", () => {
             expect(report.data).toEqual(
                 expect.objectContaining({
                     countryDirector: "",
-                    executiveSummary: "",
+                    executiveSummaries: {},
+                    additionalComments: "",
                     ministrySummary: "",
                     projectedActivitiesNextMonth: "",
                 })
@@ -87,9 +88,10 @@ describe("MerReport", () => {
             expect(report.data).toEqual(
                 expect.objectContaining({
                     countryDirector: "Country Director",
-                    executiveSummary: "Executive Summary",
+                    executiveSummaries: { ieyBABjYyHO: "Executive Summary for Agriculture" },
                     ministrySummary: "Ministry Summary",
                     projectedActivitiesNextMonth: "Projected",
+                    additionalComments: "Some additional comments",
                 })
             );
         });
@@ -119,6 +121,7 @@ describe("MerReport", () => {
                     id: "uWuM0QT2pVl",
                     name: "0Test1-25236",
                     dateInfo: "Nov 2019 -> Mar 2020",
+                    locations: [],
                     dataElements: [
                         {
                             id: "WS8XV4WWPE7",
@@ -129,6 +132,7 @@ describe("MerReport", () => {
                             targetAchieved: 5,
                             achieved: 40,
                             comment: "comment1",
+                            isCovid19: false,
                         },
                         {
                             id: "We61YNYyOX0",
@@ -139,6 +143,7 @@ describe("MerReport", () => {
                             targetAchieved: 7,
                             achieved: 85.71428571428571,
                             comment: "comment2",
+                            isCovid19: false,
                         },
                     ],
                 },
@@ -146,6 +151,10 @@ describe("MerReport", () => {
                     id: "SKuiiu7Vbwv",
                     name: "0Test1-48852",
                     dateInfo: "Nov 2019 -> Mar 2020",
+                    locations: [
+                        { id: "GG0k0oNhgS7", name: "loc-GG0k0oNhgS7" },
+                        { id: "uKgHpYUmD87", name: "loc-uKgHpYUmD87" },
+                    ],
                     dataElements: [
                         {
                             id: "yUGuwPFkBrj",
@@ -156,6 +165,7 @@ describe("MerReport", () => {
                             targetAchieved: 0,
                             achieved: null,
                             comment: "",
+                            isCovid19: false,
                         },
                     ],
                 },

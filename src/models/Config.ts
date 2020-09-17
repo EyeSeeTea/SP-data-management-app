@@ -48,6 +48,7 @@ const baseConfig = {
     },
     attributes: {
         pairedDataElement: "DM_PAIRED_DE",
+        extraDataElement: "DM_EXTRA_INFO_DE",
         createdByApp: "DM_CREATED_BY_DATA_MANAGEMENT",
         orgUnitProject: "DM_ORGUNIT_PROJECT_ID",
         projectDashboard: "DM_PROJECT_DASHBOARD_ID",

@@ -24,7 +24,7 @@ export default class ProjectDashboard {
 
         this.categoryOnlyNew = {
             id: config.categories.newRecurring.id,
-            categoryOptions: [config.categoryOptions.new],
+            categoryOptions: [{ id: config.categoryOptions.new.id }],
         };
     }
 
@@ -134,7 +134,7 @@ export default class ProjectDashboard {
             key: "reportTable-indicators-people",
             name: i18n.t("Achieved (%) - People"),
             items: project.getActualTargetIndicators(dataElements.people),
-            reportFilter: [dimensions.orgUnit],
+            reportFilter: [dimensions.orgUnit, this.categoryOnlyNew],
             columnDimensions: [dimensions.period],
             rowDimensions: [dimensions.data],
             extra: { legendSet: project.config.legendSets.achieved },
@@ -148,7 +148,7 @@ export default class ProjectDashboard {
             key: "chart-achieved-monthly",
             name: i18n.t("Achieved monthly (%)"),
             items: project.getActualTargetIndicators(dataElements.all),
-            reportFilter: [dimensions.orgUnit],
+            reportFilter: [dimensions.orgUnit, this.categoryOnlyNew],
             seriesDimension: dimensions.period,
             categoryDimension: dimensions.data,
         });
@@ -161,7 +161,7 @@ export default class ProjectDashboard {
             key: "chart-achieved",
             name: i18n.t("Achieved (%)"),
             items: project.getActualTargetIndicators(dataElements.all),
-            reportFilter: [dimensions.period],
+            reportFilter: [dimensions.period, this.categoryOnlyNew],
             seriesDimension: dimensions.orgUnit,
             categoryDimension: dimensions.data,
         });

@@ -1,21 +1,58 @@
 import MockAdapter from "axios-mock-adapter/types";
+import { logUnknownRequest } from "../../utils/tests";
+
+function mockApiMerDataSets(mock: MockAdapter, orgUnitIds: string[]) {
+    mock.onGet("/metadata", {
+        params: {
+            "dataSets:fields": "code,dataSetElements[categoryCombo[id],dataElement[id]]",
+            "dataSets:filter": [`code:in:[${orgUnitIds.map(ou => `${ou}_ACTUAL`).join(",")}]`],
+        },
+    }).replyOnce(200, {});
+}
 
 export function mockApiForMerReportEmpty(mock: MockAdapter) {
     mock.reset();
+    mockApiMerDataSets(mock, []);
     mock.onGet("/metadata", {
         params: {
-            "organisationUnits:fields": "closedDate,displayName,id,openingDate",
+            "organisationUnits:fields":
+                "closedDate,displayName,id,openingDate,organisationUnitGroups[id]",
             "organisationUnits:filter": [
-                "closedDate:ge:2020-01-31T23:59:59",
+                "closedDate:ge:2020-01-31T00:00:00",
                 "openingDate:le:2019-11-01T00:00:00",
                 "parent.id:eq:PJb0RtEnqlf",
             ],
         },
     }).replyOnce(200, {});
+
+    mockProjectListGet(mock);
+
+    mock.onGet("/dataStore/data-management-app/mer-PJb0RtEnqlf").replyOnce(200, undefined);
+
+    logUnknownRequest(mock);
+}
+
+function mockProjectListGet(mock: MockAdapter) {
+    mock.onGet("/organisationUnits", {
+        paging: false,
+        fields:
+            "attributeValues[attribute[id],value],code~rename(c),displayName~rename(n),id~rename(i)",
+        order: "displayName:iasc",
+        filter: [
+            "attributeValues.attribute.id:eq:mgCKcJuP5n0",
+            "closedDate:ge:2020-09-30",
+            "level:eq:3",
+            "openingDate:le:2020-07-27",
+            "parent.id:in:[eu2XF73JOzl,iiqkef8z9uo,iwiydbbuiUs,aSgRoxyXeX8,WOUvEv46NeR,Sm8vKiwUPie,ugQ7vNtTtdY,OIjEJaV8fWc,So8QA5eT1Oy,S6mKzbkq02p,muOqfsK4cMw,WmczKCGK8FQ,OKQDUzFwGoC,Ww8TTOdRxf7,uAsAoB72yOf,aqWKqMN5pUb]",
+        ],
+    }).replyOnce(200, { organisationUnits: [] });
 }
 
 export function mockApiForMerReportWithData(mock: MockAdapter) {
     mock.reset();
+
+    mockProjectListGet(mock);
+
     mock.onGet("/dataStore/data-management-app/mer-PJb0RtEnqlf").replyOnce(200, {
         reports: {
             201912: {
@@ -24,8 +61,9 @@ export function mockApiForMerReportWithData(mock: MockAdapter) {
                 updated: "2019-12-18T10:17:18",
                 updatedBy: "M5zQapPyTZI",
                 countryDirector: "Country Director",
-                executiveSummary: "Executive Summary",
+                executiveSummaries: { ieyBABjYyHO: "Executive Summary for Agriculture" },
                 ministrySummary: "Ministry Summary",
+                additionalComments: "Some additional comments",
                 projectedActivitiesNextMonth: "Projected",
                 staffSummary: {
                     ifs: { fullTime: 1, partTime: 2 },
@@ -52,9 +90,10 @@ export function mockApiForMerReportWithData(mock: MockAdapter) {
     });
     mock.onGet("/metadata", {
         params: {
-            "organisationUnits:fields": "closedDate,displayName,id,openingDate",
+            "organisationUnits:fields":
+                "closedDate,displayName,id,openingDate,organisationUnitGroups[id]",
             "organisationUnits:filter": [
-                "closedDate:ge:2020-01-31T23:59:59",
+                "closedDate:ge:2020-01-31T00:00:00",
                 "openingDate:le:2019-11-01T00:00:00",
                 "parent.id:eq:PJb0RtEnqlf",
             ],
@@ -66,15 +105,19 @@ export function mockApiForMerReportWithData(mock: MockAdapter) {
                 closedDate: "2020-04-30T00:00:00.000",
                 displayName: "0Test1-25236",
                 openingDate: "2019-10-01T00:00:00.000",
+                organisationUnitGroups: [],
             },
             {
                 id: "SKuiiu7Vbwv",
                 closedDate: "2020-04-30T00:00:00.000",
                 displayName: "0Test1-48852",
                 openingDate: "2019-10-01T00:00:00.000",
+                organisationUnitGroups: [{ id: "GG0k0oNhgS7" }, { id: "uKgHpYUmD87" }],
             },
         ],
     });
+
+    mockApiMerDataSets(mock, ["uWuM0QT2pVl", "SKuiiu7Vbwv"]);
 
     mock.onGet("/analytics", {
         params: {
@@ -169,4 +212,6 @@ export function mockApiForMerReportWithData(mock: MockAdapter) {
         height: 8,
         headerWidth: 5,
     });
+
+    logUnknownRequest(mock);
 }
