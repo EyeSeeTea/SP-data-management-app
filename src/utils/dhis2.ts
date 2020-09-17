@@ -4,6 +4,10 @@ import md5 from "md5";
 import { D2Api, Ref, Id, MetadataPayload, PostOptions } from "../types/d2-api";
 import { runPromises } from "./promises";
 
+export function getId<T extends Ref>(obj: T): Id {
+    return obj.id;
+}
+
 export function getIds<T extends Ref>(objs: T[]): Id[] {
     return objs.map(obj => obj.id);
 }

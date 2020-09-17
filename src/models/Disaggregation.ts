@@ -1,14 +1,16 @@
 import _ from "lodash";
 import { Id, Ref } from "../types/d2-api";
 import { Config } from "./Config";
-import { getRef, haveSameRefs } from "../utils/dhis2";
+import { getRef, haveSameRefs, getIds } from "../utils/dhis2";
+import DataElementsSet, { SelectionInfo } from "./dataElementsSet";
+import i18n from "../locales";
 
 /* Custom disaggregation for data elements in target/actual data sets.
 
 - If a data element is not selected as COVID-19, simply use its category combo.
 - If a data element is selected as COVID-19:
     - Get its category combo and extract its categories.
-    - Add the COVID-19 category to set of categories.
+    - Add the COVID-19 category to the set of categories.
     - Find a category combo that contains those categories.
     - Use that category combo as the disaggregation for this data element in the data set.
 */
@@ -23,6 +25,13 @@ interface DataSetElement {
     dataElement: Ref;
     categoryCombo?: Ref;
 }
+
+export type SetCovid19WithRelationsOptions = {
+    dataElementsSet: DataElementsSet;
+    sectorId: Id;
+    dataElementIds: Id[];
+    isSet: boolean;
+};
 
 export class Disaggregation {
     constructor(private config: Config, private data: Data) {}
@@ -101,5 +110,36 @@ export class Disaggregation {
 
     isCovid19(dataElementId: Id): boolean {
         return !!this.data.mapping[dataElementId];
+    }
+
+    setCovid19WithRelations(
+        options: SetCovid19WithRelationsOptions
+    ): { selectionInfo: SelectionInfo; disaggregation: Disaggregation } {
+        const { dataElementsSet, sectorId, dataElementIds, isSet } = options;
+        const isCovid = this.isCovid19.bind(this);
+
+        const selectedIds = dataElementsSet
+            .get({ sectorId, onlySelected: true })
+            .filter(de => (dataElementIds.includes(de.id) ? isSet : isCovid(de.id)))
+            .map(de => de.id);
+
+        const res = dataElementsSet.getSelectionInfo(selectedIds, sectorId, {
+            filter: isCovid,
+            autoselectionMessage: i18n.t(
+                "These related global indicators have been automatically selected as COVID-19:"
+            ),
+            unselectionWarningMessage: i18n.t(
+                "Global indicators with COVID-19 sub-indicators cannot have the COVID-19 disaggregation disabled"
+            ),
+        });
+        const { selected, unselectable, selectionInfo } = res;
+
+        const deIdsToUpdate = _(dataElementIds)
+            .concat(getIds(selected))
+            .difference(unselectable.map(de => de.id))
+            .value();
+        const newDisaggregation = this.setCovid19(deIdsToUpdate, isSet);
+
+        return { selectionInfo, disaggregation: newDisaggregation };
     }
 }

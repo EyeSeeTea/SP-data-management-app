@@ -38,6 +38,11 @@ interface FormulaValue extends ValueBase {
 
 type Period = { id: string; date: Moment };
 
+const defaultFont: Partial<Font> = {
+    name: "Times New Roman",
+    size: 12,
+};
+
 const percentage = "0.00%";
 
 const baseStyle: Fill = {
@@ -151,7 +156,7 @@ class ProjectDownload {
             [
                 text(title, {
                     merge: [periods.length + 5, 1],
-                    font: { bold: true, size: 12 },
+                    font: { bold: true, size: 13 },
                     alignment: { horizontal: "center" },
                 }),
             ],
@@ -190,7 +195,8 @@ class ProjectDownload {
             { fill: fills.cumulative }
         );
 
-        const rowsCountByDataElement = 9;
+        // target header+data (1 + 4) + achievement (1) + actual header+data (1 + 4)
+        const rowsCountByDataElement = 11;
 
         const dataRows: Row[] = _.flatMap(dataElements, (dataElement, index) => {
             return [
@@ -214,24 +220,43 @@ class ProjectDownload {
                             analytics.get(dataElement, period.id, [config.categoryOptions.target]),
                         { font: { bold: true }, fill: fills.target }
                     ),
-                    { ...sumRowFormula, merge: [1, 3] },
-                    text("", { merge: [1, 3] }), // Method
-                    text("", { merge: [1, 3] }), // Responsible
+                    { ...sumRowFormula },
+                    text("", { merge: [1, 5] }), // Method
+                    text("", { merge: [1, 5] }), // Responsible
                 ],
                 [
                     ...repeat(empty, 4),
-                    text(i18n.t("New"), { fill: fills.target, alignment: { horizontal: "right" } }),
+                    text(i18n.t("Male New"), {
+                        fill: fills.target,
+                        alignment: { horizontal: "right" },
+                    }),
                     ...this.mapPeriods(period =>
                         analytics.get(dataElement, period.id, [
                             config.categoryOptions.target,
                             config.categoryOptions.new,
+                            config.categoryOptions.male,
                         ])
                     ),
                     sumRowFormula,
                 ],
                 [
                     ...repeat(empty, 4),
-                    text(i18n.t("Returning"), {
+                    text(i18n.t("Female New"), {
+                        fill: fills.target,
+                        alignment: { horizontal: "right" },
+                    }),
+                    ...this.mapPeriods(period =>
+                        analytics.get(dataElement, period.id, [
+                            config.categoryOptions.target,
+                            config.categoryOptions.new,
+                            config.categoryOptions.female,
+                        ])
+                    ),
+                    sumRowFormula,
+                ],
+                [
+                    ...repeat(empty, 4),
+                    text(i18n.t("Male Returning"), {
                         fill: fills.target,
                         alignment: { horizontal: "right" },
                     }),
@@ -239,8 +264,25 @@ class ProjectDownload {
                         analytics.get(dataElement, period.id, [
                             config.categoryOptions.target,
                             config.categoryOptions.recurring,
+                            config.categoryOptions.male,
                         ])
                     ),
+                    sumRowFormula,
+                ],
+                [
+                    ...repeat(empty, 4),
+                    text(i18n.t("Female Returning"), {
+                        fill: fills.target,
+                        alignment: { horizontal: "right" },
+                    }),
+                    ...this.mapPeriods(period =>
+                        analytics.get(dataElement, period.id, [
+                            config.categoryOptions.target,
+                            config.categoryOptions.recurring,
+                            config.categoryOptions.female,
+                        ])
+                    ),
+                    sumRowFormula,
                 ],
                 [
                     ...repeat(empty, 4),
@@ -252,9 +294,11 @@ class ProjectDownload {
                     ...repeat(empty, periods.length),
                     formula(
                         (rowIdx, colIdx) =>
-                            [cell(colIdx, rowIdx + 1), "/", cell(colIdx, rowIdx - 3)].join(""),
+                            [cell(colIdx, rowIdx + 1), "/", cell(colIdx, rowIdx - 5)].join(""),
                         { numFmt: percentage, fill: fills.cumulative, font: { bold: true } }
                     ),
+                    text("", { merge: [1, 6] }), // Method
+                    text("", { merge: [1, 6] }), // Responsible
                 ],
                 [
                     ...repeat(empty, 4),
@@ -321,7 +365,7 @@ class ProjectDownload {
             [
                 text(title, {
                     merge: [periods.length + 5, 1],
-                    font: { bold: true, size: 12 },
+                    font: { bold: true, size: 13 },
                     alignment: { horizontal: "center" },
                 }),
             ],
@@ -361,6 +405,7 @@ function addWorkSheet(
 ): Worksheet {
     const sheet = workbook.addWorksheet(name);
     if (options.columns) sheet.columns = options.columns;
+
     const sheetRows: CellValue[][] = rows.map((row, rowIdx) =>
         row.map((cell, colIdx) =>
             cell.type === "formula"
@@ -370,6 +415,7 @@ function addWorkSheet(
     );
     sheet.addRows(sheetRows);
     applyStyles(sheet, rows);
+
     return sheet;
 }
 
@@ -377,6 +423,7 @@ function applyStyles(sheet: Worksheet, rows: Row[]): void {
     rows.forEach((row, rowIndex) => {
         row.forEach((cellValue, columnIndex) => {
             const cell = sheet.getCell(rowIndex + 1, columnIndex + 1);
+
             if (cellValue.merge) {
                 sheet.mergeCells({
                     top: 1 + rowIndex,
@@ -389,6 +436,8 @@ function applyStyles(sheet: Worksheet, rows: Row[]): void {
             if (cellValue.font) cell.font = cellValue.font;
             if (cellValue.numFmt) cell.numFmt = cellValue.numFmt;
             if (cellValue.fill) cell.fill = cellValue.fill;
+
+            cell.font = { ...defaultFont, ...cell.font };
         });
 
         const maxHeight = _(row)

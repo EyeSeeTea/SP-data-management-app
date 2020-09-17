@@ -4,7 +4,7 @@ import { NameColumn } from "./NameColumn";
 import { DataElement, SortableField } from "./DataElementsTable";
 import { ReactNode } from "react";
 import { SelectionInfo } from "../../../models/dataElementsSet";
-import { TableState } from "d2-ui-components";
+import { TableState, SnackbarState } from "d2-ui-components";
 import { Id } from "../../../types/d2-api";
 import i18n from "../../../locales";
 import { renderJoin } from "../../../utils/react";
@@ -63,24 +63,8 @@ export function withPaired<Field extends keyof DataElement>(
     return _.memoize(render, (de: DataElement) => [de.id, de.sector.id, paired].join("-"));
 }
 
-export function getSelectionMessage(dataElements: DataElement[], action: string): string | null {
-    return dataElements.length === 0
-        ? null
-        : [
-              i18n.t("Those related data elements have been automatically {{action}}:", { action }),
-              "",
-              ...dataElements.map(
-                  de => `${de.sector.name}: [${de.code}] ${de.name} (${de.indicatorType})`
-              ),
-          ].join("\n");
-}
-
-export function showSelectionMessage(snackbar: any, selectionUpdate: SelectionInfo): void {
-    const msg = _.compact([
-        getSelectionMessage(selectionUpdate.selected || [], i18n.t("selected")),
-        ...(selectionUpdate.messages || []),
-    ]).join("\n\n");
-
+export function showSelectionMessage(snackbar: SnackbarState, selectionInfo: SelectionInfo): void {
+    const msg = selectionInfo.messages?.join("\n");
     if (msg) snackbar.info(msg);
 }
 

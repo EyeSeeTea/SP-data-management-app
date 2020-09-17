@@ -35,12 +35,7 @@ function getComponentConfig(
     setProjectIdsToDelete: (state: React.SetStateAction<Id[] | undefined>) => void,
     currentUser: CurrentUser
 ) {
-    const initialPagination = {
-        page: 1,
-        pageSize: 20,
-        pageSizeOptions: [10, 20, 50],
-    };
-
+    const initialPagination = { page: 1, pageSize: 10 };
     const initialSorting = { field: "displayName" as const, order: "asc" as const };
 
     const columns: TableColumn<ProjectForList>[] = [
@@ -162,7 +157,11 @@ function getComponentConfig(
         },
     };
 
-    const actionsByRole = _.compact(_.at(allActions, currentUser.actions));
+    const actionsByRole = _(allActions)
+        .at(currentUser.actions as ContextualAction[])
+        .compact()
+        .uniqBy(action => action.name)
+        .value();
     const actions = [allActions.details, ...actionsByRole];
 
     return { columns, initialSorting, details, actions, initialPagination };
@@ -218,10 +217,13 @@ const ProjectsList: React.FC = () => {
         setLoading(false);
     }
 
-    const onStateChange = useCallback((newState: TableState<ProjectForList>) => {
-        const { pagination, sorting } = newState;
-        getProjects(sorting, pagination);
-    }, []);
+    const onStateChange = useCallback(
+        (newState: TableState<ProjectForList>) => {
+            const { pagination, sorting } = newState;
+            getProjects(sorting, pagination);
+        },
+        [search, filter, objectsTableKey]
+    );
 
     const closeDeleteDialog = useCallback(() => {
         setProjectIdsToDelete(undefined);
@@ -248,6 +250,7 @@ const ProjectsList: React.FC = () => {
                     searchBoxLabel={i18n.t("Search by name or code")}
                     onChangeSearch={setSearch}
                     pagination={pagination}
+                    paginationOptions={paginationOptions}
                     onChange={onStateChange}
                     columns={componentConfig.columns}
                     details={componentConfig.details}
@@ -338,5 +341,9 @@ function getSharingInfo(project: ProjectForList) {
         </React.Fragment>
     );
 }
+
+const paginationOptions = {
+    pageSizeOptions: [10, 20, 50],
+};
 
 export default React.memo(ProjectsList);

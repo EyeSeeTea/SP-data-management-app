@@ -16,6 +16,30 @@ declare module "lodash" {
             message?: string
         ): TObject[TKey];
     }
+
+    interface Collection<T> {
+        groupConsecutiveBy<Key>(mapper: (obj: T) => Key): Collection<[Key, T[]]>;
+    }
+}
+
+function groupConsecutiveBy<TValue, Key>(
+    objs: TValue[],
+    mapper: (val: TValue) => Key
+): Array<[Key, TValue[]]> {
+    const output: Array<[Key, TValue[]]> = [];
+    let currentKey: Key | symbol = Symbol("empty");
+
+    _(objs).each(obj => {
+        const key = mapper(obj);
+        if (key === currentKey) {
+            output[output.length - 1][1].push(obj);
+        } else {
+            output.push([key, [obj]]);
+            currentKey = key;
+        }
+    });
+
+    return output;
 }
 
 function getOrFail(obj: any, key: string | number, message?: string): any {
@@ -34,3 +58,4 @@ function getOrFail(obj: any, key: string | number, message?: string): any {
 }
 
 _.mixin({ getOrFail }, { chain: false });
+_.mixin({ groupConsecutiveBy });

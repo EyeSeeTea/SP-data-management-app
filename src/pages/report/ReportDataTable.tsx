@@ -1,19 +1,11 @@
 import React from "react";
-import {
-    Table,
-    TableRow,
-    TableHead,
-    TableCell,
-    TableBody,
-    Paper,
-    LinearProgress,
-} from "@material-ui/core";
+import { Table, TableRow, TableHead, TableCell, Paper } from "@material-ui/core";
 
-import MerReport, { DataElementInfo, Project } from "../../models/MerReport";
+import MerReport, { DataElementInfo, ProjectForMer, DataElementMER } from "../../models/MerReport";
 import i18n from "../../locales";
-import { getMultilineRows } from "./utils";
-import TextFieldOnBlur from "./TextFieldOnBlur";
-import { makeStyles } from "@material-ui/styles";
+import TableBodyGrouped from "./TableBodyGrouped";
+import { Grouper, RowComponent } from "./rich-rows-utils";
+import DataElementCells from "./DataElementCells";
 
 interface ReportDataTableProps {
     merReport: MerReport;
@@ -23,109 +15,89 @@ interface ReportDataTableProps {
 const ReportDataTable: React.FC<ReportDataTableProps> = props => {
     const { merReport, onChange } = props;
     const { date, organisationUnit } = merReport.data;
-    const classes = useStyles();
+
+    const onCommentChange = React.useCallback(
+        (project: ProjectForMer, dataElement: DataElementInfo, comment: string): void => {
+            if (merReport) onChange(merReport.setComment(project, dataElement, comment));
+        },
+        [merReport]
+    );
+
+    const groupers: Grouper<DataElementMER>[] = React.useMemo(() => {
+        return [
+            {
+                name: "locations",
+                getId: dataElementMER =>
+                    dataElementMER.locations.map(location => location.id).join("+"),
+                component: LocationCell,
+            },
+            {
+                name: "project",
+                getId: dataElementMER => dataElementMER.project.id,
+                component: ProjectCell,
+            },
+            {
+                name: "indicator",
+                getId: dataElementMER => [dataElementMER.project.id, dataElementMER.id].join("-"),
+                component: function DataElementCellsForIndicator({ row: dataElementMER }) {
+                    return (
+                        <DataElementCells dataElement={dataElementMER} onChange={onCommentChange} />
+                    );
+                },
+            },
+        ];
+    }, [onCommentChange]);
+
+    const rows = React.useMemo(() => merReport.getData(), [merReport]);
+
     if (!date || !organisationUnit) return null;
-
-    function onCommentChange(
-        project: Project,
-        dataElement: DataElementInfo,
-        comment: string
-    ): void {
-        if (merReport) onChange(merReport.setComment(project, dataElement, comment));
-    }
-
-    if (!merReport || !merReport.data.projectsData) return <LinearProgress />;
 
     return (
         <Paper>
             <Table>
                 <TableHead>
                     <TableRow>
-                        <TableCell style={{ width: "15em" }}>{i18n.t("Project")}</TableCell>
-                        <TableCell style={{ width: "35em" }}>{i18n.t("Indicators")}</TableCell>
-                        <TableCell style={{ width: "3em" }}>{i18n.t("Target")}</TableCell>
-                        <TableCell style={{ width: "3em" }}>{i18n.t("Actual")}</TableCell>
-                        <TableCell style={{ width: "4em" }}>{i18n.t("Target to date")}</TableCell>
-                        <TableCell style={{ width: "4em" }}>{i18n.t("Actual to date")}</TableCell>
-                        <TableCell style={{ width: "5em" }}>
-                            {" "}
-                            {i18n.t("Achieved to date (%)")}
-                        </TableCell>
-                        <TableCell style={{ width: "30em" }}>{i18n.t("Comment")}</TableCell>
+                        <TableCell style={w("15em")}>{i18n.t("Locations")}</TableCell>
+                        <TableCell style={w("15em")}>{i18n.t("Project")}</TableCell>
+                        <TableCell style={w("35em")}>{i18n.t("Indicators")}</TableCell>
+                        <TableCell style={w("3em")}>{i18n.t("Target")}</TableCell>
+                        <TableCell style={w("3em")}>{i18n.t("Actual")}</TableCell>
+                        <TableCell style={w("4em")}>{i18n.t("Target to date")}</TableCell>
+                        <TableCell style={w("4em")}>{i18n.t("Actual to date")}</TableCell>
+                        <TableCell style={w("5em")}> {i18n.t("Achieved to date (%)")}</TableCell>
+                        <TableCell style={w("30em")}>{i18n.t("Comment")}</TableCell>
                     </TableRow>
                 </TableHead>
-
-                <TableBody>
-                    {merReport.data.projectsData.map(project => (
-                        <React.Fragment key={project.id}>
-                            <TableRow className={classes.row} key={project.id}>
-                                <TableCell rowSpan={project.dataElements.length}>
-                                    {project.name}
-                                    <br />
-                                    <i>{project.dateInfo}</i>
-                                </TableCell>
-                                {project.dataElements.length > 0 && (
-                                    <DataElementCells
-                                        project={project}
-                                        dataElement={project.dataElements[0]}
-                                        onChange={onCommentChange}
-                                    />
-                                )}
-                            </TableRow>
-
-                            {project.dataElements.slice(1).map(dataElement => (
-                                <TableRow className={classes.row} key={dataElement.id}>
-                                    <DataElementCells
-                                        project={project}
-                                        dataElement={dataElement}
-                                        onChange={onCommentChange}
-                                    />
-                                </TableRow>
-                            ))}
-                        </React.Fragment>
-                    ))}
-                </TableBody>
+                <TableBodyGrouped rows={rows} groupers={groupers} />
             </Table>
         </Paper>
     );
 };
 
-const useStyles = makeStyles({
-    row: {
-        borderBottom: "3px solid #E0E0E0",
-    },
-});
-
-function formatNumber(n: number | null | undefined, suffix?: string): string {
-    return n === null || n === undefined ? "-" : n.toFixed(2) + (suffix || "");
+function w<Value extends number | string>(value: Value): { width: Value } {
+    return { width: value };
 }
 
-interface DataElementCellsProps {
-    project: Project;
-    dataElement: DataElementInfo;
-    onChange(project: Project, dataElement: DataElementInfo, value: string): void;
-}
-
-const DataElementCells: React.FC<DataElementCellsProps> = ({ project, dataElement, onChange }) => (
-    <React.Fragment>
-        <TableCell>{dataElement.name}</TableCell>
-        <TableCell>{formatNumber(dataElement.target)}</TableCell>
-        <TableCell>{formatNumber(dataElement.actual)}</TableCell>
-        <TableCell>{formatNumber(dataElement.targetAchieved)}</TableCell>
-        <TableCell>{formatNumber(dataElement.actualAchieved)}</TableCell>
-        <TableCell>{formatNumber(dataElement.achieved, "%")}</TableCell>
-        <TableCell>
-            <TextFieldOnBlur
-                value={dataElement.comment}
-                fullWidth={true}
-                multiline={true}
-                rows={getMultilineRows(dataElement.comment, 1, 4)}
-                rowsMax={4}
-                onBlurChange={value => onChange(project, dataElement, value)}
-            />
+const LocationCell: RowComponent<DataElementMER> = props => {
+    const { row: dataElementMER, rowSpan } = props;
+    return (
+        <TableCell rowSpan={rowSpan}>
+            {dataElementMER.locations.map(location => location.name).join(", ")}
         </TableCell>
-    </React.Fragment>
-);
+    );
+};
+
+const ProjectCell: RowComponent<DataElementMER> = props => {
+    const { row: dataElementMER, rowSpan } = props;
+
+    return (
+        <TableCell rowSpan={rowSpan}>
+            {dataElementMER.project.name}
+            <br />
+            <i>{dataElementMER.project.dateInfo}</i>
+        </TableCell>
+    );
+};
 
 function shouldKeepView(prevProps: ReportDataTableProps, nextProps: ReportDataTableProps): boolean {
     return prevProps.merReport.data.projectsData === nextProps.merReport.data.projectsData;

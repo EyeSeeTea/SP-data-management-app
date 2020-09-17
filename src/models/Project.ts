@@ -7,7 +7,7 @@ import { generateUid } from "d2/uid";
 import { TableSorting } from "d2-ui-components";
 
 import i18n from "../locales";
-import DataElementsSet, { PeopleOrBenefit, DataElement } from "./dataElementsSet";
+import DataElementsSet, { PeopleOrBenefit, DataElement, SelectionInfo } from "./dataElementsSet";
 import ProjectDb from "./ProjectDb";
 import { toISOString, getMonthsRange } from "../utils/date";
 import ProjectDownload from "./ProjectDownload";
@@ -22,7 +22,7 @@ import {
 } from "../utils/validations";
 import { getKeys, Maybe } from "../types/utils";
 import ProjectSharing, { Sharing } from "./ProjectSharing";
-import { Disaggregation } from "./Disaggregation";
+import { Disaggregation, SetCovid19WithRelationsOptions } from "./Disaggregation";
 
 /*
 Project model.
@@ -550,6 +550,15 @@ class Project {
     static async delete(config: Config, api: D2Api, ids: Id[]): Promise<void> {
         return new ProjectDelete(config, api).delete(ids);
     }
+
+    setCovid19(
+        options: SetCovid19WithRelationsOptions
+    ): { selectionInfo: SelectionInfo; project: Project } {
+        const res = this.disaggregation.setCovid19WithRelations(options);
+        const { selectionInfo, disaggregation: newDisaggregation } = res;
+        const newProject = this.setObj({ disaggregation: newDisaggregation });
+        return { selectionInfo, project: newProject };
+    }
 }
 
 interface Project extends ProjectData {}
@@ -579,12 +588,18 @@ export function getProjectFromOrgUnit<OU extends OrgUnitWithDates>(orgUnit: OU):
 
 export function getOrgUnitDatesFromProject(startDate: Moment, endDate: Moment): OrgUnitWithDates {
     return {
-        openingDate: toISOString(startDate.clone().subtract(1, "month")),
+        openingDate: toISOString(
+            startDate
+                .clone()
+                .subtract(1, "month")
+                .startOf("day")
+        ),
         closedDate: toISOString(
             endDate
                 .clone()
                 .add(1, "month")
                 .endOf("month")
+                .startOf("day")
         ),
     };
 }
