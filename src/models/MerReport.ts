@@ -394,6 +394,7 @@ class MerReport {
             item => item.locations.length,
             item => item.locations.map(location => location.name).join(", "),
             item => item.project.name,
+            item => item.project.id,
             item => item.name,
         ]);
     }
