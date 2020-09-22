@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2020-09-16T11:13:59.832Z\n"
-"PO-Revision-Date: 2020-09-16T11:13:59.832Z\n"
+"POT-Creation-Date: 2020-09-22T06:54:12.909Z\n"
+"PO-Revision-Date: 2020-09-22T06:54:12.909Z\n"
 
 msgid "Data Entry"
 msgstr ""
@@ -406,15 +406,6 @@ msgstr ""
 msgid "Total People Targeted"
 msgstr ""
 
-msgid "New"
-msgstr ""
-
-msgid "Returning"
-msgstr ""
-
-msgid "Total Actual People"
-msgstr ""
-
 msgid "Male New"
 msgstr ""
 
@@ -425,6 +416,9 @@ msgid "Male Returning"
 msgstr ""
 
 msgid "Female Returning"
+msgstr ""
+
+msgid "Total Actual People"
 msgstr ""
 
 msgid "People"

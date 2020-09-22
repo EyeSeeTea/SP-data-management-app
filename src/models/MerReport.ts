@@ -6,7 +6,7 @@ import { Id, Ref, D2Api, DataStore } from "../types/d2-api";
 import { Config, Sector } from "./Config";
 import { getDataStore, getId, getIds } from "../utils/dhis2";
 import { runPromises } from "../utils/promises";
-import { getProjectFromOrgUnit, getOrgUnitDatesFromProject } from "./Project";
+import { getProjectFromOrgUnit } from "./Project";
 import { toISOString, getMonthsRange } from "../utils/date";
 import i18n from "../locales";
 import { DataElementBase } from "./dataElementsSet";
@@ -170,8 +170,8 @@ class MerReport {
         const reportData = await getReportData(api, organisationUnit, date);
         const { report } = reportData;
         const comments = report ? report.comments : {};
-        const projectsData = await MerReport.getProjectsData(api, config, selectData, comments);
         const projects = await getProjects(api, config, selectData);
+        const projectsData = await MerReport.getProjectsData(api, config, projects, date, comments);
         const sectors = getProjectSectors(projects);
 
         const data: Data = {
@@ -285,11 +285,11 @@ class MerReport {
     static async getProjectsData(
         api: D2Api,
         config: Config,
-        selectData: SelectData,
+        projects: Ref[],
+        date: Moment,
         commentsByProjectAndDe: _.Dictionary<string>
     ): Promise<ProjectsData> {
-        const { date, organisationUnit } = selectData;
-        const orgUnits = await getOrgUnits(api, organisationUnit, date);
+        const orgUnits = await getOrgUnitsForProjects(api, projects);
         const disaggregationsByProject = await getDisaggregationsByProject(api, config, orgUnits);
 
         if (_.isEmpty(orgUnits)) return [];
@@ -392,20 +392,15 @@ class MerReport {
 
         return _.orderBy(richDataElements, [
             item => item.locations.length,
+            item => item.locations.map(location => location.name).join(", "),
             item => item.project.name,
+            item => item.project.id,
             item => item.name,
         ]);
     }
 }
 
-async function getOrgUnits(
-    api: D2Api,
-    organisationUnit: OrganisationUnit,
-    date: Moment
-): Promise<OrgUnit[]> {
-    const startOfMonth = date.clone().startOf("month");
-    const dates = getOrgUnitDatesFromProject(startOfMonth, startOfMonth);
-
+async function getOrgUnitsForProjects(api: D2Api, projects: Ref[]): Promise<OrgUnit[]> {
     const { organisationUnits } = await api.metadata
         .get({
             organisationUnits: {
@@ -417,9 +412,7 @@ async function getOrgUnits(
                     organisationUnitGroups: { id: true },
                 },
                 filter: {
-                    "parent.id": { eq: organisationUnit.id },
-                    openingDate: { le: dates.openingDate },
-                    closedDate: { ge: dates.closedDate },
+                    id: { in: projects.map(getId) },
                 },
             },
         })
