@@ -392,6 +392,7 @@ class MerReport {
 
         return _.orderBy(richDataElements, [
             item => item.locations.length,
+            item => item.locations.map(location => location.name).join(", "),
             item => item.project.name,
             item => item.name,
         ]);
