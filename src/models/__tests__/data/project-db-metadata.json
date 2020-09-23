@@ -498,6 +498,17 @@
                     "y": 40
                 },
                 {
+                    "id": "mgwFIMjbsdw",
+                    "type": "REPORT_TABLE",
+                    "reportTable": {
+                        "id": "GEe8ZzUkVwG"
+                    },
+                    "width": 29,
+                    "height": 20,
+                    "x": 29,
+                    "y": 40
+                },
+                {
                     "id": "ys0CVedHirZ",
                     "type": "CHART",
                     "chart": {
@@ -1138,7 +1149,7 @@
             "showDimensionLabels": true,
             "aggregationType": "DEFAULT",
             "legendDisplayStrategy": "FIXED",
-            "rowTotals": true,
+            "rowTotals": false,
             "digitGroupSeparator": "SPACE",
             "dataDimensionItems": [
                 {
@@ -1196,6 +1207,126 @@
                     "id": "ou"
                 },
                 {
+                    "code": "NEW_RETURNING",
+                    "id": "uSMHdwhxFSV",
+                    "categoryOptions": [
+                        {
+                            "code": "NEW",
+                            "id": "KiK0FMExoqh"
+                        },
+                        {
+                            "code": "RETURNING",
+                            "id": "a6AJLXQy8vO"
+                        }
+                    ]
+                }
+            ],
+            "filterDimensions": ["ou", "uSMHdwhxFSV"],
+            "rows": [
+                {
+                    "id": "dx"
+                }
+            ],
+            "rowDimensions": ["dx"],
+            "categoryDimensions": [
+                {
+                    "category": {
+                        "id": "uSMHdwhxFSV"
+                    },
+                    "categoryOptions": [
+                        {
+                            "id": "KiK0FMExoqh"
+                        },
+                        {
+                            "id": "a6AJLXQy8vO"
+                        }
+                    ]
+                }
+            ],
+            "publicAccess": "--------",
+            "externalAccess": false,
+            "userAccesses": [
+                {
+                    "id": "M5zQapPyTZI",
+                    "displayName": "admin admin",
+                    "access": "rw------"
+                }
+            ],
+            "userGroupAccesses": [
+                {
+                    "id": "ywuI2WspUUG",
+                    "displayName": "System Admin",
+                    "access": "rw------"
+                },
+                {
+                    "id": "mKKNXzeIAJs",
+                    "displayName": "Data Management Admin",
+                    "access": "rw------"
+                }
+            ],
+            "legendSet": {
+                "code": "ACTUAL_TARGET_ACHIEVED",
+                "id": "yoAt108kUFm"
+            }
+        },
+        {
+            "id": "GEe8ZzUkVwG",
+            "name": "MyProject - Achieved total (%) - People",
+            "numberType": "VALUE",
+            "legendDisplayStyle": "FILL",
+            "rowSubTotals": true,
+            "showDimensionLabels": true,
+            "aggregationType": "DEFAULT",
+            "legendDisplayStrategy": "FIXED",
+            "rowTotals": false,
+            "digitGroupSeparator": "SPACE",
+            "dataDimensionItems": [
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "eYmeRzhBFV4"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "u404ICrBKj3"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "K4sH0aQDdeL"
+                    }
+                }
+            ],
+            "organisationUnits": [
+                {
+                    "id": "WGC0DJ0YSis"
+                }
+            ],
+            "periods": [
+                {
+                    "id": "201810"
+                },
+                {
+                    "id": "201811"
+                },
+                {
+                    "id": "201812"
+                },
+                {
+                    "id": "201901"
+                },
+                {
+                    "id": "201902"
+                },
+                {
+                    "id": "201903"
+                }
+            ],
+            "columns": [
+                {
                     "id": "uSMHdwhxFSV",
                     "categoryOptions": [
                         {
@@ -1204,7 +1335,16 @@
                     ]
                 }
             ],
-            "filterDimensions": ["ou", "uSMHdwhxFSV"],
+            "columnDimensions": ["uSMHdwhxFSV"],
+            "filters": [
+                {
+                    "id": "ou"
+                },
+                {
+                    "id": "pe"
+                }
+            ],
+            "filterDimensions": ["ou", "pe"],
             "rows": [
                 {
                     "id": "dx"
@@ -1331,10 +1471,16 @@
                     "id": "ou"
                 },
                 {
+                    "code": "NEW_RETURNING",
                     "id": "uSMHdwhxFSV",
                     "categoryOptions": [
                         {
+                            "code": "NEW",
                             "id": "KiK0FMExoqh"
+                        },
+                        {
+                            "code": "RETURNING",
+                            "id": "a6AJLXQy8vO"
                         }
                     ]
                 }
@@ -1348,6 +1494,9 @@
                     "categoryOptions": [
                         {
                             "id": "KiK0FMExoqh"
+                        },
+                        {
+                            "id": "a6AJLXQy8vO"
                         }
                     ]
                 }
