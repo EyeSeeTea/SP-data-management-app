@@ -632,13 +632,17 @@
                     "id": "pe"
                 }
             ],
-            "columnDimensions": ["pe"],
+            "columnDimensions": [
+                "pe"
+            ],
             "filters": [
                 {
                     "id": "ou"
                 }
             ],
-            "filterDimensions": ["ou"],
+            "filterDimensions": [
+                "ou"
+            ],
             "rows": [
                 {
                     "id": "dx"
@@ -658,7 +662,10 @@
                     ]
                 }
             ],
-            "rowDimensions": ["dx", "GIIHAr9BzzO"],
+            "rowDimensions": [
+                "dx",
+                "GIIHAr9BzzO"
+            ],
             "categoryDimensions": [
                 {
                     "category": {
@@ -771,13 +778,18 @@
                     ]
                 }
             ],
-            "columnDimensions": ["pe", "Kyg1O6YEGa9"],
+            "columnDimensions": [
+                "pe",
+                "Kyg1O6YEGa9"
+            ],
             "filters": [
                 {
                     "id": "ou"
                 }
             ],
-            "filterDimensions": ["ou"],
+            "filterDimensions": [
+                "ou"
+            ],
             "rows": [
                 {
                     "id": "dx"
@@ -811,7 +823,11 @@
                     ]
                 }
             ],
-            "rowDimensions": ["dx", "GIIHAr9BzzO", "uSMHdwhxFSV"],
+            "rowDimensions": [
+                "dx",
+                "GIIHAr9BzzO",
+                "uSMHdwhxFSV"
+            ],
             "categoryDimensions": [
                 {
                     "category": {
@@ -950,7 +966,10 @@
                     ]
                 }
             ],
-            "columnDimensions": ["pe", "Kyg1O6YEGa9"],
+            "columnDimensions": [
+                "pe",
+                "Kyg1O6YEGa9"
+            ],
             "filters": [
                 {
                     "id": "ou"
@@ -964,7 +983,10 @@
                     ]
                 }
             ],
-            "filterDimensions": ["ou", "uSMHdwhxFSV"],
+            "filterDimensions": [
+                "ou",
+                "uSMHdwhxFSV"
+            ],
             "rows": [
                 {
                     "id": "dx"
@@ -984,7 +1006,10 @@
                     ]
                 }
             ],
-            "rowDimensions": ["dx", "GIIHAr9BzzO"],
+            "rowDimensions": [
+                "dx",
+                "GIIHAr9BzzO"
+            ],
             "categoryDimensions": [
                 {
                     "category": {
@@ -1100,19 +1125,25 @@
                     "id": "pe"
                 }
             ],
-            "columnDimensions": ["pe"],
+            "columnDimensions": [
+                "pe"
+            ],
             "filters": [
                 {
                     "id": "ou"
                 }
             ],
-            "filterDimensions": ["ou"],
+            "filterDimensions": [
+                "ou"
+            ],
             "rows": [
                 {
                     "id": "dx"
                 }
             ],
-            "rowDimensions": ["dx"],
+            "rowDimensions": [
+                "dx"
+            ],
             "categoryDimensions": [],
             "publicAccess": "--------",
             "externalAccess": false,
@@ -1201,48 +1232,26 @@
                     "id": "pe"
                 }
             ],
-            "columnDimensions": ["pe"],
+            "columnDimensions": [
+                "pe"
+            ],
             "filters": [
                 {
                     "id": "ou"
-                },
-                {
-                    "code": "NEW_RETURNING",
-                    "id": "uSMHdwhxFSV",
-                    "categoryOptions": [
-                        {
-                            "code": "NEW",
-                            "id": "KiK0FMExoqh"
-                        },
-                        {
-                            "code": "RETURNING",
-                            "id": "a6AJLXQy8vO"
-                        }
-                    ]
                 }
             ],
-            "filterDimensions": ["ou", "uSMHdwhxFSV"],
+            "filterDimensions": [
+                "ou"
+            ],
             "rows": [
                 {
                     "id": "dx"
                 }
             ],
-            "rowDimensions": ["dx"],
-            "categoryDimensions": [
-                {
-                    "category": {
-                        "id": "uSMHdwhxFSV"
-                    },
-                    "categoryOptions": [
-                        {
-                            "id": "KiK0FMExoqh"
-                        },
-                        {
-                            "id": "a6AJLXQy8vO"
-                        }
-                    ]
-                }
+            "rowDimensions": [
+                "dx"
             ],
+            "categoryDimensions": [],
             "publicAccess": "--------",
             "externalAccess": false,
             "userAccesses": [
@@ -1335,7 +1344,9 @@
                     ]
                 }
             ],
-            "columnDimensions": ["uSMHdwhxFSV"],
+            "columnDimensions": [
+                "uSMHdwhxFSV"
+            ],
             "filters": [
                 {
                     "id": "ou"
@@ -1344,13 +1355,18 @@
                     "id": "pe"
                 }
             ],
-            "filterDimensions": ["ou", "pe"],
+            "filterDimensions": [
+                "ou",
+                "pe"
+            ],
             "rows": [
                 {
                     "id": "dx"
                 }
             ],
-            "rowDimensions": ["dx"],
+            "rowDimensions": [
+                "dx"
+            ],
             "categoryDimensions": [
                 {
                     "category": {
@@ -1469,38 +1485,12 @@
             "filters": [
                 {
                     "id": "ou"
-                },
-                {
-                    "code": "NEW_RETURNING",
-                    "id": "uSMHdwhxFSV",
-                    "categoryOptions": [
-                        {
-                            "code": "NEW",
-                            "id": "KiK0FMExoqh"
-                        },
-                        {
-                            "code": "RETURNING",
-                            "id": "a6AJLXQy8vO"
-                        }
-                    ]
                 }
             ],
-            "filterDimensions": ["ou", "uSMHdwhxFSV"],
-            "categoryDimensions": [
-                {
-                    "category": {
-                        "id": "uSMHdwhxFSV"
-                    },
-                    "categoryOptions": [
-                        {
-                            "id": "KiK0FMExoqh"
-                        },
-                        {
-                            "id": "a6AJLXQy8vO"
-                        }
-                    ]
-                }
+            "filterDimensions": [
+                "ou"
             ],
+            "categoryDimensions": [],
             "publicAccess": "--------",
             "externalAccess": false,
             "userAccesses": [
@@ -1611,7 +1601,10 @@
                     ]
                 }
             ],
-            "filterDimensions": ["pe", "uSMHdwhxFSV"],
+            "filterDimensions": [
+                "pe",
+                "uSMHdwhxFSV"
+            ],
             "categoryDimensions": [
                 {
                     "category": {
@@ -1736,7 +1729,11 @@
                     ]
                 }
             ],
-            "filterDimensions": ["ou", "pe", "uSMHdwhxFSV"],
+            "filterDimensions": [
+                "ou",
+                "pe",
+                "uSMHdwhxFSV"
+            ],
             "categoryDimensions": [
                 {
                     "category": {
@@ -1840,7 +1837,9 @@
                     "id": "pe"
                 }
             ],
-            "filterDimensions": ["pe"],
+            "filterDimensions": [
+                "pe"
+            ],
             "categoryDimensions": [],
             "publicAccess": "--------",
             "externalAccess": false,

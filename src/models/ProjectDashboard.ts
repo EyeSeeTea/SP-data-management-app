@@ -139,7 +139,7 @@ export default class ProjectDashboard {
             key: "reportTable-indicators-people",
             name: i18n.t("Achieved (%) - People"),
             items: project.getActualTargetIndicators(dataElements.people),
-            reportFilter: [dimensions.orgUnit, this.config.categories.newRecurring],
+            reportFilter: [dimensions.orgUnit],
             columnDimensions: [dimensions.period],
             rowDimensions: [dimensions.data],
             extra: { legendSet: project.config.legendSets.achieved },
@@ -169,7 +169,7 @@ export default class ProjectDashboard {
             key: "chart-achieved-monthly",
             name: i18n.t("Achieved monthly (%)"),
             items: project.getActualTargetIndicators(dataElements.all),
-            reportFilter: [dimensions.orgUnit, this.config.categories.newRecurring],
+            reportFilter: [dimensions.orgUnit],
             seriesDimension: dimensions.period,
             categoryDimension: dimensions.data,
         });
