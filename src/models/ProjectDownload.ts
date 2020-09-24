@@ -217,7 +217,10 @@ class ProjectDownload {
                     header(i18n.t("Total People Targeted"), { fill: fills.target }),
                     ...this.mapPeriods(
                         period =>
-                            analytics.get(dataElement, period.id, [config.categoryOptions.target]),
+                            analytics.get(dataElement, period.id, [
+                                config.categoryOptions.target,
+                                config.categoryOptions.new,
+                            ]),
                         { font: { bold: true }, fill: fills.target }
                     ),
                     { ...sumRowFormula },
@@ -305,7 +308,10 @@ class ProjectDownload {
                     header(i18n.t("Total Actual People"), { fill: fills.actual }),
                     ...this.mapPeriods(
                         period =>
-                            analytics.get(dataElement, period.id, [config.categoryOptions.actual]),
+                            analytics.get(dataElement, period.id, [
+                                config.categoryOptions.actual,
+                                config.categoryOptions.new,
+                            ]),
                         { fill: fills.actual }
                     ),
                     sumRowFormula,
