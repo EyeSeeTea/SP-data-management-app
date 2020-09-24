@@ -531,6 +531,17 @@
                     "y": 80
                 },
                 {
+                    "id": "uYY7v977Ubm",
+                    "type": "CHART",
+                    "chart": {
+                        "id": "uiyYMLiDaK2"
+                    },
+                    "width": 29,
+                    "height": 20,
+                    "x": 29,
+                    "y": 80
+                },
+                {
                     "id": "qUqsDmtiBLF",
                     "type": "CHART",
                     "chart": {
@@ -538,8 +549,8 @@
                     },
                     "width": 29,
                     "height": 20,
-                    "x": 29,
-                    "y": 80
+                    "x": 0,
+                    "y": 100
                 },
                 {
                     "id": "mwMpIdPdu8H",
@@ -549,7 +560,7 @@
                     },
                     "width": 29,
                     "height": 20,
-                    "x": 0,
+                    "x": 29,
                     "y": 100
                 }
             ],
@@ -632,17 +643,13 @@
                     "id": "pe"
                 }
             ],
-            "columnDimensions": [
-                "pe"
-            ],
+            "columnDimensions": ["pe"],
             "filters": [
                 {
                     "id": "ou"
                 }
             ],
-            "filterDimensions": [
-                "ou"
-            ],
+            "filterDimensions": ["ou"],
             "rows": [
                 {
                     "id": "dx"
@@ -662,10 +669,7 @@
                     ]
                 }
             ],
-            "rowDimensions": [
-                "dx",
-                "GIIHAr9BzzO"
-            ],
+            "rowDimensions": ["dx", "GIIHAr9BzzO"],
             "categoryDimensions": [
                 {
                     "category": {
@@ -778,18 +782,13 @@
                     ]
                 }
             ],
-            "columnDimensions": [
-                "pe",
-                "Kyg1O6YEGa9"
-            ],
+            "columnDimensions": ["pe", "Kyg1O6YEGa9"],
             "filters": [
                 {
                     "id": "ou"
                 }
             ],
-            "filterDimensions": [
-                "ou"
-            ],
+            "filterDimensions": ["ou"],
             "rows": [
                 {
                     "id": "dx"
@@ -823,11 +822,7 @@
                     ]
                 }
             ],
-            "rowDimensions": [
-                "dx",
-                "GIIHAr9BzzO",
-                "uSMHdwhxFSV"
-            ],
+            "rowDimensions": ["dx", "GIIHAr9BzzO", "uSMHdwhxFSV"],
             "categoryDimensions": [
                 {
                     "category": {
@@ -966,10 +961,7 @@
                     ]
                 }
             ],
-            "columnDimensions": [
-                "pe",
-                "Kyg1O6YEGa9"
-            ],
+            "columnDimensions": ["pe", "Kyg1O6YEGa9"],
             "filters": [
                 {
                     "id": "ou"
@@ -983,10 +975,7 @@
                     ]
                 }
             ],
-            "filterDimensions": [
-                "ou",
-                "uSMHdwhxFSV"
-            ],
+            "filterDimensions": ["ou", "uSMHdwhxFSV"],
             "rows": [
                 {
                     "id": "dx"
@@ -1006,10 +995,7 @@
                     ]
                 }
             ],
-            "rowDimensions": [
-                "dx",
-                "GIIHAr9BzzO"
-            ],
+            "rowDimensions": ["dx", "GIIHAr9BzzO"],
             "categoryDimensions": [
                 {
                     "category": {
@@ -1125,25 +1111,19 @@
                     "id": "pe"
                 }
             ],
-            "columnDimensions": [
-                "pe"
-            ],
+            "columnDimensions": ["pe"],
             "filters": [
                 {
                     "id": "ou"
                 }
             ],
-            "filterDimensions": [
-                "ou"
-            ],
+            "filterDimensions": ["ou"],
             "rows": [
                 {
                     "id": "dx"
                 }
             ],
-            "rowDimensions": [
-                "dx"
-            ],
+            "rowDimensions": ["dx"],
             "categoryDimensions": [],
             "publicAccess": "--------",
             "externalAccess": false,
@@ -1232,25 +1212,19 @@
                     "id": "pe"
                 }
             ],
-            "columnDimensions": [
-                "pe"
-            ],
+            "columnDimensions": ["pe"],
             "filters": [
                 {
                     "id": "ou"
                 }
             ],
-            "filterDimensions": [
-                "ou"
-            ],
+            "filterDimensions": ["ou"],
             "rows": [
                 {
                     "id": "dx"
                 }
             ],
-            "rowDimensions": [
-                "dx"
-            ],
+            "rowDimensions": ["dx"],
             "categoryDimensions": [],
             "publicAccess": "--------",
             "externalAccess": false,
@@ -1344,9 +1318,7 @@
                     ]
                 }
             ],
-            "columnDimensions": [
-                "uSMHdwhxFSV"
-            ],
+            "columnDimensions": ["uSMHdwhxFSV"],
             "filters": [
                 {
                     "id": "ou"
@@ -1355,18 +1327,13 @@
                     "id": "pe"
                 }
             ],
-            "filterDimensions": [
-                "ou",
-                "pe"
-            ],
+            "filterDimensions": ["ou", "pe"],
             "rows": [
                 {
                     "id": "dx"
                 }
             ],
-            "rowDimensions": [
-                "dx"
-            ],
+            "rowDimensions": ["dx"],
             "categoryDimensions": [
                 {
                     "category": {
@@ -1487,9 +1454,7 @@
                     "id": "ou"
                 }
             ],
-            "filterDimensions": [
-                "ou"
-            ],
+            "filterDimensions": ["ou"],
             "categoryDimensions": [],
             "publicAccess": "--------",
             "externalAccess": false,
@@ -1515,7 +1480,7 @@
         },
         {
             "id": "qmsj4FqnVPX",
-            "name": "MyProject - Achieved (%)",
+            "name": "MyProject - Achieved Benefit (%)",
             "type": "COLUMN",
             "aggregationType": "DEFAULT",
             "showData": true,
@@ -1535,6 +1500,86 @@
                 {
                     "dataDimensionItemType": "INDICATOR",
                     "indicator": {
+                        "id": "i01veyO4Cuw"
+                    }
+                }
+            ],
+            "periods": [
+                {
+                    "id": "201810"
+                },
+                {
+                    "id": "201811"
+                },
+                {
+                    "id": "201812"
+                },
+                {
+                    "id": "201901"
+                },
+                {
+                    "id": "201902"
+                },
+                {
+                    "id": "201903"
+                }
+            ],
+            "series": "ou",
+            "columns": [
+                {
+                    "id": "ou"
+                }
+            ],
+            "rows": [
+                {
+                    "id": "dx"
+                }
+            ],
+            "filters": [
+                {
+                    "id": "pe"
+                }
+            ],
+            "filterDimensions": ["pe"],
+            "categoryDimensions": [],
+            "publicAccess": "--------",
+            "externalAccess": false,
+            "userAccesses": [
+                {
+                    "id": "M5zQapPyTZI",
+                    "displayName": "admin admin",
+                    "access": "rw------"
+                }
+            ],
+            "userGroupAccesses": [
+                {
+                    "id": "ywuI2WspUUG",
+                    "displayName": "System Admin",
+                    "access": "rw------"
+                },
+                {
+                    "id": "mKKNXzeIAJs",
+                    "displayName": "Data Management Admin",
+                    "access": "rw------"
+                }
+            ]
+        },
+        {
+            "id": "uiyYMLiDaK2",
+            "name": "MyProject - Achieved People (%)",
+            "type": "COLUMN",
+            "aggregationType": "DEFAULT",
+            "showData": true,
+            "category": "dx",
+            "organisationUnits": [
+                {
+                    "id": "WGC0DJ0YSis"
+                }
+            ],
+            "dataDimensionItems": [
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
                         "id": "eYmeRzhBFV4"
                     }
                 },
@@ -1542,12 +1587,6 @@
                     "dataDimensionItemType": "INDICATOR",
                     "indicator": {
                         "id": "u404ICrBKj3"
-                    }
-                },
-                {
-                    "dataDimensionItemType": "INDICATOR",
-                    "indicator": {
-                        "id": "i01veyO4Cuw"
                     }
                 },
                 {
@@ -1601,10 +1640,7 @@
                     ]
                 }
             ],
-            "filterDimensions": [
-                "pe",
-                "uSMHdwhxFSV"
-            ],
+            "filterDimensions": ["pe", "uSMHdwhxFSV"],
             "categoryDimensions": [
                 {
                     "category": {
@@ -1729,11 +1765,7 @@
                     ]
                 }
             ],
-            "filterDimensions": [
-                "ou",
-                "pe",
-                "uSMHdwhxFSV"
-            ],
+            "filterDimensions": ["ou", "pe", "uSMHdwhxFSV"],
             "categoryDimensions": [
                 {
                     "category": {
@@ -1837,9 +1869,7 @@
                     "id": "pe"
                 }
             ],
-            "filterDimensions": [
-                "pe"
-            ],
+            "filterDimensions": ["pe"],
             "categoryDimensions": [],
             "publicAccess": "--------",
             "externalAccess": false,

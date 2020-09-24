@@ -47,7 +47,8 @@ export default class ProjectDashboard {
         ]);
 
         const charts: Array<PartialPersistedModel<D2Chart>> = _.compact([
-            this.achievedChart(),
+            this.achievedBenefitChart(),
+            this.achievedPeopleChart(),
             this.genderChart(),
             this.costBenefit(),
         ]);
@@ -175,13 +176,26 @@ export default class ProjectDashboard {
         });
     }
 
-    achievedChart(): MaybeD2Chart {
+    achievedBenefitChart(): MaybeD2Chart {
         const { project, dataElements } = this;
 
         return getChart(project, {
             key: "chart-achieved",
-            name: i18n.t("Achieved (%)"),
-            items: project.getActualTargetIndicators(dataElements.all),
+            name: i18n.t("Achieved Benefit (%)"),
+            items: project.getActualTargetIndicators(dataElements.benefit),
+            reportFilter: [dimensions.period],
+            seriesDimension: dimensions.orgUnit,
+            categoryDimension: dimensions.data,
+        });
+    }
+
+    achievedPeopleChart(): MaybeD2Chart {
+        const { project, dataElements } = this;
+
+        return getChart(project, {
+            key: "chart-people-achieved",
+            name: i18n.t("Achieved People (%)"),
+            items: project.getActualTargetIndicators(dataElements.people),
             reportFilter: [dimensions.period, this.categoryOnlyNew],
             seriesDimension: dimensions.orgUnit,
             categoryDimension: dimensions.data,
