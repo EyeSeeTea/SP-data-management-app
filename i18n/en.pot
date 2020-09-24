@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2020-09-22T06:54:12.909Z\n"
-"PO-Revision-Date: 2020-09-22T06:54:12.909Z\n"
+"POT-Creation-Date: 2020-09-24T08:12:43.632Z\n"
+"PO-Revision-Date: 2020-09-24T08:12:43.632Z\n"
 
 msgid "Data Entry"
 msgstr ""
@@ -344,10 +344,16 @@ msgstr ""
 msgid "Achieved (%) - People"
 msgstr ""
 
+msgid "Achieved total (%) - People"
+msgstr ""
+
 msgid "Achieved monthly (%)"
 msgstr ""
 
-msgid "Achieved (%)"
+msgid "Achieved Benefit (%)"
+msgstr ""
+
+msgid "Achieved People (%)"
 msgstr ""
 
 msgid "Achieved by gender (%)"
