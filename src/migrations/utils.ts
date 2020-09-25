@@ -1,16 +1,3 @@
-import _ from "lodash";
-import { Ref } from "../types/d2-api";
-
-export function getDuplicatedIds<Obj extends Ref>(objects: Obj[]): string[] {
-    return _(objects)
-        .map(obj => obj.id)
-        .countBy()
-        .pickBy(count => count > 1)
-        .keys()
-        .value();
-}
-
-/* Map sequentially over T[] with an asynchronous function and return array of mapped values */
 export function promiseMap<T, S>(inputValues: T[], mapper: (value: T) => Promise<S>): Promise<S[]> {
     const reducer = (acc$: Promise<S[]>, inputValue: T): Promise<S[]> =>
         acc$.then((acc: S[]) =>

@@ -141,6 +141,7 @@ function getPendingMigrationsText(runner: MigrationsRunner): string {
     );
 }
 
+console.log(process.env);
 const isDebug = process.env.NODE_ENV === "development";
 
 const MigrationsError: React.FC<{ runner: MigrationsRunner; onFinish: () => void }> = ({
@@ -151,12 +152,12 @@ const MigrationsError: React.FC<{ runner: MigrationsRunner; onFinish: () => void
         isOpen={true}
         title={i18n.t("Error")}
         onSave={isDebug ? onFinish : undefined}
-        saveText={i18n.t("Continue to app anyway")}
+        saveText={i18n.t("Continue to the app anyway")}
         maxWidth="md"
         fullWidth={true}
     >
         {i18n.t(
-            "The database version (v{{instanceVersion}}) is greater than the app version (v{{appVersion}}), we cannot continue. Please contact the administrator to update the app.",
+            "The database version ({{instanceVersion}}) is greater than the app version ({{appVersion}}), cannot continue. Please contact the administrator to update the app.",
             runner
         )}
     </ConfirmationDialog>

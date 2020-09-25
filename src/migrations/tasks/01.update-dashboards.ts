@@ -24,7 +24,7 @@ async function saveProjectDashboards(api: D2Api, config: Config, debug: Debug, p
     return promiseMap(enumerate(projectIds), async ([idx, projectId]) => {
         const project = await Project.get(api, config, projectId);
         const name = `[${project.parentOrgUnit?.displayName}] ${project.name} (${project.id})`;
-        debug(`Save dashboard for project (${idx + 1} / ${projectIds.length}): ${name}`);
+        debug(`Save dashboard (${idx + 1} / ${projectIds.length}): ${name}`);
         await new ProjectDashboardSave(project).execute();
     });
 }
@@ -57,7 +57,7 @@ async function checkCurrentUserInAdminGroup(api: D2Api, config: Config, debug: D
         const res = await api.models.userGroups.put(newAdminGroup).getData();
         if (res.status !== "OK") throw new Error("Cannot update admin group");
     } else {
-        debug(`Current user (${currentUser.displayName} is already in group ${adminGroup.name}`);
+        debug(`Current user ${currentUser.displayName} is already in group ${adminGroup.name}`);
     }
 }
 

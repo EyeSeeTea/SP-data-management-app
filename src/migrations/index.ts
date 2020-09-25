@@ -52,22 +52,6 @@ export class MigrationsRunner {
         debug(`Migrate: version ${this.instanceVersion} to version ${this.appVersion}`);
 
         await this.runMigrations(migrations);
-
-        /*
-        Do not backup dataStore, should be an option from the migrations, only if necessary
-
-        await this.rollBackExistingBackup();
-        await this.backupDataStore();
-
-        try {
-            await this.runMigrations(migrations);
-        } catch (error) {
-            await this.rollbackDataStore(error);
-            throw error;
-        }
-
-        await this.deleteBackup();
-        */
     }
 
     async runMigrations(migrations: MigrationWithVersion[]): Promise<Config> {
@@ -80,7 +64,7 @@ export class MigrationsRunner {
         await saveDataStore(api, namespace, configKey, configWithCurrentMigration);
 
         for (const migration of migrations) {
-            debug(`Apply migration ${zeroPad(migration.version, 2)}: ${migration.name}`);
+            debug(`Apply migration ${zeroPad(migration.version, 2)} - ${migration.name}`);
             try {
                 await migration.migrate(api, debug);
             } catch (error) {
@@ -94,6 +78,8 @@ export class MigrationsRunner {
         await saveDataStore(api, namespace, configKey, newConfig);
         return newConfig;
     }
+
+    // dataStore backup methods are currently unused, call only if a migration needs it.
 
     async deleteBackup() {
         try {
