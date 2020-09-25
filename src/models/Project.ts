@@ -3,6 +3,7 @@ import moment, { Moment } from "moment";
 import _ from "lodash";
 import { D2Api, SelectedPick, Id, Ref } from "../types/d2-api";
 import { D2OrganisationUnit, D2IndicatorSchema } from "../types/d2-api";
+// @ts-ignore
 import { generateUid } from "d2/uid";
 import { TableSorting } from "d2-ui-components";
 
