@@ -172,6 +172,12 @@ const MerReportComponent: React.FC = () => {
                         ))}
 
                         <ReportTextField
+                            title={i18n.t("Additional comments")}
+                            value={merReport.data.additionalComments}
+                            onBlurChange={value => onChange("additionalComments", value)}
+                        />
+
+                        <ReportTextField
                             title={i18n.t("Ministry Summary")}
                             value={merReport.data.ministrySummary}
                             onBlurChange={value => onChange("ministrySummary", value)}
@@ -183,12 +189,6 @@ const MerReportComponent: React.FC = () => {
                             title={i18n.t("Projected Activities for the next month")}
                             value={merReport.data.projectedActivitiesNextMonth}
                             onBlurChange={value => onChange("projectedActivitiesNextMonth", value)}
-                        />
-
-                        <ReportTextField
-                            title={i18n.t("Additional comments")}
-                            value={merReport.data.additionalComments}
-                            onBlurChange={value => onChange("additionalComments", value)}
                         />
 
                         <ReportTextField

@@ -35,7 +35,7 @@ function getComponentConfig(
     setProjectIdsToDelete: (state: React.SetStateAction<Id[] | undefined>) => void,
     currentUser: CurrentUser
 ) {
-    const initialPagination = { page: 1, pageSize: 10 };
+    const initialPagination = { page: 1, pageSize: 20 };
     const initialSorting = { field: "displayName" as const, order: "asc" as const };
 
     const columns: TableColumn<ProjectForList>[] = [

@@ -195,6 +195,11 @@ class ProjectDownload {
             { fill: fills.cumulative }
         );
 
+        const cumulativeNewSumFormula = formula(
+            (rowIdx, colIdx) => [cell(colIdx, rowIdx + 1), "+", cell(colIdx, rowIdx + 2)].join(""),
+            { fill: fills.cumulative }
+        );
+
         // target header+data (1 + 4) + achievement (1) + actual header+data (1 + 4)
         const rowsCountByDataElement = 11;
 
@@ -220,7 +225,7 @@ class ProjectDownload {
                             analytics.get(dataElement, period.id, [config.categoryOptions.target]),
                         { font: { bold: true }, fill: fills.target }
                     ),
-                    { ...sumRowFormula },
+                    cumulativeNewSumFormula,
                     text("", { merge: [1, 5] }), // Method
                     text("", { merge: [1, 5] }), // Responsible
                 ],
@@ -308,7 +313,7 @@ class ProjectDownload {
                             analytics.get(dataElement, period.id, [config.categoryOptions.actual]),
                         { fill: fills.actual }
                     ),
-                    sumRowFormula,
+                    cumulativeNewSumFormula,
                 ],
                 [
                     ...repeat(empty, 4),

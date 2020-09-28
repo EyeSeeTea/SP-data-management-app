@@ -210,6 +210,7 @@ export type CurrentUser = {
     username: string;
     userRoles: Array<{ name: string }>;
     organisationUnits: OrganisationUnit[];
+    authorities: string[];
 };
 
 export interface OrganisationUnit {
@@ -252,7 +253,7 @@ class ConfigLoader {
         const d2CurrentUser = await this.getCurrentUser();
         const { funders, locations } = getFundersAndLocations(metadata);
         const { userRoles, username } = d2CurrentUser.userCredentials;
-        const currentUser = { ...d2CurrentUser, userRoles, username };
+        const currentUser: Config["currentUser"] = { ...d2CurrentUser, userRoles, username };
         const dataElementsMetadata = await this.getDataElementsMetadata(currentUser, metadata);
 
         return {
@@ -282,6 +283,7 @@ class ConfigLoader {
                     displayName: true,
                     userCredentials: { username: true, userRoles: { name: true } },
                     organisationUnits: { id: true, displayName: true, level: true },
+                    authorities: true,
                 },
             })
             .getData();
