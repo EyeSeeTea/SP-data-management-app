@@ -20,6 +20,10 @@ import { ApiContext, AppContext } from "../../contexts/api-context";
 import { getConfig } from "../../models/Config";
 import User from "../../models/user";
 import { LinearProgress } from "@material-ui/core";
+import Migrations from "../migrations/Migrations";
+import { useMigrations } from "../migrations/hooks";
+
+const appKey = "data-management-app";
 
 export interface AppConfig {
     appKey: string;
@@ -84,6 +88,7 @@ const App: React.FC<AppProps> = props => {
     const [showShareButton, setShowShareButton] = useState(false);
     const { loading, error, data } = useDataQuery(settingsQuery);
     const isDev = _.last(window.location.hash.split("#")) === "dev";
+    const migrations = useMigrations(api, appKey);
 
     useEffect(() => {
         const run = async () => {
@@ -135,6 +140,8 @@ const App: React.FC<AppProps> = props => {
                 <OldMuiThemeProvider muiTheme={muiThemeLegacy}>
                     <SnackbarProvider>
                         <HeaderBar appName={"Data Management"} />
+
+                        <Migrations migrations={migrations} />
 
                         <div id="app" className="content">
                             <ApiContext.Provider value={appContext}>

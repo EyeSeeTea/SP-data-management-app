@@ -498,6 +498,17 @@
                     "y": 40
                 },
                 {
+                    "id": "mgwFIMjbsdw",
+                    "type": "REPORT_TABLE",
+                    "reportTable": {
+                        "id": "GEe8ZzUkVwG"
+                    },
+                    "width": 29,
+                    "height": 20,
+                    "x": 29,
+                    "y": 40
+                },
+                {
                     "id": "ys0CVedHirZ",
                     "type": "CHART",
                     "chart": {
@@ -520,6 +531,17 @@
                     "y": 80
                 },
                 {
+                    "id": "uYY7v977Ubm",
+                    "type": "CHART",
+                    "chart": {
+                        "id": "uiyYMLiDaK2"
+                    },
+                    "width": 29,
+                    "height": 20,
+                    "x": 29,
+                    "y": 80
+                },
+                {
                     "id": "qUqsDmtiBLF",
                     "type": "CHART",
                     "chart": {
@@ -527,8 +549,8 @@
                     },
                     "width": 29,
                     "height": 20,
-                    "x": 29,
-                    "y": 80
+                    "x": 0,
+                    "y": 100
                 },
                 {
                     "id": "mwMpIdPdu8H",
@@ -538,7 +560,7 @@
                     },
                     "width": 29,
                     "height": 20,
-                    "x": 0,
+                    "x": 29,
                     "y": 100
                 }
             ],
@@ -1138,7 +1160,7 @@
             "showDimensionLabels": true,
             "aggregationType": "DEFAULT",
             "legendDisplayStrategy": "FIXED",
-            "rowTotals": true,
+            "rowTotals": false,
             "digitGroupSeparator": "SPACE",
             "dataDimensionItems": [
                 {
@@ -1194,7 +1216,99 @@
             "filters": [
                 {
                     "id": "ou"
+                }
+            ],
+            "filterDimensions": ["ou"],
+            "rows": [
+                {
+                    "id": "dx"
+                }
+            ],
+            "rowDimensions": ["dx"],
+            "categoryDimensions": [],
+            "publicAccess": "--------",
+            "externalAccess": false,
+            "userAccesses": [
+                {
+                    "id": "M5zQapPyTZI",
+                    "displayName": "admin admin",
+                    "access": "rw------"
+                }
+            ],
+            "userGroupAccesses": [
+                {
+                    "id": "ywuI2WspUUG",
+                    "displayName": "System Admin",
+                    "access": "rw------"
                 },
+                {
+                    "id": "mKKNXzeIAJs",
+                    "displayName": "Data Management Admin",
+                    "access": "rw------"
+                }
+            ],
+            "legendSet": {
+                "code": "ACTUAL_TARGET_ACHIEVED",
+                "id": "yoAt108kUFm"
+            }
+        },
+        {
+            "id": "GEe8ZzUkVwG",
+            "name": "MyProject - Achieved total (%) - People",
+            "numberType": "VALUE",
+            "legendDisplayStyle": "FILL",
+            "rowSubTotals": true,
+            "showDimensionLabels": true,
+            "aggregationType": "DEFAULT",
+            "legendDisplayStrategy": "FIXED",
+            "rowTotals": false,
+            "digitGroupSeparator": "SPACE",
+            "dataDimensionItems": [
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "eYmeRzhBFV4"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "u404ICrBKj3"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "K4sH0aQDdeL"
+                    }
+                }
+            ],
+            "organisationUnits": [
+                {
+                    "id": "WGC0DJ0YSis"
+                }
+            ],
+            "periods": [
+                {
+                    "id": "201810"
+                },
+                {
+                    "id": "201811"
+                },
+                {
+                    "id": "201812"
+                },
+                {
+                    "id": "201901"
+                },
+                {
+                    "id": "201902"
+                },
+                {
+                    "id": "201903"
+                }
+            ],
+            "columns": [
                 {
                     "id": "uSMHdwhxFSV",
                     "categoryOptions": [
@@ -1204,7 +1318,16 @@
                     ]
                 }
             ],
-            "filterDimensions": ["ou", "uSMHdwhxFSV"],
+            "columnDimensions": ["uSMHdwhxFSV"],
+            "filters": [
+                {
+                    "id": "ou"
+                },
+                {
+                    "id": "pe"
+                }
+            ],
+            "filterDimensions": ["ou", "pe"],
             "rows": [
                 {
                     "id": "dx"
@@ -1329,29 +1452,10 @@
             "filters": [
                 {
                     "id": "ou"
-                },
-                {
-                    "id": "uSMHdwhxFSV",
-                    "categoryOptions": [
-                        {
-                            "id": "KiK0FMExoqh"
-                        }
-                    ]
                 }
             ],
-            "filterDimensions": ["ou", "uSMHdwhxFSV"],
-            "categoryDimensions": [
-                {
-                    "category": {
-                        "id": "uSMHdwhxFSV"
-                    },
-                    "categoryOptions": [
-                        {
-                            "id": "KiK0FMExoqh"
-                        }
-                    ]
-                }
-            ],
+            "filterDimensions": ["ou"],
+            "categoryDimensions": [],
             "publicAccess": "--------",
             "externalAccess": false,
             "userAccesses": [
@@ -1376,7 +1480,7 @@
         },
         {
             "id": "qmsj4FqnVPX",
-            "name": "MyProject - Achieved (%)",
+            "name": "MyProject - Achieved Benefit (%)",
             "type": "COLUMN",
             "aggregationType": "DEFAULT",
             "showData": true,
@@ -1396,6 +1500,86 @@
                 {
                     "dataDimensionItemType": "INDICATOR",
                     "indicator": {
+                        "id": "i01veyO4Cuw"
+                    }
+                }
+            ],
+            "periods": [
+                {
+                    "id": "201810"
+                },
+                {
+                    "id": "201811"
+                },
+                {
+                    "id": "201812"
+                },
+                {
+                    "id": "201901"
+                },
+                {
+                    "id": "201902"
+                },
+                {
+                    "id": "201903"
+                }
+            ],
+            "series": "ou",
+            "columns": [
+                {
+                    "id": "ou"
+                }
+            ],
+            "rows": [
+                {
+                    "id": "dx"
+                }
+            ],
+            "filters": [
+                {
+                    "id": "pe"
+                }
+            ],
+            "filterDimensions": ["pe"],
+            "categoryDimensions": [],
+            "publicAccess": "--------",
+            "externalAccess": false,
+            "userAccesses": [
+                {
+                    "id": "M5zQapPyTZI",
+                    "displayName": "admin admin",
+                    "access": "rw------"
+                }
+            ],
+            "userGroupAccesses": [
+                {
+                    "id": "ywuI2WspUUG",
+                    "displayName": "System Admin",
+                    "access": "rw------"
+                },
+                {
+                    "id": "mKKNXzeIAJs",
+                    "displayName": "Data Management Admin",
+                    "access": "rw------"
+                }
+            ]
+        },
+        {
+            "id": "uiyYMLiDaK2",
+            "name": "MyProject - Achieved People (%)",
+            "type": "COLUMN",
+            "aggregationType": "DEFAULT",
+            "showData": true,
+            "category": "dx",
+            "organisationUnits": [
+                {
+                    "id": "WGC0DJ0YSis"
+                }
+            ],
+            "dataDimensionItems": [
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
                         "id": "eYmeRzhBFV4"
                     }
                 },
@@ -1403,12 +1587,6 @@
                     "dataDimensionItemType": "INDICATOR",
                     "indicator": {
                         "id": "u404ICrBKj3"
-                    }
-                },
-                {
-                    "dataDimensionItemType": "INDICATOR",
-                    "indicator": {
-                        "id": "i01veyO4Cuw"
                     }
                 },
                 {

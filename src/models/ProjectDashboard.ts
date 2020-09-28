@@ -1,3 +1,4 @@
+import { Config } from "./Config";
 import { PartialPersistedModel, PartialModel } from "../types/d2-api";
 import _ from "lodash";
 import { D2Dashboard, D2ReportTable, Ref, D2Chart, D2DashboardItem, Id } from "../types/d2-api";
@@ -12,6 +13,7 @@ type Maybe<T> = T | null | undefined;
 export default class ProjectDashboard {
     dataElements: Record<"all" | "people" | "benefit", DataElement[]>;
     categoryOnlyNew: { id: Id; categoryOptions: Ref[] };
+    config: Config;
 
     constructor(public project: Project) {
         const { config } = project;
@@ -26,6 +28,8 @@ export default class ProjectDashboard {
             id: config.categories.newRecurring.id,
             categoryOptions: [{ id: config.categoryOptions.new.id }],
         };
+
+        this.config = config;
     }
 
     generate() {
@@ -39,10 +43,12 @@ export default class ProjectDashboard {
             // Percent achieved
             this.achievedBenefitsTable(),
             this.achievedPeopleTable(),
+            this.achievedPeopleTotalTable(),
         ]);
 
         const charts: Array<PartialPersistedModel<D2Chart>> = _.compact([
-            this.achievedChart(),
+            this.achievedBenefitChart(),
+            this.achievedPeopleChart(),
             this.genderChart(),
             this.costBenefit(),
         ]);
@@ -134,10 +140,26 @@ export default class ProjectDashboard {
             key: "reportTable-indicators-people",
             name: i18n.t("Achieved (%) - People"),
             items: project.getActualTargetIndicators(dataElements.people),
-            reportFilter: [dimensions.orgUnit, this.categoryOnlyNew],
+            reportFilter: [dimensions.orgUnit],
             columnDimensions: [dimensions.period],
             rowDimensions: [dimensions.data],
             extra: { legendSet: project.config.legendSets.achieved },
+            rowTotals: false,
+        });
+    }
+
+    achievedPeopleTotalTable(): MaybeD2Table {
+        const { project, dataElements } = this;
+
+        return getReportTable(project, {
+            key: "reportTable-indicators-people-total",
+            name: i18n.t("Achieved total (%) - People"),
+            items: project.getActualTargetIndicators(dataElements.people),
+            reportFilter: [dimensions.orgUnit, dimensions.period],
+            columnDimensions: [this.categoryOnlyNew],
+            rowDimensions: [dimensions.data],
+            extra: { legendSet: project.config.legendSets.achieved },
+            rowTotals: false,
         });
     }
 
@@ -148,19 +170,32 @@ export default class ProjectDashboard {
             key: "chart-achieved-monthly",
             name: i18n.t("Achieved monthly (%)"),
             items: project.getActualTargetIndicators(dataElements.all),
-            reportFilter: [dimensions.orgUnit, this.categoryOnlyNew],
+            reportFilter: [dimensions.orgUnit],
             seriesDimension: dimensions.period,
             categoryDimension: dimensions.data,
         });
     }
 
-    achievedChart(): MaybeD2Chart {
+    achievedBenefitChart(): MaybeD2Chart {
         const { project, dataElements } = this;
 
         return getChart(project, {
             key: "chart-achieved",
-            name: i18n.t("Achieved (%)"),
-            items: project.getActualTargetIndicators(dataElements.all),
+            name: i18n.t("Achieved Benefit (%)"),
+            items: project.getActualTargetIndicators(dataElements.benefit),
+            reportFilter: [dimensions.period],
+            seriesDimension: dimensions.orgUnit,
+            categoryDimension: dimensions.data,
+        });
+    }
+
+    achievedPeopleChart(): MaybeD2Chart {
+        const { project, dataElements } = this;
+
+        return getChart(project, {
+            key: "chart-people-achieved",
+            name: i18n.t("Achieved People (%)"),
+            items: project.getActualTargetIndicators(dataElements.people),
             reportFilter: [dimensions.period, this.categoryOnlyNew],
             seriesDimension: dimensions.orgUnit,
             categoryDimension: dimensions.data,
@@ -222,6 +257,7 @@ interface Table {
     rowDimensions: Dimension[];
     columnDimensions: Dimension[];
     extra?: PartialModel<D2ReportTable>;
+    rowTotals?: boolean;
 }
 
 interface Chart {
@@ -274,7 +310,7 @@ function getReportTable(project: Project, table: Table): MaybeD2Table {
         showDimensionLabels: true,
         aggregationType: "DEFAULT",
         legendDisplayStrategy: "FIXED",
-        rowTotals: true,
+        rowTotals: table.rowTotals ?? true,
         digitGroupSeparator: "SPACE",
         dataDimensionItems,
         organisationUnits: [{ id: orgUnitId }],
