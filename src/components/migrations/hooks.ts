@@ -1,4 +1,3 @@
-import axiosRetry from "axios-retry";
 import React from "react";
 import { MigrationsRunner } from "../../migrations";
 import { D2Api } from "../../types/d2-api";
@@ -27,8 +26,6 @@ export function useMigrations(api: D2Api, dataStoreNamespace: string): UseMigrat
 }
 
 async function runMigrations(api: D2Api, dataStoreNamespace: string): Promise<MigrationsState> {
-    axiosRetry(api.connection, { retries: 3 });
-
     const runner = await MigrationsRunner.init({
         api,
         debug: console.log,

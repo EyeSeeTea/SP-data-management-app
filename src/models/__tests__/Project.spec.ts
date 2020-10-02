@@ -100,6 +100,8 @@ describe("Project", () => {
             });
 
             project = await Project.get(api, config, "R3rGhxWbAI9");
+
+            logUnknownRequest(mock);
         });
 
         it("has filled values", () => {
@@ -261,6 +263,8 @@ describe("Project", () => {
                 speedKey: "key",
             });
 
+            mock.reset();
+
             mock.onGet("/metadata", {
                 params: {
                     "organisationUnits:fields": "displayName",
@@ -345,6 +349,7 @@ describe("Project", () => {
         const orgUnitsById = _.keyBy(organisationUnits, ou => ou.id);
 
         it("returns list of organisation units filtered", async () => {
+            debugger;
             mock.onGet("/organisationUnits", {
                 params: {
                     paging: false,
@@ -396,8 +401,6 @@ describe("Project", () => {
                     },
                 ],
             });
-
-            logUnknownRequest(mock);
 
             const { objects, pager: pagination } = await Project.getList(
                 api,
