@@ -36,7 +36,7 @@ function configI18n(userSettings) {
 async function main() {
     const baseUrl = await getBaseUrl();
     const d2 = await init({ baseUrl: baseUrl + "/api" });
-    const api = new D2Api({ baseUrl, backend: "fetch" });
+    const api = new D2Api({ baseUrl });
     const userSettings = await api.get("/userSettings").getData();
     configI18n(userSettings);
     const config = { baseUrl, apiVersion: "30" };
