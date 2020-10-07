@@ -247,9 +247,9 @@ function getReport(
                 catOptComboDataApprovals.permissions.mayUnapprove &&
                 catOptComboDataApprovals.accepted;
 
-            return projectDataSet.getApprovalForm(date).then(report => {
+            return projectDataSet.getApprovalForm(date).then(reportData => {
                 // Parse report
-                const htmlReport = jQuery(jQuery("<div/>").html(report.data));
+                const htmlReport = jQuery(jQuery("<div/>").html(reportData));
                 htmlReport.find("table.listTable tbody tr:odd").addClass("listAlternateRow");
                 htmlReport.find("table.listTable tbody tr:even").addClass("listRow");
                 htmlReport.find("#shareForm").hide();
