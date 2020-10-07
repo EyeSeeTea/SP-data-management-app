@@ -145,7 +145,9 @@ export default class ProjectDataSet {
         const dataSet = this.getDataSet();
         const params = { ds: dataSet.id, pe: period, ou: orgUnit.id, dimension: "ao:" + aoc.id };
         const path = "/dhis-web-reporting/generateDataSetReport.action";
-        return this.api.baseConnection.get(path, { params });
+        return this.api
+            .request({ method: "get", url: path, params, skipApiPrefix: true })
+            .getData();
     }
 
     private getAttributeOptionCombo() {
