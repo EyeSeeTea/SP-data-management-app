@@ -37,6 +37,7 @@ const MerReportComponent: React.FC = () => {
     const [date, setDate] = useState(initial.date);
     const [orgUnit, setOrgUnit] = useState(initial.orgUnit);
     const [merReport, setMerReportBase] = useState<Maybe<MerReport>>(null);
+    const [isSaving, setSaving] = useState(false);
     const title = i18n.t("Monthly Executive Reports");
 
     React.useEffect(() => {
@@ -73,12 +74,15 @@ const MerReportComponent: React.FC = () => {
     const save = React.useCallback(() => {
         async function run(merReport: MerReport) {
             try {
+                setSaving(true);
                 await merReport.save();
                 snackbar.success(i18n.t("Report saved"));
                 wasReportModifiedSet(false);
             } catch (err) {
                 const msg = i18n.t("Error saving report") + ": " + err.message || err.toString();
                 snackbar.error(msg);
+            } finally {
+                setSaving(false);
             }
         }
         if (merReport) run(merReport);
@@ -207,6 +211,7 @@ const MerReportComponent: React.FC = () => {
                             <Button
                                 onClick={save}
                                 variant="contained"
+                                disabled={isSaving}
                                 className={classes.saveButton}
                             >
                                 {i18n.t("Save")}
@@ -225,6 +230,8 @@ const MerReportComponent: React.FC = () => {
                                 </Button>
                             </div>
                         </div>
+
+                        {isSaving && <LinearProgress />}
                     </Paper>
                 </React.Fragment>
             )}
