@@ -89,6 +89,7 @@ const App: React.FC<AppProps> = props => {
     const { loading, error, data } = useDataQuery(settingsQuery);
     const isDev = _.last(window.location.hash.split("#")) === "dev";
     const migrations = useMigrations(api, appKey);
+    const [loadError, setLoadError] = useState<string>();
 
     useEffect(() => {
         const run = async () => {
@@ -115,8 +116,12 @@ const App: React.FC<AppProps> = props => {
             }
         };
 
-        if (data) run();
+        if (data) run().catch(err => setLoadError(err.message));
     }, [data]);
+
+    if (loadError) {
+        return <div>Cannot load app: {loadError}</div>;
+    }
 
     if (error) {
         return (
