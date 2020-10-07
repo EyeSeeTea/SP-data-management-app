@@ -105,6 +105,8 @@ const MerReportComponent: React.FC = () => {
         [setDate, datePickerState]
     );
 
+    const saveReportMsg = i18n.t("The report must be saved before it can be downloaded");
+
     return (
         <React.Fragment>
             {proceedWarning.type === "visible" && (
@@ -210,13 +212,18 @@ const MerReportComponent: React.FC = () => {
                                 {i18n.t("Save")}
                             </Button>
 
-                            <Button
-                                onClick={download}
-                                variant="contained"
+                            <div
+                                title={wasReportModified ? saveReportMsg : undefined}
                                 className={classes.downloadButton}
                             >
-                                {i18n.t("Download")}
-                            </Button>
+                                <Button
+                                    onClick={download}
+                                    variant="contained"
+                                    disabled={wasReportModified}
+                                >
+                                    {i18n.t("Download")}
+                                </Button>
+                            </div>
                         </div>
                     </Paper>
                 </React.Fragment>
@@ -254,7 +261,8 @@ const useStyles = makeStyles({
         color: "white",
     },
     downloadButton: {
-        marginLeft: 10,
+        display: "inline",
+        marginLeft: 25,
     },
 });
 
