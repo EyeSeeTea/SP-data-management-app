@@ -10,12 +10,12 @@ import { logUnknownRequest } from "../../utils/tests";
 const { api, mock } = getMockApi();
 const config = (configJson as unknown) as Config;
 
-function getProject() {
+function getNewProject() {
     return Project.create(api, config).set("id", "BvNo8zQaol8");
 }
 
 async function expectFieldPresence(field: ValidationKey) {
-    const project = await getProject();
+    const project = await getNewProject();
     const errors = await project.validate([field]);
     expect(errors[field] !== undefined && (errors[field] || []).length > 0).toBeTruthy();
 }
@@ -38,7 +38,7 @@ const fullAccess = {
 describe("Project", () => {
     describe("set", () => {
         it("sets immutable data fields using field name", async () => {
-            const project1 = await getProject();
+            const project1 = await getNewProject();
             const project2 = project1.set("name", "Project name");
             expect(project1.name).toEqual("");
             expect(project2.name).toEqual("Project name");
@@ -81,30 +81,8 @@ describe("Project", () => {
     });
 
     describe("get", () => {
-        let project: Project;
-
-        beforeAll(async () => {
-            mock.onGet("/metadata", {
-                params: {
-                    "organisationUnits:fields":
-                        "attributeValues[attribute[id],value],closedDate,code,description,displayName,id,name,openingDate,organisationUnitGroups[id],parent[displayName,id,name,path],path",
-                    "organisationUnits:filter": ["id:eq:R3rGhxWbAI9"],
-                    "dataSets:fields":
-                        "code,dataInputPeriods[closingDate,openingDate,period],dataSetElements[categoryCombo[id],dataElement[id]],expiryDays,externalAccess,id,openFuturePeriods,publicAccess,sections[code,dataElements[id]],userAccesses[access,displayName,id],userGroupAccesses[access,displayName,id]",
-                    "dataSets:filter": ["code:$like:R3rGhxWbAI9"],
-                },
-            }).replyOnce(200, metadataForGet);
-
-            mock.onGet("/dataStore/data-management-app/project-R3rGhxWbAI9").replyOnce(200, {
-                merDataElementIds: ["u24zk6wAgFE"],
-            });
-
-            project = await Project.get(api, config, "R3rGhxWbAI9");
-
-            logUnknownRequest(mock);
-        });
-
-        it("has filled values", () => {
+        it("has filled values", async () => {
+            const project = await getProject();
             expect(project.id).toEqual("R3rGhxWbAI9");
             expect(project.name).toEqual("0Test1-13726c");
             expect(project.description).toEqual("Some description2");
@@ -131,11 +109,13 @@ describe("Project", () => {
             expect(project.dashboard).toEqual({ id: "yk6HaCRtmEL" });
         });
 
-        it("has initial data set", () => {
+        it("has initial data set", async () => {
+            const project = await getProject();
             expect(project.initialData && project.initialData.id).toEqual("R3rGhxWbAI9");
         });
 
-        it("has data element sets", () => {
+        it("has data element sets", async () => {
+            const project = await getProject();
             expect(
                 project.dataElementsSelection.get({ onlySelected: true }).map(de => de.id)
             ).toEqual(["yMqK9DKbA3X", "u24zk6wAgFE"]);
@@ -145,6 +125,7 @@ describe("Project", () => {
         });
 
         it("raises exception on not found", async () => {
+            mock.reset();
             mock.onGet("/metadata").replyOnce(200, {});
             await expect(Project.get(api, config, "a1234567890")).rejects.toThrow();
         });
@@ -152,7 +133,7 @@ describe("Project", () => {
 
     describe("code", () => {
         it("joins {subsequentLettering}{this.awardNumber}-{this.speedKey}", async () => {
-            const project = await getProject();
+            const project = await getNewProject();
             const project2 = project.setObj({
                 subsequentLettering: "es",
                 awardNumber: "12345",
@@ -162,7 +143,7 @@ describe("Project", () => {
         });
 
         it("joins {subsequentLettering}{this.awardNumber} if speedKey not set", async () => {
-            const project = await getProject();
+            const project = await getNewProject();
             const project2 = project.set("subsequentLettering", "es").set("awardNumber", "12345");
             expect(project2.code).toEqual("12345es");
         });
@@ -198,7 +179,7 @@ describe("Project", () => {
         });
 
         it("limits speedKey to 40 chars", async () => {
-            const project = (await getProject()).set("speedKey", "1");
+            const project = (await getNewProject()).set("speedKey", "1");
             const errors = await project.validate(["speedKey"]);
             expect(errors["speedKey"]).toHaveLength(0);
 
@@ -209,7 +190,7 @@ describe("Project", () => {
         });
 
         it("requires a five-digit string in award number", async () => {
-            const project = (await getProject()).set("awardNumber", "12345");
+            const project = (await getNewProject()).set("awardNumber", "12345");
             const errors = await project.validate(["awardNumber"]);
             expect(errors["awardNumber"]).toHaveLength(0);
 
@@ -225,7 +206,7 @@ describe("Project", () => {
         });
 
         it("requires a string of two letters in subsequent lettering", async () => {
-            const project = (await getProject()).set("subsequentLettering", "NG");
+            const project = (await getNewProject()).set("subsequentLettering", "NG");
             const errors = await project.validate(["subsequentLettering"]);
             expect(errors["subsequentLettering"]).toHaveLength(0);
 
@@ -257,7 +238,7 @@ describe("Project", () => {
         });
 
         it("requires a unique code", async () => {
-            const project = (await getProject()).setObj({
+            const project = (await getNewProject()).setObj({
                 subsequentLettering: "au",
                 awardNumber: "19234",
                 speedKey: "key",
@@ -279,7 +260,7 @@ describe("Project", () => {
         });
 
         it("requires at least one data element by sector", async () => {
-            const project = (await getProject()).setObj({
+            const project = (await getNewProject()).setObj({
                 sectors: [
                     { id: "ieyBABjYyHO", displayName: "Agriculture", code: "SECTOR_AGRICULTURE" },
                     { id: "GkiSljtLcOI", displayName: "Livelihood", code: "SECTOR_LIVELIHOOD" },
@@ -306,7 +287,7 @@ describe("Project", () => {
         });
 
         it("without keys, it runs all validations", async () => {
-            const project = await getProject();
+            const project = await getNewProject();
             const errors = await project.validate();
             expect(_.keys(errors)).toEqual(
                 expect.arrayContaining([
@@ -590,3 +571,26 @@ const metadataForGet = {
         },
     ],
 };
+
+async function getProject(): Promise<Project> {
+    mock.reset();
+
+    mock.onGet("/metadata", {
+        params: {
+            "organisationUnits:fields":
+                "attributeValues[attribute[id],value],closedDate,code,description,displayName,id,name,openingDate,organisationUnitGroups[id],parent[displayName,id,name,path],path",
+            "organisationUnits:filter": ["id:eq:R3rGhxWbAI9"],
+            "dataSets:fields":
+                "code,dataInputPeriods[closingDate,openingDate,period],dataSetElements[categoryCombo[id],dataElement[id]],expiryDays,externalAccess,id,openFuturePeriods,publicAccess,sections[code,dataElements[id]],userAccesses[access,displayName,id],userGroupAccesses[access,displayName,id]",
+            "dataSets:filter": ["code:$like:R3rGhxWbAI9"],
+        },
+    }).replyOnce(200, metadataForGet);
+
+    mock.onGet("/dataStore/data-management-app/project-R3rGhxWbAI9").replyOnce(200, {
+        merDataElementIds: ["u24zk6wAgFE"],
+    });
+
+    logUnknownRequest(mock);
+
+    return Project.get(api, config, "R3rGhxWbAI9");
+}
