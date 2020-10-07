@@ -351,7 +351,7 @@ describe("Project", () => {
                     fields:
                         "closedDate,code,created,displayDescription,displayName,href,id,lastUpdated,lastUpdatedBy[name],openingDate,parent[displayName,id],user[displayName,id]",
                     order: "displayName:idesc",
-                    filter: ["id:in:[3,5]"],
+                    filter: ["id:in:[5,3,1]"],
                 },
             }).replyOnce(200, { organisationUnits: _.at(orgUnitsById, ["5", "3"]) });
 
@@ -395,7 +395,7 @@ describe("Project", () => {
                 { page: 1, pageSize: 2 }
             );
 
-            expect(pagination).toEqual({ page: 1, pageSize: 2, total: 3 });
+            expect(pagination).toEqual({ page: 1, pageSize: 2, total: 1 });
             const emptySharing = { userAccesses: [], userGroupAccesses: [] };
             expect(objects).toEqual([
                 {
