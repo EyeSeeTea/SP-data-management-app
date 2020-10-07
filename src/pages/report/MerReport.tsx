@@ -3,7 +3,7 @@ import { useHistory } from "react-router";
 import { History } from "history";
 import { makeStyles } from "@material-ui/core/styles";
 import { Paper, Button, LinearProgress } from "@material-ui/core";
-import { DatePicker, useSnackbar, ConfirmationDialog } from "d2-ui-components";
+import { DatePicker, useSnackbar, ConfirmationDialog, useLoading } from "d2-ui-components";
 import { Moment } from "moment";
 
 import MerReport, { MerReportData } from "../../models/MerReport";
@@ -37,8 +37,8 @@ const MerReportComponent: React.FC = () => {
     const [date, setDate] = useState(initial.date);
     const [orgUnit, setOrgUnit] = useState(initial.orgUnit);
     const [merReport, setMerReportBase] = useState<Maybe<MerReport>>(null);
-    const [isSaving, setSaving] = useState(false);
     const title = i18n.t("Monthly Executive Reports");
+    const loading = useLoading();
 
     React.useEffect(() => {
         if (date && orgUnit) {
@@ -74,7 +74,7 @@ const MerReportComponent: React.FC = () => {
     const save = React.useCallback(() => {
         async function run(merReport: MerReport) {
             try {
-                setSaving(true);
+                loading.show(true, i18n.t("Saving MER report"));
                 await merReport.save();
                 snackbar.success(i18n.t("Report saved"));
                 wasReportModifiedSet(false);
@@ -82,7 +82,7 @@ const MerReportComponent: React.FC = () => {
                 const msg = i18n.t("Error saving report") + ": " + err.message || err.toString();
                 snackbar.error(msg);
             } finally {
-                setSaving(false);
+                loading.hide();
             }
         }
         if (merReport) run(merReport);
@@ -211,7 +211,6 @@ const MerReportComponent: React.FC = () => {
                             <Button
                                 onClick={save}
                                 variant="contained"
-                                disabled={isSaving}
                                 className={classes.saveButton}
                             >
                                 {i18n.t("Save")}
@@ -221,17 +220,11 @@ const MerReportComponent: React.FC = () => {
                                 title={wasReportModified ? saveReportMsg : undefined}
                                 className={classes.downloadButton}
                             >
-                                <Button
-                                    onClick={download}
-                                    variant="contained"
-                                    disabled={wasReportModified}
-                                >
+                                <Button onClick={download} variant="contained">
                                     {i18n.t("Download")}
                                 </Button>
                             </div>
                         </div>
-
-                        {isSaving && <LinearProgress />}
                     </Paper>
                 </React.Fragment>
             )}
