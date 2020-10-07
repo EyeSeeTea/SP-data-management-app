@@ -8,6 +8,7 @@ import i18n from "../../locales";
 import { getIdFromOrgUnit } from "../../utils/dhis2";
 import { D2Api } from "../../types/d2-api";
 import { makeStyles } from "@material-ui/styles";
+import { withSnackbarOnError } from "../utils/errors";
 
 type Path = string;
 
@@ -66,7 +67,9 @@ const UserOrgUnits: React.FC<UserOrgUnitsProps> = props => {
 
     async function onChangeOu(orgUnitPaths: string[]) {
         const lastSelectedPath = _.last(orgUnitPaths);
-        const orgUnit = lastSelectedPath ? await getOrganisationUnit(api, lastSelectedPath) : null;
+        const orgUnit = lastSelectedPath
+            ? await withSnackbarOnError(snackbar, () => getOrganisationUnit(api, lastSelectedPath))
+            : null;
         if (orgUnit) onChange(orgUnit);
     }
 

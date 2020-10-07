@@ -6,10 +6,14 @@ interface Options {
     onCatch?(): void;
 }
 
-export async function withSnackbarOnError(snackbar: SnackbarState, fn: Function, options: Options) {
-    const { onCatch, onFinally } = options;
+export async function withSnackbarOnError<T>(
+    snackbar: SnackbarState,
+    fn: () => T,
+    options?: Options
+): Promise<T> {
+    const { onCatch, onFinally } = options || {};
     try {
-        await fn();
+        return await fn();
     } catch (err) {
         const bodyMessage = err.response?.data?.message;
         console.error(err);
@@ -18,6 +22,7 @@ export async function withSnackbarOnError(snackbar: SnackbarState, fn: Function,
             .compact()
             .join(" - ");
         snackbar.error(message);
+        throw new Error(err);
     } finally {
         if (onFinally) onFinally();
     }

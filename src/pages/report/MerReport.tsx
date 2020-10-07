@@ -19,6 +19,7 @@ import ReportTextField from "./ReportTextField";
 import { downloadFile } from "../../utils/download";
 import { useBoolean } from "../../utils/hooks";
 import { Maybe } from "../../types/utils";
+import { withSnackbarOnError } from "../../components/utils/errors";
 
 type ProceedWarning = { type: "hidden" } | { type: "visible"; action: () => void };
 
@@ -43,7 +44,9 @@ const MerReportComponent: React.FC = () => {
             setMerReportBase(undefined);
             wasReportModifiedSet(false);
             const selectData = { date, organisationUnit: orgUnit };
-            MerReport.create(api, config, selectData).then(setMerReportBase);
+            withSnackbarOnError(snackbar, () =>
+                MerReport.create(api, config, selectData).then(setMerReportBase)
+            );
         }
     }, [date, orgUnit]);
 
