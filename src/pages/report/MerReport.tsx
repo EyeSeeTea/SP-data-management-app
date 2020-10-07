@@ -220,7 +220,11 @@ const MerReportComponent: React.FC = () => {
                                 title={wasReportModified ? saveReportMsg : undefined}
                                 className={classes.downloadButton}
                             >
-                                <Button onClick={download} variant="contained">
+                                <Button
+                                    onClick={download}
+                                    variant="contained"
+                                    disabled={wasReportModified}
+                                >
                                     {i18n.t("Download")}
                                 </Button>
                             </div>
