@@ -202,16 +202,20 @@ const MerReportComponent: React.FC = () => {
                         />
 
                         <div className={classes.buttonsWrapper}>
-                            <Button onClick={download} variant="contained">
-                                {i18n.t("Download")}
-                            </Button>
-
                             <Button
                                 onClick={save}
                                 variant="contained"
                                 className={classes.saveButton}
                             >
                                 {i18n.t("Save")}
+                            </Button>
+
+                            <Button
+                                onClick={download}
+                                variant="contained"
+                                className={classes.downloadButton}
+                            >
+                                {i18n.t("Download")}
                             </Button>
                         </div>
                     </Paper>
@@ -243,11 +247,14 @@ const useStyles = makeStyles({
     buttonsWrapper: {
         padding: 5,
         marginLeft: 30,
+        paddingBottom: 25,
     },
     saveButton: {
-        margin: 10,
         backgroundColor: "#2b98f0",
         color: "white",
+    },
+    downloadButton: {
+        marginLeft: 10,
     },
 });
 
