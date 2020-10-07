@@ -349,7 +349,6 @@ describe("Project", () => {
         const orgUnitsById = _.keyBy(organisationUnits, ou => ou.id);
 
         it("returns list of organisation units filtered", async () => {
-            debugger;
             mock.onGet("/organisationUnits", {
                 params: {
                     paging: false,
