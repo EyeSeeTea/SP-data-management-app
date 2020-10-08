@@ -1,4 +1,4 @@
-import MockAdapter from "axios-mock-adapter/types";
+import MockAdapter from "axios-mock-adapter";
 import { logUnknownRequest } from "../../utils/tests";
 
 function mockApiMerDataSets(mock: MockAdapter, orgUnitIds: string[]) {

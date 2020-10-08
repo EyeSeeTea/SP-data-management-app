@@ -1,7 +1,7 @@
 import fs from "fs";
 import tmp from "tmp";
 import _ from "lodash";
-import MockAdapter from "axios-mock-adapter/types";
+import MockAdapter from "axios-mock-adapter";
 import { Method } from "axios";
 
 interface MockAdapterWithHandlers extends MockAdapter {
@@ -20,7 +20,7 @@ export function logUnknownRequest(mockAdapter: MockAdapter) {
         if (!method) return [500, {}];
 
         const msgs: string[] = [];
-        msgs.push(`Error: \n${method?.toUpperCase()} ${url}`);
+        msgs.push(`Error: \n${(method || "get").toUpperCase()} ${url}`);
         if (params) msgs.push(`Params: ${JSON.stringify(params)}`);
 
         if (data) {

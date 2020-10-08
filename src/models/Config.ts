@@ -104,6 +104,9 @@ const baseConfig = {
         appAdmin: "DATA_MANAGEMENT_ADMIN",
         countryAdminPrefix: "ADMIN_COUNTRY_",
     },
+    merReports: {
+        excludedSectors: ["SECTOR_MINISTRY"],
+    },
 };
 
 function getParamsForIndexables(indexedCodes: _.Dictionary<string>) {
