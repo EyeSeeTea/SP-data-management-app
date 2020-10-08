@@ -1,16 +1,17 @@
 import React from "react";
 import axios from "axios";
 import ReactDOM from "react-dom";
+// @ts-ignore
 import { init } from "d2";
-import i18n from "@dhis2/d2-i18n";
 import { Provider } from "@dhis2/app-runtime";
 
 import App from "./components/app/App";
 import "./locales";
 import "./utils/lodash-mixins";
 import { D2Api } from "./types/d2-api";
+import i18n from "./locales";
 
-async function getBaseUrl() {
+async function getBaseUrl(): Promise<string> {
     if (process.env.NODE_ENV === "development") {
         const baseUrl = process.env.REACT_APP_DHIS2_BASE_URL || "http://localhost:8080";
         console.info(`[DEV] DHIS2 instance: ${baseUrl}`);
@@ -21,13 +22,15 @@ async function getBaseUrl() {
     }
 }
 
-function isLangRTL(code) {
+function isLangRTL(code: string): boolean {
     const langs = ["ar", "fa", "ur"];
     const prefixed = langs.map(c => `${c}-`);
     return langs.includes(code) || prefixed.filter(c => code && code.startsWith(c)).length > 0;
 }
 
-function configI18n(userSettings) {
+type UserSettings = { keyUiLocale: string };
+
+function configI18n(userSettings: UserSettings) {
     const uiLocale = userSettings.keyUiLocale;
     i18n.changeLanguage(uiLocale);
     document.documentElement.setAttribute("dir", isLangRTL(uiLocale) ? "rtl" : "ltr");
@@ -36,20 +39,27 @@ function configI18n(userSettings) {
 async function main() {
     const baseUrl = await getBaseUrl();
     const d2 = await init({ baseUrl: baseUrl + "/api" });
-    const api = new D2Api({ baseUrl });
-    const userSettings = await api.get("/userSettings").getData();
+    const api = new D2Api({ baseUrl, backend: "xhr", timeout: 60 * 1000 });
+    const userSettings = (await api.get("/userSettings").getData()) as UserSettings;
     configI18n(userSettings);
-    const config = { baseUrl, apiVersion: "30" };
+    const config = { baseUrl, apiVersion: 30 };
+
     try {
         ReactDOM.render(
-            <Provider config={config}>
-                <App d2={d2} api={api} />
-            </Provider>,
+            // eslint-disable-next-line react/no-children-prop
+            React.createElement(
+                Provider,
+                { config, children: null },
+                React.createElement(App, { d2, api })
+            ),
             document.getElementById("root")
         );
     } catch (err) {
         console.error(err);
-        ReactDOM.render(<div>{err.toString()}</div>, document.getElementById("root"));
+        ReactDOM.render(
+            React.createElement("div", {}, err.toString()),
+            document.getElementById("root")
+        );
     }
 }
 

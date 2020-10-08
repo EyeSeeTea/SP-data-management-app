@@ -8,7 +8,7 @@ import OldMuiThemeProvider from "material-ui/styles/MuiThemeProvider";
 import { useDataQuery, useConfig } from "@dhis2/app-runtime";
 import _ from "lodash";
 //@ts-ignore
-import { SnackbarProvider } from "d2-ui-components";
+import { SnackbarProvider, LoadingProvider } from "d2-ui-components";
 import { D2Api } from "../../types/d2-api";
 
 import "./App.css";
@@ -89,6 +89,7 @@ const App: React.FC<AppProps> = props => {
     const { loading, error, data } = useDataQuery(settingsQuery);
     const isDev = _.last(window.location.hash.split("#")) === "dev";
     const migrations = useMigrations(api, appKey);
+    const [loadError, setLoadError] = useState<string>();
 
     useEffect(() => {
         const run = async () => {
@@ -115,8 +116,12 @@ const App: React.FC<AppProps> = props => {
             }
         };
 
-        if (data) run();
+        if (data) run().catch(err => setLoadError(err.message));
     }, [data]);
+
+    if (loadError) {
+        return <div>Cannot load app: {loadError}</div>;
+    }
 
     if (error) {
         return (
@@ -138,19 +143,21 @@ const App: React.FC<AppProps> = props => {
         return (
             <MuiThemeProvider theme={muiTheme}>
                 <OldMuiThemeProvider muiTheme={muiThemeLegacy}>
-                    <SnackbarProvider>
-                        <HeaderBar appName={"Data Management"} />
+                    <LoadingProvider>
+                        <SnackbarProvider>
+                            <HeaderBar appName={"Data Management"} />
 
-                        <Migrations migrations={migrations} />
+                            <Migrations migrations={migrations} />
 
-                        <div id="app" className="content">
-                            <ApiContext.Provider value={appContext}>
-                                <Root />
-                            </ApiContext.Provider>
-                        </div>
+                            <div id="app" className="content">
+                                <ApiContext.Provider value={appContext}>
+                                    <Root />
+                                </ApiContext.Provider>
+                            </div>
 
-                        <Share visible={showShareButton} />
-                    </SnackbarProvider>
+                            <Share visible={showShareButton} />
+                        </SnackbarProvider>
+                    </LoadingProvider>
                 </OldMuiThemeProvider>
             </MuiThemeProvider>
         );

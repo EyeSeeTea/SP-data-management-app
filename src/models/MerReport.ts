@@ -134,9 +134,10 @@ type SelectData = Pick<Data, "date" | "organisationUnit">;
 
 const emptyStaffSummary: StaffSummary = {};
 
-function getProjectSectors(projects: ProjectForList[]): Sector[] {
+function getProjectSectors(config: Config, projects: ProjectForList[]): Sector[] {
     return _(projects)
         .flatMap(project => project.sectors)
+        .reject(sector => config.base.merReports.excludedSectors.includes(sector.code))
         .uniqBy(sector => sector.id)
         .sortBy(sector => sector.displayName)
         .value();
@@ -172,7 +173,7 @@ class MerReport {
         const comments = report ? report.comments : {};
         const projects = await getProjects(api, config, selectData);
         const projectsData = await MerReport.getProjectsData(api, config, projects, date, comments);
-        const sectors = getProjectSectors(projects);
+        const sectors = getProjectSectors(config, projects);
 
         const data: Data = {
             sectors,
