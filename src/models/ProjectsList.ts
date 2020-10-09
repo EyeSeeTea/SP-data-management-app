@@ -59,8 +59,7 @@ export default class ProjectsList {
     ): Promise<{ objects: ProjectForList[]; pager: Partial<TablePagination> }> {
         const { api, config } = this;
         const order = `${sorting.field}:i${sorting.order}`;
-        const baseOrgUnitIds = await this.getBaseOrgUnitIds(api, config, filters, order);
-        const { pager, objects: orgUnitIds } = paginate(baseOrgUnitIds, pagination);
+        const orgUnitIds = await this.getBaseOrgUnitIds(api, config, filters, order);
 
         const { objects: d2OrgUnits } =
             orgUnitIds.length === 0
@@ -126,7 +125,7 @@ export default class ProjectsList {
             return project;
         });
 
-        return { pager: pager, objects: _.compact(projectsWithSectors) };
+        return paginate(_.compact(projectsWithSectors), pagination);
     }
 
     async getBaseOrgUnitIds(api: D2Api, config: Config, filters: FiltersForList, order: string) {

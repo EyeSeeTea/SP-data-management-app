@@ -3,7 +3,7 @@ import { useHistory } from "react-router";
 import { History } from "history";
 import { makeStyles } from "@material-ui/core/styles";
 import { Paper, Button, LinearProgress } from "@material-ui/core";
-import { DatePicker, useSnackbar, ConfirmationDialog } from "d2-ui-components";
+import { DatePicker, useSnackbar, ConfirmationDialog, useLoading } from "d2-ui-components";
 import { Moment } from "moment";
 
 import MerReport, { MerReportData } from "../../models/MerReport";
@@ -19,6 +19,7 @@ import ReportTextField from "./ReportTextField";
 import { downloadFile } from "../../utils/download";
 import { useBoolean } from "../../utils/hooks";
 import { Maybe } from "../../types/utils";
+import { withSnackbarOnError } from "../../components/utils/errors";
 
 type ProceedWarning = { type: "hidden" } | { type: "visible"; action: () => void };
 
@@ -37,13 +38,16 @@ const MerReportComponent: React.FC = () => {
     const [orgUnit, setOrgUnit] = useState(initial.orgUnit);
     const [merReport, setMerReportBase] = useState<Maybe<MerReport>>(null);
     const title = i18n.t("Monthly Executive Reports");
+    const loading = useLoading();
 
     React.useEffect(() => {
         if (date && orgUnit) {
             setMerReportBase(undefined);
             wasReportModifiedSet(false);
             const selectData = { date, organisationUnit: orgUnit };
-            MerReport.create(api, config, selectData).then(setMerReportBase);
+            withSnackbarOnError(snackbar, () =>
+                MerReport.create(api, config, selectData).then(setMerReportBase)
+            );
         }
     }, [date, orgUnit]);
 
@@ -70,12 +74,15 @@ const MerReportComponent: React.FC = () => {
     const save = React.useCallback(() => {
         async function run(merReport: MerReport) {
             try {
+                loading.show(true, i18n.t("Saving MER report"));
                 await merReport.save();
                 snackbar.success(i18n.t("Report saved"));
                 wasReportModifiedSet(false);
             } catch (err) {
                 const msg = i18n.t("Error saving report") + ": " + err.message || err.toString();
                 snackbar.error(msg);
+            } finally {
+                loading.hide();
             }
         }
         if (merReport) run(merReport);
@@ -101,6 +108,8 @@ const MerReportComponent: React.FC = () => {
         },
         [setDate, datePickerState]
     );
+
+    const saveReportMsg = i18n.t("The report must be saved before it can be downloaded");
 
     return (
         <React.Fragment>
@@ -199,10 +208,6 @@ const MerReportComponent: React.FC = () => {
                         />
 
                         <div className={classes.buttonsWrapper}>
-                            <Button onClick={download} variant="contained">
-                                {i18n.t("Download")}
-                            </Button>
-
                             <Button
                                 onClick={save}
                                 variant="contained"
@@ -210,6 +215,19 @@ const MerReportComponent: React.FC = () => {
                             >
                                 {i18n.t("Save")}
                             </Button>
+
+                            <div
+                                title={wasReportModified ? saveReportMsg : undefined}
+                                className={classes.downloadButton}
+                            >
+                                <Button
+                                    onClick={download}
+                                    variant="contained"
+                                    disabled={wasReportModified}
+                                >
+                                    {i18n.t("Download")}
+                                </Button>
+                            </div>
                         </div>
                     </Paper>
                 </React.Fragment>
@@ -240,11 +258,15 @@ const useStyles = makeStyles({
     buttonsWrapper: {
         padding: 5,
         marginLeft: 30,
+        paddingBottom: 25,
     },
     saveButton: {
-        margin: 10,
         backgroundColor: "#2b98f0",
         color: "white",
+    },
+    downloadButton: {
+        display: "inline",
+        marginLeft: 25,
     },
 });
 
