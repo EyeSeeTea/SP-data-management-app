@@ -174,13 +174,17 @@ class Project {
 
     static lengths = {
         awardNumber: 5,
-        subsequentLettering: 2,
         speedKey: 40,
     };
 
-    static formats = {
-        subsequentLettering: /^[a-zA-Z]{2}$/,
-    };
+    static formats() {
+        return {
+            subsequentLettering: {
+                regexp: /^[a-zA-Z]{2,3}$/,
+                msg: i18n.t("Subsequent Lettering must be a string of two or three letters"),
+            },
+        };
+    }
 
     static fieldNames: Record<ProjectField, string> = {
         id: i18n.t("Id"),
@@ -229,8 +233,8 @@ class Project {
             validateRegexp(
                 this.subsequentLettering,
                 this.f("subsequentLettering"),
-                Project.formats.subsequentLettering,
-                i18n.t("Subsequent Lettering must be a string of two letters only")
+                Project.formats().subsequentLettering.regexp,
+                Project.formats().subsequentLettering.msg
             ),
         speedKey: () =>
             validateNumber(this.speedKey.length, this.f("speedKey"), {
