@@ -13,13 +13,15 @@ import ActionButton from "../../components/action-button/ActionButton";
 import { GetPropertiesByType } from "../../types/utils";
 import { downloadFile } from "../../utils/download";
 import { D2Api, Id } from "../../types/d2-api";
-import { Icon, LinearProgress, CircularProgress } from "@material-ui/core";
+import { Icon, LinearProgress } from "@material-ui/core";
 import ProjectsListFilters, { Filter } from "./ProjectsListFilters";
 import { ProjectForList, FiltersForList } from "../../models/ProjectsList";
 import DeleteDialog from "../../components/delete-dialog/DeleteDialog";
 import { Action } from "../../models/user";
 import { useLocation } from "react-router-dom";
 import { parse } from "querystring";
+import ListSelector, { ListView } from "../../components/list-selector/ListSelector";
+import LoadingSpinner from "../../components/loading-spinner/LoadingSpinner";
 
 type ContextualAction = Exclude<Action, "create" | "accessMER" | "reopen"> | "details";
 
@@ -169,7 +171,12 @@ function getComponentConfig(
 
 type ProjectTableSorting = TableSorting<ProjectForList>;
 
-const ProjectsList: React.FC = () => {
+interface ProjectsListProps {
+    onViewChange(view: ListView): void;
+}
+
+const ProjectsList: React.FC<ProjectsListProps> = props => {
+    const { onViewChange } = props;
     const goTo = useGoTo();
     const { api, config, currentUser } = useAppContext();
     const match = useLocation();
@@ -281,6 +288,8 @@ const ProjectsList: React.FC = () => {
                             )}
 
                             <LoadingSpinner isVisible={isLoading} />
+
+                            <ListSelector view="projects" onChange={onViewChange} />
                         </React.Fragment>
                     }
                 />
@@ -317,13 +326,6 @@ async function download(api: D2Api, config: Config, projectId: string) {
     const project = await Project.get(api, config, projectId);
     downloadFile(await project.download());
 }
-
-const LoadingSpinner: React.FunctionComponent<{ isVisible: boolean }> = ({ isVisible }) => (
-    <React.Fragment>
-        <div style={{ flex: "10 1 auto" }}></div>
-        {isVisible && <CircularProgress />}
-    </React.Fragment>
-);
 
 function onFirst<T>(objs: T[], fn: (obj: T) => void): void {
     const obj = _.first(objs);

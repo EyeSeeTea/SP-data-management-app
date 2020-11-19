@@ -45,7 +45,7 @@ const actionsByRole: Record<Role, Action[]> = {
 };
 
 type UserConfig = Pick<Config, "base" | "currentUser">;
-type OrganisationUnit = GetItemType<Config["currentUser"]["organisationUnits"]>;
+export type OrganisationUnit = GetItemType<Config["currentUser"]["organisationUnits"]>;
 
 export default class User {
     data: Config["currentUser"];
