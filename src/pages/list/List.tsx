@@ -6,7 +6,7 @@ import CountriesList from "../../components/countries-list/CountriesList";
 interface ListProps {}
 
 const List: React.FunctionComponent<ListProps> = () => {
-    const [view, setView] = React.useState<ListView>("projects"); // TODO: change to projects
+    const [view, setView] = React.useState<ListView>("projects");
     return (
         <div>
             {view === "projects" ? (

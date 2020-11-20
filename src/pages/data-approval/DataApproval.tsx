@@ -84,7 +84,7 @@ const DataApproval: React.FC = () => {
 
     const title = i18n.t("Data Approval");
 
-    useEffect(() => loadData(projectId, api, config, setState), [projectId]);
+    useEffect(() => loadData(projectId, api, config, setState), [api, config, projectId]);
     useEffect(() => getReport(projectDataSet, date, setState), [projectDataSet, date]);
 
     useDebugValuesOnDev(project, setState);
@@ -336,7 +336,7 @@ function useDebugValuesOnDev(
         const projectDataSet = project.dataSetsByType[dataSetType];
         const newState = { date: moment().format(monthFormat), dataSetType, projectDataSet };
         setState(state_ => ({ ...state_, ...newState }));
-    }, [project]);
+    }, [isDev, project, setState]);
 }
 
 export default React.memo(DataApproval);

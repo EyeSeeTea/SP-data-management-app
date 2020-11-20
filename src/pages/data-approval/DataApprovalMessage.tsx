@@ -41,7 +41,7 @@ export const DataApprovalMessage: React.FC<DataApprovalMessageProps> = props => 
                     setIsSending(false);
                 });
         }
-    }, [setIsSending, onSend, onClose, setBody, snackbar, users, body]);
+    }, [setIsSending, onSend, onClose, snackbar, users, body]);
 
     return (
         <ConfirmationDialog

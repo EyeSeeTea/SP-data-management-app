@@ -183,7 +183,7 @@ const ProjectsList: React.FC<ProjectsListProps> = props => {
     const [projectIdsToDelete, setProjectIdsToDelete] = useState<Id[] | undefined>(undefined);
     const baseConfig = React.useMemo(() => {
         return getComponentConfig(api, config, goTo, setProjectIdsToDelete, currentUser);
-    }, [api, config, currentUser]);
+    }, [api, config, currentUser, goTo]);
 
     const [filter, setFilter] = useState<Filter>({});
 
@@ -207,7 +207,7 @@ const ProjectsList: React.FC<ProjectsListProps> = props => {
 
             return Project.getList(api, config, filters, sorting, listPagination);
         },
-        [api, filter]
+        [api, config, filter.countries, filter.onlyActive, filter.sectors]
     );
 
     const tableProps = useObjectsTable(baseConfig, getRows);
@@ -225,8 +225,6 @@ const ProjectsList: React.FC<ProjectsListProps> = props => {
 
     const canAccessReports = currentUser.can("accessMER");
     const newProjectPageHandler = currentUser.can("create") && (() => goTo("projects.new"));
-
-    console.log("ProjectsList-render");
 
     return (
         <React.Fragment>

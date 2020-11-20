@@ -183,7 +183,19 @@ function useSave(project: Project, action: StepProps["action"], projectInfo: Rea
             console.error(err);
             snackbar.error(err.message || err.toString());
         }
-    }, [project, setSaving, history, snackbar, action, api, appConfig, isDev, projectInfo]);
+    }, [
+        project,
+        setSaving,
+        history,
+        snackbar,
+        action,
+        api,
+        appConfig,
+        isDev,
+        projectInfo,
+        currentUser,
+        isTest,
+    ]);
 
     return { isSaving, errorMessage, save };
 }

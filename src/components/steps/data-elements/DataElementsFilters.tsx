@@ -43,7 +43,7 @@ const DataElementsFilters: React.FC<DataElementsFiltersProps> = props => {
                 return [key, isVisible] as [FilterKey, boolean];
             })
         );
-    }, visibleFilters);
+    }, [visibleFilters]);
 
     return (
         <div>

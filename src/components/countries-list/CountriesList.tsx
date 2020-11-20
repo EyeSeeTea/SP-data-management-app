@@ -43,7 +43,7 @@ const CountriesList: React.FC<CountriesListProps> = props => {
             const { pager, objects } = await instance.get(search, paging, sorting);
             return { pager, objects: getCountryViews(objects) };
         },
-        [api]
+        [api, config]
     );
 
     const tableProps = useObjectsTable(baseConfig, getRows);
@@ -70,8 +70,8 @@ function getBaseListConfig(): TableConfig<CountryView> {
         { name: "name", text: i18n.t("Name"), sortable: true },
         { name: "code", text: i18n.t("Code"), sortable: true },
         { name: "projectsCount", text: i18n.t("# Projects"), sortable: false },
-        { name: "lastUpdated", text: i18n.t("Last Updated"), sortable: true },
-        { name: "created", text: i18n.t("Created"), sortable: true },
+        { name: "lastUpdated", text: i18n.t("Last Updated"), sortable: true, hidden: true },
+        { name: "created", text: i18n.t("Created"), sortable: true, hidden: true },
     ];
 
     const details = columns;

@@ -20,7 +20,7 @@ const ReportDataTable: React.FC<ReportDataTableProps> = props => {
         (project: ProjectForMer, dataElement: DataElementInfo, comment: string): void => {
             if (merReport) onChange(merReport.setComment(project, dataElement, comment));
         },
-        [merReport]
+        [merReport, onChange]
     );
 
     const groupers: Grouper<DataElementMER>[] = React.useMemo(() => {

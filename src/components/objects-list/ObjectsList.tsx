@@ -11,7 +11,7 @@ import {
     TableGlobalAction,
     MouseActionsMapping,
 } from "d2-ui-components";
-import { makeStyles, LinearProgress } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core";
 import { Spinner } from "../objects-list/Spinner";
 import styled from "styled-components";
 

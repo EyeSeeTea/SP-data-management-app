@@ -1,4 +1,3 @@
-/* eslint react-hooks/exhaustive-deps: 1 */ // --> ON
 import React from "react";
 import _ from "lodash";
 import {
