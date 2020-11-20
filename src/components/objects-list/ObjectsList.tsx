@@ -9,36 +9,50 @@ import {
     TableState,
     ObjectsTableProps,
     TableGlobalAction,
+    MouseActionsMapping,
 } from "d2-ui-components";
 import { makeStyles, LinearProgress } from "@material-ui/core";
 import { Spinner } from "../objects-list/Spinner";
 import styled from "styled-components";
 
 export interface ObjectsListProps<Obj extends ReferenceObject> {
-    isLoading: boolean;
-    rows: Obj[] | undefined;
     columns: TableColumn<Obj>[];
+    rows: Obj[] | undefined;
+    onChange(newState: TableState<Obj>): void;
+
+    isLoading: boolean;
+
     pagination: Partial<TablePagination>;
     paginationOptions: Partial<PaginationOptions>;
     initialSorting: TableSorting<Obj>;
-    onChange(newState: TableState<Obj>): void;
+
     sideComponents?: ObjectsTableProps<Obj>["sideComponents"];
     globalActions?: TableGlobalAction[];
+    mouseActionsMapping?: MouseActionsMapping;
+
+    searchBoxLabel: string;
+    onChangeSearch?(value: string): void;
+
+    reload(): void;
 }
 
-const ObjectsTableStyled = <T extends ReferenceObject>(props: ObjectsTableProps<T>) => {
-    const ObjectsTableStyledT = styled<React.FC<ObjectsTableProps<T>>>(ObjectsTable)`
-        .MuiTextField-root {
-            max-width: 400px;
-        }
-    `;
-    return <ObjectsTableStyledT {...props} />;
-};
+const ObjectsTableStyled = styled(ObjectsTable)`
+    .MuiTextField-root {
+        max-width: 250px;
+    }
+` as typeof ObjectsTable;
 
 export function ObjectsList<T extends ReferenceObject>(
     props: PropsWithChildren<ObjectsListProps<T>>
 ): React.ReactElement<ObjectsListProps<T>> {
-    const { children, isLoading, rows, ...tableProps } = props;
+    const {
+        children,
+        isLoading,
+        rows,
+        mouseActionsMapping = defaultMouseActionsMapping,
+        ...tableProps
+    } = props;
+
     const classes = useStyles();
 
     return (
@@ -48,6 +62,7 @@ export function ObjectsList<T extends ReferenceObject>(
             {rows && (
                 <ObjectsTableStyled<T>
                     rows={rows}
+                    mouseActionsMapping={mouseActionsMapping}
                     {...tableProps}
                     filterComponents={
                         <React.Fragment key="filters">
@@ -61,6 +76,11 @@ export function ObjectsList<T extends ReferenceObject>(
         </div>
     );
 }
+
+const defaultMouseActionsMapping: MouseActionsMapping = {
+    left: { type: "contextual" },
+    right: { type: "contextual" },
+};
 
 const useStyles = makeStyles({
     wrapper: { marginTop: 25 },

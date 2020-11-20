@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2020-11-20T09:41:23.867Z\n"
-"PO-Revision-Date: 2020-11-20T09:41:23.867Z\n"
+"POT-Creation-Date: 2020-11-20T12:23:03.750Z\n"
+"PO-Revision-Date: 2020-11-20T12:23:03.750Z\n"
 
 msgid "Name"
 msgstr ""
@@ -127,7 +127,7 @@ msgid ""
 "update the app."
 msgstr ""
 
-msgid "Search by name or code"
+msgid "Search by name"
 msgstr ""
 
 msgid "This user has no Data output and analytic organisation units assigned"
@@ -730,6 +730,9 @@ msgid "Edit"
 msgstr ""
 
 msgid "Delete"
+msgstr ""
+
+msgid "Search by name or code"
 msgstr ""
 
 msgid "MER Reports"

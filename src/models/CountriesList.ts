@@ -25,7 +25,11 @@ export class CountriesList {
         this.countries = this.currentUser.getCountries();
     }
 
-    async get(paging: Paging, sorting: Sorting<Country>): Promise<PaginatedObjects<Country>> {
+    async get(
+        search: string,
+        paging: Paging,
+        sorting: Sorting<Country>
+    ): Promise<PaginatedObjects<Country>> {
         const orderField = countryFieldToOrderField[sorting.field] || sorting.field;
         const metadata$ = this.api.models.organisationUnits.get({
             fields: {
@@ -39,6 +43,7 @@ export class CountriesList {
             },
             filter: {
                 id: { in: this.countries.map(ou => ou.id) },
+                ...(search ? { name: { ilike: search } } : {}),
             },
             paging: true,
             ...paging,

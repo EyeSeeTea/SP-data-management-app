@@ -9,7 +9,6 @@ import {
 
 import { ObjectsList } from "../objects-list/ObjectsList";
 import { TableConfig, useObjectsTable } from "../objects-list/objects-list-hooks";
-import { makeStyles } from "@material-ui/core";
 import { useAppContext } from "../../contexts/api-context";
 import i18n from "../../locales";
 import ListSelector, { ListView } from "../list-selector/ListSelector";
@@ -35,31 +34,26 @@ const CountriesList: React.FC<CountriesListProps> = props => {
     const baseConfig = React.useMemo(getBaseListConfig, []);
 
     const getRows = React.useMemo(
-        () => async (paging: TablePagination, sorting: TableSorting<CountryView>) => {
+        () => async (
+            search: string,
+            paging: TablePagination,
+            sorting: TableSorting<CountryView>
+        ) => {
             const instance = new CountriesListModel(api, config);
-            const { pager, objects } = await instance.get(paging, sorting);
+            const { pager, objects } = await instance.get(search, paging, sorting);
             return { pager, objects: getCountryViews(objects) };
         },
         [api]
     );
 
     const tableProps = useObjectsTable(baseConfig, getRows);
-    const classes = useStyles();
 
     return (
-        <div className={classes.wrapper}>
-            <ObjectsList<CountryView> {...tableProps}>
-                <ListSelector view="countries" onChange={onViewChange} />
-            </ObjectsList>
-        </div>
+        <ObjectsList<CountryView> {...tableProps}>
+            <ListSelector view="countries" onChange={onViewChange} />
+        </ObjectsList>
     );
 };
-
-const useStyles = makeStyles({
-    wrapper: {
-        marginTop: 25,
-    },
-});
 
 function getBaseListConfig(): TableConfig<CountryView> {
     const paginationOptions: PaginationOptions = {
