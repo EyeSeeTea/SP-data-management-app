@@ -10,6 +10,7 @@ import {
     TableAction,
 } from "d2-ui-components";
 import { ObjectsListProps } from "./ObjectsList";
+import i18n from "../../locales";
 
 export interface TableConfig<Obj extends ReferenceObject> {
     columns: TableColumn<Obj>[];
@@ -69,5 +70,15 @@ export function useObjectsTable<Obj extends ReferenceObject>(
         [loadRows]
     );
 
-    return { ...config, isLoading, rows, onChange, pagination };
+    const props = {
+        ...config,
+        isLoading,
+        rows,
+        onChange,
+        pagination,
+        searchBoxLabel: i18n.t("Search by name or code"),
+        onChangeSearch: console.log,
+    };
+
+    return props;
 }

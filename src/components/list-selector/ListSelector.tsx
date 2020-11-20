@@ -2,7 +2,7 @@ import React from "react";
 import ListIcon from "@material-ui/icons/List";
 import PublicIcon from "@material-ui/icons/Public";
 import i18n from "../../locales";
-import { Tabs, Tab, makeStyles } from "@material-ui/core";
+import { Tabs, Tab, makeStyles, Paper } from "@material-ui/core";
 
 const views = ["projects", "countries"] as const;
 
@@ -28,25 +28,27 @@ const ListSelector: React.FunctionComponent<ListSelectorProps> = props => {
     const classes = useStyles();
 
     return (
-        <Tabs
-            value={value}
-            onChange={setCurrentTab}
-            indicatorColor="primary"
-            textColor="primary"
-            aria-label="icon tabs example"
-            classes={{ root: classes.tabs }}
-        >
-            <Tab
-                classes={{ root: classes.tab }}
-                icon={<ListIcon />}
-                aria-label={i18n.t("Projects view")}
-            />
-            <Tab
-                classes={{ root: classes.tab }}
-                icon={<PublicIcon />}
-                aria-label={i18n.t("Countries view")}
-            />
-        </Tabs>
+        <Paper className={classes.tabs}>
+            <Tabs
+                value={value}
+                onChange={setCurrentTab}
+                indicatorColor="primary"
+                textColor="primary"
+                aria-label="icon tabs example"
+                /*classes={{ root: classes.tabs }}*/
+            >
+                <Tab
+                    classes={{ root: classes.tab }}
+                    icon={<ListIcon />}
+                    aria-label={i18n.t("Projects view")}
+                />
+                <Tab
+                    classes={{ root: classes.tab }}
+                    icon={<PublicIcon />}
+                    aria-label={i18n.t("Countries view")}
+                />
+            </Tabs>
+        </Paper>
     );
 };
 
