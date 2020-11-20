@@ -14,6 +14,9 @@ import i18n from "../../locales";
 import ListSelector, { ListView } from "../list-selector/ListSelector";
 import { CountriesList as CountriesListModel, Country } from "../../models/CountriesList";
 import { formatDateLong } from "../../utils/date";
+import { Icon } from "@material-ui/core";
+import { Id } from "../../types/d2-api";
+import { useGoTo, GoTo } from "../../router";
 
 interface CountryView {
     id: string;
@@ -31,7 +34,8 @@ interface CountriesListProps {
 const CountriesList: React.FC<CountriesListProps> = props => {
     const { onViewChange } = props;
     const { api, config } = useAppContext();
-    const baseConfig = React.useMemo(getBaseListConfig, []);
+    const goTo = useGoTo();
+    const baseConfig = React.useMemo(() => getBaseListConfig(goTo), [goTo]);
 
     const getRows = React.useMemo(
         () => async (
@@ -55,7 +59,7 @@ const CountriesList: React.FC<CountriesListProps> = props => {
     );
 };
 
-function getBaseListConfig(): TableConfig<CountryView> {
+function getBaseListConfig(goTo: GoTo): TableConfig<CountryView> {
     const paginationOptions: PaginationOptions = {
         pageSizeOptions: [10, 20, 50],
         pageSizeInitialValue: 20,
@@ -82,6 +86,13 @@ function getBaseListConfig(): TableConfig<CountryView> {
             text: i18n.t("Details"),
             multiple: false,
             primary: true,
+        },
+        {
+            name: "dashboard",
+            icon: <Icon>dashboard</Icon>,
+            text: i18n.t("Go to Dashboard"),
+            multiple: false,
+            onClick: (ids: Id[]) => alert(`TODO:country-dashboard: ${ids[0]} - ${goTo}`),
         },
     ];
 
