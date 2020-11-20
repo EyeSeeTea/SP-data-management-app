@@ -1,3 +1,4 @@
+/* eslint react-hooks/exhaustive-deps: 1 */ // --> ON
 import React from "react";
 import _ from "lodash";
 import {
@@ -29,80 +30,70 @@ type GetRows<Obj extends ReferenceObject> = (
     search: string,
     paging: TablePagination,
     sorting: TableSorting<Obj>
-) => Promise<{ objects: Obj[]; pager: Pager } | undefined>;
+) => Promise<{ objects: Obj[]; pager: Pager }>;
 
 const initialPagination: TablePagination = { page: 1, pageSize: 20, total: 0 };
+
+// Group state to avoid multiple re-renders on individual setState dispatchers
+interface State<Obj extends ReferenceObject> {
+    rows: Obj[] | undefined;
+    pagination: TablePagination;
+    sorting: TableSorting<Obj>;
+    isLoading: boolean;
+}
 
 export function useObjectsTable<Obj extends ReferenceObject>(
     config: TableConfig<Obj>,
     getRows: GetRows<Obj>
 ): ObjectsListProps<Obj> {
-    const [rows, setRows] = React.useState<Obj[]>();
-    const [pagination, setPagination] = React.useState<TablePagination>(initialPagination);
-    const [sorting, setSorting] = React.useState<TableSorting<Obj>>(config.initialSorting);
-    const [isLoading, setLoading] = React.useState(true);
+    const [state, setState] = React.useState<State<Obj>>(() => ({
+        rows: undefined,
+        pagination: initialPagination,
+        sorting: config.initialSorting,
+        isLoading: false,
+    }));
 
     const match = useLocation();
     const queryParams = parse(match.search.slice(1));
     const initialSearch = _.castArray(queryParams.search)[0] || "";
     const [search, setSearch] = React.useState(initialSearch);
 
-    const reload = React.useCallback(async () => {
-        setLoading(true);
-        const res = await getRows(search.trim(), pagination, sorting);
-
-        if (res) {
-            setRows(res.objects);
-            setPagination({ ...pagination, ...res.pager });
-        } else {
-            setRows([]);
-            setPagination(initialPagination);
-        }
-
-        setSorting(sorting);
-        setLoading(false);
-    }, [getRows, search]);
-
     const loadRows = React.useCallback(
-        async (sorting: TableSorting<Obj>, paginationOptions: Partial<TablePagination>) => {
-            setLoading(true);
-            const paging = { ...initialPagination, ...paginationOptions };
+        async (sorting: TableSorting<Obj>, pagination: Partial<TablePagination>) => {
+            setState(state => ({ ...state, isLoading: true }));
+            const paging = { ...initialPagination, ...pagination };
             const res = await getRows(search.trim(), paging, sorting);
-
-            if (res) {
-                setRows(res.objects);
-                setPagination({ ...paginationOptions, ...res.pager });
-            } else {
-                setRows([]);
-                setPagination(initialPagination);
-            }
-
-            setSorting(sorting);
-            setLoading(false);
+            setState({
+                rows: res.objects,
+                pagination: { ...pagination, ...res.pager },
+                sorting,
+                isLoading: false,
+            });
         },
         [getRows, search]
     );
 
+    const reload = React.useCallback(async () => {
+        loadRows(state.sorting, state.pagination);
+    }, [loadRows, state.sorting, state.pagination]);
+
     React.useEffect(() => {
-        loadRows(sorting, initialPagination);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [loadRows]);
+        loadRows(config.initialSorting, initialPagination);
+    }, [config.initialSorting, loadRows]);
 
     const onChange = React.useCallback(
         (newState: TableState<Obj>) => {
-            const { pagination, sorting } = newState;
-            // TODO: We should set sorting/pagination and remove them from within loadRows (and eslint-disable)
-            loadRows(sorting, pagination);
+            loadRows(newState.sorting, newState.pagination);
         },
         [loadRows]
     );
 
     return {
         ...config,
-        isLoading,
-        rows,
+        isLoading: state.isLoading,
+        rows: state.rows,
         onChange,
-        pagination,
+        pagination: state.pagination,
         searchBoxLabel: config.searchBoxLabel || i18n.t("Search by name"),
         onChangeSearch: setSearch,
         reload,

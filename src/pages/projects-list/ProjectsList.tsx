@@ -226,6 +226,8 @@ const ProjectsList: React.FC<ProjectsListProps> = props => {
     const canAccessReports = currentUser.can("accessMER");
     const newProjectPageHandler = currentUser.can("create") && (() => goTo("projects.new"));
 
+    console.log("ProjectsList-render");
+
     return (
         <React.Fragment>
             {projectIdsToDelete && (

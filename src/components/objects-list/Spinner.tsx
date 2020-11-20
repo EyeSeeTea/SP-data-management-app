@@ -6,5 +6,5 @@ interface SpinnerProps {
 }
 
 export const Spinner: React.FunctionComponent<SpinnerProps> = ({ isVisible }) => (
-    <React.Fragment>{isVisible && <CircularProgress />}</React.Fragment>
+    <React.Fragment>{isVisible && <CircularProgress style={{ marginLeft: 10 }} />}</React.Fragment>
 );

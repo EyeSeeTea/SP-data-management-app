@@ -58,10 +58,9 @@ export function ObjectsList<T extends ReferenceObject>(
     return (
         <div className={classes.wrapper}>
             {isLoading ? <span data-test-loading /> : <span data-test-loaded />}
-            {!rows && <LinearProgress />}
-            {rows && (
+            {
                 <ObjectsTableStyled<T>
-                    rows={rows}
+                    rows={rows || []}
                     mouseActionsMapping={mouseActionsMapping}
                     {...tableProps}
                     filterComponents={
@@ -72,7 +71,7 @@ export function ObjectsList<T extends ReferenceObject>(
                         </React.Fragment>
                     }
                 />
-            )}
+            }
         </div>
     );
 }
