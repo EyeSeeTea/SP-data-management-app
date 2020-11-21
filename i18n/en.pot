@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2020-11-20T12:23:03.750Z\n"
-"PO-Revision-Date: 2020-11-20T12:23:03.750Z\n"
+"POT-Creation-Date: 2020-11-21T18:35:00.112Z\n"
+"PO-Revision-Date: 2020-11-21T18:35:00.112Z\n"
 
 msgid "Name"
 msgstr ""
@@ -24,6 +24,9 @@ msgid "Created"
 msgstr ""
 
 msgid "Details"
+msgstr ""
+
+msgid "Go to Dashboard"
 msgstr ""
 
 msgid "Data Entry"
@@ -712,9 +715,6 @@ msgid "API Link"
 msgstr ""
 
 msgid "Add Actual Values"
-msgstr ""
-
-msgid "Go to Dashboard"
 msgstr ""
 
 msgid "Add Target Values"
