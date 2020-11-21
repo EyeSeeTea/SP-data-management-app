@@ -184,9 +184,6 @@ msgstr ""
 msgid "Field should be a 5-digit number"
 msgstr ""
 
-msgid "Field must be composed by two letter characters"
-msgstr ""
-
 msgid "Field cannot be blank"
 msgstr ""
 
@@ -343,6 +340,9 @@ msgstr ""
 msgid "Total"
 msgstr ""
 
+msgid "Subsequent Lettering must be a string of two or three letters"
+msgstr ""
+
 msgid "Id"
 msgstr ""
 
@@ -377,9 +377,6 @@ msgid "Initial Data"
 msgstr ""
 
 msgid "Award Number should be a number of 5 digits"
-msgstr ""
-
-msgid "Subsequent Lettering must be a string of two letters only"
 msgstr ""
 
 msgid "One Organisation Unit should be selected"

@@ -314,4 +314,8 @@ const paginationOptions = {
     pageSizeOptions: [10, 20, 50],
 };
 
+const initialFilter: Filter = {
+    onlyActive: true,
+};
+
 export default React.memo(ProjectsList);

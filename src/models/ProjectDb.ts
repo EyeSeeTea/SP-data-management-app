@@ -15,6 +15,7 @@ import { runPromises } from "../utils/promises";
 import DataElementsSet from "./dataElementsSet";
 import { ProjectInfo, getProjectStorageKey } from "./MerReport";
 import ProjectSharing, { getSharing } from "./ProjectSharing";
+import { splitParts } from "../utils/string";
 
 const expiryDaysInMonthActual = 10;
 
@@ -447,14 +448,15 @@ export default class ProjectDb {
 
         const { dataSetElements } = projectDataSets.actual;
         const disaggregation = Disaggregation.buildFromDataSetElements(config, dataSetElements);
+        const [code1, code2] = splitParts(code, "-", 2);
 
         const projectData = {
             id: orgUnit.id,
             name: orgUnit.name,
             description: orgUnit.description,
-            awardNumber: code.slice(0, 5),
-            subsequentLettering: code.slice(5, 5 + 2),
-            speedKey: code.slice(8),
+            awardNumber: code1.slice(0, 5),
+            subsequentLettering: code1.slice(5),
+            speedKey: code2 || "",
             startDate: startDate,
             endDate: endDate,
             sectors: sectors,
