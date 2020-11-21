@@ -183,7 +183,7 @@ const ProjectsList: React.FC = () => {
     const [sorting, setSorting] = useState<ProjectTableSorting>(componentConfig.initialSorting);
     const initialSearch = _.castArray(queryParams.search)[0] || "";
     const [search, setSearch] = useState(initialSearch);
-    const [filter, setFilter] = useState<Filter>({});
+    const [filter, setFilter] = useState<Filter>(initialFilter);
     const [isLoading, setLoading] = useState(true);
     const [objectsTableKey, objectsTableKeySet] = useState(() => new Date().getTime());
 
@@ -344,6 +344,10 @@ function getSharingInfo(project: ProjectForList) {
 
 const paginationOptions = {
     pageSizeOptions: [10, 20, 50],
+};
+
+const initialFilter: Filter = {
+    onlyActive: true,
 };
 
 export default React.memo(ProjectsList);

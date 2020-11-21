@@ -29,6 +29,8 @@ class GeneralInfoStep extends React.Component<StepProps> {
 
     render() {
         const { project } = this.props;
+        const { subsequentLettering } = Project.formats();
+
         const fields = [
             getTextField("name", project.name, {
                 validators: [validators.presence],
@@ -49,10 +51,7 @@ class GeneralInfoStep extends React.Component<StepProps> {
             getTextField("subsequentLettering", project.subsequentLettering, {
                 validators: [
                     validators.presence,
-                    validators.regexp(
-                        /^[a-zA-Z]{2}$/,
-                        i18n.t("Field must be composed by two letter characters")
-                    ),
+                    validators.regexp(subsequentLettering.regexp, subsequentLettering.msg),
                 ],
             }),
             getTextField("speedKey", project.speedKey, {
