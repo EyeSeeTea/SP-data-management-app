@@ -185,7 +185,7 @@ const ProjectsList: React.FC<ProjectsListProps> = props => {
         return getComponentConfig(api, config, goTo, setProjectIdsToDelete, currentUser);
     }, [api, config, currentUser, goTo]);
 
-    const [filter, setFilter] = useState<Filter>({});
+    const [filter, setFilter] = useState<Filter>(initialFilter);
 
     const { onViewChange } = props;
 
