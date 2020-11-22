@@ -35,17 +35,18 @@ const ListSelector: React.FunctionComponent<ListSelectorProps> = props => {
                 indicatorColor="primary"
                 textColor="primary"
                 aria-label="icon tabs example"
-                /*classes={{ root: classes.tabs }}*/
             >
                 <Tab
                     classes={{ root: classes.tab }}
                     icon={<ListIcon />}
                     aria-label={i18n.t("Projects view")}
+                    title={i18n.t("Projects view")}
                 />
                 <Tab
                     classes={{ root: classes.tab }}
                     icon={<PublicIcon />}
                     aria-label={i18n.t("Countries view")}
+                    title={i18n.t("Countries view")}
                 />
             </Tabs>
         </Paper>
