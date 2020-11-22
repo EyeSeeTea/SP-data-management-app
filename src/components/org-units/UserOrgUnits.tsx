@@ -63,7 +63,7 @@ const UserOrgUnits: React.FC<UserOrgUnitsProps> = props => {
         } else {
             setRootIds(rootIds);
         }
-    }, [config]);
+    }, [config, snackbar]);
 
     async function onChangeOu(orgUnitPaths: string[]) {
         const lastSelectedPath = _.last(orgUnitPaths);

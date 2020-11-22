@@ -1,6 +1,6 @@
 import _ from "lodash";
-import { TableSorting, TablePagination } from "d2-ui-components";
-import { D2Api, D2OrganisationUnitSchema, SelectedPick, Id } from "../types/d2-api";
+import { TableSorting } from "d2-ui-components";
+import { D2Api, D2OrganisationUnitSchema, SelectedPick, Id, Pager } from "../types/d2-api";
 import { Config } from "./Config";
 import moment, { Moment } from "moment";
 import { Sector, getOrgUnitDatesFromProject, getProjectFromOrgUnit } from "./Project";
@@ -56,7 +56,7 @@ export default class ProjectsList {
         filters: FiltersForList,
         sorting: TableSorting<ProjectForList>,
         pagination: Pagination
-    ): Promise<{ objects: ProjectForList[]; pager: Partial<TablePagination> }> {
+    ): Promise<{ objects: ProjectForList[]; pager: Pager }> {
         const { api, config } = this;
         const order = `${sorting.field}:i${sorting.order}`;
         const orgUnitIds = await this.getBaseOrgUnitIds(api, config, filters, order);
@@ -225,6 +225,7 @@ function paginate<Obj>(objects: Obj[], pagination: Pagination) {
     const pager = {
         page: pagination.page,
         pageSize: pagination.pageSize,
+        pageCount: Math.ceil(objects.length / pagination.pageSize),
         total: objects.length,
     };
     const { page, pageSize } = pagination;

@@ -117,7 +117,7 @@ const App: React.FC<AppProps> = props => {
         };
 
         if (data) run().catch(err => setLoadError(err.message));
-    }, [data]);
+    }, [api, d2, data, isDev]);
 
     if (loadError) {
         return <div>Cannot load app: {loadError}</div>;

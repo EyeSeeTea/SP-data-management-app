@@ -49,7 +49,7 @@ const MerReportComponent: React.FC = () => {
                 MerReport.create(api, config, selectData).then(setMerReportBase)
             );
         }
-    }, [date, orgUnit]);
+    }, [api, config, snackbar, date, orgUnit]);
 
     const setMerReport = React.useCallback((report: MerReport) => {
         setMerReportBase(report);
@@ -69,7 +69,7 @@ const MerReportComponent: React.FC = () => {
         if (merReport) {
             new MerReportSpreadsheet(merReport).generate().then(downloadFile);
         }
-    }, [merReport, downloadFile]);
+    }, [merReport]);
 
     const save = React.useCallback(() => {
         async function run(merReport: MerReport) {
@@ -86,7 +86,7 @@ const MerReportComponent: React.FC = () => {
             }
         }
         if (merReport) run(merReport);
-    }, [merReport, snackbar, wasReportModifiedSet]);
+    }, [merReport, snackbar, wasReportModifiedSet, loading]);
 
     function confirmIfUnsavedChanges(action: () => void) {
         if (wasReportModified) {

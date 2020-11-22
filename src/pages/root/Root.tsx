@@ -1,13 +1,13 @@
 import React from "react";
 import { Route, Switch, HashRouter } from "react-router-dom";
 
-import ProjectsList from "../projects-list/ProjectsList";
 import MerReport from "../report/MerReport";
 import Dashboard from "../dashboard/Dashboard";
 import { generateUrl } from "../../router";
 import ProjectWizard from "../project-wizard/ProjectWizard";
 import DataValues from "../data-values/DataValues";
 import DataApproval from "../data-approval/DataApproval";
+import List from "../list/List";
 
 const Root = () => {
     const idParam = { id: ":id" };
@@ -39,7 +39,7 @@ const Root = () => {
                     path={generateUrl("dataApproval", idParam)}
                     render={() => <DataApproval />}
                 />
-                <Route render={() => <ProjectsList />} />
+                <Route render={() => <List />} />
             </Switch>
         </HashRouter>
     );

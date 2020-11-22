@@ -1,3 +1,4 @@
+import React from "react";
 import { useHistory } from "react-router";
 import { stringify } from "querystring";
 
@@ -29,10 +30,13 @@ export function generateUrl<Name extends keyof Routes>(
 
 export function useGoTo(): GoTo {
     const history = useHistory();
-    const goTo: GoTo = (name, params) => {
-        const url = generateUrl(name, params);
-        history.push(url);
-        return url;
-    };
+    const goTo: GoTo = React.useCallback(
+        (name, params) => {
+            const url = generateUrl(name, params);
+            history.push(url);
+            return url;
+        },
+        [history]
+    );
     return goTo;
 }

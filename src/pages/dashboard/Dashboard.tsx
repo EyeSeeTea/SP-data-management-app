@@ -74,7 +74,12 @@ const Dashboard: React.FC = () => {
     const translations = getTranslations(data ? data.name : undefined);
 
     const projectId = match ? match.params.id : null;
-    useEffect(() => loadData(baseUrl, projectId, api, config, setState), [projectId]);
+    useEffect(() => loadData(baseUrl, projectId, api, config, setState), [
+        projectId,
+        api,
+        baseUrl,
+        config,
+    ]);
     const iframeRef: React.RefObject<HTMLIFrameElement> = React.createRef();
 
     const setDashboardStyling = async (iframe: any) => {
@@ -99,7 +104,7 @@ const Dashboard: React.FC = () => {
             const intervalId = autoResizeIframeByContent(iframe);
             return () => window.clearInterval(intervalId);
         }
-    }, [iframeRef]);
+    }, [iframeRef, loading]);
 
     return (
         <React.Fragment>

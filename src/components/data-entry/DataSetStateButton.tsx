@@ -26,10 +26,10 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
         return projectDataSet.getOpenInfo(moment(period, monthFormat));
     }, [projectDataSet, period]);
 
-    function notifyOnChange() {
+    const notifyOnChange = React.useCallback(() => {
         setActive(false);
         onChange();
-    }
+    }, [setActive, onChange]);
 
     const reopen = React.useCallback(() => {
         setActive(true);
@@ -38,7 +38,7 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
             .reopen({ unapprovePeriod })
             .then(notifyOnChange)
             .catch(showErrorAndSetInactive);
-    }, [projectDataSet, period, onChange, dataSetInfo]);
+    }, [dataSetInfo, period, projectDataSet, notifyOnChange, showErrorAndSetInactive]);
 
     const reset = React.useCallback(() => {
         setActive(true);
@@ -46,7 +46,7 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
             .reset()
             .then(notifyOnChange)
             .catch(showErrorAndSetInactive);
-    }, [projectDataSet, onChange]);
+    }, [projectDataSet, notifyOnChange, showErrorAndSetInactive]);
 
     const reopenConfirmation = useConfirmation({
         title: i18n.t("Reopen data set"),

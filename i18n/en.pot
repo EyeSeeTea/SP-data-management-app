@@ -5,8 +5,29 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2020-11-19T08:57:46.340Z\n"
-"PO-Revision-Date: 2020-11-19T08:57:46.340Z\n"
+"POT-Creation-Date: 2020-11-21T18:35:00.112Z\n"
+"PO-Revision-Date: 2020-11-21T18:35:00.112Z\n"
+
+msgid "Name"
+msgstr ""
+
+msgid "Code"
+msgstr ""
+
+msgid "# Projects"
+msgstr ""
+
+msgid "Last Updated"
+msgstr ""
+
+msgid "Created"
+msgstr ""
+
+msgid "Details"
+msgstr ""
+
+msgid "Go to Dashboard"
+msgstr ""
 
 msgid "Data Entry"
 msgstr ""
@@ -65,6 +86,12 @@ msgstr ""
 msgid "Help"
 msgstr ""
 
+msgid "Projects view"
+msgstr ""
+
+msgid "Countries view"
+msgstr ""
+
 msgid "There are pending migrations"
 msgstr ""
 
@@ -103,6 +130,9 @@ msgid ""
 "update the app."
 msgstr ""
 
+msgid "Search by name"
+msgstr ""
+
 msgid "This user has no Data output and analytic organisation units assigned"
 msgstr ""
 
@@ -119,12 +149,6 @@ msgid "Externals"
 msgstr ""
 
 msgid "Only selected"
-msgstr ""
-
-msgid "Name"
-msgstr ""
-
-msgid "Code"
 msgstr ""
 
 msgid "People / Benefit"
@@ -675,12 +699,6 @@ msgid ""
 "“Previous” button located on the bottom right side of the screen."
 msgstr ""
 
-msgid "Last Updated"
-msgstr ""
-
-msgid "Created"
-msgstr ""
-
 msgid "Opening Date"
 msgstr ""
 
@@ -696,13 +714,7 @@ msgstr ""
 msgid "API Link"
 msgstr ""
 
-msgid "Details"
-msgstr ""
-
 msgid "Add Actual Values"
-msgstr ""
-
-msgid "Go to Dashboard"
 msgstr ""
 
 msgid "Add Target Values"

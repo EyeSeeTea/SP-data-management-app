@@ -32,7 +32,8 @@ export function useMemoAsync<T>(getter: () => Promise<T>, dependencies: any[]) {
     const [data, setData] = React.useState<T | undefined>(undefined);
     React.useEffect(() => {
         getter().then(setData);
-    }, dependencies);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [getter, ...dependencies]);
     return data;
 }
 

@@ -18,7 +18,7 @@ export function useMigrations(api: D2Api, dataStoreNamespace: string): UseMigrat
 
     React.useEffect(() => {
         runMigrations(api, dataStoreNamespace).then(setState);
-    }, []);
+    }, [api, dataStoreNamespace]);
 
     const result = React.useMemo(() => ({ state, onFinish }), [state, onFinish]);
 

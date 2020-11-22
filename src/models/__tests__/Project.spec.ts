@@ -392,7 +392,7 @@ describe("Project", () => {
                 { page: 1, pageSize: 2 }
             );
 
-            expect(pagination).toEqual({ page: 1, pageSize: 2, total: 1 });
+            expect(pagination).toEqual({ page: 1, pageSize: 2, total: 1, pageCount: 1 });
             const emptySharing = { userAccesses: [], userGroupAccesses: [] };
             expect(objects).toEqual([
                 {

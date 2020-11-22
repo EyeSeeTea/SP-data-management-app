@@ -22,7 +22,7 @@ const DataElementsStep: React.FC<DataElementsStepProps> = props => {
             onChange(projectUpdated);
             return selectionInfo;
         },
-        [project, sectorId]
+        [sectorId, onSelect, onChange]
     );
 
     if (!sectorId) return null;

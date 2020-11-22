@@ -33,9 +33,7 @@ const StaffTable: React.FC<StaffTableProps> = props => {
         onChange(merReport.setStaffHours(staffKey, staffInfo));
     }
 
-    const staffTotals = React.useMemo(() => merReport.getStaffTotals(), [
-        merReport.data.staffSummary,
-    ]);
+    const staffTotals = React.useMemo(() => merReport.getStaffTotals(), [merReport]);
 
     if (!date || !organisationUnit) return null;
     if (!merReport || !merReport.data.projectsData) return <LinearProgress />;

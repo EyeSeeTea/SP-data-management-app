@@ -141,7 +141,6 @@ function getPendingMigrationsText(runner: MigrationsRunner): string {
     );
 }
 
-console.log(process.env);
 const isDebug = process.env.NODE_ENV === "development";
 
 const MigrationsError: React.FC<{ runner: MigrationsRunner; onFinish: () => void }> = ({

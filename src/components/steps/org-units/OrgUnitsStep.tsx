@@ -30,7 +30,7 @@ const OrgUnitsStep: React.FC<StepProps> = ({ project, onChange }) => {
         return project
             .getSelectableLocations(project.parentOrgUnit)
             .map(location => ({ value: location.id, text: location.displayName }));
-    }, [project.parentOrgUnit]);
+    }, [project]);
 
     return (
         <React.Fragment>

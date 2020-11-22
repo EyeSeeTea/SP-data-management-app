@@ -179,7 +179,7 @@ const DataEntry = (props: DataEntryProps) => {
         if (state.dropdownValue) {
             setDataSetOpen(setSelectPeriod(iframeRef.current, state.dropdownValue, attributes));
         }
-    }, [state, project, iframeKey]);
+    }, [state, project, iframeKey, attributes]);
 
     useEffect(() => {
         const iframe = iframeRef.current;
@@ -194,7 +194,7 @@ const DataEntry = (props: DataEntryProps) => {
                 );
             });
         }
-    }, [iframeKey]);
+    }, [dataSet, iframeKey, orgUnitId, project, state]);
 
     const period = state.dropdownValue;
 
