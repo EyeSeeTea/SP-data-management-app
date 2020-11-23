@@ -40,7 +40,7 @@ const ObjectsTableStyled = styled(ObjectsTable)`
     .MuiTextField-root {
         max-width: 250px;
     }
-` as typeof ObjectsTable;
+`;
 
 export function ObjectsList<T extends ReferenceObject>(
     props: PropsWithChildren<ObjectsListProps<T>>
@@ -59,7 +59,7 @@ export function ObjectsList<T extends ReferenceObject>(
         <div className={classes.wrapper}>
             {isLoading ? <span data-test-loading /> : <span data-test-loaded />}
             {
-                <ObjectsTableStyled<T>
+                <ObjectsTableStyled<React.FC<ObjectsTableProps<T>>>
                     rows={rows || []}
                     mouseActionsMapping={mouseActionsMapping}
                     {...tableProps}
