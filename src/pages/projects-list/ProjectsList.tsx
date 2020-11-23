@@ -9,7 +9,7 @@ import {
 import _ from "lodash";
 import React, { useCallback, useState } from "react";
 import ActionButton from "../../components/action-button/ActionButton";
-import ListSelector, { ListView } from "../../components/list-selector/ListSelector";
+import ListSelector from "../../components/list-selector/ListSelector";
 import { useObjectsTable } from "../../components/objects-list/objects-list-hooks";
 import { ObjectsList, ObjectsListProps } from "../../components/objects-list/ObjectsList";
 import { CurrentUser, useAppContext } from "../../contexts/api-context";
@@ -26,6 +26,7 @@ import { downloadFile } from "../../utils/download";
 import ProjectsListFilters, { Filter } from "./ProjectsListFilters";
 import DeleteDialog from "../../components/delete-dialog/DeleteDialog";
 import styled from "styled-components";
+import { useListSelector } from "../../components/list-selector/ListSelectorHooks";
 
 type ContextualAction = Exclude<Action, "create" | "accessMER" | "reopen"> | "details";
 
@@ -174,11 +175,9 @@ function getComponentConfig(
     return { columns, initialSorting, details, actions, paginationOptions, searchBoxLabel };
 }
 
-interface ProjectsListProps {
-    onViewChange(view: ListView): void;
-}
+interface ProjectsListProps {}
 
-const ProjectsList: React.FC<ProjectsListProps> = props => {
+const ProjectsList: React.FC<ProjectsListProps> = () => {
     const goTo = useGoTo();
     const { api, config, currentUser } = useAppContext();
     const [projectIdsToDelete, setProjectIdsToDelete] = useState<Id[] | undefined>(undefined);
@@ -187,8 +186,7 @@ const ProjectsList: React.FC<ProjectsListProps> = props => {
     }, [api, config, currentUser, goTo]);
 
     const [filter, setFilter] = useState<Filter>(initialFilter);
-
-    const { onViewChange } = props;
+    const onViewChange = useListSelector("projects");
 
     const getRows = React.useMemo(
         () => async (

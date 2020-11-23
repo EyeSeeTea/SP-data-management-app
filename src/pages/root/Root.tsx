@@ -7,7 +7,8 @@ import { generateUrl } from "../../router";
 import ProjectWizard from "../project-wizard/ProjectWizard";
 import DataValues from "../data-values/DataValues";
 import DataApproval from "../data-approval/DataApproval";
-import List from "../list/List";
+import CountriesList from "../../components/countries-list/CountriesList";
+import ProjectsList from "../projects-list/ProjectsList";
 
 const Root = () => {
     const idParam = { id: ":id" };
@@ -39,7 +40,9 @@ const Root = () => {
                     path={generateUrl("dataApproval", idParam)}
                     render={() => <DataApproval />}
                 />
-                <Route render={() => <List />} />
+                <Route path={generateUrl("countries")} render={() => <CountriesList />} />
+
+                <Route render={() => <ProjectsList />} />
             </Switch>
         </HashRouter>
     );

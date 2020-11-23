@@ -11,12 +11,13 @@ import { ObjectsList } from "../objects-list/ObjectsList";
 import { TableConfig, useObjectsTable } from "../objects-list/objects-list-hooks";
 import { useAppContext } from "../../contexts/api-context";
 import i18n from "../../locales";
-import ListSelector, { ListView } from "../list-selector/ListSelector";
+import ListSelector from "../list-selector/ListSelector";
 import { CountriesList as CountriesListModel, Country } from "../../models/CountriesList";
 import { formatDateLong } from "../../utils/date";
 import { Icon } from "@material-ui/core";
 import { Id } from "../../types/d2-api";
 import { useGoTo, GoTo } from "../../router";
+import { useListSelector } from "../list-selector/ListSelectorHooks";
 
 interface CountryView {
     id: string;
@@ -27,12 +28,9 @@ interface CountryView {
     lastUpdated: string;
 }
 
-interface CountriesListProps {
-    onViewChange(view: ListView): void;
-}
+interface CountriesListProps {}
 
-const CountriesList: React.FC<CountriesListProps> = props => {
-    const { onViewChange } = props;
+const CountriesList: React.FC<CountriesListProps> = () => {
     const { api, config } = useAppContext();
     const goTo = useGoTo();
     const baseConfig = React.useMemo(() => getBaseListConfig(goTo), [goTo]);
@@ -51,6 +49,7 @@ const CountriesList: React.FC<CountriesListProps> = props => {
     );
 
     const tableProps = useObjectsTable(baseConfig, getRows);
+    const onViewChange = useListSelector("countries");
 
     return (
         <ObjectsList<CountryView> {...tableProps}>

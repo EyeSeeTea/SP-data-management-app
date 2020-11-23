@@ -12,6 +12,7 @@ const routes = {
     dashboard: ({ id }: { id: string }) => `/dashboard/${id}`,
     dashboards: () => `/dashboard`,
     dataApproval: ({ id }: { id: string }) => `/data-approval/${id}`,
+    countries: () => `/countries`,
 };
 
 type Routes = typeof routes;
