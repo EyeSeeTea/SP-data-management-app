@@ -1,7 +1,9 @@
 import { D2Api } from "../types/d2-api";
+import _ from "lodash";
 import { PaginatedObjects, Paging, Sorting } from "./PaginatedObjects";
 import { Config } from "./Config";
 import User, { OrganisationUnit } from "./user";
+import { paginate } from "../utils/pagination";
 
 export interface Country {
     id: string;
@@ -11,10 +13,6 @@ export interface Country {
     created: Date;
     lastUpdated: Date;
 }
-
-const countryFieldToOrderField: Partial<Record<keyof Country, keyof OrganisationUnit>> = {
-    name: "displayName",
-};
 
 export class CountriesList {
     currentUser: User;
@@ -30,28 +28,31 @@ export class CountriesList {
         paging: Paging,
         sorting: Sorting<Country>
     ): Promise<PaginatedObjects<Country>> {
-        const orderField = countryFieldToOrderField[sorting.field] || sorting.field;
         const metadata$ = this.api.models.organisationUnits.get({
+            paging: false,
             fields: {
                 id: true,
                 displayName: true,
                 code: true,
                 created: true,
                 lastUpdated: true,
-                name: { $fn: { name: "rename", to: "abc" } } as const,
                 children: { $fn: { name: "size" } } as const,
             },
             filter: {
                 id: { in: this.countries.map(ou => ou.id) },
-                ...(search ? { name: { ilike: search } } : {}),
             },
-            paging: true,
-            ...paging,
-            order: `${orderField}:i${sorting.order}`,
         });
-        const { pager, objects: orgUnits } = await metadata$.getData();
+        const { objects: allOrgUnits } = await metadata$.getData();
+        const { pager, objects: orgUnits } = paginate(allOrgUnits, paging);
+        const searchLower = toKey(search);
 
-        const countries: Country[] = orgUnits.map(orgUnit => ({
+        const orgUnitsFiltered = orgUnits.filter(
+            orgUnit =>
+                toKey(orgUnit.displayName).includes(searchLower) ||
+                toKey(orgUnit.code).includes(searchLower)
+        );
+
+        const countries: Country[] = orgUnitsFiltered.map(orgUnit => ({
             id: orgUnit.id,
             name: orgUnit.displayName,
             code: orgUnit.code,
@@ -60,6 +61,15 @@ export class CountriesList {
             lastUpdated: new Date(orgUnit.lastUpdated),
         }));
 
-        return { pager, objects: countries };
+        const countriesSorted = _.orderBy(
+            countries,
+            [country => country[sorting.field]],
+            [sorting.order]
+        );
+        return { pager, objects: countriesSorted };
     }
+}
+
+function toKey(s: string | undefined): string {
+    return s ? s.toLocaleLowerCase() : "";
 }

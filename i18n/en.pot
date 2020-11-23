@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2020-11-21T18:35:00.112Z\n"
-"PO-Revision-Date: 2020-11-21T18:35:00.112Z\n"
+"POT-Creation-Date: 2020-11-23T08:52:42.571Z\n"
+"PO-Revision-Date: 2020-11-23T08:52:42.571Z\n"
 
 msgid "Name"
 msgstr ""
@@ -27,6 +27,9 @@ msgid "Details"
 msgstr ""
 
 msgid "Go to Dashboard"
+msgstr ""
+
+msgid "Search by name or code"
 msgstr ""
 
 msgid "Data Entry"
@@ -727,9 +730,6 @@ msgid "Edit"
 msgstr ""
 
 msgid "Delete"
-msgstr ""
-
-msgid "Search by name or code"
 msgstr ""
 
 msgid "MER Reports"

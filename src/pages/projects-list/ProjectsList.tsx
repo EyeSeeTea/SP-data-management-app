@@ -11,7 +11,7 @@ import React, { useCallback, useState } from "react";
 import ActionButton from "../../components/action-button/ActionButton";
 import ListSelector, { ListView } from "../../components/list-selector/ListSelector";
 import { useObjectsTable } from "../../components/objects-list/objects-list-hooks";
-import { ObjectsList } from "../../components/objects-list/ObjectsList";
+import { ObjectsList, ObjectsListProps } from "../../components/objects-list/ObjectsList";
 import { CurrentUser, useAppContext } from "../../contexts/api-context";
 import i18n from "../../locales";
 import { Config } from "../../models/Config";
@@ -25,6 +25,7 @@ import { formatDateLong, formatDateShort } from "../../utils/date";
 import { downloadFile } from "../../utils/download";
 import ProjectsListFilters, { Filter } from "./ProjectsListFilters";
 import DeleteDialog from "../../components/delete-dialog/DeleteDialog";
+import styled from "styled-components";
 
 type ContextualAction = Exclude<Action, "create" | "accessMER" | "reopen"> | "details";
 
@@ -232,7 +233,7 @@ const ProjectsList: React.FC<ProjectsListProps> = props => {
                 <DeleteDialog projectIds={projectIdsToDelete} onClose={closeDeleteDialog} />
             )}
 
-            <ObjectsList<ProjectForList> {...tableProps}>
+            <ObjectsListStyled<React.FC<ObjectsListProps<ProjectForList>>> {...tableProps}>
                 <ProjectsListFilters
                     filter={filter}
                     filterOptions={filterOptions}
@@ -255,7 +256,7 @@ const ProjectsList: React.FC<ProjectsListProps> = props => {
                 )}
 
                 <ListSelector view="projects" onChange={onViewChange} />
-            </ObjectsList>
+            </ObjectsListStyled>
         </React.Fragment>
     );
 };
@@ -317,5 +318,11 @@ const paginationOptions = {
 const initialFilter: Filter = {
     onlyActive: true,
 };
+
+const ObjectsListStyled = styled(ObjectsList)`
+    .MuiTextField-root {
+        max-width: 250px;
+    }
+`;
 
 export default React.memo(ProjectsList);

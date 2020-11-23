@@ -73,7 +73,7 @@ function getBaseListConfig(goTo: GoTo): TableConfig<CountryView> {
     const columns: TableColumn<CountryView>[] = [
         { name: "name", text: i18n.t("Name"), sortable: true },
         { name: "code", text: i18n.t("Code"), sortable: true },
-        { name: "projectsCount", text: i18n.t("# Projects"), sortable: false },
+        { name: "projectsCount", text: i18n.t("# Projects"), sortable: true },
         { name: "lastUpdated", text: i18n.t("Last Updated"), sortable: true, hidden: true },
         { name: "created", text: i18n.t("Created"), sortable: true, hidden: true },
     ];
@@ -96,7 +96,9 @@ function getBaseListConfig(goTo: GoTo): TableConfig<CountryView> {
         },
     ];
 
-    return { columns, details, actions, initialSorting, paginationOptions };
+    const searchBoxLabel = i18n.t("Search by name or code");
+
+    return { columns, details, actions, initialSorting, paginationOptions, searchBoxLabel };
 }
 
 function getCountryViews(countries: Country[]): CountryView[] {
