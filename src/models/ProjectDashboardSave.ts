@@ -3,7 +3,7 @@ import ProjectDashboard from "./ProjectDashboard";
 import { D2Api } from "../types/d2-api";
 import i18n from "../locales";
 
-export default class {
+export default class ProjectDashboardSave {
     api: D2Api;
 
     constructor(public project: Project) {
