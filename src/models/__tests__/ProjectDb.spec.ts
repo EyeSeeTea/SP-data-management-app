@@ -24,6 +24,21 @@ describe("ProjectDb", () => {
                 },
             }).replyOnce(200, []);
 
+            // Country dashboard
+
+            mock.onGet("/metadata", {
+                expected: {
+                    "organisationUnits:fields": "children[id,name],id,name",
+                    "organisationUnits:filter": ["id:eq:eu2XF73JOzl"],
+                    "dataSets:fields":
+                        "code,dataInputPeriods[openingDate],dataSetElements[dataElement[code,dataElementGroups[code],id,name]],id",
+                    "dataSets:filter": ["code:like$:_ACTUAL"],
+                },
+            }).replyOnce(200, {
+                organisationUnits: [{ id: "ou1", name: "Bahamas", children: [] }],
+                dataSets: [],
+            });
+
             mock.onGet("/metadata", {
                 params: {
                     "organisationUnitGroups:fields": ":owner",
