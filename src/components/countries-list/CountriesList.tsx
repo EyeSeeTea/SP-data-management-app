@@ -1,4 +1,5 @@
 import React from "react";
+import _ from "lodash";
 import {
     TableColumn,
     TableSorting,
@@ -18,6 +19,7 @@ import { Icon } from "@material-ui/core";
 import { Id } from "../../types/d2-api";
 import { useGoTo, GoTo } from "../../router";
 import { useListSelector } from "../list-selector/ListSelectorHooks";
+import User from "../../models/user";
 
 interface CountryView {
     id: string;
@@ -31,9 +33,11 @@ interface CountryView {
 interface CountriesListProps {}
 
 const CountriesList: React.FC<CountriesListProps> = () => {
-    const { api, config } = useAppContext();
+    const { api, config, currentUser } = useAppContext();
     const goTo = useGoTo();
-    const baseConfig = React.useMemo(() => getBaseListConfig(goTo), [goTo]);
+    const baseConfig = React.useMemo(() => {
+        return getBaseListConfig(currentUser, goTo);
+    }, [currentUser, goTo]);
 
     const getRows = React.useMemo(
         () => async (
@@ -58,7 +62,7 @@ const CountriesList: React.FC<CountriesListProps> = () => {
     );
 };
 
-function getBaseListConfig(goTo: GoTo): TableConfig<CountryView> {
+function getBaseListConfig(currentUser: User, goTo: GoTo): TableConfig<CountryView> {
     const paginationOptions: PaginationOptions = {
         pageSizeOptions: [10, 20, 50],
         pageSizeInitialValue: 20,
@@ -79,21 +83,23 @@ function getBaseListConfig(goTo: GoTo): TableConfig<CountryView> {
 
     const details = columns;
 
-    const actions: TableAction<CountryView>[] = [
+    const actions: TableAction<CountryView>[] = _.compact([
         {
             name: "details",
             text: i18n.t("Details"),
             multiple: false,
             primary: true,
         },
-        {
-            name: "dashboard",
-            icon: <Icon>dashboard</Icon>,
-            text: i18n.t("Go to Dashboard"),
-            multiple: false,
-            onClick: (ids: Id[]) => alert(`TODO:country-dashboard: ${ids[0]} - ${goTo}`),
-        },
-    ];
+        currentUser.actions.includes("countryDashboard")
+            ? {
+                  name: "dashboard",
+                  icon: <Icon>dashboard</Icon>,
+                  text: i18n.t("Go to Dashboard"),
+                  multiple: false,
+                  onClick: (ids: Id[]) => alert(`TODO:country-dashboard: ${ids[0]} - ${goTo}`),
+              }
+            : null,
+    ]);
 
     const searchBoxLabel = i18n.t("Search by name or code");
 

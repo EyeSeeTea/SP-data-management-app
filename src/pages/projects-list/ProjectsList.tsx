@@ -28,7 +28,9 @@ import DeleteDialog from "../../components/delete-dialog/DeleteDialog";
 import styled from "styled-components";
 import { useListSelector } from "../../components/list-selector/ListSelectorHooks";
 
-type ContextualAction = Exclude<Action, "create" | "accessMER" | "reopen"> | "details";
+type ContextualAction =
+    | Exclude<Action, "countryDashboard" | "create" | "accessMER" | "reopen">
+    | "details";
 
 function getComponentConfig(
     api: D2Api,
