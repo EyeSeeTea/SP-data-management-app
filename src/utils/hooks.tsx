@@ -28,15 +28,6 @@ export function useBoolean(initialValue: boolean): UseBooleanReturn {
     };
 }
 
-export function useMemoAsync<T>(getter: () => Promise<T>, dependencies: any[]) {
-    const [data, setData] = React.useState<T | undefined>(undefined);
-    React.useEffect(() => {
-        getter().then(setData);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [getter, ...dependencies]);
-    return data;
-}
-
 export function useConfirmation(options: {
     title: string;
     text: string;
