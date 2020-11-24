@@ -17,9 +17,9 @@ import {
     getReportTable,
     MaybeD2Chart,
     getChart,
+    PositionItemsOptions,
 } from "./Dashboard";
-
-type Maybe<T> = T | null | undefined;
+import { getActualTargetIndicators, getCostBenefitIndicators } from "./indicators";
 
 export default class ProjectDashboard {
     dataElements: Record<"all" | "people" | "benefit", DataElement[]>;
@@ -73,10 +73,16 @@ export default class ProjectDashboard {
             ...charts.map(chart => getChartItem(chart)),
         ]);
 
+        const positionItemsOptions: PositionItemsOptions = {
+            maxWidth: toItemWidth(100),
+            defaultWidth: toItemWidth(50),
+            defaultHeight: 20, // 20 vertical units ~ 50% of viewport height
+        };
+
         const dashboard: PartialPersistedModel<D2Dashboard> = {
             id: getUid("dashboard", project.uid),
             name: project.name,
-            dashboardItems: positionItems(items),
+            dashboardItems: positionItems(items, positionItemsOptions),
             ...new ProjectSharing(project).getSharingAttributesForDashboard(),
         };
 
@@ -131,7 +137,7 @@ export default class ProjectDashboard {
 
     achievedBenefitsTable(): MaybeD2Table {
         const { project, dataElements } = this;
-        const indicators = project.getActualTargetIndicators(dataElements.benefit);
+        const indicators = getActualTargetIndicators(this.config, dataElements.benefit);
 
         return getReportTable(project, {
             key: "reportTable-indicators-benefits",
@@ -150,7 +156,7 @@ export default class ProjectDashboard {
         return getReportTable(project, {
             key: "reportTable-indicators-people",
             name: i18n.t("Achieved (%) - People"),
-            items: project.getActualTargetIndicators(dataElements.people),
+            items: getActualTargetIndicators(this.config, dataElements.people),
             reportFilter: [dimensions.orgUnit],
             columnDimensions: [dimensions.period],
             rowDimensions: [dimensions.data],
@@ -165,7 +171,7 @@ export default class ProjectDashboard {
         return getReportTable(project, {
             key: "reportTable-indicators-people-total",
             name: i18n.t("Achieved total (%) - People"),
-            items: project.getActualTargetIndicators(dataElements.people),
+            items: getActualTargetIndicators(this.config, dataElements.people),
             reportFilter: [dimensions.orgUnit, dimensions.period],
             columnDimensions: [this.categoryOnlyNew],
             rowDimensions: [dimensions.data],
@@ -180,7 +186,7 @@ export default class ProjectDashboard {
         return getChart(project, {
             key: "chart-achieved-monthly",
             name: i18n.t("Achieved monthly (%)"),
-            items: project.getActualTargetIndicators(dataElements.all),
+            items: getActualTargetIndicators(this.config, dataElements.all),
             reportFilter: [dimensions.orgUnit],
             seriesDimension: dimensions.period,
             categoryDimension: dimensions.data,
@@ -193,7 +199,7 @@ export default class ProjectDashboard {
         return getChart(project, {
             key: "chart-achieved",
             name: i18n.t("Achieved Benefit (%)"),
-            items: project.getActualTargetIndicators(dataElements.benefit),
+            items: getActualTargetIndicators(this.config, dataElements.benefit),
             reportFilter: [dimensions.period],
             seriesDimension: dimensions.orgUnit,
             categoryDimension: dimensions.data,
@@ -206,7 +212,7 @@ export default class ProjectDashboard {
         return getChart(project, {
             key: "chart-people-achieved",
             name: i18n.t("Achieved People (%)"),
-            items: project.getActualTargetIndicators(dataElements.people),
+            items: getActualTargetIndicators(this.config, dataElements.people),
             reportFilter: [dimensions.period, this.categoryOnlyNew],
             seriesDimension: dimensions.orgUnit,
             categoryDimension: dimensions.data,
@@ -219,7 +225,7 @@ export default class ProjectDashboard {
         return getChart(project, {
             key: "chart-achieved-gender",
             name: i18n.t("Achieved by gender (%)"),
-            items: project.getActualTargetIndicators(dataElements.people),
+            items: getActualTargetIndicators(this.config, dataElements.people),
             reportFilter: [dimensions.orgUnit, dimensions.period, this.categoryOnlyNew],
             seriesDimension: project.config.categories.gender,
             categoryDimension: dimensions.data,
@@ -235,7 +241,7 @@ export default class ProjectDashboard {
         return getChart(project, {
             key: "cost-benefit",
             name: i18n.t("Benefits Per Person"),
-            items: project.getCostBenefitIndicators(pairedDataElements),
+            items: getCostBenefitIndicators(this.config, pairedDataElements),
             reportFilter: [dimensions.period],
             seriesDimension: dimensions.orgUnit,
             categoryDimension: dimensions.data,

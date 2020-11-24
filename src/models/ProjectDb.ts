@@ -16,6 +16,7 @@ import DataElementsSet from "./dataElementsSet";
 import { ProjectInfo, getProjectStorageKey } from "./MerReport";
 import ProjectSharing, { getSharing } from "./ProjectSharing";
 import { splitParts } from "../utils/string";
+import CountryDashboard from "./CountryDashboard";
 
 const expiryDaysInMonthActual = 10;
 
@@ -41,11 +42,15 @@ export default class ProjectDb {
         const { project, api, config } = this;
         const { startDate, endDate } = project;
 
+        const country = project.parentOrgUnit;
+
         const validationErrors = _.flatten(_.values(await project.validate()));
         if (!_.isEmpty(validationErrors)) {
             throw new Error("Validation errors:\n" + validationErrors.join("\n"));
         } else if (!startDate || !endDate || !project.parentOrgUnit) {
             throw new Error("Invalid project state");
+        } else if (!country) {
+            throw new Error("No country set");
         }
 
         const baseAttributeValues = [
@@ -74,8 +79,11 @@ export default class ProjectDb {
         };
 
         const projectWithOrgUnit = project.set("orgUnit", orgUnit);
-        const dashboardsMetadata = new ProjectDashboard(projectWithOrgUnit).generate();
-        const dashboard = dashboardsMetadata.dashboards[0];
+        const projectDashboardMetadata = new ProjectDashboard(projectWithOrgUnit).generate();
+        const countryDashboard = await CountryDashboard.build(api, config, country.id);
+        const countryDashboardMetadata = countryDashboard.generate();
+
+        const dashboard = projectDashboardMetadata.dashboards[0];
         if (!dashboard) throw new Error("No dashboard defined");
 
         const orgUnitToSave = {
@@ -122,7 +130,8 @@ export default class ProjectDb {
             orgUnitsMetadata,
             dataSetTargetMetadata,
             dataSetActualMetadata,
-            dashboardsMetadata,
+            projectDashboardMetadata,
+            countryDashboardMetadata,
         ]);
 
         await this.saveMERData(orgUnit.id).getData();

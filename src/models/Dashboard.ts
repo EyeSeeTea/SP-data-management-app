@@ -11,6 +11,7 @@ import {
 import { Maybe } from "../types/utils";
 import { getUid } from "../utils/dhis2";
 import ProjectSharing from "./ProjectSharing";
+import { Config } from "./Config";
 
 export const dimensions = {
     period: { id: "pe" },
@@ -54,9 +55,13 @@ export type MaybeD2Table = Maybe<PartialPersistedModel<D2ReportTable>>;
 
 export type MaybeD2Chart = Maybe<PartialPersistedModel<D2Chart>>;
 
-function getDataDimensionItems(project: Project, items: Ref[]) {
+export function getDataDimensionItemsFromProject(project: Project, items: Ref[]) {
     const { config } = project;
-    const dataElementIds = new Set(project.getSelectedDataElements().map(de => de.id));
+    return getDataDimensionItems(items, config, project.getSelectedDataElements());
+}
+
+export function getDataDimensionItems(items: Ref[], config: Config, dataElements: Ref[]) {
+    const dataElementIds = new Set(dataElements.map(de => de.id));
     const indicatorIds = new Set(config.indicators.map(ind => ind.id));
 
     return _(items)
@@ -78,7 +83,7 @@ export function getReportTable(project: Project, table: Table): MaybeD2Table {
     if (_.isEmpty(table.items)) return null;
 
     const orgUnitId = getOrgUnitId(project);
-    const dataDimensionItems = getDataDimensionItems(project, table.items);
+    const dataDimensionItems = getDataDimensionItemsFromProject(project, table.items);
     const dimensions = _.concat(table.columnDimensions, table.rowDimensions, table.reportFilter);
 
     const baseTable: PartialPersistedModel<D2ReportTable> = {
@@ -108,7 +113,7 @@ export function getReportTable(project: Project, table: Table): MaybeD2Table {
     return _.merge({}, baseTable, table.extra || {});
 }
 
-function getCategoryDimensions(dimensions: Dimension[]) {
+export function getCategoryDimensions(dimensions: Dimension[]) {
     return _.compact(
         dimensions.map(dimension =>
             dimension.categoryOptions
@@ -133,7 +138,7 @@ export function getChart(project: Project, chart: Chart): MaybeD2Chart {
         showData: true,
         category: chart.categoryDimension.id,
         organisationUnits: [{ id: getOrgUnitId(project) }],
-        dataDimensionItems: getDataDimensionItems(project, chart.items),
+        dataDimensionItems: getDataDimensionItemsFromProject(project, chart.items),
         periods: project.getPeriods().map(period => ({ id: period.id })),
         series: chart.seriesDimension.id,
         columns: [chart.seriesDimension],
@@ -181,15 +186,15 @@ export function toItemWidth(percentWidth: number) {
     return (percentWidth * 58) / 100;
 }
 
-const positionItemsConfig = {
-    maxWidth: toItemWidth(100),
-    defaultWidth: toItemWidth(50),
-    defaultHeight: 20, // 20 vertical units ~ 50% of viewport height
-};
+export interface PositionItemsOptions {
+    maxWidth: number;
+    defaultWidth: number;
+    defaultHeight: number; // 20 vertical units ~ 50% of viewport height
+}
 
 /* Set attributes x, y, width and height for an array of dashboard items */
-export function positionItems(items: Array<Item>) {
-    const { maxWidth, defaultWidth, defaultHeight } = positionItemsConfig;
+export function positionItems(items: Item[], options: PositionItemsOptions) {
+    const { maxWidth, defaultWidth, defaultHeight } = options;
     const initialPos = { x: 0, y: 0 };
 
     return items.reduce<{ pos: Pos; outputItems: Item[] }>(

@@ -39,3 +39,9 @@ export function getMonthsRange(
         return outputDates;
     }
 }
+
+export const monthFormat = "YYYYMM";
+
+export function getPeriodIds(range: Moment[]): Array<{ id: string }> {
+    return range.map(m => ({ id: m.format(monthFormat) }));
+}
