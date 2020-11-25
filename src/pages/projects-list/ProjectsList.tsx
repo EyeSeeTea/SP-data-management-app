@@ -121,7 +121,7 @@ function getComponentConfig(
             icon: <Icon>dashboard</Icon>,
             text: i18n.t("Go to Dashboard"),
             multiple: false,
-            onClick: (ids: Id[]) => onFirst(ids, id => goTo("dashboard", { id })),
+            onClick: (ids: Id[]) => onFirst(ids, id => goTo("projectDashboard", { id })),
         },
 
         targetValues: {

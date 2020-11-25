@@ -46,6 +46,15 @@ describe("ProjectDb", () => {
 
             mock.onGet("/metadata", {
                 params: {
+                    "organisationUnits:fields": ":owner",
+                    "organisationUnits:filter": ["id:eq:eu2XF73JOzl"],
+                },
+            }).replyOnce(200, {
+                organisationUnits: [{ id: "eu2XF73JOzl", name: "Bahamas", attributeValues: [] }],
+            });
+
+            mock.onGet("/metadata", {
+                params: {
                     "organisationUnitGroups:fields": ":owner",
                     "organisationUnitGroups:filter": [
                         "id:in:[OE0KdZRX2FC,WKUXmz4LIUG,GG0k0oNhgS7]",

@@ -96,7 +96,7 @@ function getBaseListConfig(currentUser: User, goTo: GoTo): TableConfig<CountryVi
                   icon: <Icon>dashboard</Icon>,
                   text: i18n.t("Go to Dashboard"),
                   multiple: false,
-                  onClick: (ids: Id[]) => alert(`TODO:country-dashboard: ${ids[0]} - ${goTo}`),
+                  onClick: (ids: Id[]) => goTo("countryDashboard", { id: ids[0] }),
               }
             : null,
     ]);

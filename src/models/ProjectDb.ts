@@ -80,20 +80,27 @@ export default class ProjectDb {
 
         const projectWithOrgUnit = project.set("orgUnit", orgUnit);
         const projectDashboardMetadata = new ProjectDashboard(projectWithOrgUnit).generate();
-        const countryDashboard = await CountryDashboard.build(api, config, country.id);
-        const countryDashboardMetadata = countryDashboard.generate();
+        const countryDashboardGenerator = await CountryDashboard.build(api, config, country.id);
+        const countryDashboardMetadata = countryDashboardGenerator.generate();
 
-        const dashboard = projectDashboardMetadata.dashboards[0];
-        if (!dashboard) throw new Error("No dashboard defined");
+        const projectDashboard = projectDashboardMetadata.dashboards[0];
+        const countryDashboard = countryDashboardMetadata.dashboards[0];
+        const d2Country = await getCountry(api, country.id);
 
-        const orgUnitToSave = {
-            ...orgUnit,
-            attributeValues: addAttributeValue(
-                orgUnit.attributeValues,
-                config.attributes.projectDashboard,
-                dashboard.id
-            ),
-        };
+        if (!projectDashboard || !countryDashboard || !d2Country)
+            throw new Error("Dashboards error");
+
+        const projectOrgUnit = addAttributeValueToObj(orgUnit, {
+            values: orgUnit.attributeValues,
+            attribute: config.attributes.projectDashboard,
+            value: projectDashboard.id,
+        });
+
+        const countryUpdated = addAttributeValueToObj(d2Country, {
+            values: d2Country.attributeValues,
+            attribute: config.attributes.projectDashboard,
+            value: countryDashboard.id,
+        });
 
         const orgUnitGroupsToSave = await getOrgUnitGroups(api, project);
 
@@ -122,7 +129,7 @@ export default class ProjectDb {
         const dataSetActual = _(dataSetActualMetadata.dataSets).getOrFail(0);
 
         const orgUnitsMetadata: OrgUnitsMeta = {
-            organisationUnits: [orgUnitToSave],
+            organisationUnits: [projectOrgUnit, countryUpdated],
             organisationUnitGroups: orgUnitGroupsToSave,
         };
 
@@ -143,12 +150,12 @@ export default class ProjectDb {
                 ? this.project.setObj({
                       id: orgUnit.id,
                       orgUnit: orgUnit,
-                      dashboard: { id: dashboard.id },
+                      dashboard: { id: projectDashboard.id },
                       dataSets: { actual: dataSetActual, target: dataSetTarget },
                   })
                 : this.project;
 
-        return { orgUnit: orgUnitToSave, payload, response, project: savedProject };
+        return { orgUnit: projectOrgUnit, payload, response, project: savedProject };
     }
 
     async updateDataSet(dataSet: Ref, attrs: PartialModel<D2DataSet>) {
@@ -546,12 +553,24 @@ function getOrgUnitId(orgUnit: { path: string }): string {
     else throw new Error(`Invalid path: ${orgUnit.path}`);
 }
 
-function addAttributeValue<Attribute extends Ref>(
-    attributeValues: Array<{ attribute: Ref; value: string }>,
-    attribute: Attribute,
-    value: string
+type AttributeValue = { attribute: Ref; value: string };
+
+function addAttributeValue(attributeValues: AttributeValue[], attribute: Ref, value: string) {
+    return attributeValues
+        .filter(av => av.attribute.id !== attribute.id)
+        .concat([{ value, attribute: { id: attribute.id } }]);
+}
+
+function addAttributeValueToObj<Obj extends { attributeValues: AttributeValue[] }>(
+    obj: Obj,
+    options: {
+        values: AttributeValue[];
+        attribute: Ref;
+        value: string;
+    }
 ) {
-    return attributeValues.concat([{ value, attribute: { id: attribute.id } }]);
+    const newValues = addAttributeValue(options.values, options.attribute, options.value);
+    return { ...obj, attributeValues: newValues };
 }
 
 type OrgUnitsWithAttributes = SelectedPick<
@@ -579,4 +598,17 @@ export function flattenPayloads<Model extends keyof MetadataPayload>(
         {} as Pick<MetadataPayload, Model>
     );
     return payload as Pick<MetadataPayload, Model>;
+}
+
+async function getCountry(api: D2Api, id: Id) {
+    const { organisationUnits } = await api.metadata
+        .get({
+            organisationUnits: {
+                fields: { $owner: true },
+                filter: { id: { eq: id } },
+            },
+        })
+        .getData();
+
+    return organisationUnits[0];
 }
