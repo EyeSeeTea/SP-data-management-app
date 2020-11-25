@@ -7,7 +7,7 @@ import {
 } from "../../components/dashboard/dashboard-hooks";
 import { Loader } from "../../components/loader/Loader";
 import { generateUrl } from "../../router";
-import { getCountryWithDashboard } from "../../models/Country";
+import { getCountryDashboard } from "../../models/Country";
 import i18n from "../../locales";
 
 const CountryDashboard: React.FC = () => {
@@ -23,9 +23,9 @@ const CountryDashboard: React.FC = () => {
 };
 
 const getDashboard: GetDashboard = async (api, config, countryId) => {
-    const res = await getCountryWithDashboard({ api, config, countryId });
+    const res = await getCountryDashboard({ api, config, countryId });
     return res.type === "success"
-        ? { type: "success", data: res.data.dashboard }
+        ? { type: "success", data: res.data }
         : { type: "error", message: i18n.t("Cannot get country dashboard") };
 };
 
