@@ -587,9 +587,54 @@
             ]
         },
         {
-            "id": "aaGCsgQnY7p",
+            "id": "qyG6foGIKEx",
             "name": "Bahamas",
-            "dashboardItems": [],
+            "dashboardItems": [
+                {
+                    "id": "e6UAresDcfM",
+                    "type": "CHART",
+                    "chart": {
+                        "id": "GqYJDh6asM8"
+                    },
+                    "width": 58,
+                    "height": 30,
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "id": "CQuufxhy672",
+                    "type": "CHART",
+                    "chart": {
+                        "id": "me6p7L8VHXl"
+                    },
+                    "width": 58,
+                    "height": 30,
+                    "x": 0,
+                    "y": 30
+                },
+                {
+                    "id": "eUSMAePgCN9",
+                    "type": "REPORT_TABLE",
+                    "reportTable": {
+                        "id": "KOiGcdA4JjD"
+                    },
+                    "width": 58,
+                    "height": 30,
+                    "x": 0,
+                    "y": 60
+                },
+                {
+                    "id": "GWKMgoU2E38",
+                    "type": "REPORT_TABLE",
+                    "reportTable": {
+                        "id": "CS7csnUtibF"
+                    },
+                    "width": 58,
+                    "height": 30,
+                    "x": 0,
+                    "y": 90
+                }
+            ],
             "publicAccess": "rw------"
         }
     ],
@@ -1377,19 +1422,272 @@
                 "code": "ACTUAL_TARGET_ACHIEVED",
                 "id": "yoAt108kUFm"
             }
+        },
+        {
+            "id": "KOiGcdA4JjD",
+            "name": "[Bahamas] Projects - People",
+            "numberType": "VALUE",
+            "legendDisplayStyle": "FILL",
+            "rowSubTotals": true,
+            "showDimensionLabels": true,
+            "aggregationType": "DEFAULT",
+            "legendDisplayStrategy": "FIXED",
+            "rowTotals": true,
+            "digitGroupSeparator": "SPACE",
+            "dataDimensionItems": [
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "SQy5q6kCYI1"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "iYEDR850FFL"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "qkyeCTJHU2d"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "eAkVLI8mKBa"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "Kg29718LQHl"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "KKmUWsn19fq"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "iCKxYSFIlcu"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "qAM1NbCbS9G"
+                    }
+                }
+            ],
+            "organisationUnits": [
+                {
+                    "id": "cqZ9zQfePzQ"
+                },
+                {
+                    "id": "TvSmIyYcRnd"
+                }
+            ],
+            "periods": [],
+            "relativePeriods": {
+                "thisYear": true
+            },
+            "columns": [
+                {
+                    "id": "dx"
+                }
+            ],
+            "columnDimensions": ["dx"],
+            "filters": [
+                {
+                    "id": "pe"
+                },
+                {
+                    "id": "uSMHdwhxFSV",
+                    "categoryOptions": [
+                        {
+                            "id": "KiK0FMExoqh"
+                        }
+                    ]
+                },
+                {
+                    "id": "GIIHAr9BzzO",
+                    "categoryOptions": [
+                        {
+                            "id": "eWeQoOlAcxV"
+                        }
+                    ]
+                }
+            ],
+            "filterDimensions": ["pe", "uSMHdwhxFSV", "GIIHAr9BzzO"],
+            "rows": [
+                {
+                    "id": "ou"
+                }
+            ],
+            "rowDimensions": ["ou"],
+            "categoryDimensions": [
+                {
+                    "category": {
+                        "id": "uSMHdwhxFSV"
+                    },
+                    "categoryOptions": [
+                        {
+                            "id": "KiK0FMExoqh"
+                        }
+                    ]
+                },
+                {
+                    "category": {
+                        "id": "GIIHAr9BzzO"
+                    },
+                    "categoryOptions": [
+                        {
+                            "id": "eWeQoOlAcxV"
+                        }
+                    ]
+                }
+            ],
+            "publicAccess": "rw------"
+        },
+        {
+            "id": "CS7csnUtibF",
+            "name": "[Bahamas] Projects - Benefit",
+            "numberType": "VALUE",
+            "legendDisplayStyle": "FILL",
+            "rowSubTotals": true,
+            "showDimensionLabels": true,
+            "aggregationType": "DEFAULT",
+            "legendDisplayStrategy": "FIXED",
+            "rowTotals": true,
+            "digitGroupSeparator": "SPACE",
+            "dataDimensionItems": [
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "aYk5MgSCLXP"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "CI8NCm34d7D"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "mu2b9Ivde6J"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "WUMjtbgofs2"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "umkL2sEVSNR"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "SCY3TdhSz1K"
+                    }
+                }
+            ],
+            "organisationUnits": [
+                {
+                    "id": "cqZ9zQfePzQ"
+                },
+                {
+                    "id": "TvSmIyYcRnd"
+                }
+            ],
+            "periods": [],
+            "relativePeriods": {
+                "thisYear": true
+            },
+            "columns": [
+                {
+                    "id": "dx"
+                }
+            ],
+            "columnDimensions": ["dx"],
+            "filters": [
+                {
+                    "id": "pe"
+                },
+                {
+                    "id": "GIIHAr9BzzO",
+                    "categoryOptions": [
+                        {
+                            "id": "eWeQoOlAcxV"
+                        }
+                    ]
+                }
+            ],
+            "filterDimensions": ["pe", "GIIHAr9BzzO"],
+            "rows": [
+                {
+                    "id": "ou"
+                }
+            ],
+            "rowDimensions": ["ou"],
+            "categoryDimensions": [
+                {
+                    "category": {
+                        "id": "GIIHAr9BzzO"
+                    },
+                    "categoryOptions": [
+                        {
+                            "id": "eWeQoOlAcxV"
+                        }
+                    ]
+                }
+            ],
+            "publicAccess": "rw------"
         }
     ],
     "charts": [
         {
             "id": "uG9C9z46CNK",
             "name": "MyProject - Achieved monthly (%)",
+            "periods": [
+                {
+                    "id": "201810"
+                },
+                {
+                    "id": "201811"
+                },
+                {
+                    "id": "201812"
+                },
+                {
+                    "id": "201901"
+                },
+                {
+                    "id": "201902"
+                },
+                {
+                    "id": "201903"
+                }
+            ],
             "type": "COLUMN",
             "aggregationType": "DEFAULT",
             "showData": true,
             "category": "dx",
-            "organisationUnits": [
+            "series": "pe",
+            "columns": [
                 {
-                    "id": "WGC0DJ0YSis"
+                    "id": "pe"
                 }
             ],
             "dataDimensionItems": [
@@ -1424,32 +1722,6 @@
                     }
                 }
             ],
-            "periods": [
-                {
-                    "id": "201810"
-                },
-                {
-                    "id": "201811"
-                },
-                {
-                    "id": "201812"
-                },
-                {
-                    "id": "201901"
-                },
-                {
-                    "id": "201902"
-                },
-                {
-                    "id": "201903"
-                }
-            ],
-            "series": "pe",
-            "columns": [
-                {
-                    "id": "pe"
-                }
-            ],
             "rows": [
                 {
                     "id": "dx"
@@ -1462,6 +1734,11 @@
             ],
             "filterDimensions": ["ou"],
             "categoryDimensions": [],
+            "organisationUnits": [
+                {
+                    "id": "WGC0DJ0YSis"
+                }
+            ],
             "publicAccess": "--------",
             "externalAccess": false,
             "userAccesses": [
@@ -1487,29 +1764,6 @@
         {
             "id": "qmsj4FqnVPX",
             "name": "MyProject - Achieved Benefit (%)",
-            "type": "COLUMN",
-            "aggregationType": "DEFAULT",
-            "showData": true,
-            "category": "dx",
-            "organisationUnits": [
-                {
-                    "id": "WGC0DJ0YSis"
-                }
-            ],
-            "dataDimensionItems": [
-                {
-                    "dataDimensionItemType": "INDICATOR",
-                    "indicator": {
-                        "id": "eCufXa6RkTm"
-                    }
-                },
-                {
-                    "dataDimensionItemType": "INDICATOR",
-                    "indicator": {
-                        "id": "i01veyO4Cuw"
-                    }
-                }
-            ],
             "periods": [
                 {
                     "id": "201810"
@@ -1530,10 +1784,28 @@
                     "id": "201903"
                 }
             ],
+            "type": "COLUMN",
+            "aggregationType": "DEFAULT",
+            "showData": true,
+            "category": "dx",
             "series": "ou",
             "columns": [
                 {
                     "id": "ou"
+                }
+            ],
+            "dataDimensionItems": [
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "eCufXa6RkTm"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "i01veyO4Cuw"
+                    }
                 }
             ],
             "rows": [
@@ -1548,6 +1820,11 @@
             ],
             "filterDimensions": ["pe"],
             "categoryDimensions": [],
+            "organisationUnits": [
+                {
+                    "id": "WGC0DJ0YSis"
+                }
+            ],
             "publicAccess": "--------",
             "externalAccess": false,
             "userAccesses": [
@@ -1573,35 +1850,6 @@
         {
             "id": "uiyYMLiDaK2",
             "name": "MyProject - Achieved People (%)",
-            "type": "COLUMN",
-            "aggregationType": "DEFAULT",
-            "showData": true,
-            "category": "dx",
-            "organisationUnits": [
-                {
-                    "id": "WGC0DJ0YSis"
-                }
-            ],
-            "dataDimensionItems": [
-                {
-                    "dataDimensionItemType": "INDICATOR",
-                    "indicator": {
-                        "id": "eYmeRzhBFV4"
-                    }
-                },
-                {
-                    "dataDimensionItemType": "INDICATOR",
-                    "indicator": {
-                        "id": "u404ICrBKj3"
-                    }
-                },
-                {
-                    "dataDimensionItemType": "INDICATOR",
-                    "indicator": {
-                        "id": "K4sH0aQDdeL"
-                    }
-                }
-            ],
             "periods": [
                 {
                     "id": "201810"
@@ -1622,10 +1870,34 @@
                     "id": "201903"
                 }
             ],
+            "type": "COLUMN",
+            "aggregationType": "DEFAULT",
+            "showData": true,
+            "category": "dx",
             "series": "ou",
             "columns": [
                 {
                     "id": "ou"
+                }
+            ],
+            "dataDimensionItems": [
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "eYmeRzhBFV4"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "u404ICrBKj3"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "K4sH0aQDdeL"
+                    }
                 }
             ],
             "rows": [
@@ -1659,6 +1931,11 @@
                     ]
                 }
             ],
+            "organisationUnits": [
+                {
+                    "id": "WGC0DJ0YSis"
+                }
+            ],
             "publicAccess": "--------",
             "externalAccess": false,
             "userAccesses": [
@@ -1684,35 +1961,6 @@
         {
             "id": "u6Sin4Fy1Wt",
             "name": "MyProject - Achieved by gender (%)",
-            "type": "COLUMN",
-            "aggregationType": "DEFAULT",
-            "showData": true,
-            "category": "dx",
-            "organisationUnits": [
-                {
-                    "id": "WGC0DJ0YSis"
-                }
-            ],
-            "dataDimensionItems": [
-                {
-                    "dataDimensionItemType": "INDICATOR",
-                    "indicator": {
-                        "id": "eYmeRzhBFV4"
-                    }
-                },
-                {
-                    "dataDimensionItemType": "INDICATOR",
-                    "indicator": {
-                        "id": "u404ICrBKj3"
-                    }
-                },
-                {
-                    "dataDimensionItemType": "INDICATOR",
-                    "indicator": {
-                        "id": "K4sH0aQDdeL"
-                    }
-                }
-            ],
             "periods": [
                 {
                     "id": "201810"
@@ -1733,6 +1981,10 @@
                     "id": "201903"
                 }
             ],
+            "type": "COLUMN",
+            "aggregationType": "DEFAULT",
+            "showData": true,
+            "category": "dx",
             "series": "Kyg1O6YEGa9",
             "columns": [
                 {
@@ -1748,6 +2000,26 @@
                             "id": "yW2hYVS3S4u"
                         }
                     ]
+                }
+            ],
+            "dataDimensionItems": [
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "eYmeRzhBFV4"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "u404ICrBKj3"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "K4sH0aQDdeL"
+                    }
                 }
             ],
             "rows": [
@@ -1797,6 +2069,11 @@
                     ]
                 }
             ],
+            "organisationUnits": [
+                {
+                    "id": "WGC0DJ0YSis"
+                }
+            ],
             "publicAccess": "--------",
             "externalAccess": false,
             "userAccesses": [
@@ -1822,23 +2099,6 @@
         {
             "id": "ukewRkZsyCI",
             "name": "MyProject - Benefits Per Person",
-            "type": "COLUMN",
-            "aggregationType": "DEFAULT",
-            "showData": true,
-            "category": "dx",
-            "organisationUnits": [
-                {
-                    "id": "WGC0DJ0YSis"
-                }
-            ],
-            "dataDimensionItems": [
-                {
-                    "dataDimensionItemType": "INDICATOR",
-                    "indicator": {
-                        "id": "Gob5qHAX60C"
-                    }
-                }
-            ],
             "periods": [
                 {
                     "id": "201810"
@@ -1859,10 +2119,22 @@
                     "id": "201903"
                 }
             ],
+            "type": "COLUMN",
+            "aggregationType": "DEFAULT",
+            "showData": true,
+            "category": "dx",
             "series": "ou",
             "columns": [
                 {
                     "id": "ou"
+                }
+            ],
+            "dataDimensionItems": [
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "Gob5qHAX60C"
+                    }
                 }
             ],
             "rows": [
@@ -1877,6 +2149,11 @@
             ],
             "filterDimensions": ["pe"],
             "categoryDimensions": [],
+            "organisationUnits": [
+                {
+                    "id": "WGC0DJ0YSis"
+                }
+            ],
             "publicAccess": "--------",
             "externalAccess": false,
             "userAccesses": [
@@ -1898,6 +2175,222 @@
                     "access": "rw------"
                 }
             ]
+        },
+        {
+            "id": "GqYJDh6asM8",
+            "name": "[Bahamas] Aggregated Actual Values - People",
+            "periods": [],
+            "relativePeriods": {
+                "thisYear": true
+            },
+            "type": "COLUMN",
+            "aggregationType": "DEFAULT",
+            "showData": true,
+            "category": "pe",
+            "series": "dx",
+            "columns": [
+                {
+                    "id": "dx"
+                }
+            ],
+            "dataDimensionItems": [
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "SQy5q6kCYI1"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "iYEDR850FFL"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "qkyeCTJHU2d"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "eAkVLI8mKBa"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "Kg29718LQHl"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "KKmUWsn19fq"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "iCKxYSFIlcu"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "qAM1NbCbS9G"
+                    }
+                }
+            ],
+            "rows": [
+                {
+                    "id": "pe"
+                }
+            ],
+            "filters": [
+                {
+                    "id": "ou"
+                },
+                {
+                    "id": "uSMHdwhxFSV",
+                    "categoryOptions": [
+                        {
+                            "id": "KiK0FMExoqh"
+                        }
+                    ]
+                },
+                {
+                    "id": "GIIHAr9BzzO",
+                    "categoryOptions": [
+                        {
+                            "id": "eWeQoOlAcxV"
+                        }
+                    ]
+                }
+            ],
+            "filterDimensions": ["ou", "uSMHdwhxFSV", "GIIHAr9BzzO"],
+            "categoryDimensions": [
+                {
+                    "category": {
+                        "id": "uSMHdwhxFSV"
+                    },
+                    "categoryOptions": [
+                        {
+                            "id": "KiK0FMExoqh"
+                        }
+                    ]
+                },
+                {
+                    "category": {
+                        "id": "GIIHAr9BzzO"
+                    },
+                    "categoryOptions": [
+                        {
+                            "id": "eWeQoOlAcxV"
+                        }
+                    ]
+                }
+            ],
+            "organisationUnits": [
+                {
+                    "id": "eu2XF73JOzl"
+                }
+            ],
+            "publicAccess": "rw------"
+        },
+        {
+            "id": "me6p7L8VHXl",
+            "name": "[Bahamas] Aggregated Actual Values - Benefit",
+            "periods": [],
+            "relativePeriods": {
+                "thisYear": true
+            },
+            "type": "COLUMN",
+            "aggregationType": "DEFAULT",
+            "showData": true,
+            "category": "pe",
+            "series": "dx",
+            "columns": [
+                {
+                    "id": "dx"
+                }
+            ],
+            "dataDimensionItems": [
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "aYk5MgSCLXP"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "CI8NCm34d7D"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "mu2b9Ivde6J"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "WUMjtbgofs2"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "umkL2sEVSNR"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "SCY3TdhSz1K"
+                    }
+                }
+            ],
+            "rows": [
+                {
+                    "id": "pe"
+                }
+            ],
+            "filters": [
+                {
+                    "id": "ou"
+                },
+                {
+                    "id": "GIIHAr9BzzO",
+                    "categoryOptions": [
+                        {
+                            "id": "eWeQoOlAcxV"
+                        }
+                    ]
+                }
+            ],
+            "filterDimensions": ["ou", "GIIHAr9BzzO"],
+            "categoryDimensions": [
+                {
+                    "category": {
+                        "id": "GIIHAr9BzzO"
+                    },
+                    "categoryOptions": [
+                        {
+                            "id": "eWeQoOlAcxV"
+                        }
+                    ]
+                }
+            ],
+            "organisationUnits": [
+                {
+                    "id": "eu2XF73JOzl"
+                }
+            ],
+            "publicAccess": "rw------"
         }
     ]
 }

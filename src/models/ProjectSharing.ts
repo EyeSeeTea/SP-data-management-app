@@ -3,6 +3,7 @@ import _ from "lodash";
 import { Config } from "./Config";
 import { D2DataSetSchema } from "../types/d2-api";
 
+// Move to entities
 type D2Access = string;
 
 export interface D2Sharing {

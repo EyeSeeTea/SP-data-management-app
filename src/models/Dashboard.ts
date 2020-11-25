@@ -1,5 +1,4 @@
 import _ from "lodash";
-import Project from "./Project";
 import {
     Ref,
     PartialModel,
@@ -7,11 +6,11 @@ import {
     D2Chart,
     PartialPersistedModel,
     D2DashboardItem,
+    Id,
 } from "../types/d2-api";
 import { Maybe } from "../types/utils";
 import { getUid } from "../utils/dhis2";
-import ProjectSharing from "./ProjectSharing";
-import { Config } from "./Config";
+import { D2Sharing } from "./ProjectSharing";
 
 export const dimensions = {
     period: { id: "pe" },
@@ -19,35 +18,42 @@ export const dimensions = {
     data: { id: "dx" },
 };
 
-export function getOrgUnitId(project: Project): string {
-    const ou = project.orgUnit;
-    if (!ou) {
-        throw new Error("No organisation defined for project");
-    } else {
-        return _.last(ou.path.split("/")) || "";
-    }
+export interface Dimension {
+    id: string;
+    categoryOptions?: Ref[];
 }
 
-export type Dimension = { id: string; categoryOptions?: Ref[] };
+interface Item {
+    id: Id;
+    type: "DATA_ELEMENT" | "INDICATOR";
+}
 
 export interface Table {
     key: string;
     name: string;
-    items: Ref[];
+    items: Item[];
+    periods: string[];
+    relativePeriods?: D2ReportTable["relativePeriods"];
+    organisationUnits: Ref[];
     reportFilter: Dimension[];
     rowDimensions: Dimension[];
     columnDimensions: Dimension[];
-    extra?: PartialModel<D2ReportTable>;
     rowTotals?: boolean;
+    sharing: D2Sharing;
+    extra?: PartialModel<D2ReportTable>;
 }
 
 export interface Chart {
     key: string;
     name: string;
-    items: Ref[];
+    items: Item[];
+    periods: string[];
+    relativePeriods?: D2Chart["relativePeriods"];
+    organisationUnits: Ref[];
     reportFilter: Dimension[];
-    seriesDimension: Dimension;
+    seriesDimension?: Dimension;
     categoryDimension: Dimension;
+    sharing: D2Sharing;
     extra?: PartialModel<D2Chart>;
 }
 
@@ -55,21 +61,20 @@ export type MaybeD2Table = Maybe<PartialPersistedModel<D2ReportTable>>;
 
 export type MaybeD2Chart = Maybe<PartialPersistedModel<D2Chart>>;
 
-export function getDataDimensionItemsFromProject(project: Project, items: Ref[]) {
-    const { config } = project;
-    return getDataDimensionItems(items, config, project.getSelectedDataElements());
-}
+type DimensionItem =
+    | { dataDimensionItemType: "DATA_ELEMENT"; dataElement: Ref }
+    | { dataDimensionItemType: "INDICATOR"; indicator: Ref };
 
-export function getDataDimensionItems(items: Ref[], config: Config, dataElements: Ref[]) {
-    const dataElementIds = new Set(dataElements.map(de => de.id));
-    const indicatorIds = new Set(config.indicators.map(ind => ind.id));
-
+export function getDataDimensionItems(items: Item[]): DimensionItem[] {
     return _(items)
         .map(item => {
-            if (dataElementIds.has(item.id)) {
-                return { dataDimensionItemType: "DATA_ELEMENT", dataElement: { id: item.id } };
-            } else if (indicatorIds.has(item.id)) {
-                return { dataDimensionItemType: "INDICATOR", indicator: { id: item.id } };
+            if (item.type === "DATA_ELEMENT") {
+                return {
+                    dataDimensionItemType: "DATA_ELEMENT" as const,
+                    dataElement: { id: item.id },
+                };
+            } else if (item.type === "INDICATOR") {
+                return { dataDimensionItemType: "INDICATOR" as const, indicator: { id: item.id } };
             } else {
                 console.error(`Unsupported item: ${item.id}`);
                 return null;
@@ -79,16 +84,19 @@ export function getDataDimensionItems(items: Ref[], config: Config, dataElements
         .value();
 }
 
-export function getReportTable(project: Project, table: Table): MaybeD2Table {
+export function getD2ReportTable(table: Table): MaybeD2Table {
     if (_.isEmpty(table.items)) return null;
 
-    const orgUnitId = getOrgUnitId(project);
-    const dataDimensionItems = getDataDimensionItemsFromProject(project, table.items);
-    const dimensions = _.concat(table.columnDimensions, table.rowDimensions, table.reportFilter);
+    const dataDimensionItems = getDataDimensionItems(table.items);
+    const categoryDimensions = _.concat(
+        table.columnDimensions,
+        table.rowDimensions,
+        table.reportFilter
+    );
 
-    const baseTable: PartialPersistedModel<D2ReportTable> = {
-        id: getUid(table.key, project.uid),
-        name: `${project.name} - ${table.name}`,
+    const d2Table: PartialPersistedModel<D2ReportTable> = {
+        id: getUid(table.key, ""),
+        name: table.name,
         numberType: "VALUE",
         legendDisplayStyle: "FILL",
         rowSubTotals: true,
@@ -98,19 +106,54 @@ export function getReportTable(project: Project, table: Table): MaybeD2Table {
         rowTotals: table.rowTotals ?? true,
         digitGroupSeparator: "SPACE",
         dataDimensionItems,
-        organisationUnits: [{ id: orgUnitId }],
-        periods: project.getPeriods().map(period => ({ id: period.id })),
+        organisationUnits: table.organisationUnits,
+        periods: table.periods.map(id => ({ id })),
+        relativePeriods: table.relativePeriods,
         columns: table.columnDimensions,
         columnDimensions: table.columnDimensions.map(dimension => dimension.id),
         filters: table.reportFilter,
         filterDimensions: table.reportFilter.map(dimension => dimension.id),
         rows: table.rowDimensions,
         rowDimensions: table.rowDimensions.map(dimension => dimension.id),
-        categoryDimensions: getCategoryDimensions(dimensions),
-        ...new ProjectSharing(project).getSharingAttributesForDashboard(),
+        categoryDimensions: getCategoryDimensions(categoryDimensions),
+        ...table.sharing,
     };
 
-    return _.merge({}, baseTable, table.extra || {});
+    return _.merge({}, d2Table, table.extra || {});
+}
+
+export function getD2Chart(chart: Chart): MaybeD2Chart {
+    if (_.isEmpty(chart.items)) return null;
+    const dataDimensionItems = getDataDimensionItems(chart.items);
+    const seriesDimension = chart.seriesDimension || dimensions.data;
+
+    const chartDimensions = _.compact([
+        ...chart.reportFilter,
+        chart.seriesDimension,
+        chart.categoryDimension,
+    ]);
+
+    const d2Chart: PartialPersistedModel<D2Chart> = {
+        id: getUid(chart.key, ""),
+        name: chart.name,
+        periods: chart.periods.map(id => ({ id })),
+        relativePeriods: chart.relativePeriods,
+        type: "COLUMN",
+        aggregationType: "DEFAULT",
+        showData: true,
+        category: chart.categoryDimension.id,
+        series: seriesDimension.id,
+        columns: [seriesDimension],
+        dataDimensionItems,
+        rows: [chart.categoryDimension],
+        filters: chart.reportFilter,
+        filterDimensions: chart.reportFilter.map(dimension => dimension.id),
+        categoryDimensions: getCategoryDimensions(chartDimensions),
+        organisationUnits: chart.organisationUnits,
+        ...chart.sharing,
+    };
+
+    return { ...d2Chart, ...chart.extra };
 }
 
 export function getCategoryDimensions(dimensions: Dimension[]) {
@@ -124,32 +167,6 @@ export function getCategoryDimensions(dimensions: Dimension[]) {
                 : null
         )
     );
-}
-
-export function getChart(project: Project, chart: Chart): MaybeD2Chart {
-    if (_.isEmpty(chart.items)) return null;
-    const dimensions = [...chart.reportFilter, chart.seriesDimension, chart.categoryDimension];
-
-    const baseChart: PartialPersistedModel<D2Chart> = {
-        id: getUid(chart.key, project.uid),
-        name: `${project.name} - ${chart.name}`,
-        type: "COLUMN",
-        aggregationType: "DEFAULT",
-        showData: true,
-        category: chart.categoryDimension.id,
-        organisationUnits: [{ id: getOrgUnitId(project) }],
-        dataDimensionItems: getDataDimensionItemsFromProject(project, chart.items),
-        periods: project.getPeriods().map(period => ({ id: period.id })),
-        series: chart.seriesDimension.id,
-        columns: [chart.seriesDimension],
-        rows: [chart.categoryDimension],
-        filters: chart.reportFilter,
-        filterDimensions: chart.reportFilter.map(dimension => dimension.id),
-        categoryDimensions: getCategoryDimensions(dimensions),
-        ...new ProjectSharing(project).getSharingAttributesForDashboard(),
-    };
-
-    return _.merge({}, baseChart, chart.extra || {});
 }
 
 export function getReportTableItem(
@@ -179,7 +196,7 @@ export function getChartItem(
 }
 
 type Pos = { x: number; y: number };
-type Item = PartialModel<D2DashboardItem>;
+type DashboardItem = PartialModel<D2DashboardItem>;
 
 export function toItemWidth(percentWidth: number) {
     // 58 units = 100% of screen width (60 is too wide, it overflows)
@@ -193,11 +210,11 @@ export interface PositionItemsOptions {
 }
 
 /* Set attributes x, y, width and height for an array of dashboard items */
-export function positionItems(items: Item[], options: PositionItemsOptions) {
+export function positionItems(items: DashboardItem[], options: PositionItemsOptions) {
     const { maxWidth, defaultWidth, defaultHeight } = options;
     const initialPos = { x: 0, y: 0 };
 
-    return items.reduce<{ pos: Pos; outputItems: Item[] }>(
+    return items.reduce<{ pos: Pos; outputItems: DashboardItem[] }>(
         ({ pos, outputItems }, item) => {
             const width = Math.min(item.width || defaultWidth, maxWidth);
             const itemPos = pos.x + width > maxWidth ? { x: 0, y: pos.y + defaultHeight } : pos;
@@ -207,4 +224,12 @@ export function positionItems(items: Item[], options: PositionItemsOptions) {
         },
         { pos: initialPos, outputItems: [] }
     ).outputItems;
+}
+
+export function dataElementItems(dataElements: Ref[]): Item[] {
+    return dataElements.map(de => ({ type: "DATA_ELEMENT", id: de.id }));
+}
+
+export function indicatorItems(indicators: Ref[]): Item[] {
+    return indicators.map(indicator => ({ type: "INDICATOR", id: indicator.id }));
 }

@@ -3,6 +3,7 @@ import ProjectDb from "../ProjectDb";
 import { getProject } from "./project-data";
 import { logUnknownRequest } from "../../utils/tests";
 import expectedMetadataPost from "./data/project-db-metadata.json";
+import countryMetadataResponse from "./data/country-metadata.json";
 
 const { api, mock } = getMockApi();
 
@@ -34,10 +35,7 @@ describe("ProjectDb", () => {
                         "code,dataInputPeriods[openingDate],dataSetElements[dataElement[code,dataElementGroups[code],id,name]],id",
                     "dataSets:filter": ["code:like$:_ACTUAL"],
                 },
-            }).replyOnce(200, {
-                organisationUnits: [{ id: "ou1", name: "Bahamas", children: [] }],
-                dataSets: [],
-            });
+            }).replyOnce(200, countryMetadataResponse);
 
             mock.onGet("/metadata", {
                 params: {

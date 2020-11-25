@@ -60,9 +60,9 @@ type State = GetState<{
     url: string;
 }>;
 
-// type State = { loading: boolean; name?: string; data?: string; error?: string };
+export interface DashboardProps {}
 
-const Dashboard: React.FC = () => {
+const Dashboard: React.FC<DashboardProps> = () => {
     const { api, config } = useAppContext();
     const match = useRouteMatch<RouterParams>();
     const history = useHistory();

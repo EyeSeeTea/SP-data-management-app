@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2020-11-24T09:56:45.908Z\n"
-"PO-Revision-Date: 2020-11-24T09:56:45.908Z\n"
+"POT-Creation-Date: 2020-11-25T09:10:58.353Z\n"
+"PO-Revision-Date: 2020-11-25T09:10:58.353Z\n"
 
 msgid "Name"
 msgstr ""
@@ -261,6 +261,15 @@ msgid ""
 msgstr ""
 
 msgid "Aggregated Actual Values - People"
+msgstr ""
+
+msgid "Aggregated Actual Values - Benefit"
+msgstr ""
+
+msgid "Projects - People"
+msgstr ""
+
+msgid "Projects - Benefit"
 msgstr ""
 
 msgid "Data Approval"

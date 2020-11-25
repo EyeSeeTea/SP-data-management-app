@@ -1,3 +1,4 @@
+import _ from "lodash";
 import { Config } from "./Config";
 import {
     PartialPersistedModel,
@@ -7,7 +8,6 @@ import {
     D2OrganisationUnitSchema,
     D2DataSetSchema,
 } from "../types/d2-api";
-import _ from "lodash";
 import { D2Dashboard, D2ReportTable, Ref, D2Chart, D2DashboardItem, Id } from "../types/d2-api";
 import i18n from "../locales";
 import { getUid } from "../utils/dhis2";
@@ -18,10 +18,13 @@ import {
     dimensions,
     MaybeD2Chart,
     Chart,
-    getCategoryDimensions,
-    getDataDimensionItems,
     toItemWidth,
     PositionItemsOptions,
+    dataElementItems,
+    getD2Chart,
+    Table,
+    MaybeD2Table,
+    getD2ReportTable,
 } from "./Dashboard";
 import { PeopleOrBenefit } from "./dataElementsSet";
 import { D2Sharing, getD2Access } from "./ProjectSharing";
@@ -42,6 +45,7 @@ interface Country {
 
 interface Project {
     id: Id;
+    orgUnit: Ref;
     dataElements: DataElement[];
     openingDate: Date;
 }
@@ -103,24 +107,22 @@ export default class CountryDashboard {
     generate() {
         const { country } = this;
 
-        const reportTables: Array<PartialPersistedModel<D2ReportTable>> = _.compact([]);
-
         const charts: Array<PartialPersistedModel<D2Chart>> = _.compact([
             this.aggregatedActualValuesPeopleChart(),
+            this.aggregatedActualValuesBenefitChart(),
+        ]);
+
+        const reportTables: Array<PartialPersistedModel<D2ReportTable>> = _.compact([
+            this.projectsActualPeopleTable(),
+            this.projectsActualBenefitTable(),
         ]);
 
         const favorites = { reportTables, charts };
 
         const items: Array<PartialModel<D2DashboardItem>> = _.compact([
-            ...reportTables.map(reportTable => getReportTableItem(reportTable)),
             ...charts.map(chart => getChartItem(chart)),
+            ...reportTables.map(reportTable => getReportTableItem(reportTable)),
         ]);
-
-        const positionItemsOptions: PositionItemsOptions = {
-            maxWidth: toItemWidth(100),
-            defaultWidth: toItemWidth(100),
-            defaultHeight: 30,
-        };
 
         const dashboard: PartialPersistedModel<D2Dashboard> = {
             id: getUid("country-dashboard", country.id),
@@ -133,42 +135,87 @@ export default class CountryDashboard {
     }
 
     aggregatedActualValuesPeopleChart(): MaybeD2Chart {
-        const { country, dataElements } = this;
-
-        return this.getChart(country, dataElements.people, {
+        return this.getChart({
             key: "aggregated-actual-people",
             name: i18n.t("Aggregated Actual Values - People"),
-            items: dataElements.people,
+            items: dataElementItems(this.dataElements.people),
             reportFilter: [dimensions.orgUnit, this.categories.new, this.categories.actual],
             seriesDimension: dimensions.data,
             categoryDimension: dimensions.period,
         });
     }
 
-    private getChart(country: Country, dataElements: DataElement[], chart: Chart): MaybeD2Chart {
-        if (_.isEmpty(chart.items)) return null;
-        const dimensions = [...chart.reportFilter, chart.seriesDimension, chart.categoryDimension];
+    aggregatedActualValuesBenefitChart(): MaybeD2Chart {
+        return this.getChart({
+            key: "aggregated-actual-benefit",
+            name: i18n.t("Aggregated Actual Values - Benefit"),
+            items: dataElementItems(this.dataElements.benefit),
+            reportFilter: [dimensions.orgUnit, this.categories.actual],
+            seriesDimension: dimensions.data,
+            categoryDimension: dimensions.period,
+        });
+    }
 
-        const baseChart: PartialPersistedModel<D2Chart> = {
-            id: getUid(chart.key, country.id),
-            name: `[${country.name}] ${chart.name}`,
-            type: "COLUMN",
-            aggregationType: "DEFAULT",
-            showData: true,
-            category: chart.categoryDimension.id,
-            organisationUnits: [{ id: country.id }],
-            dataDimensionItems: getDataDimensionItems(chart.items, this.config, dataElements),
+    projectsActualPeopleTable(): MaybeD2Table {
+        const { dataElements } = this;
+
+        return this.getTable({
+            key: "reportTable-actual-people",
+            name: i18n.t("Projects - People"),
+            items: dataElementItems(dataElements.people),
+            reportFilter: [dimensions.period, this.categories.new, this.categories.actual],
+            columnDimensions: [dimensions.data],
+            rowDimensions: [dimensions.orgUnit],
+        });
+    }
+
+    projectsActualBenefitTable(): MaybeD2Table {
+        const { dataElements } = this;
+
+        return this.getTable({
+            key: "reportTable-actual-benefit",
+            name: i18n.t("Projects - Benefit"),
+            items: dataElementItems(dataElements.benefit),
+            reportFilter: [dimensions.period, this.categories.actual],
+            columnDimensions: [dimensions.data],
+            rowDimensions: [dimensions.orgUnit],
+        });
+    }
+
+    getChart(baseChart: BaseChart): MaybeD2Chart {
+        const { country } = this;
+
+        const chart: Chart = {
+            ...baseChart,
+            key: baseChart.key + country.id,
+            name: `[${country.name}] ${baseChart.name}`,
+            periods: [],
             relativePeriods: { thisYear: true },
-            series: chart.seriesDimension.id,
-            columns: [chart.seriesDimension],
-            rows: [chart.categoryDimension],
-            filters: chart.reportFilter,
-            filterDimensions: chart.reportFilter.map(dimension => dimension.id),
-            categoryDimensions: getCategoryDimensions(dimensions),
-            ...this.getSharing(),
+            organisationUnits: [{ id: country.id }],
+            sharing: this.getSharing(),
         };
 
-        return _.merge({}, baseChart, chart.extra || {});
+        const d2Chart = getD2Chart(chart);
+
+        return d2Chart ? { ...d2Chart, ...chart.extra } : null;
+    }
+
+    getTable(baseTable: BaseTable): MaybeD2Table {
+        const { country } = this;
+
+        const chart: Table = {
+            ...baseTable,
+            key: baseTable.key + country.id,
+            name: `[${country.name}] ${baseTable.name}`,
+            periods: [],
+            relativePeriods: { thisYear: true },
+            organisationUnits: country.projects.map(project => project.orgUnit),
+            sharing: this.getSharing(),
+        };
+
+        const d2Table = getD2ReportTable(chart);
+
+        return d2Table ? { ...d2Table, ...chart.extra } : null;
     }
 
     getSharing(): D2Sharing {
@@ -225,7 +272,7 @@ async function getMetadata(api: D2Api, countryId: Id): Promise<Metadata | null> 
     return orgUnit ? { orgUnit, dataSets } : null;
 }
 
-function getProject(config: Config, metadata: Metadata, dataSet: DataSetApi) {
+function getProject(config: Config, metadata: Metadata, dataSet: DataSetApi): Project | null {
     const orgUnitById = _.keyBy(metadata.orgUnit.children, ou => ou.id);
     const projectId = dataSet.code.split("_")[0];
     const orgUnit = orgUnitById[projectId];
@@ -259,5 +306,33 @@ function getProject(config: Config, metadata: Metadata, dataSet: DataSetApi) {
         .compact()
         .value();
 
-    return { id: orgUnit.id, openingDate: new Date(dateString), dataElements };
+    return {
+        id: orgUnit.id,
+        orgUnit: { id: orgUnit.id },
+        openingDate: new Date(dateString),
+        dataElements,
+    };
 }
+
+const positionItemsOptions: PositionItemsOptions = {
+    maxWidth: toItemWidth(100),
+    defaultWidth: toItemWidth(100),
+    defaultHeight: 30,
+};
+
+type BaseTable = Pick<
+    Table,
+    | "key"
+    | "name"
+    | "items"
+    | "reportFilter"
+    | "extra"
+    | "rowDimensions"
+    | "columnDimensions"
+    | "rowTotals"
+>;
+
+type BaseChart = Pick<
+    Chart,
+    "key" | "name" | "items" | "reportFilter" | "categoryDimension" | "extra" | "seriesDimension"
+>;
