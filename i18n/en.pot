@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2020-11-25T09:10:58.353Z\n"
-"PO-Revision-Date: 2020-11-25T09:10:58.353Z\n"
+"POT-Creation-Date: 2020-11-25T12:46:00.910Z\n"
+"PO-Revision-Date: 2020-11-25T12:46:00.910Z\n"
 
 msgid "Name"
 msgstr ""
@@ -30,6 +30,25 @@ msgid "Go to Dashboard"
 msgstr ""
 
 msgid "Search by name or code"
+msgstr ""
+
+msgid "Dashboard"
+msgstr ""
+
+msgid ""
+"Data updates in the dashboards every 15 minutes.  If you do not see your "
+"data immediately after data entry, please give the system additional time "
+"to update.\n"
+"\n"
+"        If you notice data errors while viewing the dashboards, please "
+"return to the home screen and edit the data under the data entry sections "
+"for your project."
+msgstr ""
+
+msgid "Loading dashboard to analyse your data..."
+msgstr ""
+
+msgid "Cannot load dashboard"
 msgstr ""
 
 msgid "Data Entry"
@@ -260,6 +279,9 @@ msgid ""
 "lost. Are you sure you want to proceed?"
 msgstr ""
 
+msgid "Error saving dashboard"
+msgstr ""
+
 msgid "Aggregated Actual Values - People"
 msgstr ""
 
@@ -388,9 +410,6 @@ msgstr ""
 msgid "Data Sets"
 msgstr ""
 
-msgid "Dashboard"
-msgstr ""
-
 msgid "Initial Data"
 msgstr ""
 
@@ -434,9 +453,6 @@ msgid "Achieved by gender (%)"
 msgstr ""
 
 msgid "Benefits Per Person"
-msgstr ""
-
-msgid "Error saving dashboard"
 msgstr ""
 
 msgid ""
@@ -547,23 +563,10 @@ msgid ""
 "initial returning + new values for past periods: {{newValuesSumFormula}}"
 msgstr ""
 
-msgid "Dashboard for Project"
+msgid "Cannot get country dashboard"
 msgstr ""
 
-msgid ""
-"Data updates in the dashboards every 15 minutes.  If you do not see your "
-"data immediately after data entry, please give the system additional time "
-"to update.\n"
-"\n"
-"        If you notice data errors while viewing the dashboards, please "
-"return to the home screen and edit the data under the data entry sections "
-"for your project."
-msgstr ""
-
-msgid "Dashboard project to analyse your data..."
-msgstr ""
-
-msgid "Cannot load project relations"
+msgid "Cannot get project"
 msgstr ""
 
 msgid "Period"
@@ -582,6 +585,9 @@ msgid "Send Message"
 msgstr ""
 
 msgid "Cannot load category option combo"
+msgstr ""
+
+msgid "Cannot load project relations"
 msgstr ""
 
 msgid ""

@@ -8,6 +8,7 @@ import {
 import { Loader } from "../../components/loader/Loader";
 import { generateUrl } from "../../router";
 import Project from "../../models/Project";
+import i18n from "../../locales";
 
 const ProjectDashboard: React.FC = () => {
     const state = useDashboardFromParams(getDashboard);
@@ -28,7 +29,9 @@ const ProjectDashboard: React.FC = () => {
 const getDashboard: GetDashboard = async (api, config, projectId) => {
     const project = await Project.get(api, config, projectId);
     const dashboard = project?.dashboard;
-    return dashboard ? { id: dashboard.id, name: project.name } : undefined;
+    return dashboard
+        ? { type: "success", data: { id: dashboard.id, name: project.name } }
+        : { type: "error", message: i18n.t("Cannot get project") };
 };
 
 export default React.memo(ProjectDashboard);

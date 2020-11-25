@@ -7,6 +7,7 @@ import {
     SelectedPick,
     D2OrganisationUnitSchema,
     D2DataSetSchema,
+    D2OrganisationUnit,
 } from "../types/d2-api";
 import { D2Dashboard, D2ReportTable, Ref, D2Chart, D2DashboardItem, Id } from "../types/d2-api";
 import i18n from "../locales";
@@ -28,6 +29,7 @@ import {
 } from "./Dashboard";
 import { PeopleOrBenefit } from "./dataElementsSet";
 import { D2Sharing, getD2Access } from "./ProjectSharing";
+import { addAttributeValueToObj, AttributeValue } from "./Attributes";
 
 interface DataElement {
     id: Id;
@@ -40,6 +42,7 @@ interface Country {
     id: Id;
     name: string;
     openingDate: Date | undefined;
+    attributeValues: Array<{ attribute: Ref; value: string }>;
     projects: Project[];
 }
 
@@ -55,11 +58,15 @@ interface Category {
     categoryOptions: Ref[];
 }
 
+interface D2Country extends PartialPersistedModel<D2OrganisationUnit> {
+    attributeValues: AttributeValue[];
+}
+
 export default class CountryDashboard {
     dataElements: Record<"all" | "people" | "benefit", DataElement[]>;
     categories: { new: Category; actual: Category };
 
-    constructor(private config: Config, private country: Country) {
+    constructor(private config: Config, private d2Country: D2Country, private country: Country) {
         this.categories = {
             new: {
                 id: config.categories.newRecurring.id,
@@ -98,14 +105,16 @@ export default class CountryDashboard {
             id: orgUnit.id,
             name: orgUnit.name,
             projects,
+            attributeValues: orgUnit.attributeValues,
             openingDate: _.min(projects.map(project => project.openingDate)),
         };
 
-        return new CountryDashboard(config, country);
+        const d2Country = _.omit(orgUnit, ["children"]);
+        return new CountryDashboard(config, d2Country, country);
     }
 
     generate() {
-        const { country } = this;
+        const { d2Country, country } = this;
 
         const charts: Array<PartialPersistedModel<D2Chart>> = _.compact([
             this.aggregatedActualValuesPeopleChart(),
@@ -131,7 +140,17 @@ export default class CountryDashboard {
             ...this.getSharing(),
         };
 
-        return { dashboards: [dashboard], ...favorites };
+        const countryUpdated = addAttributeValueToObj(d2Country, {
+            values: d2Country.attributeValues,
+            attribute: this.config.attributes.projectDashboard,
+            value: dashboard.id,
+        });
+
+        return {
+            dashboards: [dashboard],
+            organisationUnits: [countryUpdated],
+            ...favorites,
+        };
     }
 
     aggregatedActualValuesPeopleChart(): MaybeD2Chart {
@@ -227,9 +246,9 @@ export default class CountryDashboard {
 
 const selectors = {
     organisationUnits: {
-        id: true,
-        name: true,
+        $owner: true,
         children: { id: true, name: true },
+        attributeValues: { attribute: { id: true }, value: true },
     },
     dataSets: {
         id: true,
