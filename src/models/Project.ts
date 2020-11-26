@@ -500,11 +500,13 @@ class Project {
             : [];
     }
 
-    getPeriods(): Array<{ date: Moment; id: string }> {
-        return getMonthsRange(this.startDate, this.endDate).map(date => ({
-            date,
-            id: date.format("YYYYMM"),
-        }));
+    getPeriods(options: { toDate?: boolean } = {}): Array<{ date: Moment; id: string }> {
+        const { startDate, endDate } = this;
+        const { toDate = false } = options;
+        const months = getMonthsRange(startDate, endDate);
+        const periods = months.map(date => ({ date, id: date.format("YYYYMM") }));
+        const now = moment();
+        return !toDate ? periods : periods.filter(period => period.date <= now);
     }
 
     getDates(): { startDate: Moment; endDate: Moment } {

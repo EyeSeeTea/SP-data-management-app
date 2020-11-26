@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2020-11-25T12:46:00.910Z\n"
-"PO-Revision-Date: 2020-11-25T12:46:00.910Z\n"
+"POT-Creation-Date: 2020-11-26T08:33:23.989Z\n"
+"PO-Revision-Date: 2020-11-26T08:33:23.989Z\n"
 
 msgid "Name"
 msgstr ""
@@ -431,10 +431,16 @@ msgstr ""
 msgid "Target vs Actual - Unique People"
 msgstr ""
 
+msgid "Achieved to date (%) - Benefits"
+msgstr ""
+
 msgid "Achieved (%) - Benefits"
 msgstr ""
 
 msgid "Achieved (%) - People"
+msgstr ""
+
+msgid "Achieved total to date (%) - People"
 msgstr ""
 
 msgid "Achieved total (%) - People"

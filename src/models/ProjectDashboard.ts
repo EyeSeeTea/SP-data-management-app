@@ -55,6 +55,9 @@ export default class ProjectDashboard {
             this.targetVsActualBenefits(),
             this.targetVsActualPeople(),
             this.targetVsActualUniquePeople(),
+            // Percent achieved (to date)
+            this.achievedBenefitsTable({ toDate: true }),
+            this.achievedPeopleTotalTable({ toDate: true }),
             // Percent achieved
             this.achievedBenefitsTable(),
             this.achievedPeopleTable(),
@@ -138,18 +141,21 @@ export default class ProjectDashboard {
         });
     }
 
-    achievedBenefitsTable(): MaybeD2Table {
+    achievedBenefitsTable(options: VisualizationOptions = {}): MaybeD2Table {
         const { config, project, dataElements } = this;
         const indicators = getActualTargetIndicators(config, dataElements.benefit);
 
         return this.getTable({
-            key: "reportTable-indicators-benefits",
-            name: i18n.t("Achieved (%) - Benefits"),
+            key: "reportTable-indicators-benefits" + (options.toDate ? "-todate" : ""),
+            name: options.toDate
+                ? i18n.t("Achieved to date (%) - Benefits")
+                : i18n.t("Achieved (%) - Benefits"),
             items: indicatorItems(indicators),
             reportFilter: [dimensions.orgUnit],
             columnDimensions: [dimensions.period],
             rowDimensions: [dimensions.data],
             extra: { legendSet: project.config.legendSets.achieved },
+            ...options,
         });
     }
 
@@ -169,18 +175,21 @@ export default class ProjectDashboard {
         });
     }
 
-    achievedPeopleTotalTable(): MaybeD2Table {
+    achievedPeopleTotalTable(options: VisualizationOptions = {}): MaybeD2Table {
         const { project, dataElements } = this;
 
         return this.getTable({
-            key: "reportTable-indicators-people-total",
-            name: i18n.t("Achieved total (%) - People"),
+            key: "reportTable-indicators-people-total" + (options.toDate ? "-todate" : ""),
+            name: options.toDate
+                ? i18n.t("Achieved total to date (%) - People")
+                : i18n.t("Achieved total (%) - People"),
             items: indicatorItems(getActualTargetIndicators(this.config, dataElements.people)),
             reportFilter: [dimensions.orgUnit, dimensions.period],
             columnDimensions: [this.categoryOnlyNew],
             rowDimensions: [dimensions.data],
             extra: { legendSet: project.config.legendSets.achieved },
             rowTotals: false,
+            ...options,
         });
     }
 
@@ -272,11 +281,11 @@ export default class ProjectDashboard {
         const { project } = this;
 
         const table: Table = {
-            ...baseTable,
+            ..._.omit(baseTable, ["toDate"]),
             key: baseTable.key + project.uid,
             name: `${project.name} - ${baseTable.name}`,
             organisationUnits: [{ id: getOrgUnitId(project) }],
-            periods: getIds(project.getPeriods()),
+            periods: getIds(project.getPeriods(baseTable)),
             sharing: new ProjectSharing(project).getSharingAttributesForDashboard(),
         };
 
@@ -295,17 +304,21 @@ function getOrgUnitId(project: Project): string {
     }
 }
 
-type BaseTable = Pick<
-    Table,
+interface VisualizationOptions {
+    toDate?: boolean;
+}
+
+type BaseTableKey =
     | "key"
     | "name"
     | "items"
-    | "reportFilter"
     | "extra"
+    | "reportFilter"
     | "rowDimensions"
     | "columnDimensions"
-    | "rowTotals"
->;
+    | "rowTotals";
+
+type BaseTable = Pick<Table, BaseTableKey> & VisualizationOptions;
 
 type BaseChart = Pick<
     Chart,
