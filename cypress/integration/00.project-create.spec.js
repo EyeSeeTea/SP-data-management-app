@@ -165,9 +165,8 @@ describe("Projects - Create", () => {
         cy.contains("# of people trained in livelihood topics - P020100 [COVID-19] [MER]");
         cy.contains("# of people trained on microfinance - P020103");
 
-        cy.server()
-            .route({ method: "post", url: "/api/email/notification*" })
-            .as("sendEmail");
+        cy.server();
+        cy.route("POST", "/api/email/**").as("sendEmail");
 
         cy.get("[data-wizard-contents] button")
             .contains("Save")
