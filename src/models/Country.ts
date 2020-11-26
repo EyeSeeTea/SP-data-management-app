@@ -75,13 +75,11 @@ export async function getCountryDashboard({
             .post(metadata)
             .getData()
             .catch(_err => null);
-
         const newDashboard = { id: dashboard.id, name: country.name };
-
         const updateSuccessful = !response || response.status !== "OK";
 
         if (updateSuccessful) {
-            // There was an error saving the updated dashboard, but and old one existed, return it.
+            // There was an error saving the updated dashboard, but an old one existed, return it.
             if (country.dashboard) {
                 return { type: "success", data: country.dashboard };
             } else {

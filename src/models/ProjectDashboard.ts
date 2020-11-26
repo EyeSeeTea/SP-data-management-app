@@ -1,6 +1,6 @@
 import _ from "lodash";
 import { Config } from "./Config";
-import { PartialPersistedModel, PartialModel } from "../types/d2-api";
+import { PartialPersistedModel, PartialModel, D2Api } from "../types/d2-api";
 import { D2Dashboard, D2ReportTable, Ref, D2Chart, D2DashboardItem, Id } from "../types/d2-api";
 import Project from "./Project";
 import i18n from "../locales";
@@ -24,6 +24,7 @@ import {
     indicatorItems,
 } from "./Dashboard";
 import { getActualTargetIndicators, getCostBenefitIndicators } from "./indicators";
+import { Response } from "./Response";
 
 export default class ProjectDashboard {
     dataElements: Record<"all" | "people" | "benefit", DataElement[]>;
@@ -292,6 +293,48 @@ export default class ProjectDashboard {
         const d2Table = getD2ReportTable(table);
 
         return d2Table ? { ...d2Table, ...table.extra } : null;
+    }
+}
+
+interface Dashboard {
+    id: Id;
+    name: string;
+}
+
+export async function getProjectDashboard(
+    api: D2Api,
+    config: Config,
+    projectId: Id
+): Promise<Response<Dashboard>> {
+    let project: Project;
+    try {
+        project = await Project.get(api, config, projectId);
+    } catch (err) {
+        const msg = err.message || err;
+        return { type: "error", message: i18n.t(`Cannot load project: ${msg}`) };
+    }
+
+    const metadata = new ProjectDashboard(project).generate();
+    const dashboard = metadata.dashboards[0];
+    if (!dashboard) return { type: "error", message: "Error generating dashboard" };
+
+    const response = await api.metadata
+        .post(metadata)
+        .getData()
+        .catch(_err => null);
+    const newDashboard = { id: dashboard.id, name: project.name };
+    const updateSuccessful = !response || response.status !== "OK";
+
+    if (updateSuccessful) {
+        if (project.dashboard) {
+            // There was an error saving the updated dashboard, but an old one existed, return it.
+            console.error("Error saving dashboard", response);
+            return { type: "success", data: { ...project.dashboard, name: project.name } };
+        } else {
+            return { type: "error", message: i18n.t("Error saving dashboard") };
+        }
+    } else {
+        return { type: "success", data: newDashboard };
     }
 }
 
