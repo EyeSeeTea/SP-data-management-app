@@ -23,3 +23,9 @@ export interface RunnerOptions {
     dataStoreNamespace: string;
     migrations?: MigrationWithVersion[];
 }
+
+export type MigrationTasks = MigrationWithVersion[];
+
+export function migration(version: number, migration: Migration): MigrationWithVersion {
+    return { version, ...migration };
+}
