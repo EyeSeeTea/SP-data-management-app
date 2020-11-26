@@ -28,33 +28,28 @@ interface Item {
     type: "DATA_ELEMENT" | "INDICATOR";
 }
 
-export interface Table {
+interface Visualization {
     key: string;
     name: string;
     items: Item[];
     periods: string[];
     relativePeriods?: D2ReportTable["relativePeriods"];
     organisationUnits: Ref[];
-    reportFilter: Dimension[];
-    rowDimensions: Dimension[];
-    columnDimensions: Dimension[];
-    rowTotals?: boolean;
     sharing: D2Sharing;
     extra?: PartialModel<D2ReportTable>;
 }
 
-export interface Chart {
-    key: string;
-    name: string;
-    items: Item[];
-    periods: string[];
-    relativePeriods?: D2Chart["relativePeriods"];
-    organisationUnits: Ref[];
+export interface Table extends Visualization {
+    reportFilter: Dimension[];
+    rowDimensions: Dimension[];
+    columnDimensions: Dimension[];
+    rowTotals?: boolean;
+}
+
+export interface Chart extends Visualization {
     reportFilter: Dimension[];
     seriesDimension?: Dimension;
     categoryDimension: Dimension;
-    sharing: D2Sharing;
-    extra?: PartialModel<D2Chart>;
 }
 
 export type MaybeD2Table = Maybe<PartialPersistedModel<D2ReportTable>>;
@@ -107,7 +102,7 @@ export function getD2ReportTable(table: Table): MaybeD2Table {
         digitGroupSeparator: "SPACE",
         dataDimensionItems,
         organisationUnits: table.organisationUnits,
-        periods: table.periods.map(id => ({ id })),
+        periods: getPeriods(table),
         relativePeriods: table.relativePeriods,
         columns: table.columnDimensions,
         columnDimensions: table.columnDimensions.map(dimension => dimension.id),
@@ -136,7 +131,7 @@ export function getD2Chart(chart: Chart): MaybeD2Chart {
     const d2Chart: PartialPersistedModel<D2Chart> = {
         id: getUid(chart.key, ""),
         name: chart.name,
-        periods: chart.periods.map(id => ({ id })),
+        periods: getPeriods(chart),
         relativePeriods: chart.relativePeriods,
         type: "COLUMN",
         aggregationType: "DEFAULT",
@@ -232,4 +227,8 @@ export function dataElementItems(dataElements: Ref[]): Item[] {
 
 export function indicatorItems(indicators: Ref[]): Item[] {
     return indicators.map(indicator => ({ type: "INDICATOR", id: indicator.id }));
+}
+
+function getPeriods(visualization: Visualization): Ref[] {
+    return visualization.periods.map(id => ({ id }));
 }
