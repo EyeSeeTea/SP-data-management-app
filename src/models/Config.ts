@@ -91,6 +91,7 @@ const baseConfig = {
     organisationUnitGroupSets: {
         funder: "FUNDER",
         location: "LOCATION",
+        awardNumber: "AWARD_NUMBER",
     },
     indicators: {
         actualTargetPrefix: "ACTUAL_TARGET_",

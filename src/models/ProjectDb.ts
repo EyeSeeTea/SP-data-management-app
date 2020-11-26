@@ -1,7 +1,7 @@
 import { Disaggregation } from "./Disaggregation";
 import _ from "lodash";
 import moment from "moment";
-import { MetadataPayload, Id, D2Api } from "../types/d2-api";
+import { MetadataPayload, Id, D2Api, D2OrganisationUnitGroup } from "../types/d2-api";
 import { D2DataSet, D2OrganisationUnit, D2ApiResponse } from "../types/d2-api";
 import { SelectedPick, D2OrganisationUnitSchema } from "../types/d2-api";
 import { PartialModel, Ref, PartialPersistedModel, MetadataResponse } from "../types/d2-api";
@@ -498,11 +498,12 @@ export function getSectorCodeFromSectionCode(code: string | undefined) {
     return _.initial((code || "").split("_")).join("_");
 }
 
+type OrgUnitGroup = PartialPersistedModel<D2OrganisationUnitGroup>;
 type OrgUnitsMeta = Pick<MetadataPayload, "organisationUnits" | "organisationUnitGroups">;
 
 async function getOrgUnitGroups(api: D2Api, project: Project) {
-    /* The project may have changed funders and locations, so get also the previously related
-       groups to clear them if necessary */
+    /* The project may have changed funders/locations/awardNumber, so we need to get
+       the previously associated organisation unit groups and clear them if necessary. */
     const orgUnitId = project.id;
     const { organisationUnitGroups: prevOrgUnitGroups } = await api.metadata
         .get({
@@ -513,7 +514,15 @@ async function getOrgUnitGroups(api: D2Api, project: Project) {
         })
         .getData();
 
-    const orgUnitGroupIds = new Set(getIds([...project.funders, ...project.locations]));
+    const awardNumberOrgUnitGroupBase: OrgUnitGroup = {
+        id: getUid("awardNumber", project.awardNumber),
+        name: `Award Number ${project.awardNumber}`,
+        organisationUnits: [],
+    };
+
+    const orgUnitGroupIds = new Set(
+        getIds([...project.funders, ...project.locations, awardNumberOrgUnitGroupBase])
+    );
 
     const { organisationUnitGroups: newOrgUnitGroups } = await api.metadata
         .get({
@@ -524,8 +533,9 @@ async function getOrgUnitGroups(api: D2Api, project: Project) {
         })
         .getData();
 
-    const orgUnitGroupsToSave = _(prevOrgUnitGroups)
+    const orgUnitGroupsToSave = _(prevOrgUnitGroups as OrgUnitGroup[])
         .concat(newOrgUnitGroups)
+        .concat([awardNumberOrgUnitGroupBase])
         .uniqBy(oug => oug.id)
         .value();
 

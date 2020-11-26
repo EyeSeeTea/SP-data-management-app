@@ -105,6 +105,15 @@
             "translations": [],
             "userAccesses": [],
             "organisationUnits": []
+        },
+        {
+            "id": "WIEp6vpQw6n",
+            "name": "Award Number 12345",
+            "organisationUnits": [
+                {
+                    "id": "WGC0DJ0YSis"
+                }
+            ]
         }
     ],
     "dataSets": [
