@@ -41,8 +41,19 @@ describe("ProjectDb", () => {
                 params: {
                     "organisationUnitGroups:fields": ":owner",
                     "organisationUnitGroups:filter": ["organisationUnits.id:eq:WGC0DJ0YSis"],
+                    "organisationUnitGroupSets:fields": ":owner",
+                    "organisationUnitGroupSets:filter": ["code:eq:AWARD_NUMBER"],
                 },
-            }).replyOnce(200, []);
+            }).replyOnce(200, {
+                organisationUnitGroupSets: [
+                    {
+                        id: "OUGGW1cHaYy",
+                        name: "Award number",
+                        code: "AWARD_NUMBER",
+                        organisationUnitGroups: [{ id: "existing-1234" }],
+                    },
+                ],
+            });
 
             mock.onGet("/metadata", {
                 params: {

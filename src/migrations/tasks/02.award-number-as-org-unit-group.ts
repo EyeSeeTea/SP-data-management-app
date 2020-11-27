@@ -4,14 +4,13 @@ import { Debug, Migration } from "../types";
 import Project from "../../models/Project";
 import { promiseMap, enumerate } from "../utils";
 import { getConfig } from "../../models/Config";
-import { checkCurrentUserIsSuperadmin, checkCurrentUserInAdminGroup } from "./permissions";
+import { checkCurrentUserIsSuperadmin } from "./permissions";
 import { getProjectIds } from "./common";
 
 async function updateProjectsAwardNumber(api: D2Api, debug: Debug): Promise<void> {
     const config = await getConfig(api);
 
     checkCurrentUserIsSuperadmin(config);
-    await checkCurrentUserInAdminGroup(api, config, debug);
 
     const projectIds = await getProjectIds(api, config, debug);
     debug(`Projects count: ${projectIds.length}`);

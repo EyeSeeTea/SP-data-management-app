@@ -94,7 +94,7 @@ export default class ProjectDb {
             value: projectDashboard.id,
         });
 
-        const orgUnitGroupsToSave = await getOrgUnitGroups(api, project);
+        const orgUnitGroupsMetadata = await getOrgUnitGroupsMetadata(api, project);
 
         const dataSetAttributeValues = addAttributeValue(
             baseAttributeValues,
@@ -122,7 +122,7 @@ export default class ProjectDb {
 
         const orgUnitsMetadata: OrgUnitsMeta = {
             organisationUnits: [projectOrgUnit],
-            organisationUnitGroups: orgUnitGroupsToSave,
+            ...orgUnitGroupsMetadata,
         };
 
         const payload = flattenPayloads([
@@ -499,17 +499,30 @@ export function getSectorCodeFromSectionCode(code: string | undefined) {
 }
 
 type OrgUnitGroup = PartialPersistedModel<D2OrganisationUnitGroup>;
-type OrgUnitsMeta = Pick<MetadataPayload, "organisationUnits" | "organisationUnitGroups">;
+type OrgUnitsMeta = Pick<
+    MetadataPayload,
+    "organisationUnits" | "organisationUnitGroups" | "organisationUnitGroupSets"
+>;
 
-async function getOrgUnitGroups(api: D2Api, project: Project) {
+async function getOrgUnitGroupsMetadata(api: D2Api, project: Project) {
+    const { config } = project;
+
     /* The project may have changed funders/locations/awardNumber, so we need to get
-       the previously associated organisation unit groups and clear them if necessary. */
+       the previously associated organisation unit groups and clear them if necessary.
+       Get also the orgUnitGroupSets containing the award numbers to update it. */
     const orgUnitId = project.id;
-    const { organisationUnitGroups: prevOrgUnitGroups } = await api.metadata
+    const {
+        organisationUnitGroups: prevOrgUnitGroups,
+        organisationUnitGroupSets: prevOrganisationUnitGroupSets,
+    } = await api.metadata
         .get({
             organisationUnitGroups: {
                 fields: { $owner: true },
                 filter: { "organisationUnits.id": { eq: orgUnitId } },
+            },
+            organisationUnitGroupSets: {
+                fields: { $owner: true },
+                filter: { code: { eq: config.base.organisationUnitGroupSets.awardNumber } },
             },
         })
         .getData();
@@ -539,7 +552,7 @@ async function getOrgUnitGroups(api: D2Api, project: Project) {
         .uniqBy(oug => oug.id)
         .value();
 
-    return orgUnitGroupsToSave.map(orgUnitGroup => {
+    const organisationUnitGroups = orgUnitGroupsToSave.map(orgUnitGroup => {
         const organisationUnits = _(orgUnitGroup.organisationUnits || [])
             .filter(ou => ou.id !== orgUnitId)
             .map(ou => ({ id: ou.id }))
@@ -547,6 +560,16 @@ async function getOrgUnitGroups(api: D2Api, project: Project) {
             .value();
         return { ...orgUnitGroup, organisationUnits };
     });
+
+    const organisationUnitGroupSets = prevOrganisationUnitGroupSets.map(oug => ({
+        ...oug,
+        organisationUnitGroups: _(oug.organisationUnitGroups)
+            .concat([{ id: awardNumberOrgUnitGroupBase.id }])
+            .uniqBy(oug => oug.id)
+            .value(),
+    }));
+
+    return { organisationUnitGroups, organisationUnitGroupSets };
 }
 
 function getOrgUnitId(orgUnit: { path: string }): string {
@@ -574,10 +597,13 @@ export function getDashboardId<OrgUnit extends OrgUnitsWithAttributes>(
 export function flattenPayloads<Model extends keyof MetadataPayload>(
     payloads: Array<Partial<Pick<MetadataPayload, Model>>>
 ): Pick<MetadataPayload, Model> {
-    const concat = <T>(value1: T[] | undefined, value2: T[]): T[] => (value1 || []).concat(value2);
     const payload = payloads.reduce(
         (payloadAcc, payload) => _.mergeWith(payloadAcc, payload, concat),
         {} as Pick<MetadataPayload, Model>
     );
     return payload as Pick<MetadataPayload, Model>;
+}
+
+function concat<T>(value1: T[] | undefined, value2: T[]): T[] {
+    return (value1 || []).concat(value2);
 }

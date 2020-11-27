@@ -116,6 +116,21 @@
             ]
         }
     ],
+    "organisationUnitGroupSets": [
+        {
+            "id": "OUGGW1cHaYy",
+            "name": "Award number",
+            "code": "AWARD_NUMBER",
+            "organisationUnitGroups": [
+                {
+                    "id": "existing-1234"
+                },
+                {
+                    "id": "WIEp6vpQw6n"
+                }
+            ]
+        }
+    ],
     "dataSets": [
         {
             "id": "SCS4Dusnfdd",

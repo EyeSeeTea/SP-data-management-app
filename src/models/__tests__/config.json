@@ -61,7 +61,8 @@
         },
         "organisationUnitGroupSets": {
             "funder": "FUNDER",
-            "location": "LOCATION"
+            "location": "LOCATION",
+            "awardNumber": "AWARD_NUMBER"
         },
         "indicators": {
             "actualTargetPrefix": "ACTUAL_TARGET_",
