@@ -6,12 +6,11 @@ import {
     D2Api,
     SelectedPick,
     D2OrganisationUnitSchema,
-    D2DataSetSchema,
     D2OrganisationUnit,
 } from "../types/d2-api";
 import { D2Dashboard, D2ReportTable, Ref, D2Chart, D2DashboardItem, Id } from "../types/d2-api";
 import i18n from "../locales";
-import { getUid } from "../utils/dhis2";
+import { getUid, getRefs } from "../utils/dhis2";
 import {
     getReportTableItem,
     getChartItem,
@@ -30,6 +29,7 @@ import {
 import { PeopleOrBenefit } from "./dataElementsSet";
 import { D2Sharing, getD2Access } from "./ProjectSharing";
 import { addAttributeValueToObj, AttributeValue } from "./Attributes";
+import { getDashboardProjects, DashboardProjects } from "./DashboardProject";
 
 interface DataElement {
     id: Id;
@@ -41,16 +41,8 @@ interface DataElement {
 interface Country {
     id: Id;
     name: string;
-    openingDate: Date | undefined;
     attributeValues: Array<{ attribute: Ref; value: string }>;
-    projects: Project[];
-}
-
-interface Project {
-    id: Id;
-    orgUnit: Ref;
-    dataElements: DataElement[];
-    openingDate: Date;
+    dashboardProjects: DashboardProjects;
 }
 
 interface Category {
@@ -67,6 +59,8 @@ export default class CountryDashboard {
     categories: { new: Category; actual: Category };
 
     constructor(private config: Config, private d2Country: D2Country, private country: Country) {
+        this.dataElements = country.dashboardProjects.dataElements;
+
         this.categories = {
             new: {
                 id: config.categories.newRecurring.id,
@@ -77,36 +71,21 @@ export default class CountryDashboard {
                 categoryOptions: [{ id: config.categoryOptions.actual.id }],
             },
         };
-        const dataElements = _(country.projects)
-            .flatMap(project => project.dataElements)
-            .uniqBy(dataElement => dataElement.id)
-            .sortBy(dataElement => dataElement.name)
-            .value();
-
-        this.dataElements = {
-            all: dataElements,
-            people: dataElements.filter(de => de.peopleOrBenefit === "people"),
-            benefit: dataElements.filter(de => de.peopleOrBenefit === "benefit"),
-        };
     }
 
     static async build(api: D2Api, config: Config, countryId: Id): Promise<CountryDashboard> {
-        const metadata = await getMetadata(api, countryId);
-        if (!metadata) throw new Error("Cannot get metadata");
-
-        const { orgUnit, dataSets } = metadata;
-
-        const projects: Project[] = _(dataSets)
-            .map(dataSet => getProject(config, metadata, dataSet))
-            .compact()
-            .value();
+        const dashboardProjects = await getDashboardProjects(api, config, {
+            type: "country",
+            countryId,
+        });
+        const orgUnit = await getOrgUnit(api, countryId);
+        if (!orgUnit) throw new Error("Cannot get orgunit");
 
         const country: Country = {
             id: orgUnit.id,
             name: orgUnit.name,
-            projects,
+            dashboardProjects: dashboardProjects,
             attributeValues: orgUnit.attributeValues,
-            openingDate: _.min(projects.map(project => project.openingDate)),
         };
 
         const d2Country = _.omit(orgUnit, ["children"]);
@@ -228,7 +207,7 @@ export default class CountryDashboard {
             name: `[${country.name}] ${baseTable.name}`,
             periods: [],
             relativePeriods: { thisYear: true },
-            organisationUnits: country.projects.map(project => project.orgUnit),
+            organisationUnits: getRefs(country.dashboardProjects.orgUnits),
             sharing: this.getSharing(),
         };
 
@@ -250,87 +229,20 @@ const selectors = {
         children: { id: true, name: true },
         attributeValues: { attribute: { id: true }, value: true },
     },
-    dataSets: {
-        id: true,
-        code: true,
-        dataInputPeriods: { openingDate: true },
-        dataSetElements: {
-            dataElement: {
-                id: true,
-                name: true,
-                code: true,
-                dataElementGroups: { code: true },
-            },
-        },
-    },
-} as const;
+};
 
 type OrgUnitApi = SelectedPick<D2OrganisationUnitSchema, typeof selectors.organisationUnits>;
-type DataSetApi = SelectedPick<D2DataSetSchema, typeof selectors.dataSets>;
 
-interface Metadata {
-    orgUnit: OrgUnitApi;
-    dataSets: DataSetApi[];
-}
-
-async function getMetadata(api: D2Api, countryId: Id): Promise<Metadata | null> {
+async function getOrgUnit(api: D2Api, countryId: Id): Promise<OrgUnitApi | null> {
     const metadata$ = api.metadata.get({
         organisationUnits: {
             fields: selectors.organisationUnits,
             filter: { id: { eq: countryId } },
         },
-        dataSets: {
-            fields: selectors.dataSets,
-            filter: { code: { like$: "_ACTUAL" } },
-        },
     });
 
-    const { organisationUnits, dataSets } = await metadata$.getData();
-    const orgUnit = _(organisationUnits).get(0, null);
-
-    return orgUnit ? { orgUnit, dataSets } : null;
-}
-
-function getProject(config: Config, metadata: Metadata, dataSet: DataSetApi): Project | null {
-    const orgUnitById = _.keyBy(metadata.orgUnit.children, ou => ou.id);
-    const projectId = dataSet.code.split("_")[0];
-    const orgUnit = orgUnitById[projectId];
-    if (!orgUnit) return null;
-
-    const dateString = _(dataSet.dataInputPeriods)
-        .map(dip => dip.openingDate)
-        .min();
-    if (!dateString) return null;
-
-    const { people: peopleCode, benefit: benefitCode } = config.base.dataElementGroups;
-
-    const dataElements = _(dataSet.dataSetElements)
-        .map((dse): DataElement | null => {
-            const { dataElement } = dse;
-            const degCodes = dataElement.dataElementGroups.map((deg: any) => deg.code);
-            const peopleOrBenefit = degCodes.includes(peopleCode)
-                ? "people"
-                : degCodes.includes(benefitCode)
-                ? "benefit"
-                : null;
-            if (!peopleOrBenefit) return null;
-
-            return {
-                id: dataElement.id,
-                name: dataElement.name,
-                code: dataElement.code,
-                peopleOrBenefit,
-            };
-        })
-        .compact()
-        .value();
-
-    return {
-        id: orgUnit.id,
-        orgUnit: { id: orgUnit.id },
-        openingDate: new Date(dateString),
-        dataElements,
-    };
+    const { organisationUnits } = await metadata$.getData();
+    return _(organisationUnits).get(0, null);
 }
 
 const positionItemsOptions: PositionItemsOptions = {

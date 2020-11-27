@@ -29,13 +29,20 @@ describe("ProjectDb", () => {
 
             mock.onGet("/metadata", {
                 expected: {
-                    "organisationUnits:fields": "children[id,name],id,name",
+                    "organisationUnits:fields": "children[id],id",
                     "organisationUnits:filter": ["id:eq:eu2XF73JOzl"],
                     "dataSets:fields":
                         "code,dataInputPeriods[openingDate],dataSetElements[dataElement[code,dataElementGroups[code],id,name]],id",
                     "dataSets:filter": ["code:like$:_ACTUAL"],
                 },
             }).replyOnce(200, countryMetadataResponse);
+
+            mock.onGet("/metadata", {
+                expected: {
+                    "organisationUnits:fields": "children[id,name],id,name",
+                    "organisationUnits:filter": ["id:eq:eu2XF73JOzl"],
+                },
+            }).replyOnce(200, { organisationUnits: countryMetadataResponse.organisationUnits });
 
             mock.onGet("/metadata", {
                 params: {

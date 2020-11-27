@@ -52,6 +52,7 @@ const baseConfig = {
         createdByApp: "DM_CREATED_BY_DATA_MANAGEMENT",
         orgUnitProject: "DM_ORGUNIT_PROJECT_ID",
         projectDashboard: "DM_PROJECT_DASHBOARD_ID",
+        awardNumberDashboard: "DM_AWARD_NUMBER_DASHBOARD_ID",
         countingMethod: "DM_COUNTING_METHOD",
         mainSector: "DM_MAIN_SECTOR",
     },
