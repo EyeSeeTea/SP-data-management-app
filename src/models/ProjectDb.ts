@@ -80,16 +80,12 @@ export default class ProjectDb {
         };
 
         const projectWithOrgUnit = project.set("orgUnit", orgUnit);
-        const projectDashboardMetadata = (
-            await ProjectDashboard.build(api, config, projectWithOrgUnit)
-        ).generate();
-        const countryDashboardMetadata = (
-            await CountryDashboard.build(api, config, country.id)
-        ).generate();
 
-        const projectDashboard = projectDashboardMetadata.dashboards[0];
+        const dashboardMetadata = await this.getDashboardMetadata(projectWithOrgUnit);
 
-        if (!projectDashboard) throw new Error("Dashboards error");
+        const projectDashboard = dashboardMetadata.dashboards[0];
+
+        if (!projectDashboard || !projectDashboard.id) throw new Error("Dashboards error");
 
         const projectOrgUnit = addAttributeValueToObj(orgUnit, {
             values: orgUnit.attributeValues,
@@ -132,8 +128,7 @@ export default class ProjectDb {
             orgUnitsMetadata,
             dataSetTargetMetadata,
             dataSetActualMetadata,
-            projectDashboardMetadata,
-            countryDashboardMetadata,
+            dashboardMetadata,
         ]);
 
         await this.saveMERData(orgUnit.id).getData();
@@ -151,6 +146,19 @@ export default class ProjectDb {
                 : this.project;
 
         return { orgUnit: projectOrgUnit, payload, response, project: savedProject };
+    }
+
+    async getDashboardMetadata(project: Project) {
+        const { api, config } = this;
+        const projectDashboardMetadata = (
+            await ProjectDashboard.build(api, config, project)
+        ).generate();
+        const countryDashboardMetadata = project.parentOrgUnit
+            ? (await CountryDashboard.build(api, config, project.parentOrgUnit.id)).generate()
+            : null;
+
+        // First item should be the project dashboard
+        return flattenPayloads(_.compact([projectDashboardMetadata, countryDashboardMetadata]));
     }
 
     async updateDataSet(dataSet: Ref, attrs: PartialModel<D2DataSet>) {
