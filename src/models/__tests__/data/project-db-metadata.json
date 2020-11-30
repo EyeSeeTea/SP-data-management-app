@@ -2671,6 +2671,12 @@
                     "indicator": {
                         "id": "m68LzR6ho7V"
                     }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "m0a3QcxQORf"
+                    }
                 }
             ],
             "organisationUnits": [
@@ -2774,6 +2780,12 @@
                     "dataDimensionItemType": "INDICATOR",
                     "indicator": {
                         "id": "qgGwMTqEq4d"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "aOALuHaoaEQ"
                     }
                 },
                 {
@@ -2922,6 +2934,12 @@
                     "indicator": {
                         "id": "m68LzR6ho7V"
                     }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "m0a3QcxQORf"
+                    }
                 }
             ],
             "organisationUnits": [
@@ -3025,6 +3043,12 @@
                     "dataDimensionItemType": "INDICATOR",
                     "indicator": {
                         "id": "qgGwMTqEq4d"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "aOALuHaoaEQ"
                     }
                 },
                 {
@@ -3147,6 +3171,12 @@
                     "dataDimensionItemType": "INDICATOR",
                     "indicator": {
                         "id": "qgGwMTqEq4d"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "aOALuHaoaEQ"
                     }
                 },
                 {
@@ -4070,6 +4100,12 @@
                 {
                     "dataDimensionItemType": "INDICATOR",
                     "indicator": {
+                        "id": "aOALuHaoaEQ"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
                         "id": "yeQN47GFqwM"
                     }
                 },
@@ -4089,6 +4125,12 @@
                     "dataDimensionItemType": "INDICATOR",
                     "indicator": {
                         "id": "m68LzR6ho7V"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "m0a3QcxQORf"
                     }
                 }
             ],
@@ -4191,6 +4233,12 @@
                     "indicator": {
                         "id": "m68LzR6ho7V"
                     }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "m0a3QcxQORf"
+                    }
                 }
             ],
             "rows": [
@@ -4285,6 +4333,12 @@
                     "dataDimensionItemType": "INDICATOR",
                     "indicator": {
                         "id": "qgGwMTqEq4d"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "aOALuHaoaEQ"
                     }
                 },
                 {
@@ -4428,6 +4482,12 @@
                     "dataDimensionItemType": "INDICATOR",
                     "indicator": {
                         "id": "qgGwMTqEq4d"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "aOALuHaoaEQ"
                     }
                 },
                 {
