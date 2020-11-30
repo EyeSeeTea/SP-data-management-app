@@ -82,10 +82,8 @@ export default class ProjectDb {
 
         const projectWithOrgUnit = project.set("orgUnit", orgUnit);
 
-        const dashboardMetadata = await this.getDashboardMetadata(projectWithOrgUnit);
-
+        const dashboardMetadata = await this.getDashboardsMetadata(projectWithOrgUnit);
         const projectDashboard = dashboardMetadata.dashboards[0];
-
         if (!projectDashboard || !projectDashboard.id) throw new Error("Dashboards error");
 
         const projectOrgUnit = addAttributeValueToObj(orgUnit, {
@@ -149,17 +147,30 @@ export default class ProjectDb {
         return { orgUnit: projectOrgUnit, payload, response, project: savedProject };
     }
 
-    async getDashboardMetadata(project: Project) {
+    async getDashboardsMetadata(project: Project) {
         const { api, config } = this;
+
         const projectDashboardMetadata = (
-            await ProjectDashboard.build(api, config, project)
+            await ProjectDashboard.buildForProject(api, config, project)
         ).generate();
+
+        // TODO: skip if only one project for this award number
+        const awardNumberDashboardMetadata = (
+            await ProjectDashboard.buildForAwardNumber(api, config, project.awardNumber)
+        ).generate();
+
         const countryDashboardMetadata = project.parentOrgUnit
             ? (await CountryDashboard.build(api, config, project.parentOrgUnit.id)).generate()
             : null;
 
         // First item should be the project dashboard
-        return flattenPayloads(_.compact([projectDashboardMetadata, countryDashboardMetadata]));
+        return flattenPayloads(
+            _.compact([
+                projectDashboardMetadata,
+                countryDashboardMetadata,
+                awardNumberDashboardMetadata,
+            ])
+        );
     }
 
     async updateDataSet(dataSet: Ref, attrs: PartialModel<D2DataSet>) {

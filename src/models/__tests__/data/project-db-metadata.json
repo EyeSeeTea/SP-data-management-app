@@ -694,6 +694,165 @@
                 }
             ],
             "publicAccess": "rw------"
+        },
+        {
+            "id": "mm4MpCYx5jJ",
+            "name": "Award Number 12345 - Abaco Ministry, HOPE Abaco",
+            "dashboardItems": [
+                {
+                    "id": "aUK2CcChUeX",
+                    "type": "REPORT_TABLE",
+                    "reportTable": {
+                        "id": "iMyQtM39bM2"
+                    },
+                    "width": 29,
+                    "height": 20,
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "id": "u4WEIKIRquJ",
+                    "type": "REPORT_TABLE",
+                    "reportTable": {
+                        "id": "Cw64PsxdZ89"
+                    },
+                    "width": 29,
+                    "height": 20,
+                    "x": 29,
+                    "y": 0
+                },
+                {
+                    "id": "ieqKIWVm8AV",
+                    "type": "REPORT_TABLE",
+                    "reportTable": {
+                        "id": "eggTOdnJm6Z"
+                    },
+                    "width": 29,
+                    "height": 20,
+                    "x": 0,
+                    "y": 20
+                },
+                {
+                    "id": "qOwXkHg3q9T",
+                    "type": "REPORT_TABLE",
+                    "reportTable": {
+                        "id": "WK2xcw5pIYH"
+                    },
+                    "width": 29,
+                    "height": 20,
+                    "x": 29,
+                    "y": 20
+                },
+                {
+                    "id": "K4hH0P274Fo",
+                    "type": "REPORT_TABLE",
+                    "reportTable": {
+                        "id": "q40Mqv4zP2c"
+                    },
+                    "width": 29,
+                    "height": 20,
+                    "x": 0,
+                    "y": 40
+                },
+                {
+                    "id": "mQM1Pb0Fb9E",
+                    "type": "REPORT_TABLE",
+                    "reportTable": {
+                        "id": "GiktHxplS3A"
+                    },
+                    "width": 29,
+                    "height": 20,
+                    "x": 29,
+                    "y": 40
+                },
+                {
+                    "id": "aEWaktTVhHz",
+                    "type": "REPORT_TABLE",
+                    "reportTable": {
+                        "id": "CAs3931QwjE"
+                    },
+                    "width": 29,
+                    "height": 20,
+                    "x": 0,
+                    "y": 60
+                },
+                {
+                    "id": "GOd74xUDUFH",
+                    "type": "REPORT_TABLE",
+                    "reportTable": {
+                        "id": "igyyebFIFYI"
+                    },
+                    "width": 29,
+                    "height": 20,
+                    "x": 29,
+                    "y": 60
+                },
+                {
+                    "id": "Ce8Vx93oDAm",
+                    "type": "CHART",
+                    "chart": {
+                        "id": "KsMZ8TSvklN"
+                    },
+                    "width": 58,
+                    "height": 20,
+                    "x": 0,
+                    "y": 80
+                },
+                {
+                    "id": "iEKoIqWhOO7",
+                    "type": "CHART",
+                    "chart": {
+                        "id": "Og8PtJaAOlk"
+                    },
+                    "width": 29,
+                    "height": 20,
+                    "x": 0,
+                    "y": 100
+                },
+                {
+                    "id": "i6uCIxRTkbw",
+                    "type": "CHART",
+                    "chart": {
+                        "id": "qqYp7Oh3aYg"
+                    },
+                    "width": 29,
+                    "height": 20,
+                    "x": 29,
+                    "y": 100
+                },
+                {
+                    "id": "SIiq6AvxrpA",
+                    "type": "CHART",
+                    "chart": {
+                        "id": "SGSUAn0OeDx"
+                    },
+                    "width": 29,
+                    "height": 20,
+                    "x": 0,
+                    "y": 120
+                }
+            ],
+            "publicAccess": "--------",
+            "externalAccess": false,
+            "userAccesses": [
+                {
+                    "id": "M5zQapPyTZI",
+                    "displayName": "admin admin",
+                    "access": "rw------"
+                }
+            ],
+            "userGroupAccesses": [
+                {
+                    "id": "ywuI2WspUUG",
+                    "displayName": "System Admin",
+                    "access": "rw------"
+                },
+                {
+                    "id": "mKKNXzeIAJs",
+                    "displayName": "Data Management Admin",
+                    "access": "rw------"
+                }
+            ]
         }
     ],
     "reportTables": [
@@ -1927,6 +2086,1173 @@
                 }
             ],
             "publicAccess": "rw------"
+        },
+        {
+            "id": "iMyQtM39bM2",
+            "name": "Award Number 12345 - Abaco Ministry, HOPE Abaco - Target vs Actual - Benefits",
+            "numberType": "VALUE",
+            "legendDisplayStyle": "FILL",
+            "rowSubTotals": true,
+            "showDimensionLabels": true,
+            "aggregationType": "DEFAULT",
+            "legendDisplayStrategy": "FIXED",
+            "rowTotals": true,
+            "digitGroupSeparator": "SPACE",
+            "dataDimensionItems": [
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "aYk5MgSCLXP"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "CI8NCm34d7D"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "mu2b9Ivde6J"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "WUMjtbgofs2"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "umkL2sEVSNR"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "SCY3TdhSz1K"
+                    }
+                }
+            ],
+            "organisationUnits": [
+                {
+                    "id": "TvSmIyYcRnd"
+                },
+                {
+                    "id": "cqZ9zQfePzQ"
+                }
+            ],
+            "periods": [
+                {
+                    "id": "202007"
+                },
+                {
+                    "id": "202008"
+                },
+                {
+                    "id": "202009"
+                },
+                {
+                    "id": "202010"
+                }
+            ],
+            "columns": [
+                {
+                    "id": "pe"
+                }
+            ],
+            "columnDimensions": ["pe"],
+            "filters": [
+                {
+                    "id": "ou"
+                }
+            ],
+            "filterDimensions": ["ou"],
+            "rows": [
+                {
+                    "id": "dx"
+                },
+                {
+                    "code": "ACTUAL_TARGET",
+                    "id": "GIIHAr9BzzO",
+                    "categoryOptions": [
+                        {
+                            "code": "TARGET",
+                            "id": "imyqCWQ229K"
+                        },
+                        {
+                            "code": "ACTUAL",
+                            "id": "eWeQoOlAcxV"
+                        }
+                    ]
+                }
+            ],
+            "rowDimensions": ["dx", "GIIHAr9BzzO"],
+            "categoryDimensions": [
+                {
+                    "category": {
+                        "id": "GIIHAr9BzzO"
+                    },
+                    "categoryOptions": [
+                        {
+                            "id": "imyqCWQ229K"
+                        },
+                        {
+                            "id": "eWeQoOlAcxV"
+                        }
+                    ]
+                }
+            ],
+            "publicAccess": "--------",
+            "externalAccess": false,
+            "userAccesses": [
+                {
+                    "id": "M5zQapPyTZI",
+                    "displayName": "admin admin",
+                    "access": "rw------"
+                }
+            ],
+            "userGroupAccesses": [
+                {
+                    "id": "ywuI2WspUUG",
+                    "displayName": "System Admin",
+                    "access": "rw------"
+                },
+                {
+                    "id": "mKKNXzeIAJs",
+                    "displayName": "Data Management Admin",
+                    "access": "rw------"
+                }
+            ]
+        },
+        {
+            "id": "Cw64PsxdZ89",
+            "name": "Award Number 12345 - Abaco Ministry, HOPE Abaco - Target vs Actual - People",
+            "numberType": "VALUE",
+            "legendDisplayStyle": "FILL",
+            "rowSubTotals": true,
+            "showDimensionLabels": true,
+            "aggregationType": "DEFAULT",
+            "legendDisplayStrategy": "FIXED",
+            "rowTotals": true,
+            "digitGroupSeparator": "SPACE",
+            "dataDimensionItems": [
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "SQy5q6kCYI1"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "iYEDR850FFL"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "qkyeCTJHU2d"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "eAkVLI8mKBa"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "Kg29718LQHl"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "KKmUWsn19fq"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "iCKxYSFIlcu"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "qAM1NbCbS9G"
+                    }
+                }
+            ],
+            "organisationUnits": [
+                {
+                    "id": "TvSmIyYcRnd"
+                },
+                {
+                    "id": "cqZ9zQfePzQ"
+                }
+            ],
+            "periods": [
+                {
+                    "id": "202007"
+                },
+                {
+                    "id": "202008"
+                },
+                {
+                    "id": "202009"
+                },
+                {
+                    "id": "202010"
+                }
+            ],
+            "columns": [
+                {
+                    "id": "pe"
+                },
+                {
+                    "code": "GENDER",
+                    "id": "Kyg1O6YEGa9",
+                    "categoryOptions": [
+                        {
+                            "code": "MALE",
+                            "id": "qk2FihwV6IL"
+                        },
+                        {
+                            "code": "FEMALE",
+                            "id": "yW2hYVS3S4u"
+                        }
+                    ]
+                }
+            ],
+            "columnDimensions": ["pe", "Kyg1O6YEGa9"],
+            "filters": [
+                {
+                    "id": "ou"
+                }
+            ],
+            "filterDimensions": ["ou"],
+            "rows": [
+                {
+                    "id": "dx"
+                },
+                {
+                    "code": "ACTUAL_TARGET",
+                    "id": "GIIHAr9BzzO",
+                    "categoryOptions": [
+                        {
+                            "code": "TARGET",
+                            "id": "imyqCWQ229K"
+                        },
+                        {
+                            "code": "ACTUAL",
+                            "id": "eWeQoOlAcxV"
+                        }
+                    ]
+                },
+                {
+                    "code": "NEW_RETURNING",
+                    "id": "uSMHdwhxFSV",
+                    "categoryOptions": [
+                        {
+                            "code": "NEW",
+                            "id": "KiK0FMExoqh"
+                        },
+                        {
+                            "code": "RETURNING",
+                            "id": "a6AJLXQy8vO"
+                        }
+                    ]
+                }
+            ],
+            "rowDimensions": ["dx", "GIIHAr9BzzO", "uSMHdwhxFSV"],
+            "categoryDimensions": [
+                {
+                    "category": {
+                        "id": "Kyg1O6YEGa9"
+                    },
+                    "categoryOptions": [
+                        {
+                            "id": "qk2FihwV6IL"
+                        },
+                        {
+                            "id": "yW2hYVS3S4u"
+                        }
+                    ]
+                },
+                {
+                    "category": {
+                        "id": "GIIHAr9BzzO"
+                    },
+                    "categoryOptions": [
+                        {
+                            "id": "imyqCWQ229K"
+                        },
+                        {
+                            "id": "eWeQoOlAcxV"
+                        }
+                    ]
+                },
+                {
+                    "category": {
+                        "id": "uSMHdwhxFSV"
+                    },
+                    "categoryOptions": [
+                        {
+                            "id": "KiK0FMExoqh"
+                        },
+                        {
+                            "id": "a6AJLXQy8vO"
+                        }
+                    ]
+                }
+            ],
+            "publicAccess": "--------",
+            "externalAccess": false,
+            "userAccesses": [
+                {
+                    "id": "M5zQapPyTZI",
+                    "displayName": "admin admin",
+                    "access": "rw------"
+                }
+            ],
+            "userGroupAccesses": [
+                {
+                    "id": "ywuI2WspUUG",
+                    "displayName": "System Admin",
+                    "access": "rw------"
+                },
+                {
+                    "id": "mKKNXzeIAJs",
+                    "displayName": "Data Management Admin",
+                    "access": "rw------"
+                }
+            ]
+        },
+        {
+            "id": "eggTOdnJm6Z",
+            "name": "Award Number 12345 - Abaco Ministry, HOPE Abaco - Target vs Actual - Unique People",
+            "numberType": "VALUE",
+            "legendDisplayStyle": "FILL",
+            "rowSubTotals": true,
+            "showDimensionLabels": true,
+            "aggregationType": "DEFAULT",
+            "legendDisplayStrategy": "FIXED",
+            "rowTotals": true,
+            "digitGroupSeparator": "SPACE",
+            "dataDimensionItems": [
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "SQy5q6kCYI1"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "iYEDR850FFL"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "qkyeCTJHU2d"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "eAkVLI8mKBa"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "Kg29718LQHl"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "KKmUWsn19fq"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "iCKxYSFIlcu"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "qAM1NbCbS9G"
+                    }
+                }
+            ],
+            "organisationUnits": [
+                {
+                    "id": "TvSmIyYcRnd"
+                },
+                {
+                    "id": "cqZ9zQfePzQ"
+                }
+            ],
+            "periods": [
+                {
+                    "id": "202007"
+                },
+                {
+                    "id": "202008"
+                },
+                {
+                    "id": "202009"
+                },
+                {
+                    "id": "202010"
+                }
+            ],
+            "columns": [
+                {
+                    "id": "pe"
+                },
+                {
+                    "code": "GENDER",
+                    "id": "Kyg1O6YEGa9",
+                    "categoryOptions": [
+                        {
+                            "code": "MALE",
+                            "id": "qk2FihwV6IL"
+                        },
+                        {
+                            "code": "FEMALE",
+                            "id": "yW2hYVS3S4u"
+                        }
+                    ]
+                }
+            ],
+            "columnDimensions": ["pe", "Kyg1O6YEGa9"],
+            "filters": [
+                {
+                    "id": "ou"
+                },
+                {
+                    "id": "uSMHdwhxFSV",
+                    "categoryOptions": [
+                        {
+                            "id": "KiK0FMExoqh"
+                        }
+                    ]
+                }
+            ],
+            "filterDimensions": ["ou", "uSMHdwhxFSV"],
+            "rows": [
+                {
+                    "id": "dx"
+                },
+                {
+                    "code": "ACTUAL_TARGET",
+                    "id": "GIIHAr9BzzO",
+                    "categoryOptions": [
+                        {
+                            "code": "TARGET",
+                            "id": "imyqCWQ229K"
+                        },
+                        {
+                            "code": "ACTUAL",
+                            "id": "eWeQoOlAcxV"
+                        }
+                    ]
+                }
+            ],
+            "rowDimensions": ["dx", "GIIHAr9BzzO"],
+            "categoryDimensions": [
+                {
+                    "category": {
+                        "id": "Kyg1O6YEGa9"
+                    },
+                    "categoryOptions": [
+                        {
+                            "id": "qk2FihwV6IL"
+                        },
+                        {
+                            "id": "yW2hYVS3S4u"
+                        }
+                    ]
+                },
+                {
+                    "category": {
+                        "id": "GIIHAr9BzzO"
+                    },
+                    "categoryOptions": [
+                        {
+                            "id": "imyqCWQ229K"
+                        },
+                        {
+                            "id": "eWeQoOlAcxV"
+                        }
+                    ]
+                },
+                {
+                    "category": {
+                        "id": "uSMHdwhxFSV"
+                    },
+                    "categoryOptions": [
+                        {
+                            "id": "KiK0FMExoqh"
+                        }
+                    ]
+                }
+            ],
+            "publicAccess": "--------",
+            "externalAccess": false,
+            "userAccesses": [
+                {
+                    "id": "M5zQapPyTZI",
+                    "displayName": "admin admin",
+                    "access": "rw------"
+                }
+            ],
+            "userGroupAccesses": [
+                {
+                    "id": "ywuI2WspUUG",
+                    "displayName": "System Admin",
+                    "access": "rw------"
+                },
+                {
+                    "id": "mKKNXzeIAJs",
+                    "displayName": "Data Management Admin",
+                    "access": "rw------"
+                }
+            ]
+        },
+        {
+            "id": "WK2xcw5pIYH",
+            "name": "Award Number 12345 - Abaco Ministry, HOPE Abaco - Achieved to date (%) - Benefits",
+            "numberType": "VALUE",
+            "legendDisplayStyle": "FILL",
+            "rowSubTotals": true,
+            "showDimensionLabels": true,
+            "aggregationType": "DEFAULT",
+            "legendDisplayStrategy": "FIXED",
+            "rowTotals": true,
+            "digitGroupSeparator": "SPACE",
+            "dataDimensionItems": [
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "qu0x94utOgv"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "qQsafE8eZQt"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "isKcihOpMrF"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "OOIDqW7eQqr"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "m68LzR6ho7V"
+                    }
+                }
+            ],
+            "organisationUnits": [
+                {
+                    "id": "TvSmIyYcRnd"
+                },
+                {
+                    "id": "cqZ9zQfePzQ"
+                }
+            ],
+            "periods": [
+                {
+                    "id": "202007"
+                },
+                {
+                    "id": "202008"
+                },
+                {
+                    "id": "202009"
+                },
+                {
+                    "id": "202010"
+                }
+            ],
+            "columns": [
+                {
+                    "id": "pe"
+                }
+            ],
+            "columnDimensions": ["pe"],
+            "filters": [
+                {
+                    "id": "ou"
+                }
+            ],
+            "filterDimensions": ["ou"],
+            "rows": [
+                {
+                    "id": "dx"
+                }
+            ],
+            "rowDimensions": ["dx"],
+            "categoryDimensions": [],
+            "publicAccess": "--------",
+            "externalAccess": false,
+            "userAccesses": [
+                {
+                    "id": "M5zQapPyTZI",
+                    "displayName": "admin admin",
+                    "access": "rw------"
+                }
+            ],
+            "userGroupAccesses": [
+                {
+                    "id": "ywuI2WspUUG",
+                    "displayName": "System Admin",
+                    "access": "rw------"
+                },
+                {
+                    "id": "mKKNXzeIAJs",
+                    "displayName": "Data Management Admin",
+                    "access": "rw------"
+                }
+            ],
+            "legendSet": {
+                "code": "ACTUAL_TARGET_ACHIEVED",
+                "id": "yoAt108kUFm"
+            }
+        },
+        {
+            "id": "q40Mqv4zP2c",
+            "name": "Award Number 12345 - Abaco Ministry, HOPE Abaco - Achieved total to date (%) - People",
+            "numberType": "VALUE",
+            "legendDisplayStyle": "FILL",
+            "rowSubTotals": true,
+            "showDimensionLabels": true,
+            "aggregationType": "DEFAULT",
+            "legendDisplayStrategy": "FIXED",
+            "rowTotals": false,
+            "digitGroupSeparator": "SPACE",
+            "dataDimensionItems": [
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "CqURW24bmHJ"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "iewd6jLYV4H"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "K6ipXoSOmt2"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "qgGwMTqEq4d"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "yeQN47GFqwM"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "K2ADN2EmEmr"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "qW6b6ZRfXA5"
+                    }
+                }
+            ],
+            "organisationUnits": [
+                {
+                    "id": "TvSmIyYcRnd"
+                },
+                {
+                    "id": "cqZ9zQfePzQ"
+                }
+            ],
+            "periods": [
+                {
+                    "id": "202007"
+                },
+                {
+                    "id": "202008"
+                },
+                {
+                    "id": "202009"
+                },
+                {
+                    "id": "202010"
+                }
+            ],
+            "columns": [
+                {
+                    "id": "uSMHdwhxFSV",
+                    "categoryOptions": [
+                        {
+                            "id": "KiK0FMExoqh"
+                        }
+                    ]
+                }
+            ],
+            "columnDimensions": ["uSMHdwhxFSV"],
+            "filters": [
+                {
+                    "id": "ou"
+                },
+                {
+                    "id": "pe"
+                }
+            ],
+            "filterDimensions": ["ou", "pe"],
+            "rows": [
+                {
+                    "id": "dx"
+                }
+            ],
+            "rowDimensions": ["dx"],
+            "categoryDimensions": [
+                {
+                    "category": {
+                        "id": "uSMHdwhxFSV"
+                    },
+                    "categoryOptions": [
+                        {
+                            "id": "KiK0FMExoqh"
+                        }
+                    ]
+                }
+            ],
+            "publicAccess": "--------",
+            "externalAccess": false,
+            "userAccesses": [
+                {
+                    "id": "M5zQapPyTZI",
+                    "displayName": "admin admin",
+                    "access": "rw------"
+                }
+            ],
+            "userGroupAccesses": [
+                {
+                    "id": "ywuI2WspUUG",
+                    "displayName": "System Admin",
+                    "access": "rw------"
+                },
+                {
+                    "id": "mKKNXzeIAJs",
+                    "displayName": "Data Management Admin",
+                    "access": "rw------"
+                }
+            ],
+            "legendSet": {
+                "code": "ACTUAL_TARGET_ACHIEVED",
+                "id": "yoAt108kUFm"
+            }
+        },
+        {
+            "id": "GiktHxplS3A",
+            "name": "Award Number 12345 - Abaco Ministry, HOPE Abaco - Achieved (%) - Benefits",
+            "numberType": "VALUE",
+            "legendDisplayStyle": "FILL",
+            "rowSubTotals": true,
+            "showDimensionLabels": true,
+            "aggregationType": "DEFAULT",
+            "legendDisplayStrategy": "FIXED",
+            "rowTotals": true,
+            "digitGroupSeparator": "SPACE",
+            "dataDimensionItems": [
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "qu0x94utOgv"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "qQsafE8eZQt"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "isKcihOpMrF"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "OOIDqW7eQqr"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "m68LzR6ho7V"
+                    }
+                }
+            ],
+            "organisationUnits": [
+                {
+                    "id": "TvSmIyYcRnd"
+                },
+                {
+                    "id": "cqZ9zQfePzQ"
+                }
+            ],
+            "periods": [
+                {
+                    "id": "202007"
+                },
+                {
+                    "id": "202008"
+                },
+                {
+                    "id": "202009"
+                },
+                {
+                    "id": "202010"
+                }
+            ],
+            "columns": [
+                {
+                    "id": "pe"
+                }
+            ],
+            "columnDimensions": ["pe"],
+            "filters": [
+                {
+                    "id": "ou"
+                }
+            ],
+            "filterDimensions": ["ou"],
+            "rows": [
+                {
+                    "id": "dx"
+                }
+            ],
+            "rowDimensions": ["dx"],
+            "categoryDimensions": [],
+            "publicAccess": "--------",
+            "externalAccess": false,
+            "userAccesses": [
+                {
+                    "id": "M5zQapPyTZI",
+                    "displayName": "admin admin",
+                    "access": "rw------"
+                }
+            ],
+            "userGroupAccesses": [
+                {
+                    "id": "ywuI2WspUUG",
+                    "displayName": "System Admin",
+                    "access": "rw------"
+                },
+                {
+                    "id": "mKKNXzeIAJs",
+                    "displayName": "Data Management Admin",
+                    "access": "rw------"
+                }
+            ],
+            "legendSet": {
+                "code": "ACTUAL_TARGET_ACHIEVED",
+                "id": "yoAt108kUFm"
+            }
+        },
+        {
+            "id": "CAs3931QwjE",
+            "name": "Award Number 12345 - Abaco Ministry, HOPE Abaco - Achieved (%) - People",
+            "numberType": "VALUE",
+            "legendDisplayStyle": "FILL",
+            "rowSubTotals": true,
+            "showDimensionLabels": true,
+            "aggregationType": "DEFAULT",
+            "legendDisplayStrategy": "FIXED",
+            "rowTotals": false,
+            "digitGroupSeparator": "SPACE",
+            "dataDimensionItems": [
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "CqURW24bmHJ"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "iewd6jLYV4H"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "K6ipXoSOmt2"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "qgGwMTqEq4d"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "yeQN47GFqwM"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "K2ADN2EmEmr"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "qW6b6ZRfXA5"
+                    }
+                }
+            ],
+            "organisationUnits": [
+                {
+                    "id": "TvSmIyYcRnd"
+                },
+                {
+                    "id": "cqZ9zQfePzQ"
+                }
+            ],
+            "periods": [
+                {
+                    "id": "202007"
+                },
+                {
+                    "id": "202008"
+                },
+                {
+                    "id": "202009"
+                },
+                {
+                    "id": "202010"
+                }
+            ],
+            "columns": [
+                {
+                    "id": "pe"
+                }
+            ],
+            "columnDimensions": ["pe"],
+            "filters": [
+                {
+                    "id": "ou"
+                }
+            ],
+            "filterDimensions": ["ou"],
+            "rows": [
+                {
+                    "id": "dx"
+                }
+            ],
+            "rowDimensions": ["dx"],
+            "categoryDimensions": [],
+            "publicAccess": "--------",
+            "externalAccess": false,
+            "userAccesses": [
+                {
+                    "id": "M5zQapPyTZI",
+                    "displayName": "admin admin",
+                    "access": "rw------"
+                }
+            ],
+            "userGroupAccesses": [
+                {
+                    "id": "ywuI2WspUUG",
+                    "displayName": "System Admin",
+                    "access": "rw------"
+                },
+                {
+                    "id": "mKKNXzeIAJs",
+                    "displayName": "Data Management Admin",
+                    "access": "rw------"
+                }
+            ],
+            "legendSet": {
+                "code": "ACTUAL_TARGET_ACHIEVED",
+                "id": "yoAt108kUFm"
+            }
+        },
+        {
+            "id": "igyyebFIFYI",
+            "name": "Award Number 12345 - Abaco Ministry, HOPE Abaco - Achieved total (%) - People",
+            "numberType": "VALUE",
+            "legendDisplayStyle": "FILL",
+            "rowSubTotals": true,
+            "showDimensionLabels": true,
+            "aggregationType": "DEFAULT",
+            "legendDisplayStrategy": "FIXED",
+            "rowTotals": false,
+            "digitGroupSeparator": "SPACE",
+            "dataDimensionItems": [
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "CqURW24bmHJ"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "iewd6jLYV4H"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "K6ipXoSOmt2"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "qgGwMTqEq4d"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "yeQN47GFqwM"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "K2ADN2EmEmr"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "qW6b6ZRfXA5"
+                    }
+                }
+            ],
+            "organisationUnits": [
+                {
+                    "id": "TvSmIyYcRnd"
+                },
+                {
+                    "id": "cqZ9zQfePzQ"
+                }
+            ],
+            "periods": [
+                {
+                    "id": "202007"
+                },
+                {
+                    "id": "202008"
+                },
+                {
+                    "id": "202009"
+                },
+                {
+                    "id": "202010"
+                }
+            ],
+            "columns": [
+                {
+                    "id": "uSMHdwhxFSV",
+                    "categoryOptions": [
+                        {
+                            "id": "KiK0FMExoqh"
+                        }
+                    ]
+                }
+            ],
+            "columnDimensions": ["uSMHdwhxFSV"],
+            "filters": [
+                {
+                    "id": "ou"
+                },
+                {
+                    "id": "pe"
+                }
+            ],
+            "filterDimensions": ["ou", "pe"],
+            "rows": [
+                {
+                    "id": "dx"
+                }
+            ],
+            "rowDimensions": ["dx"],
+            "categoryDimensions": [
+                {
+                    "category": {
+                        "id": "uSMHdwhxFSV"
+                    },
+                    "categoryOptions": [
+                        {
+                            "id": "KiK0FMExoqh"
+                        }
+                    ]
+                }
+            ],
+            "publicAccess": "--------",
+            "externalAccess": false,
+            "userAccesses": [
+                {
+                    "id": "M5zQapPyTZI",
+                    "displayName": "admin admin",
+                    "access": "rw------"
+                }
+            ],
+            "userGroupAccesses": [
+                {
+                    "id": "ywuI2WspUUG",
+                    "displayName": "System Admin",
+                    "access": "rw------"
+                },
+                {
+                    "id": "mKKNXzeIAJs",
+                    "displayName": "Data Management Admin",
+                    "access": "rw------"
+                }
+            ],
+            "legendSet": {
+                "code": "ACTUAL_TARGET_ACHIEVED",
+                "id": "yoAt108kUFm"
+            }
         }
     ],
     "charts": [
@@ -2664,6 +3990,541 @@
                 }
             ],
             "publicAccess": "rw------"
+        },
+        {
+            "id": "KsMZ8TSvklN",
+            "name": "Award Number 12345 - Abaco Ministry, HOPE Abaco - Achieved monthly (%)",
+            "periods": [
+                {
+                    "id": "202007"
+                },
+                {
+                    "id": "202008"
+                },
+                {
+                    "id": "202009"
+                },
+                {
+                    "id": "202010"
+                }
+            ],
+            "type": "COLUMN",
+            "aggregationType": "DEFAULT",
+            "showData": true,
+            "category": "dx",
+            "series": "pe",
+            "columns": [
+                {
+                    "id": "pe"
+                }
+            ],
+            "dataDimensionItems": [
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "qu0x94utOgv"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "qQsafE8eZQt"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "isKcihOpMrF"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "OOIDqW7eQqr"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "CqURW24bmHJ"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "iewd6jLYV4H"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "K6ipXoSOmt2"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "qgGwMTqEq4d"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "yeQN47GFqwM"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "K2ADN2EmEmr"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "qW6b6ZRfXA5"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "m68LzR6ho7V"
+                    }
+                }
+            ],
+            "rows": [
+                {
+                    "id": "dx"
+                }
+            ],
+            "filters": [
+                {
+                    "id": "ou"
+                }
+            ],
+            "filterDimensions": ["ou"],
+            "categoryDimensions": [],
+            "organisationUnits": [
+                {
+                    "id": "TvSmIyYcRnd"
+                },
+                {
+                    "id": "cqZ9zQfePzQ"
+                }
+            ],
+            "publicAccess": "--------",
+            "externalAccess": false,
+            "userAccesses": [
+                {
+                    "id": "M5zQapPyTZI",
+                    "displayName": "admin admin",
+                    "access": "rw------"
+                }
+            ],
+            "userGroupAccesses": [
+                {
+                    "id": "ywuI2WspUUG",
+                    "displayName": "System Admin",
+                    "access": "rw------"
+                },
+                {
+                    "id": "mKKNXzeIAJs",
+                    "displayName": "Data Management Admin",
+                    "access": "rw------"
+                }
+            ]
+        },
+        {
+            "id": "Og8PtJaAOlk",
+            "name": "Award Number 12345 - Abaco Ministry, HOPE Abaco - Achieved Benefit (%)",
+            "periods": [
+                {
+                    "id": "202007"
+                },
+                {
+                    "id": "202008"
+                },
+                {
+                    "id": "202009"
+                },
+                {
+                    "id": "202010"
+                }
+            ],
+            "type": "COLUMN",
+            "aggregationType": "DEFAULT",
+            "showData": true,
+            "category": "dx",
+            "series": "ou",
+            "columns": [
+                {
+                    "id": "ou"
+                }
+            ],
+            "dataDimensionItems": [
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "qu0x94utOgv"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "qQsafE8eZQt"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "isKcihOpMrF"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "OOIDqW7eQqr"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "m68LzR6ho7V"
+                    }
+                }
+            ],
+            "rows": [
+                {
+                    "id": "dx"
+                }
+            ],
+            "filters": [
+                {
+                    "id": "pe"
+                }
+            ],
+            "filterDimensions": ["pe"],
+            "categoryDimensions": [],
+            "organisationUnits": [
+                {
+                    "id": "TvSmIyYcRnd"
+                },
+                {
+                    "id": "cqZ9zQfePzQ"
+                }
+            ],
+            "publicAccess": "--------",
+            "externalAccess": false,
+            "userAccesses": [
+                {
+                    "id": "M5zQapPyTZI",
+                    "displayName": "admin admin",
+                    "access": "rw------"
+                }
+            ],
+            "userGroupAccesses": [
+                {
+                    "id": "ywuI2WspUUG",
+                    "displayName": "System Admin",
+                    "access": "rw------"
+                },
+                {
+                    "id": "mKKNXzeIAJs",
+                    "displayName": "Data Management Admin",
+                    "access": "rw------"
+                }
+            ]
+        },
+        {
+            "id": "qqYp7Oh3aYg",
+            "name": "Award Number 12345 - Abaco Ministry, HOPE Abaco - Achieved People (%)",
+            "periods": [
+                {
+                    "id": "202007"
+                },
+                {
+                    "id": "202008"
+                },
+                {
+                    "id": "202009"
+                },
+                {
+                    "id": "202010"
+                }
+            ],
+            "type": "COLUMN",
+            "aggregationType": "DEFAULT",
+            "showData": true,
+            "category": "dx",
+            "series": "ou",
+            "columns": [
+                {
+                    "id": "ou"
+                }
+            ],
+            "dataDimensionItems": [
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "CqURW24bmHJ"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "iewd6jLYV4H"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "K6ipXoSOmt2"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "qgGwMTqEq4d"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "yeQN47GFqwM"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "K2ADN2EmEmr"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "qW6b6ZRfXA5"
+                    }
+                }
+            ],
+            "rows": [
+                {
+                    "id": "dx"
+                }
+            ],
+            "filters": [
+                {
+                    "id": "pe"
+                },
+                {
+                    "id": "uSMHdwhxFSV",
+                    "categoryOptions": [
+                        {
+                            "id": "KiK0FMExoqh"
+                        }
+                    ]
+                }
+            ],
+            "filterDimensions": ["pe", "uSMHdwhxFSV"],
+            "categoryDimensions": [
+                {
+                    "category": {
+                        "id": "uSMHdwhxFSV"
+                    },
+                    "categoryOptions": [
+                        {
+                            "id": "KiK0FMExoqh"
+                        }
+                    ]
+                }
+            ],
+            "organisationUnits": [
+                {
+                    "id": "TvSmIyYcRnd"
+                },
+                {
+                    "id": "cqZ9zQfePzQ"
+                }
+            ],
+            "publicAccess": "--------",
+            "externalAccess": false,
+            "userAccesses": [
+                {
+                    "id": "M5zQapPyTZI",
+                    "displayName": "admin admin",
+                    "access": "rw------"
+                }
+            ],
+            "userGroupAccesses": [
+                {
+                    "id": "ywuI2WspUUG",
+                    "displayName": "System Admin",
+                    "access": "rw------"
+                },
+                {
+                    "id": "mKKNXzeIAJs",
+                    "displayName": "Data Management Admin",
+                    "access": "rw------"
+                }
+            ]
+        },
+        {
+            "id": "SGSUAn0OeDx",
+            "name": "Award Number 12345 - Abaco Ministry, HOPE Abaco - Achieved by gender (%)",
+            "periods": [
+                {
+                    "id": "202007"
+                },
+                {
+                    "id": "202008"
+                },
+                {
+                    "id": "202009"
+                },
+                {
+                    "id": "202010"
+                }
+            ],
+            "type": "COLUMN",
+            "aggregationType": "DEFAULT",
+            "showData": true,
+            "category": "dx",
+            "series": "Kyg1O6YEGa9",
+            "columns": [
+                {
+                    "code": "GENDER",
+                    "id": "Kyg1O6YEGa9",
+                    "categoryOptions": [
+                        {
+                            "code": "MALE",
+                            "id": "qk2FihwV6IL"
+                        },
+                        {
+                            "code": "FEMALE",
+                            "id": "yW2hYVS3S4u"
+                        }
+                    ]
+                }
+            ],
+            "dataDimensionItems": [
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "CqURW24bmHJ"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "iewd6jLYV4H"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "K6ipXoSOmt2"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "qgGwMTqEq4d"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "yeQN47GFqwM"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "K2ADN2EmEmr"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "qW6b6ZRfXA5"
+                    }
+                }
+            ],
+            "rows": [
+                {
+                    "id": "dx"
+                }
+            ],
+            "filters": [
+                {
+                    "id": "ou"
+                },
+                {
+                    "id": "pe"
+                },
+                {
+                    "id": "uSMHdwhxFSV",
+                    "categoryOptions": [
+                        {
+                            "id": "KiK0FMExoqh"
+                        }
+                    ]
+                }
+            ],
+            "filterDimensions": ["ou", "pe", "uSMHdwhxFSV"],
+            "categoryDimensions": [
+                {
+                    "category": {
+                        "id": "uSMHdwhxFSV"
+                    },
+                    "categoryOptions": [
+                        {
+                            "id": "KiK0FMExoqh"
+                        }
+                    ]
+                },
+                {
+                    "category": {
+                        "id": "Kyg1O6YEGa9"
+                    },
+                    "categoryOptions": [
+                        {
+                            "id": "qk2FihwV6IL"
+                        },
+                        {
+                            "id": "yW2hYVS3S4u"
+                        }
+                    ]
+                }
+            ],
+            "organisationUnits": [
+                {
+                    "id": "TvSmIyYcRnd"
+                },
+                {
+                    "id": "cqZ9zQfePzQ"
+                }
+            ],
+            "publicAccess": "--------",
+            "externalAccess": false,
+            "userAccesses": [
+                {
+                    "id": "M5zQapPyTZI",
+                    "displayName": "admin admin",
+                    "access": "rw------"
+                }
+            ],
+            "userGroupAccesses": [
+                {
+                    "id": "ywuI2WspUUG",
+                    "displayName": "System Admin",
+                    "access": "rw------"
+                },
+                {
+                    "id": "mKKNXzeIAJs",
+                    "displayName": "Data Management Admin",
+                    "access": "rw------"
+                }
+            ]
         }
     ]
 }

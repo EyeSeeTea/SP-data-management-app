@@ -5,6 +5,7 @@ import { logUnknownRequest } from "../../utils/tests";
 import expectedMetadataPost from "./data/project-db-metadata.json";
 import projectMetadataResponse from "./data/project-metadata.json";
 import countryMetadataResponse from "./data/country-metadata.json";
+import awardNumberMetadataResponse from "./data/awardNumber-metadata.json";
 
 const { api, mock } = getMockApi();
 
@@ -55,6 +56,18 @@ describe("ProjectDb", () => {
                     ],
                 },
             }).replyOnce(200, countryMetadataResponse);
+
+            // Award number dashboard
+
+            mock.onGet("/metadata", {
+                params: {
+                    "organisationUnits:fields": "children[id,name,parent],id,name,parent,path",
+                    "organisationUnits:filter": ["code:$like:12345"],
+                    "dataSets:fields":
+                        "code,dataInputPeriods[period[id]],dataSetElements[dataElement[attributeValues[attribute[id],value],code,dataElementGroups[code],id,name]],externalAccess,id,publicAccess,userAccesses[access,displayName,id],userGroupAccesses[access,displayName,id]",
+                    "dataSets:filter": ["code:like$:_ACTUAL", "organisationUnits.code:$like:12345"],
+                },
+            }).replyOnce(200, awardNumberMetadataResponse);
 
             mock.onGet("/metadata", {
                 params: {

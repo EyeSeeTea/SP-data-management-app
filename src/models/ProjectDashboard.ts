@@ -41,10 +41,27 @@ export default class ProjectDashboard {
         this.config = config;
     }
 
-    static async build(api: D2Api, config: Config, project: Project): Promise<ProjectDashboard> {
+    static async buildForProject(
+        api: D2Api,
+        config: Config,
+        project: Ref
+    ): Promise<ProjectDashboard> {
         const projectsListDashboard = await getProjectsListDashboard(api, config, {
             type: "project",
             id: project.id,
+        });
+
+        return new ProjectDashboard(config, projectsListDashboard);
+    }
+
+    static async buildForAwardNumber(
+        api: D2Api,
+        config: Config,
+        awardNumber: string
+    ): Promise<ProjectDashboard> {
+        const projectsListDashboard = await getProjectsListDashboard(api, config, {
+            type: "awardNumber",
+            value: awardNumber,
         });
 
         return new ProjectDashboard(config, projectsListDashboard);
@@ -318,7 +335,7 @@ export async function getProjectDashboard(
         return { type: "error", message: i18n.t(`Cannot load project: ${msg}`) };
     }
 
-    const metadata = (await ProjectDashboard.build(api, config, project)).generate();
+    const metadata = (await ProjectDashboard.buildForProject(api, config, project)).generate();
     const dashboard = metadata.dashboards[0];
     if (!dashboard) return { type: "error", message: "Error generating dashboard" };
 

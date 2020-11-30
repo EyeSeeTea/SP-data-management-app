@@ -17,7 +17,7 @@ export default class ProjectDashboardSave {
         const { config } = project;
 
         const projectDashboardsMetadata = (
-            await ProjectDashboard.build(api, config, project)
+            await ProjectDashboard.buildForProject(api, config, project)
         ).generate();
 
         const country = project.parentOrgUnit;

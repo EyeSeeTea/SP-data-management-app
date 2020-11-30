@@ -12,6 +12,8 @@ import {
     D2Sharing,
     mergeSharing as unionSharing,
 } from "./Sharing";
+import i18n from "../locales";
+import { getUid } from "../utils/dhis2";
 
 interface DashboardProject {
     id: Id;
@@ -102,10 +104,9 @@ export async function getProjectsListDashboard(
             : _.first(metadata.orgUnits.map(ou => ou.parent));
 
     const dashboardProjects: ProjectsListDashboard = {
-        id: condition.type === "country" || condition.type === "project" ? condition.id : "",
+        ...getIdName(metadata, condition),
         parentOrgUnit,
         sharing,
-        name: getName(metadata, condition),
         orgUnits: metadata.orgUnits,
         periods: getPeriodsFromRange(openingDate, closingDate),
         dates: openingDate && closingDate ? { opening: openingDate, closing: closingDate } : null,
@@ -115,18 +116,31 @@ export async function getProjectsListDashboard(
     return dashboardProjects;
 }
 
-function getName(metadata: Metadata, condition: Condition): string {
+function getIdName(metadata: Metadata, condition: Condition): { id: Id; name: string } {
     switch (condition.type) {
         case "country":
         case "project": {
             const country = metadata.orgUnits.find(ou => ou.id === condition.id);
-            return country ? country.name : "-";
+            return { id: condition.id, name: country ? country.name : "-" };
         }
-        case "awardNumber":
-            return _(metadata.orgUnits)
+        case "awardNumber": {
+            const orgUnitNames = _(metadata.orgUnits)
                 .map(ou => ou.name)
                 .sort()
                 .join(", ");
+
+            const ids = _(metadata.orgUnits)
+                .map(ou => ou.id)
+                .sort()
+                .value();
+
+            const name = i18n.t("Award Number {{awardNumber}} - {{orgUnitNames}}", {
+                awardNumber: condition.value,
+                orgUnitNames,
+            });
+
+            return { id: getUid("awardNumbers", ids.join(".")), name };
+        }
     }
 }
 
