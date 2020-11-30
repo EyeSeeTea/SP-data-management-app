@@ -1,6 +1,6 @@
 import _ from "lodash";
 import { Config } from "./Config";
-import { PartialPersistedModel, PartialModel } from "../types/d2-api";
+import { PartialPersistedModel, PartialModel, D2Api } from "../types/d2-api";
 import { D2Dashboard, D2ReportTable, Ref, D2Chart, D2DashboardItem, Id } from "../types/d2-api";
 import Project from "./Project";
 import i18n from "../locales";
@@ -24,6 +24,7 @@ import {
     indicatorItems,
 } from "./Dashboard";
 import { getActualTargetIndicators, getCostBenefitIndicators } from "./indicators";
+import { Response } from "./Response";
 
 export default class ProjectDashboard {
     dataElements: Record<"all" | "people" | "benefit", DataElement[]>;
@@ -55,6 +56,9 @@ export default class ProjectDashboard {
             this.targetVsActualBenefits(),
             this.targetVsActualPeople(),
             this.targetVsActualUniquePeople(),
+            // Percent achieved (to date)
+            this.achievedBenefitsTable({ toDate: true }),
+            this.achievedPeopleTotalTable({ toDate: true }),
             // Percent achieved
             this.achievedBenefitsTable(),
             this.achievedPeopleTable(),
@@ -138,18 +142,21 @@ export default class ProjectDashboard {
         });
     }
 
-    achievedBenefitsTable(): MaybeD2Table {
+    achievedBenefitsTable(options: VisualizationOptions = {}): MaybeD2Table {
         const { config, project, dataElements } = this;
         const indicators = getActualTargetIndicators(config, dataElements.benefit);
 
         return this.getTable({
-            key: "reportTable-indicators-benefits",
-            name: i18n.t("Achieved (%) - Benefits"),
+            key: "reportTable-indicators-benefits" + (options.toDate ? "-todate" : ""),
+            name: options.toDate
+                ? i18n.t("Achieved to date (%) - Benefits")
+                : i18n.t("Achieved (%) - Benefits"),
             items: indicatorItems(indicators),
             reportFilter: [dimensions.orgUnit],
             columnDimensions: [dimensions.period],
             rowDimensions: [dimensions.data],
             extra: { legendSet: project.config.legendSets.achieved },
+            ...options,
         });
     }
 
@@ -169,18 +176,21 @@ export default class ProjectDashboard {
         });
     }
 
-    achievedPeopleTotalTable(): MaybeD2Table {
+    achievedPeopleTotalTable(options: VisualizationOptions = {}): MaybeD2Table {
         const { project, dataElements } = this;
 
         return this.getTable({
-            key: "reportTable-indicators-people-total",
-            name: i18n.t("Achieved total (%) - People"),
+            key: "reportTable-indicators-people-total" + (options.toDate ? "-todate" : ""),
+            name: options.toDate
+                ? i18n.t("Achieved total to date (%) - People")
+                : i18n.t("Achieved total (%) - People"),
             items: indicatorItems(getActualTargetIndicators(this.config, dataElements.people)),
             reportFilter: [dimensions.orgUnit, dimensions.period],
             columnDimensions: [this.categoryOnlyNew],
             rowDimensions: [dimensions.data],
             extra: { legendSet: project.config.legendSets.achieved },
             rowTotals: false,
+            ...options,
         });
     }
 
@@ -272,17 +282,59 @@ export default class ProjectDashboard {
         const { project } = this;
 
         const table: Table = {
-            ...baseTable,
+            ..._.omit(baseTable, ["toDate"]),
             key: baseTable.key + project.uid,
             name: `${project.name} - ${baseTable.name}`,
             organisationUnits: [{ id: getOrgUnitId(project) }],
-            periods: getIds(project.getPeriods()),
+            periods: getIds(project.getPeriods(baseTable)),
             sharing: new ProjectSharing(project).getSharingAttributesForDashboard(),
         };
 
         const d2Table = getD2ReportTable(table);
 
         return d2Table ? { ...d2Table, ...table.extra } : null;
+    }
+}
+
+interface Dashboard {
+    id: Id;
+    name: string;
+}
+
+export async function getProjectDashboard(
+    api: D2Api,
+    config: Config,
+    projectId: Id
+): Promise<Response<Dashboard>> {
+    let project: Project;
+    try {
+        project = await Project.get(api, config, projectId);
+    } catch (err) {
+        const msg = err.message || err;
+        return { type: "error", message: i18n.t(`Cannot load project: ${msg}`) };
+    }
+
+    const metadata = new ProjectDashboard(project).generate();
+    const dashboard = metadata.dashboards[0];
+    if (!dashboard) return { type: "error", message: "Error generating dashboard" };
+
+    const response = await api.metadata
+        .post(metadata)
+        .getData()
+        .catch(_err => null);
+    const newDashboard = { id: dashboard.id, name: project.name };
+    const updateSuccessful = !response || response.status !== "OK";
+
+    if (updateSuccessful) {
+        if (project.dashboard) {
+            // There was an error saving the updated dashboard, but an old one existed, return it.
+            console.error("Error saving dashboard", response);
+            return { type: "success", data: { ...project.dashboard, name: project.name } };
+        } else {
+            return { type: "error", message: i18n.t("Error saving dashboard") };
+        }
+    } else {
+        return { type: "success", data: newDashboard };
     }
 }
 
@@ -295,17 +347,21 @@ function getOrgUnitId(project: Project): string {
     }
 }
 
-type BaseTable = Pick<
-    Table,
+interface VisualizationOptions {
+    toDate?: boolean;
+}
+
+type BaseTableKey =
     | "key"
     | "name"
     | "items"
-    | "reportFilter"
     | "extra"
+    | "reportFilter"
     | "rowDimensions"
     | "columnDimensions"
-    | "rowTotals"
->;
+    | "rowTotals";
+
+type BaseTable = Pick<Table, BaseTableKey> & VisualizationOptions;
 
 type BaseChart = Pick<
     Chart,

@@ -7,31 +7,25 @@ import {
 } from "../../components/dashboard/dashboard-hooks";
 import { Loader } from "../../components/loader/Loader";
 import { generateUrl } from "../../router";
-import Project from "../../models/Project";
 import i18n from "../../locales";
+import { getProjectDashboard } from "../../models/ProjectDashboard";
 
 const ProjectDashboard: React.FC = () => {
     const state = useDashboardFromParams(getDashboard);
+    const backUrl = generateUrl("projects");
 
     return (
         <Loader<DashboardObj> state={state}>
-            {dashboard => (
-                <Dashboard
-                    id={dashboard.id}
-                    name={dashboard.name}
-                    backUrl={generateUrl("projects")}
-                />
-            )}
+            {dashboard => <Dashboard id={dashboard.id} name={dashboard.name} backUrl={backUrl} />}
         </Loader>
     );
 };
 
 const getDashboard: GetDashboard = async (api, config, projectId) => {
-    const project = await Project.get(api, config, projectId);
-    const dashboard = project?.dashboard;
-    return dashboard
-        ? { type: "success", data: { id: dashboard.id, name: project.name } }
-        : { type: "error", message: i18n.t("Cannot get project") };
+    const res = await getProjectDashboard(api, config, projectId);
+    return res.type === "success"
+        ? { type: "success", data: res.data }
+        : { type: "error", message: i18n.t("Cannot get project dashboard") + ": " + res.message };
 };
 
 export default React.memo(ProjectDashboard);

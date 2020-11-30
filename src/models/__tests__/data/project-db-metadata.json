@@ -29,8 +29,8 @@
             ]
         },
         {
-            "id": "eu2XF73JOzl",
             "name": "Bahamas",
+            "id": "eu2XF73JOzl",
             "attributeValues": [
                 {
                     "value": "qyG6foGIKEx",
@@ -488,6 +488,28 @@
                     "y": 20
                 },
                 {
+                    "id": "m4LaU9HizHi",
+                    "type": "REPORT_TABLE",
+                    "reportTable": {
+                        "id": "iOk52Z42bjp"
+                    },
+                    "width": 29,
+                    "height": 20,
+                    "x": 29,
+                    "y": 20
+                },
+                {
+                    "id": "ywvTGMsKdwL",
+                    "type": "REPORT_TABLE",
+                    "reportTable": {
+                        "id": "SQSYgZjfA3z"
+                    },
+                    "width": 29,
+                    "height": 20,
+                    "x": 0,
+                    "y": 40
+                },
+                {
                     "id": "qMSWdZHPjyN",
                     "type": "REPORT_TABLE",
                     "reportTable": {
@@ -496,7 +518,7 @@
                     "width": 29,
                     "height": 20,
                     "x": 29,
-                    "y": 20
+                    "y": 40
                 },
                 {
                     "id": "uyoJujQVRjE",
@@ -507,7 +529,7 @@
                     "width": 29,
                     "height": 20,
                     "x": 0,
-                    "y": 40
+                    "y": 60
                 },
                 {
                     "id": "mgwFIMjbsdw",
@@ -518,7 +540,7 @@
                     "width": 29,
                     "height": 20,
                     "x": 29,
-                    "y": 40
+                    "y": 60
                 },
                 {
                     "id": "ys0CVedHirZ",
@@ -529,7 +551,7 @@
                     "width": 58,
                     "height": 20,
                     "x": 0,
-                    "y": 60
+                    "y": 80
                 },
                 {
                     "id": "KI0C90Ol10x",
@@ -540,7 +562,7 @@
                     "width": 29,
                     "height": 20,
                     "x": 0,
-                    "y": 80
+                    "y": 100
                 },
                 {
                     "id": "uYY7v977Ubm",
@@ -551,7 +573,7 @@
                     "width": 29,
                     "height": 20,
                     "x": 29,
-                    "y": 80
+                    "y": 100
                 },
                 {
                     "id": "qUqsDmtiBLF",
@@ -562,7 +584,7 @@
                     "width": 29,
                     "height": 20,
                     "x": 0,
-                    "y": 100
+                    "y": 120
                 },
                 {
                     "id": "mwMpIdPdu8H",
@@ -573,7 +595,7 @@
                     "width": 29,
                     "height": 20,
                     "x": 29,
-                    "y": 100
+                    "y": 120
                 }
             ],
             "publicAccess": "--------",
@@ -1118,6 +1140,221 @@
                     "access": "rw------"
                 }
             ]
+        },
+        {
+            "id": "iOk52Z42bjp",
+            "name": "MyProject - Achieved to date (%) - Benefits",
+            "numberType": "VALUE",
+            "legendDisplayStyle": "FILL",
+            "rowSubTotals": true,
+            "showDimensionLabels": true,
+            "aggregationType": "DEFAULT",
+            "legendDisplayStrategy": "FIXED",
+            "rowTotals": true,
+            "digitGroupSeparator": "SPACE",
+            "dataDimensionItems": [
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "eCufXa6RkTm"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "i01veyO4Cuw"
+                    }
+                }
+            ],
+            "organisationUnits": [
+                {
+                    "id": "WGC0DJ0YSis"
+                }
+            ],
+            "periods": [
+                {
+                    "id": "201810"
+                },
+                {
+                    "id": "201811"
+                },
+                {
+                    "id": "201812"
+                },
+                {
+                    "id": "201901"
+                },
+                {
+                    "id": "201902"
+                },
+                {
+                    "id": "201903"
+                }
+            ],
+            "columns": [
+                {
+                    "id": "pe"
+                }
+            ],
+            "columnDimensions": ["pe"],
+            "filters": [
+                {
+                    "id": "ou"
+                }
+            ],
+            "filterDimensions": ["ou"],
+            "rows": [
+                {
+                    "id": "dx"
+                }
+            ],
+            "rowDimensions": ["dx"],
+            "categoryDimensions": [],
+            "publicAccess": "--------",
+            "externalAccess": false,
+            "userAccesses": [
+                {
+                    "id": "M5zQapPyTZI",
+                    "displayName": "admin admin",
+                    "access": "rw------"
+                }
+            ],
+            "userGroupAccesses": [
+                {
+                    "id": "ywuI2WspUUG",
+                    "displayName": "System Admin",
+                    "access": "rw------"
+                },
+                {
+                    "id": "mKKNXzeIAJs",
+                    "displayName": "Data Management Admin",
+                    "access": "rw------"
+                }
+            ],
+            "legendSet": {
+                "code": "ACTUAL_TARGET_ACHIEVED",
+                "id": "yoAt108kUFm"
+            }
+        },
+        {
+            "id": "SQSYgZjfA3z",
+            "name": "MyProject - Achieved total to date (%) - People",
+            "numberType": "VALUE",
+            "legendDisplayStyle": "FILL",
+            "rowSubTotals": true,
+            "showDimensionLabels": true,
+            "aggregationType": "DEFAULT",
+            "legendDisplayStrategy": "FIXED",
+            "rowTotals": false,
+            "digitGroupSeparator": "SPACE",
+            "dataDimensionItems": [
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "eYmeRzhBFV4"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "u404ICrBKj3"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "K4sH0aQDdeL"
+                    }
+                }
+            ],
+            "organisationUnits": [
+                {
+                    "id": "WGC0DJ0YSis"
+                }
+            ],
+            "periods": [
+                {
+                    "id": "201810"
+                },
+                {
+                    "id": "201811"
+                },
+                {
+                    "id": "201812"
+                },
+                {
+                    "id": "201901"
+                },
+                {
+                    "id": "201902"
+                },
+                {
+                    "id": "201903"
+                }
+            ],
+            "columns": [
+                {
+                    "id": "uSMHdwhxFSV",
+                    "categoryOptions": [
+                        {
+                            "id": "KiK0FMExoqh"
+                        }
+                    ]
+                }
+            ],
+            "columnDimensions": ["uSMHdwhxFSV"],
+            "filters": [
+                {
+                    "id": "ou"
+                },
+                {
+                    "id": "pe"
+                }
+            ],
+            "filterDimensions": ["ou", "pe"],
+            "rows": [
+                {
+                    "id": "dx"
+                }
+            ],
+            "rowDimensions": ["dx"],
+            "categoryDimensions": [
+                {
+                    "category": {
+                        "id": "uSMHdwhxFSV"
+                    },
+                    "categoryOptions": [
+                        {
+                            "id": "KiK0FMExoqh"
+                        }
+                    ]
+                }
+            ],
+            "publicAccess": "--------",
+            "externalAccess": false,
+            "userAccesses": [
+                {
+                    "id": "M5zQapPyTZI",
+                    "displayName": "admin admin",
+                    "access": "rw------"
+                }
+            ],
+            "userGroupAccesses": [
+                {
+                    "id": "ywuI2WspUUG",
+                    "displayName": "System Admin",
+                    "access": "rw------"
+                },
+                {
+                    "id": "mKKNXzeIAJs",
+                    "displayName": "Data Management Admin",
+                    "access": "rw------"
+                }
+            ],
+            "legendSet": {
+                "code": "ACTUAL_TARGET_ACHIEVED",
+                "id": "yoAt108kUFm"
+            }
         },
         {
             "id": "aeGIpbJkZAX",

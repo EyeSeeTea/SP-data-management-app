@@ -24,3 +24,13 @@ export function selectInMultiSelector(selectorName, label) {
         .next("button")
         .click();
 }
+
+export function runAndWaitForRequest(urlPattern, action) {
+    cy.server()
+        .route("GET", urlPattern)
+        .as(urlPattern);
+
+    action();
+
+    cy.wait("@" + urlPattern);
+}
