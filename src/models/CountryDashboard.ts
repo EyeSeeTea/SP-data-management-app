@@ -27,9 +27,9 @@ import {
     getD2ReportTable,
 } from "./Dashboard";
 import { PeopleOrBenefit } from "./dataElementsSet";
-import { D2Sharing, getD2Access } from "./ProjectSharing";
 import { addAttributeValueToObj, AttributeValue } from "./Attributes";
 import { getProjectsListDashboard, ProjectsListDashboard } from "./ProjectsListDashboard";
+import { D2Sharing, getD2Access } from "./Sharing";
 
 interface DataElement {
     id: Id;

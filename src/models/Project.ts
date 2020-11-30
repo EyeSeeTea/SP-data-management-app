@@ -22,8 +22,9 @@ import {
     validateNonEmpty,
 } from "../utils/validations";
 import { getKeys, Maybe } from "../types/utils";
-import ProjectSharing, { Sharing } from "./ProjectSharing";
+import ProjectSharing from "./ProjectSharing";
 import { Disaggregation, SetCovid19WithRelationsOptions } from "./Disaggregation";
+import { Sharing } from "./Sharing";
 
 /*
 Project model.
@@ -391,7 +392,7 @@ class Project {
     setCountry(country: OrganisationUnit) {
         return this.setObj({
             parentOrgUnit: country,
-            sharing: new ProjectSharing(this).getUpdatedSharingForCountry(country),
+            sharing: new ProjectSharing(this.config, this).getUpdatedSharingForCountry(country),
         });
     }
 

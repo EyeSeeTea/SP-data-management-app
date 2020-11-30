@@ -4,7 +4,7 @@ import { PartialPersistedModel, PartialModel, D2Api } from "../types/d2-api";
 import { D2Dashboard, D2ReportTable, Ref, D2Chart, D2DashboardItem, Id } from "../types/d2-api";
 import Project from "./Project";
 import i18n from "../locales";
-import { getUid, getIds } from "../utils/dhis2";
+import { getUid } from "../utils/dhis2";
 import ProjectSharing from "./ProjectSharing";
 import {
     getReportTableItem,
@@ -30,11 +30,7 @@ export default class ProjectDashboard {
     dataElements: ProjectsListDashboard["dataElements"];
     categoryOnlyNew: { id: Id; categoryOptions: Ref[] };
 
-    constructor(
-        private config: Config,
-        public project: Project,
-        private projectsListDashboard: ProjectsListDashboard
-    ) {
+    constructor(private config: Config, private projectsListDashboard: ProjectsListDashboard) {
         this.dataElements = this.projectsListDashboard.dataElements;
 
         this.categoryOnlyNew = {
@@ -51,11 +47,11 @@ export default class ProjectDashboard {
             id: project.id,
         });
 
-        return new ProjectDashboard(config, project, projectsListDashboard);
+        return new ProjectDashboard(config, projectsListDashboard);
     }
 
     generate() {
-        const { project } = this;
+        const { config, projectsListDashboard } = this;
 
         const reportTables: Array<PartialPersistedModel<D2ReportTable>> = _.compact([
             // General Data View
@@ -94,10 +90,10 @@ export default class ProjectDashboard {
         };
 
         const dashboard: PartialPersistedModel<D2Dashboard> = {
-            id: getUid("dashboard", project.id),
-            name: project.name,
+            id: getUid("dashboard", projectsListDashboard.id),
+            name: projectsListDashboard.name,
             dashboardItems: positionItems(items, positionItemsOptions),
-            ...new ProjectSharing(project).getSharingAttributesForDashboard(),
+            ...new ProjectSharing(config, projectsListDashboard).getSharingAttributesForDashboard(),
         };
 
         return { dashboards: [dashboard], ...favorites };
@@ -266,14 +262,17 @@ export default class ProjectDashboard {
     }
 
     getChart(baseChart: BaseChart): MaybeD2Chart {
-        const { project } = this;
+        const { config, projectsListDashboard } = this;
         const chart: Chart = {
             ...baseChart,
-            key: baseChart.key + project.id,
-            name: `${project.name} - ${baseChart.name}`,
-            organisationUnits: [{ id: getOrgUnitId(project) }],
-            periods: getIds(project.getPeriods()),
-            sharing: new ProjectSharing(project).getSharingAttributesForDashboard(),
+            key: baseChart.key + projectsListDashboard.id,
+            name: `${projectsListDashboard.name} - ${baseChart.name}`,
+            organisationUnits: projectsListDashboard.orgUnits,
+            periods: projectsListDashboard.periods,
+            sharing: new ProjectSharing(
+                config,
+                projectsListDashboard
+            ).getSharingAttributesForDashboard(),
         };
         const d2Chart = getD2Chart(chart);
 
@@ -281,15 +280,18 @@ export default class ProjectDashboard {
     }
 
     getTable(baseTable: BaseTable): MaybeD2Table {
-        const { project } = this;
+        const { config, projectsListDashboard } = this;
 
         const table: Table = {
             ..._.omit(baseTable, ["toDate"]),
-            key: baseTable.key + project.id,
-            name: `${project.name} - ${baseTable.name}`,
-            organisationUnits: [{ id: getOrgUnitId(project) }],
-            periods: getIds(project.getPeriods(baseTable)),
-            sharing: new ProjectSharing(project).getSharingAttributesForDashboard(),
+            key: baseTable.key + projectsListDashboard.id,
+            name: `${projectsListDashboard.name} - ${baseTable.name}`,
+            organisationUnits: projectsListDashboard.orgUnits,
+            periods: projectsListDashboard.periods,
+            sharing: new ProjectSharing(
+                config,
+                projectsListDashboard
+            ).getSharingAttributesForDashboard(),
         };
 
         const d2Table = getD2ReportTable(table);
@@ -337,15 +339,6 @@ export async function getProjectDashboard(
         }
     } else {
         return { type: "success", data: newDashboard };
-    }
-}
-
-function getOrgUnitId(project: Project): string {
-    const ou = project.orgUnit;
-    if (!ou) {
-        throw new Error("No organisation defined for project");
-    } else {
-        return _.last(ou.path.split("/")) || "";
     }
 }
 

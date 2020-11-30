@@ -1,9 +1,17 @@
 import _ from "lodash";
+import moment from "moment";
 import { Id, Ref, D2Api, SelectedPick, D2DataSetSchema } from "../types/d2-api";
 import { PeopleOrBenefit } from "./dataElementsSet";
 import { Config } from "./Config";
-import { getRefs } from "../utils/dhis2";
 import { Maybe } from "../types/utils";
+import { getPeriodsFromRange, monthPeriod } from "./Period";
+import {
+    Sharing,
+    emptySharing,
+    getSharing,
+    D2Sharing,
+    mergeSharing as unionSharing,
+} from "./Sharing";
 
 interface DashboardProject {
     id: Id;
@@ -11,6 +19,7 @@ interface DashboardProject {
     dataElements: DataElement[];
     openingDate: Date;
     closingDate: Date;
+    sharing: Sharing;
 }
 
 export interface DataElement {
@@ -22,20 +31,32 @@ export interface DataElement {
 }
 
 export interface ProjectsListDashboard {
-    dates: Maybe<{ opening: Date; closing: Date }>;
-    dataElements: Record<"all" | "people" | "benefit", DataElement[]>;
+    id: Id;
+    name: string;
     orgUnits: Ref[];
+    parentOrgUnit: Maybe<Ref>;
+    sharing: Sharing;
+    dates: Maybe<{ opening: Date; closing: Date }>;
+    periods: string[];
+    dataElements: Record<"all" | "people" | "benefit", DataElement[]>;
 }
 
 const query = {
     organisationUnits: {
         id: true,
-        children: { id: true },
+        name: true,
+        path: true,
+        parent: true,
+        children: { id: true, name: true, parent: true },
     },
     dataSets: {
         id: true,
         code: true,
-        dataInputPeriods: { openingDate: true, closingDate: true },
+        dataInputPeriods: { period: { id: true } },
+        publicAccess: true,
+        externalAccess: true,
+        userAccesses: { id: true, access: true, displayName: true },
+        userGroupAccesses: { id: true, access: true, displayName: true },
         dataSetElements: {
             dataElement: {
                 id: true,
@@ -73,10 +94,20 @@ export async function getProjectsListDashboard(
     };
 
     const openingDate = _.min(projects.map(project => project.openingDate));
-    const closingDate = _.min(projects.map(project => project.closingDate));
+    const closingDate = _.max(projects.map(project => project.closingDate));
+    const sharing = projects.map(project => project.sharing).reduce(unionSharing, emptySharing);
+    const parentOrgUnit =
+        condition.type === "country"
+            ? { id: condition.id }
+            : _.first(metadata.orgUnits.map(ou => ou.parent));
 
     const dashboardProjects: ProjectsListDashboard = {
+        id: condition.type === "country" || condition.type === "project" ? condition.id : "",
+        parentOrgUnit,
+        sharing,
+        name: getName(metadata, condition),
         orgUnits: metadata.orgUnits,
+        periods: getPeriodsFromRange(openingDate, closingDate),
         dates: openingDate && closingDate ? { opening: openingDate, closing: closingDate } : null,
         dataElements: dataElementsByType,
     };
@@ -84,10 +115,26 @@ export async function getProjectsListDashboard(
     return dashboardProjects;
 }
 
+function getName(metadata: Metadata, condition: Condition): string {
+    switch (condition.type) {
+        case "country":
+        case "project": {
+            const country = metadata.orgUnits.find(ou => ou.id === condition.id);
+            return country ? country.name : "-";
+        }
+        case "awardNumber":
+            return _(metadata.orgUnits)
+                .map(ou => ou.name)
+                .sort()
+                .join(", ");
+    }
+}
+
+type OrgUnitApi = { id: Id; name: string; parent: Ref } & D2Sharing;
 type DataSetApi = SelectedPick<D2DataSetSchema, typeof query.dataSets>;
 
 interface Metadata {
-    orgUnits: Ref[];
+    orgUnits: OrgUnitApi[];
     dataSets: DataSetApi[];
 }
 
@@ -121,7 +168,7 @@ async function getMetadata(api: D2Api, condition: Condition): Promise<Metadata> 
     const orgUnits =
         condition.type === "country"
             ? _.flatMap(organisationUnits, ou => ou.children)
-            : getRefs(organisationUnits);
+            : organisationUnits.map(ou => _.pick(ou, ["id", "name", "parent"]));
 
     return { orgUnits, dataSets };
 }
@@ -136,9 +183,10 @@ function getProject(
     const orgUnit = orgUnitById[projectId];
     if (!orgUnit) return null;
 
-    const openingDateString = _.min(dataSet.dataInputPeriods.map(dip => dip.openingDate));
-    const closingDateString = _.min(dataSet.dataInputPeriods.map(dip => dip.closingDate));
-    if (!openingDateString || !closingDateString) return null;
+    const periodIds = dataSet.dataInputPeriods.map(dip => dip.period.id as string);
+    const openingPeriod = _.min(periodIds);
+    const closingPeriod = _.max(periodIds);
+    if (!openingPeriod || !closingPeriod) return null;
 
     const { people: peopleCode, benefit: benefitCode } = config.base.dataElementGroups;
 
@@ -173,8 +221,9 @@ function getProject(
     return {
         id: orgUnit.id,
         orgUnit: { id: orgUnit.id },
-        openingDate: new Date(openingDateString),
-        closingDate: new Date(closingDateString),
+        openingDate: moment(openingPeriod, monthPeriod).toDate(),
+        closingDate: moment(closingPeriod, monthPeriod).toDate(),
         dataElements,
+        sharing: getSharing(dataSet),
     };
 }

@@ -9,8 +9,8 @@ import {
     Id,
 } from "../types/d2-api";
 import { Maybe } from "../types/utils";
-import { getUid } from "../utils/dhis2";
-import { D2Sharing } from "./ProjectSharing";
+import { getUid, getRefs } from "../utils/dhis2";
+import { D2Sharing } from "./Sharing";
 
 export const dimensions = {
     period: { id: "pe" },
@@ -101,7 +101,7 @@ export function getD2ReportTable(table: Table): MaybeD2Table {
         rowTotals: table.rowTotals ?? true,
         digitGroupSeparator: "SPACE",
         dataDimensionItems,
-        organisationUnits: table.organisationUnits,
+        organisationUnits: getRefs(table.organisationUnits),
         periods: getPeriods(table),
         relativePeriods: table.relativePeriods,
         columns: table.columnDimensions,
@@ -144,7 +144,7 @@ export function getD2Chart(chart: Chart): MaybeD2Chart {
         filters: chart.reportFilter,
         filterDimensions: chart.reportFilter.map(dimension => dimension.id),
         categoryDimensions: getCategoryDimensions(chartDimensions),
-        organisationUnits: chart.organisationUnits,
+        organisationUnits: getRefs(chart.organisationUnits),
         ...chart.sharing,
     };
 

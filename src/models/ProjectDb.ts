@@ -14,10 +14,11 @@ import { Config } from "./Config";
 import { runPromises } from "../utils/promises";
 import DataElementsSet from "./dataElementsSet";
 import { ProjectInfo, getProjectStorageKey } from "./MerReport";
-import ProjectSharing, { getSharing } from "./ProjectSharing";
+import ProjectSharing from "./ProjectSharing";
 import { splitParts } from "../utils/string";
 import CountryDashboard from "./CountryDashboard";
 import { addAttributeValueToObj, addAttributeValue } from "./Attributes";
+import { getSharing } from "./Sharing";
 
 const expiryDaysInMonthActual = 10;
 
@@ -338,7 +339,7 @@ export default class ProjectDb {
         orgUnit: T,
         baseDataSet: PartialModel<D2DataSet> & Pick<D2DataSet, "code" | OpenProperties>
     ) {
-        const { project } = this;
+        const { config, project } = this;
         const dataSetId = getUid("dataSet", project.uid + baseDataSet.code);
         const selectedDataElements = project.getSelectedDataElements();
 
@@ -362,7 +363,7 @@ export default class ProjectDb {
             };
         });
         const sections = _.compact(sections0);
-        const projectSharing = new ProjectSharing(project);
+        const projectSharing = new ProjectSharing(config, project);
 
         const dataSet = {
             id: dataSetId,

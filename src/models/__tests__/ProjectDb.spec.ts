@@ -30,10 +30,10 @@ describe("ProjectDb", () => {
 
             mock.onGet("/metadata", {
                 params: {
-                    "organisationUnits:fields": "children[id],id",
+                    "organisationUnits:fields": "children[id,name,parent],id,name,parent,path",
                     "organisationUnits:filter": ["id:eq:WGC0DJ0YSis"],
                     "dataSets:fields":
-                        "code,dataInputPeriods[closingDate,openingDate],dataSetElements[dataElement[attributeValues[attribute[id],value],code,dataElementGroups[code],id,name]],id",
+                        "code,dataInputPeriods[period[id]],dataSetElements[dataElement[attributeValues[attribute[id],value],code,dataElementGroups[code],id,name]],externalAccess,id,publicAccess,userAccesses[access,displayName,id],userGroupAccesses[access,displayName,id]",
                     "dataSets:filter": [
                         "code:like$:_ACTUAL",
                         "organisationUnits.path:like:WGC0DJ0YSis",
@@ -45,10 +45,10 @@ describe("ProjectDb", () => {
 
             mock.onGet("/metadata", {
                 params: {
-                    "organisationUnits:fields": "children[id],id",
+                    "organisationUnits:fields": "children[id,name,parent],id,name,parent,path",
                     "organisationUnits:filter": ["id:eq:eu2XF73JOzl"],
                     "dataSets:fields":
-                        "code,dataInputPeriods[closingDate,openingDate],dataSetElements[dataElement[attributeValues[attribute[id],value],code,dataElementGroups[code],id,name]],id",
+                        "code,dataInputPeriods[period[id]],dataSetElements[dataElement[attributeValues[attribute[id],value],code,dataElementGroups[code],id,name]],externalAccess,id,publicAccess,userAccesses[access,displayName,id],userGroupAccesses[access,displayName,id]",
                     "dataSets:filter": [
                         "code:like$:_ACTUAL",
                         "organisationUnits.path:like:eu2XF73JOzl",

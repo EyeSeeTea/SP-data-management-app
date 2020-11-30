@@ -8,6 +8,7 @@
     "organisationUnits": [
         {
             "id": "WGC0DJ0YSis",
+            "name": "MyProject",
             "children": []
         }
     ],
@@ -15,6 +16,27 @@
         {
             "code": "WGC0DJ0YSis_ACTUAL",
             "id": "CwUxT9UIX3z",
+            "publicAccess": "--------",
+            "externalAccess": false,
+            "userAccesses": [
+                {
+                    "id": "M5zQapPyTZI",
+                    "displayName": "admin admin",
+                    "access": "rwrw----"
+                }
+            ],
+            "userGroupAccesses": [
+                {
+                    "id": "ywuI2WspUUG",
+                    "displayName": "System Admin",
+                    "access": "rwrw----"
+                },
+                {
+                    "id": "mKKNXzeIAJs",
+                    "displayName": "Data Management Admin",
+                    "access": "rwrw----"
+                }
+            ],
             "dataSetElements": [
                 {
                     "dataElement": {
@@ -230,26 +252,44 @@
             ],
             "dataInputPeriods": [
                 {
+                    "period": {
+                        "id": "201812"
+                    },
                     "closingDate": "2019-01-10T00:00:00.000",
                     "openingDate": "2018-10-01T00:00:00.000"
                 },
                 {
+                    "period": {
+                        "id": "201901"
+                    },
                     "closingDate": "2019-02-10T00:00:00.000",
                     "openingDate": "2018-10-01T00:00:00.000"
                 },
                 {
+                    "period": {
+                        "id": "201903"
+                    },
                     "closingDate": "2019-04-10T00:00:00.000",
                     "openingDate": "2018-10-01T00:00:00.000"
                 },
                 {
+                    "period": {
+                        "id": "201810"
+                    },
                     "closingDate": "2018-11-10T00:00:00.000",
                     "openingDate": "2018-10-01T00:00:00.000"
                 },
                 {
+                    "period": {
+                        "id": "201811"
+                    },
                     "closingDate": "2018-12-10T00:00:00.000",
                     "openingDate": "2018-10-01T00:00:00.000"
                 },
                 {
+                    "period": {
+                        "id": "201902"
+                    },
                     "closingDate": "2019-03-10T00:00:00.000",
                     "openingDate": "2018-10-01T00:00:00.000"
                 }

@@ -7,8 +7,9 @@ import { Sector, getOrgUnitDatesFromProject, getProjectFromOrgUnit } from "./Pro
 import { getSectorCodeFromSectionCode } from "./ProjectDb";
 import User from "./user";
 import { getIds } from "../utils/dhis2";
-import { Sharing, getSharing, hasCurrentUserFullAccessToDataSet } from "./ProjectSharing";
+import { hasCurrentUserFullAccessToDataSet } from "./ProjectSharing";
 import { Pagination, paginate } from "../utils/pagination";
+import { Sharing, getSharing } from "./Sharing";
 
 export type FiltersForList = Partial<{
     search: string;

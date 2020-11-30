@@ -7,6 +7,7 @@ import { Sharing, ShareUpdate } from "d2-ui-components";
 import { StepProps } from "../../../pages/project-wizard/ProjectWizard";
 import ProjectSharing from "../../../models/ProjectSharing";
 import Project from "../../../models/Project";
+import { useAppContext } from "../../../contexts/api-context";
 
 const showOptions = {
     title: false,
@@ -33,16 +34,20 @@ function searchUsers(api: D2Api, query: string, project: Project) {
 }
 
 const SharingStep: React.FC<StepProps> = props => {
+    const { config } = useAppContext();
     const { api, project, onChange } = props;
-    const projectSharing = React.useMemo(() => new ProjectSharing(project), [project]);
+    const projectSharing = React.useMemo(() => {
+        return new ProjectSharing(config, project);
+    }, [config, project]);
     const sharedObject = React.useMemo(() => projectSharing.getSharedObject(), [projectSharing]);
     const setProjectSharing = React.useCallback(
         (shareUpdate: ShareUpdate) => {
-            const newProject = projectSharing.getProjectFromD2Update(shareUpdate);
+            const newSharing = projectSharing.getSharingFromD2Update(shareUpdate);
+            const newProject = project.setObj({ sharing: newSharing });
             onChange(newProject);
             return Promise.resolve();
         },
-        [projectSharing, onChange]
+        [project, projectSharing, onChange]
     );
     const search = React.useCallback((query: string) => searchUsers(api, query, project), [
         api,
