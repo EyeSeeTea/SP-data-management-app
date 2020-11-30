@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2020-11-21T18:35:00.112Z\n"
-"PO-Revision-Date: 2020-11-21T18:35:00.112Z\n"
+"POT-Creation-Date: 2020-11-26T09:13:17.636Z\n"
+"PO-Revision-Date: 2020-11-26T09:13:17.636Z\n"
 
 msgid "Name"
 msgstr ""
@@ -27,6 +27,28 @@ msgid "Details"
 msgstr ""
 
 msgid "Go to Dashboard"
+msgstr ""
+
+msgid "Search by name or code"
+msgstr ""
+
+msgid "Dashboard"
+msgstr ""
+
+msgid ""
+"Data updates in the dashboards every 15 minutes.  If you do not see your "
+"data immediately after data entry, please give the system additional time "
+"to update.\n"
+"\n"
+"        If you notice data errors while viewing the dashboards, please "
+"return to the home screen and edit the data under the data entry sections "
+"for your project."
+msgstr ""
+
+msgid "Loading dashboard to analyse your data..."
+msgstr ""
+
+msgid "Cannot load dashboard"
 msgstr ""
 
 msgid "Data Entry"
@@ -257,6 +279,21 @@ msgid ""
 "lost. Are you sure you want to proceed?"
 msgstr ""
 
+msgid "Error saving dashboard"
+msgstr ""
+
+msgid "Aggregated Actual Values - People"
+msgstr ""
+
+msgid "Aggregated Actual Values - Benefit"
+msgstr ""
+
+msgid "Projects - People"
+msgstr ""
+
+msgid "Projects - Benefit"
+msgstr ""
+
 msgid "Data Approval"
 msgstr ""
 
@@ -373,9 +410,6 @@ msgstr ""
 msgid "Data Sets"
 msgstr ""
 
-msgid "Dashboard"
-msgstr ""
-
 msgid "Initial Data"
 msgstr ""
 
@@ -397,10 +431,16 @@ msgstr ""
 msgid "Target vs Actual - Unique People"
 msgstr ""
 
+msgid "Achieved to date (%) - Benefits"
+msgstr ""
+
 msgid "Achieved (%) - Benefits"
 msgstr ""
 
 msgid "Achieved (%) - People"
+msgstr ""
+
+msgid "Achieved total to date (%) - People"
 msgstr ""
 
 msgid "Achieved total (%) - People"
@@ -419,9 +459,6 @@ msgid "Achieved by gender (%)"
 msgstr ""
 
 msgid "Benefits Per Person"
-msgstr ""
-
-msgid "Error saving dashboard"
 msgstr ""
 
 msgid ""
@@ -532,23 +569,10 @@ msgid ""
 "initial returning + new values for past periods: {{newValuesSumFormula}}"
 msgstr ""
 
-msgid "Dashboard for Project"
+msgid "Cannot get country dashboard"
 msgstr ""
 
-msgid ""
-"Data updates in the dashboards every 15 minutes.  If you do not see your "
-"data immediately after data entry, please give the system additional time "
-"to update.\n"
-"\n"
-"        If you notice data errors while viewing the dashboards, please "
-"return to the home screen and edit the data under the data entry sections "
-"for your project."
-msgstr ""
-
-msgid "Dashboard project to analyse your data..."
-msgstr ""
-
-msgid "Cannot load project relations"
+msgid "Cannot get project dashboard"
 msgstr ""
 
 msgid "Period"
@@ -567,6 +591,9 @@ msgid "Send Message"
 msgstr ""
 
 msgid "Cannot load category option combo"
+msgstr ""
+
+msgid "Cannot load project relations"
 msgstr ""
 
 msgid ""
@@ -727,9 +754,6 @@ msgid "Edit"
 msgstr ""
 
 msgid "Delete"
-msgstr ""
-
-msgid "Search by name or code"
 msgstr ""
 
 msgid "MER Reports"

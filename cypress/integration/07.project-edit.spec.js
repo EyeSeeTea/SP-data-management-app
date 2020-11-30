@@ -51,9 +51,8 @@ describe("Projects - Edit", () => {
         cy.contains("Bahamas");
         cy.contains("Sectors");
 
-        cy.server()
-            .route({ method: "post", url: "/api/email/notification*" })
-            .as("sendEmail");
+        cy.server();
+        cy.route("POST", "/api/email/**").as("sendEmail");
 
         cy.get("[data-wizard-contents] button")
             .contains("Save")

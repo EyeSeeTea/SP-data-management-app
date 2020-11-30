@@ -113,7 +113,7 @@ export function useDhis2EntryEvents(
         return () => {
             window.removeEventListener("message", onMessageFromIframe);
         };
-    }, [iframeRef, onMessage, onMessageFromIframe, options]);
+    }, [iframeRef, onMessage, options, onMessageFromIframe]);
 }
 
 function isInputMsgFromIframe(msg: any): msg is MsgFromIframe {

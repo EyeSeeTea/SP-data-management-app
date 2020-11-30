@@ -1,8 +1,8 @@
 import { Config, Sector as SectorC, Funder as FunderC, Location as LocationC } from "./Config";
 import moment, { Moment } from "moment";
 import _ from "lodash";
-import { D2Api, SelectedPick, Id, Ref } from "../types/d2-api";
-import { D2OrganisationUnit, D2IndicatorSchema } from "../types/d2-api";
+import { D2Api, Id, Ref } from "../types/d2-api";
+import { D2OrganisationUnit } from "../types/d2-api";
 // @ts-ignore
 import { generateUid } from "d2/uid";
 import { TableSorting } from "d2-ui-components";
@@ -500,51 +500,19 @@ class Project {
             : [];
     }
 
-    getPeriods(): Array<{ date: Moment; id: string }> {
-        return getMonthsRange(this.startDate, this.endDate).map(date => ({
-            date,
-            id: date.format("YYYYMM"),
-        }));
+    getPeriods(options: { toDate?: boolean } = {}): Array<{ date: Moment; id: string }> {
+        const { startDate, endDate } = this;
+        const { toDate = false } = options;
+        const months = getMonthsRange(startDate, endDate);
+        const periods = months.map(date => ({ date, id: date.format("YYYYMM") }));
+        const now = moment();
+        return !toDate ? periods : periods.filter(period => period.date <= now);
     }
 
     getDates(): { startDate: Moment; endDate: Moment } {
         const { startDate, endDate } = this;
         if (!startDate || !endDate) throw new Error("No project dates");
         return { startDate, endDate };
-    }
-
-    private getIndicators(
-        dataElements: Array<{ code: string }>,
-        codePrefix: string
-    ): Array<SelectedPick<D2IndicatorSchema, { id: true; code: true }>> {
-        const indicatorsByCode = _.keyBy(this.config.indicators, indicator => indicator.code);
-
-        return _(dataElements)
-            .map(de => {
-                const indicatorCode = codePrefix + de.code;
-                const indicator = _(indicatorsByCode).get(indicatorCode, undefined);
-                if (indicator) {
-                    return indicator;
-                } else {
-                    const msg = `Indicator ${indicatorCode} not found for data element ${de.code}`;
-                    console.error(msg);
-                    return null;
-                }
-            })
-            .compact()
-            .value();
-    }
-
-    getActualTargetIndicators(
-        dataElements: Array<{ code: string }>
-    ): Array<SelectedPick<D2IndicatorSchema, { id: true; code: true }>> {
-        return this.getIndicators(dataElements, this.config.base.indicators.actualTargetPrefix);
-    }
-
-    getCostBenefitIndicators(
-        dataElements: Array<{ code: string }>
-    ): Array<SelectedPick<D2IndicatorSchema, { id: true; code: true }>> {
-        return this.getIndicators(dataElements, this.config.base.indicators.costBenefitPrefix);
     }
 
     getProjectDataSet(dataSet: DataSet) {

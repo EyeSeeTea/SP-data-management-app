@@ -1,6 +1,6 @@
 import React, { PropsWithChildren } from "react";
+import classnames from "classnames";
 import {
-    ObjectsTable,
     TableColumn,
     TableSorting,
     ReferenceObject,
@@ -10,12 +10,13 @@ import {
     ObjectsTableProps,
     TableGlobalAction,
     MouseActionsMapping,
+    ObjectsTable,
 } from "d2-ui-components";
 import { makeStyles } from "@material-ui/core";
 import { Spinner } from "../objects-list/Spinner";
-import styled from "styled-components";
 
 export interface ObjectsListProps<Obj extends ReferenceObject> {
+    className?: string;
     columns: TableColumn<Obj>[];
     rows: Obj[] | undefined;
     onChange(newState: TableState<Obj>): void;
@@ -36,16 +37,11 @@ export interface ObjectsListProps<Obj extends ReferenceObject> {
     reload(): void;
 }
 
-const ObjectsTableStyled = styled(ObjectsTable)`
-    .MuiTextField-root {
-        max-width: 250px;
-    }
-` as typeof ObjectsTable;
-
 export function ObjectsList<T extends ReferenceObject>(
     props: PropsWithChildren<ObjectsListProps<T>>
 ): React.ReactElement<ObjectsListProps<T>> {
     const {
+        className,
         children,
         isLoading,
         rows,
@@ -56,10 +52,10 @@ export function ObjectsList<T extends ReferenceObject>(
     const classes = useStyles();
 
     return (
-        <div className={classes.wrapper}>
+        <div className={classnames(classes.wrapper, className)}>
             {isLoading ? <span data-test-loading /> : <span data-test-loaded />}
             {
-                <ObjectsTableStyled<T>
+                <ObjectsTable<T>
                     rows={rows || []}
                     mouseActionsMapping={mouseActionsMapping}
                     {...tableProps}

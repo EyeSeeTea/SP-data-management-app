@@ -3,6 +3,7 @@ import _ from "lodash";
 import { Config } from "./Config";
 import { D2DataSetSchema } from "../types/d2-api";
 
+// Move to entities
 type D2Access = string;
 
 export interface D2Sharing {
@@ -178,7 +179,7 @@ function getD2EntitiesAccess(entitySharings: EntityAccess[], access: Access): D2
     }));
 }
 
-function getD2Access(d2Access: Access): D2Access {
+export function getD2Access(d2Access: Access): D2Access {
     const parts = [
         d2Access.meta.read ? "r" : "-",
         d2Access.meta.write ? "w" : "-",

@@ -8,7 +8,7 @@ import { toISOString } from "../utils/date";
 
 const monthFormat = "YYYYMM";
 
-interface DataSetOpenInfo {
+export interface DataSetOpenInfo {
     isOpen: boolean;
     isReopened: boolean;
     isOpenByDates: boolean;

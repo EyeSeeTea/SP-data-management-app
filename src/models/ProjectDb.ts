@@ -16,6 +16,8 @@ import DataElementsSet from "./dataElementsSet";
 import { ProjectInfo, getProjectStorageKey } from "./MerReport";
 import ProjectSharing, { getSharing } from "./ProjectSharing";
 import { splitParts } from "../utils/string";
+import CountryDashboard from "./CountryDashboard";
+import { addAttributeValueToObj, addAttributeValue } from "./Attributes";
 
 const expiryDaysInMonthActual = 10;
 
@@ -41,11 +43,15 @@ export default class ProjectDb {
         const { project, api, config } = this;
         const { startDate, endDate } = project;
 
+        const country = project.parentOrgUnit;
+
         const validationErrors = _.flatten(_.values(await project.validate()));
         if (!_.isEmpty(validationErrors)) {
             throw new Error("Validation errors:\n" + validationErrors.join("\n"));
         } else if (!startDate || !endDate || !project.parentOrgUnit) {
             throw new Error("Invalid project state");
+        } else if (!country) {
+            throw new Error("No country set");
         }
 
         const baseAttributeValues = [
@@ -74,18 +80,19 @@ export default class ProjectDb {
         };
 
         const projectWithOrgUnit = project.set("orgUnit", orgUnit);
-        const dashboardsMetadata = new ProjectDashboard(projectWithOrgUnit).generate();
-        const dashboard = dashboardsMetadata.dashboards[0];
-        if (!dashboard) throw new Error("No dashboard defined");
+        const projectDashboardMetadata = new ProjectDashboard(projectWithOrgUnit).generate();
+        const countryDashboardGenerator = await CountryDashboard.build(api, config, country.id);
+        const countryDashboardMetadata = countryDashboardGenerator.generate();
 
-        const orgUnitToSave = {
-            ...orgUnit,
-            attributeValues: addAttributeValue(
-                orgUnit.attributeValues,
-                config.attributes.projectDashboard,
-                dashboard.id
-            ),
-        };
+        const projectDashboard = projectDashboardMetadata.dashboards[0];
+
+        if (!projectDashboard) throw new Error("Dashboards error");
+
+        const projectOrgUnit = addAttributeValueToObj(orgUnit, {
+            values: orgUnit.attributeValues,
+            attribute: config.attributes.projectDashboard,
+            value: projectDashboard.id,
+        });
 
         const orgUnitGroupsToSave = await getOrgUnitGroups(api, project);
 
@@ -114,7 +121,7 @@ export default class ProjectDb {
         const dataSetActual = _(dataSetActualMetadata.dataSets).getOrFail(0);
 
         const orgUnitsMetadata: OrgUnitsMeta = {
-            organisationUnits: [orgUnitToSave],
+            organisationUnits: [projectOrgUnit],
             organisationUnitGroups: orgUnitGroupsToSave,
         };
 
@@ -122,7 +129,8 @@ export default class ProjectDb {
             orgUnitsMetadata,
             dataSetTargetMetadata,
             dataSetActualMetadata,
-            dashboardsMetadata,
+            projectDashboardMetadata,
+            countryDashboardMetadata,
         ]);
 
         await this.saveMERData(orgUnit.id).getData();
@@ -134,12 +142,12 @@ export default class ProjectDb {
                 ? this.project.setObj({
                       id: orgUnit.id,
                       orgUnit: orgUnit,
-                      dashboard: { id: dashboard.id },
+                      dashboard: { id: projectDashboard.id },
                       dataSets: { actual: dataSetActual, target: dataSetTarget },
                   })
                 : this.project;
 
-        return { orgUnit: orgUnitToSave, payload, response, project: savedProject };
+        return { orgUnit: projectOrgUnit, payload, response, project: savedProject };
     }
 
     async updateDataSet(dataSet: Ref, attrs: PartialModel<D2DataSet>) {
@@ -535,14 +543,6 @@ function getOrgUnitId(orgUnit: { path: string }): string {
     const id = _.last(orgUnit.path.split("/"));
     if (id) return id;
     else throw new Error(`Invalid path: ${orgUnit.path}`);
-}
-
-function addAttributeValue<Attribute extends Ref>(
-    attributeValues: Array<{ attribute: Ref; value: string }>,
-    attribute: Attribute,
-    value: string
-) {
-    return attributeValues.concat([{ value, attribute: { id: attribute.id } }]);
 }
 
 type OrgUnitsWithAttributes = SelectedPick<

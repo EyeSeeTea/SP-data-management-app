@@ -1,59 +1,36 @@
 import _ from "lodash";
 import { runAndWaitForRequest } from "../support/utils";
 
-const projectName = "00Cypress Project";
+const countryName = "Bahamas";
 
-describe("Project Configuration - List page", () => {
+describe("Countries List page", () => {
     beforeEach(() => {
         cy.login("admin");
         cy.loadPage();
+        cy.get("[data-test='list-selector-countries']").click();
     });
 
-    it("shows list of user projects", () => {
-        cy.contains(projectName);
-    });
-
-    it("opens contextual menu when left button mouse is clicked", () => {
-        cy.contains(projectName).click();
-
-        cy.contains("Details");
-        cy.contains("Add Actual Values");
-        cy.contains("Go to Dashboard");
-        cy.contains("Add Target Values");
-        cy.contains("Download Data");
-        cy.contains("Edit");
-        cy.contains("Delete");
+    it("shows list of countries", () => {
+        cy.contains(countryName);
     });
 
     it("shows details when details action is clicked", () => {
-        cy.contains(projectName).trigger("contextmenu");
+        cy.contains(countryName).trigger("contextmenu");
         cy.contains("Details").click();
 
         cy.contains("Name");
-        cy.contains("Award Number");
-        cy.contains("Description");
         cy.contains("Last Updated");
-        cy.contains("Last Updated By");
         cy.contains("Created");
-        cy.contains("Created By");
-        cy.contains("Opening Date");
-        cy.contains("Closed Date");
-        cy.contains("API Link");
     });
 
     it("opens contextual menu when right button mouse is clicked", () => {
-        cy.contains(projectName).trigger("contextmenu");
+        cy.contains(countryName).trigger("contextmenu");
 
         cy.contains("Details");
-        cy.contains("Add Actual Values");
         cy.contains("Go to Dashboard");
-        cy.contains("Add Target Values");
-        cy.contains("Download Data");
-        cy.contains("Edit");
-        cy.contains("Delete");
     });
 
-    it("shows list of projects sorted alphabetically", () => {
+    it("shows list of countries sorted alphabetically", () => {
         cy.get(".MuiTableBody-root tr > td:nth-child(2)").then(el => {
             const names = el.get().map(x => x.innerText);
             const sortedNames = _(names)
@@ -63,9 +40,9 @@ describe("Project Configuration - List page", () => {
         });
     });
 
-    it("shows list of projects sorted alphabetically by name desc", () => {
+    it("shows list of countries sorted alphabetically by name desc", () => {
         cy.get("[data-test-loaded]");
-        runAndWaitForRequest("/api/metadata*", () => {
+        runAndWaitForRequest("/api/organisationUnits*", () => {
             cy.contains("Name").click();
         });
 
@@ -80,7 +57,7 @@ describe("Project Configuration - List page", () => {
         });
     });
 
-    it("can filter projects by name", () => {
+    it("can filter countries by name", () => {
         cy.get("[placeholder='Search by name or code']")
             .clear()
             .type("Non existing name 1234$%&");
@@ -88,4 +65,3 @@ describe("Project Configuration - List page", () => {
         cy.contains("No results found");
     });
 });
-

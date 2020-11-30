@@ -9,9 +9,10 @@ const routes = {
     report: () => "/report",
     actualValues: ({ id }: { id: string }) => `/actual-values/${id}`,
     targetValues: ({ id }: { id: string }) => `/target-values/${id}`,
-    dashboard: ({ id }: { id: string }) => `/dashboard/${id}`,
-    dashboards: () => `/dashboard`,
+    projectDashboard: ({ id }: { id: string }) => `/project-dashboard/${id}`,
+    countryDashboard: ({ id }: { id: string }) => `/country-dashboard/${id}`,
     dataApproval: ({ id }: { id: string }) => `/data-approval/${id}`,
+    countries: () => `/countries`,
 };
 
 type Routes = typeof routes;

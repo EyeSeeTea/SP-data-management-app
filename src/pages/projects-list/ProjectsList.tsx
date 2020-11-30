@@ -9,9 +9,9 @@ import {
 import _ from "lodash";
 import React, { useCallback, useState } from "react";
 import ActionButton from "../../components/action-button/ActionButton";
-import ListSelector, { ListView } from "../../components/list-selector/ListSelector";
+import ListSelector from "../../components/list-selector/ListSelector";
 import { useObjectsTable } from "../../components/objects-list/objects-list-hooks";
-import { ObjectsList } from "../../components/objects-list/ObjectsList";
+import { ObjectsList, ObjectsListProps } from "../../components/objects-list/ObjectsList";
 import { CurrentUser, useAppContext } from "../../contexts/api-context";
 import i18n from "../../locales";
 import { Config } from "../../models/Config";
@@ -25,8 +25,12 @@ import { formatDateLong, formatDateShort } from "../../utils/date";
 import { downloadFile } from "../../utils/download";
 import ProjectsListFilters, { Filter } from "./ProjectsListFilters";
 import DeleteDialog from "../../components/delete-dialog/DeleteDialog";
+import styled from "styled-components";
+import { useListSelector } from "../../components/list-selector/ListSelectorHooks";
 
-type ContextualAction = Exclude<Action, "create" | "accessMER" | "reopen"> | "details";
+type ContextualAction =
+    | Exclude<Action, "countryDashboard" | "create" | "accessMER" | "reopen">
+    | "details";
 
 function getComponentConfig(
     api: D2Api,
@@ -117,7 +121,7 @@ function getComponentConfig(
             icon: <Icon>dashboard</Icon>,
             text: i18n.t("Go to Dashboard"),
             multiple: false,
-            onClick: (ids: Id[]) => onFirst(ids, id => goTo("dashboard", { id })),
+            onClick: (ids: Id[]) => onFirst(ids, id => goTo("projectDashboard", { id })),
         },
 
         targetValues: {
@@ -173,11 +177,9 @@ function getComponentConfig(
     return { columns, initialSorting, details, actions, paginationOptions, searchBoxLabel };
 }
 
-interface ProjectsListProps {
-    onViewChange(view: ListView): void;
-}
+interface ProjectsListProps {}
 
-const ProjectsList: React.FC<ProjectsListProps> = props => {
+const ProjectsList: React.FC<ProjectsListProps> = () => {
     const goTo = useGoTo();
     const { api, config, currentUser } = useAppContext();
     const [projectIdsToDelete, setProjectIdsToDelete] = useState<Id[] | undefined>(undefined);
@@ -186,8 +188,7 @@ const ProjectsList: React.FC<ProjectsListProps> = props => {
     }, [api, config, currentUser, goTo]);
 
     const [filter, setFilter] = useState<Filter>(initialFilter);
-
-    const { onViewChange } = props;
+    const onViewChange = useListSelector("projects");
 
     const getRows = React.useMemo(
         () => async (
@@ -232,7 +233,7 @@ const ProjectsList: React.FC<ProjectsListProps> = props => {
                 <DeleteDialog projectIds={projectIdsToDelete} onClose={closeDeleteDialog} />
             )}
 
-            <ObjectsList<ProjectForList> {...tableProps}>
+            <ObjectsListStyled<React.FC<ObjectsListProps<ProjectForList>>> {...tableProps}>
                 <ProjectsListFilters
                     filter={filter}
                     filterOptions={filterOptions}
@@ -255,7 +256,7 @@ const ProjectsList: React.FC<ProjectsListProps> = props => {
                 )}
 
                 <ListSelector view="projects" onChange={onViewChange} />
-            </ObjectsList>
+            </ObjectsListStyled>
         </React.Fragment>
     );
 };
@@ -317,5 +318,11 @@ const paginationOptions = {
 const initialFilter: Filter = {
     onlyActive: true,
 };
+
+const ObjectsListStyled = styled(ObjectsList)`
+    .MuiTextField-root {
+        max-width: 250px;
+    }
+`;
 
 export default React.memo(ProjectsList);

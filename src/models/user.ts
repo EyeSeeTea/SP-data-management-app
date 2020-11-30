@@ -10,6 +10,7 @@ export type Action =
     | "actualValues"
     | "targetValues"
     | "dashboard"
+    | "countryDashboard"
     | "downloadData"
     | "edit"
     | "dataApproval"
@@ -22,6 +23,7 @@ const actionsByRole: Record<Role, Action[]> = {
         "targetValues",
         "actualValues",
         "dashboard",
+        "countryDashboard",
         "downloadData",
         "edit",
         "delete",
@@ -34,6 +36,7 @@ const actionsByRole: Record<Role, Action[]> = {
         "targetValues",
         "actualValues",
         "dashboard",
+        "countryDashboard",
         "downloadData",
         "edit",
         "dataApproval",

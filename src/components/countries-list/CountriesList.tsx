@@ -1,4 +1,5 @@
 import React from "react";
+import _ from "lodash";
 import {
     TableColumn,
     TableSorting,
@@ -11,12 +12,14 @@ import { ObjectsList } from "../objects-list/ObjectsList";
 import { TableConfig, useObjectsTable } from "../objects-list/objects-list-hooks";
 import { useAppContext } from "../../contexts/api-context";
 import i18n from "../../locales";
-import ListSelector, { ListView } from "../list-selector/ListSelector";
+import ListSelector from "../list-selector/ListSelector";
 import { CountriesList as CountriesListModel, Country } from "../../models/CountriesList";
 import { formatDateLong } from "../../utils/date";
 import { Icon } from "@material-ui/core";
 import { Id } from "../../types/d2-api";
 import { useGoTo, GoTo } from "../../router";
+import { useListSelector } from "../list-selector/ListSelectorHooks";
+import User from "../../models/user";
 
 interface CountryView {
     id: string;
@@ -27,15 +30,14 @@ interface CountryView {
     lastUpdated: string;
 }
 
-interface CountriesListProps {
-    onViewChange(view: ListView): void;
-}
+interface CountriesListProps {}
 
-const CountriesList: React.FC<CountriesListProps> = props => {
-    const { onViewChange } = props;
-    const { api, config } = useAppContext();
+const CountriesList: React.FC<CountriesListProps> = () => {
+    const { api, config, currentUser } = useAppContext();
     const goTo = useGoTo();
-    const baseConfig = React.useMemo(() => getBaseListConfig(goTo), [goTo]);
+    const baseConfig = React.useMemo(() => {
+        return getBaseListConfig(currentUser, goTo);
+    }, [currentUser, goTo]);
 
     const getRows = React.useMemo(
         () => async (
@@ -51,6 +53,7 @@ const CountriesList: React.FC<CountriesListProps> = props => {
     );
 
     const tableProps = useObjectsTable(baseConfig, getRows);
+    const onViewChange = useListSelector("countries");
 
     return (
         <ObjectsList<CountryView> {...tableProps}>
@@ -59,7 +62,7 @@ const CountriesList: React.FC<CountriesListProps> = props => {
     );
 };
 
-function getBaseListConfig(goTo: GoTo): TableConfig<CountryView> {
+function getBaseListConfig(currentUser: User, goTo: GoTo): TableConfig<CountryView> {
     const paginationOptions: PaginationOptions = {
         pageSizeOptions: [10, 20, 50],
         pageSizeInitialValue: 20,
@@ -73,30 +76,34 @@ function getBaseListConfig(goTo: GoTo): TableConfig<CountryView> {
     const columns: TableColumn<CountryView>[] = [
         { name: "name", text: i18n.t("Name"), sortable: true },
         { name: "code", text: i18n.t("Code"), sortable: true },
-        { name: "projectsCount", text: i18n.t("# Projects"), sortable: false },
+        { name: "projectsCount", text: i18n.t("# Projects"), sortable: true },
         { name: "lastUpdated", text: i18n.t("Last Updated"), sortable: true, hidden: true },
         { name: "created", text: i18n.t("Created"), sortable: true, hidden: true },
     ];
 
     const details = columns;
 
-    const actions: TableAction<CountryView>[] = [
+    const actions: TableAction<CountryView>[] = _.compact([
         {
             name: "details",
             text: i18n.t("Details"),
             multiple: false,
             primary: true,
         },
-        {
-            name: "dashboard",
-            icon: <Icon>dashboard</Icon>,
-            text: i18n.t("Go to Dashboard"),
-            multiple: false,
-            onClick: (ids: Id[]) => alert(`TODO:country-dashboard: ${ids[0]} - ${goTo}`),
-        },
-    ];
+        currentUser.actions.includes("countryDashboard")
+            ? {
+                  name: "dashboard",
+                  icon: <Icon>dashboard</Icon>,
+                  text: i18n.t("Go to Dashboard"),
+                  multiple: false,
+                  onClick: (ids: Id[]) => goTo("countryDashboard", { id: ids[0] }),
+              }
+            : null,
+    ]);
 
-    return { columns, details, actions, initialSorting, paginationOptions };
+    const searchBoxLabel = i18n.t("Search by name or code");
+
+    return { columns, details, actions, initialSorting, paginationOptions, searchBoxLabel };
 }
 
 function getCountryViews(countries: Country[]): CountryView[] {

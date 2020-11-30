@@ -8,6 +8,7 @@ import { getSectorCodeFromSectionCode } from "./ProjectDb";
 import User from "./user";
 import { getIds } from "../utils/dhis2";
 import { Sharing, getSharing, hasCurrentUserFullAccessToDataSet } from "./ProjectSharing";
+import { Pagination, paginate } from "../utils/pagination";
 
 export type FiltersForList = Partial<{
     search: string;
@@ -19,8 +20,6 @@ export type FiltersForList = Partial<{
     createdByAppOnly: boolean;
     userCountriesOnly: boolean;
 }>;
-
-type Pagination = { page: number; pageSize: number };
 
 const orgUnitFields = {
     id: true,
@@ -219,24 +218,6 @@ export default class ProjectsList {
 
         return orgUnits.filter(ou => orgUnitIdsWithinSections.has(ou.i));
     }
-}
-
-function paginate<Obj>(objects: Obj[], pagination: Pagination) {
-    const pager = {
-        page: pagination.page,
-        pageSize: pagination.pageSize,
-        pageCount: Math.ceil(objects.length / pagination.pageSize),
-        total: objects.length,
-    };
-    const { page, pageSize } = pagination;
-    const start = (page - 1) * pageSize;
-
-    const paginatedObjects = _(objects)
-        .slice(start, start + pageSize)
-        .sortBy()
-        .value();
-
-    return { pager, objects: paginatedObjects };
 }
 
 function getDateFilter(filters: FiltersForList) {

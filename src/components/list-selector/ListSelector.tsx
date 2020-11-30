@@ -41,12 +41,14 @@ const ListSelector: React.FunctionComponent<ListSelectorProps> = props => {
                     icon={<ListIcon />}
                     aria-label={i18n.t("Projects view")}
                     title={i18n.t("Projects view")}
+                    data-test="list-selector-projects"
                 />
                 <Tab
                     classes={{ root: classes.tab }}
                     icon={<PublicIcon />}
                     aria-label={i18n.t("Countries view")}
                     title={i18n.t("Countries view")}
+                    data-test="list-selector-countries"
                 />
             </Tabs>
         </Paper>

@@ -51,7 +51,7 @@ export function logUnknownRequest(mockAdapter: MockAdapter) {
 }
 
 function writeJsonFile(data: any, prefix: string): string {
-    const file = tmp.fileSync({ keep: true, prefix: prefix + "-", postfix: ".json" });
+    const file = tmp.fileSync({ keep: true, prefix: prefix, postfix: ".json" });
     const filePath = file.name;
     const json = JSON.stringify(data, null, 4);
     fs.writeFileSync(file.fd, json);
