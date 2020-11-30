@@ -34,7 +34,10 @@ describe("ProjectDb", () => {
                     "organisationUnits:filter": ["id:eq:WGC0DJ0YSis"],
                     "dataSets:fields":
                         "code,dataInputPeriods[closingDate,openingDate],dataSetElements[dataElement[attributeValues[attribute[id],value],code,dataElementGroups[code],id,name]],id",
-                    "dataSets:filter": ["code:like$:_ACTUAL"],
+                    "dataSets:filter": [
+                        "code:like$:_ACTUAL",
+                        "organisationUnits.path:like:WGC0DJ0YSis",
+                    ],
                 },
             }).replyOnce(200, projectMetadataResponse);
 
@@ -46,7 +49,10 @@ describe("ProjectDb", () => {
                     "organisationUnits:filter": ["id:eq:eu2XF73JOzl"],
                     "dataSets:fields":
                         "code,dataInputPeriods[closingDate,openingDate],dataSetElements[dataElement[attributeValues[attribute[id],value],code,dataElementGroups[code],id,name]],id",
-                    "dataSets:filter": ["code:like$:_ACTUAL"],
+                    "dataSets:filter": [
+                        "code:like$:_ACTUAL",
+                        "organisationUnits.path:like:eu2XF73JOzl",
+                    ],
                 },
             }).replyOnce(200, countryMetadataResponse);
 

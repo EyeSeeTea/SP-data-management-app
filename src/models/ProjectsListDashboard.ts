@@ -106,9 +106,13 @@ async function getMetadata(api: D2Api, condition: Condition): Promise<Metadata> 
                     : { code: { $like: condition.value } },
         },
         dataSets: {
-            // TODO: Big response
             fields: query.dataSets,
-            filter: { code: { like$: "_ACTUAL" } },
+            filter: {
+                code: { like$: "_ACTUAL" },
+                ...(condition.type === "country" || condition.type === "project"
+                    ? { "organisationUnits.path": { like: condition.id } }
+                    : { "organisationUnits.code": { $like: condition.value } }),
+            },
         },
     });
 
