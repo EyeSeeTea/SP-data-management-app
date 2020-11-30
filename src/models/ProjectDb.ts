@@ -80,9 +80,12 @@ export default class ProjectDb {
         };
 
         const projectWithOrgUnit = project.set("orgUnit", orgUnit);
-        const projectDashboardMetadata = new ProjectDashboard(projectWithOrgUnit).generate();
-        const countryDashboardGenerator = await CountryDashboard.build(api, config, country.id);
-        const countryDashboardMetadata = countryDashboardGenerator.generate();
+        const projectDashboardMetadata = (
+            await ProjectDashboard.build(api, config, projectWithOrgUnit)
+        ).generate();
+        const countryDashboardMetadata = (
+            await CountryDashboard.build(api, config, country.id)
+        ).generate();
 
         const projectDashboard = projectDashboardMetadata.dashboards[0];
 

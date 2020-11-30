@@ -18,9 +18,10 @@ export interface DataElement {
     name: string;
     code: string;
     peopleOrBenefit: PeopleOrBenefit;
+    hasPairedDataElements: boolean;
 }
 
-export interface DashboardProjects {
+export interface ProjectsListDashboard {
     dates: Maybe<{ opening: Date; closing: Date }>;
     dataElements: Record<"all" | "people" | "benefit", DataElement[]>;
     orgUnits: Ref[];
@@ -41,16 +42,17 @@ const query = {
                 name: true,
                 code: true,
                 dataElementGroups: { code: true },
+                attributeValues: { attribute: { id: true }, value: true },
             },
         },
     },
 } as const;
 
-export async function getDashboardProjects(
+export async function getProjectsListDashboard(
     api: D2Api,
     config: Config,
     condition: Condition
-): Promise<DashboardProjects> {
+): Promise<ProjectsListDashboard> {
     const metadata = await getMetadata(api, condition);
 
     const projects: DashboardProject[] = _(metadata.dataSets)
@@ -73,7 +75,7 @@ export async function getDashboardProjects(
     const openingDate = _.min(projects.map(project => project.openingDate));
     const closingDate = _.min(projects.map(project => project.closingDate));
 
-    const dashboardProjects: DashboardProjects = {
+    const dashboardProjects: ProjectsListDashboard = {
         orgUnits: metadata.orgUnits,
         dates: openingDate && closingDate ? { opening: openingDate, closing: closingDate } : null,
         dataElements: dataElementsByType,
@@ -89,16 +91,19 @@ interface Metadata {
     dataSets: DataSetApi[];
 }
 
-type Condition = { type: "country"; countryId: Id } | { type: "awardNumber"; awardNumber: string };
+type Condition =
+    | { type: "project"; id: Id }
+    | { type: "country"; id: Id }
+    | { type: "awardNumber"; value: string };
 
 async function getMetadata(api: D2Api, condition: Condition): Promise<Metadata> {
     const metadata$ = api.metadata.get({
         organisationUnits: {
             fields: query.organisationUnits,
             filter:
-                condition.type === "country"
-                    ? { id: { eq: condition.countryId } }
-                    : { code: { $like: condition.awardNumber } },
+                condition.type === "country" || condition.type === "project"
+                    ? { id: { eq: condition.id } }
+                    : { code: { $like: condition.value } },
         },
         dataSets: {
             // TODO: Big response
@@ -144,11 +149,18 @@ function getProject(
                 : null;
             if (!peopleOrBenefit) return null;
 
+            const hasPairedDataElements = _(dataElement.attributeValues).some(
+                de =>
+                    de.attribute.id === config.attributes.pairedDataElement.id &&
+                    !_.isEmpty(de.value)
+            );
+
             return {
                 id: dataElement.id,
                 name: dataElement.name,
                 code: dataElement.code,
                 peopleOrBenefit,
+                hasPairedDataElements,
             };
         })
         .compact()

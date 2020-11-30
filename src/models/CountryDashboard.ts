@@ -29,7 +29,7 @@ import {
 import { PeopleOrBenefit } from "./dataElementsSet";
 import { D2Sharing, getD2Access } from "./ProjectSharing";
 import { addAttributeValueToObj, AttributeValue } from "./Attributes";
-import { getDashboardProjects, DashboardProjects } from "./DashboardProject";
+import { getProjectsListDashboard, ProjectsListDashboard } from "./ProjectsListDashboard";
 
 interface DataElement {
     id: Id;
@@ -42,7 +42,7 @@ interface Country {
     id: Id;
     name: string;
     attributeValues: Array<{ attribute: Ref; value: string }>;
-    dashboardProjects: DashboardProjects;
+    projectsListDashboard: ProjectsListDashboard;
 }
 
 interface Category {
@@ -59,7 +59,7 @@ export default class CountryDashboard {
     categories: { new: Category; actual: Category };
 
     constructor(private config: Config, private d2Country: D2Country, private country: Country) {
-        this.dataElements = country.dashboardProjects.dataElements;
+        this.dataElements = country.projectsListDashboard.dataElements;
 
         this.categories = {
             new: {
@@ -74,9 +74,9 @@ export default class CountryDashboard {
     }
 
     static async build(api: D2Api, config: Config, countryId: Id): Promise<CountryDashboard> {
-        const dashboardProjects = await getDashboardProjects(api, config, {
+        const projectsListDashboard = await getProjectsListDashboard(api, config, {
             type: "country",
-            countryId,
+            id: countryId,
         });
         const orgUnit = await getOrgUnit(api, countryId);
         if (!orgUnit) throw new Error("Cannot get orgunit");
@@ -84,7 +84,7 @@ export default class CountryDashboard {
         const country: Country = {
             id: orgUnit.id,
             name: orgUnit.name,
-            dashboardProjects: dashboardProjects,
+            projectsListDashboard,
             attributeValues: orgUnit.attributeValues,
         };
 
@@ -207,7 +207,7 @@ export default class CountryDashboard {
             name: `[${country.name}] ${baseTable.name}`,
             periods: [],
             relativePeriods: { thisYear: true },
-            organisationUnits: getRefs(country.dashboardProjects.orgUnits),
+            organisationUnits: getRefs(country.projectsListDashboard.orgUnits),
             sharing: this.getSharing(),
         };
 

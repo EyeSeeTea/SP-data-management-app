@@ -3,6 +3,7 @@ import ProjectDb from "../ProjectDb";
 import { getProject } from "./project-data";
 import { logUnknownRequest } from "../../utils/tests";
 import expectedMetadataPost from "./data/project-db-metadata.json";
+import projectMetadataResponse from "./data/project-metadata.json";
 import countryMetadataResponse from "./data/country-metadata.json";
 
 const { api, mock } = getMockApi();
@@ -19,26 +20,46 @@ describe("ProjectDb", () => {
 
             // Validation
             mock.onGet("/metadata", {
-                expected: {
+                params: {
                     "organisationUnits:fields": "displayName",
                     "organisationUnits:filter": ["code:eq:12345en", "id:ne:WGC0DJ0YSis"],
                 },
             }).replyOnce(200, []);
 
+            // Project dashboard
+
+            mock.onGet("/metadata", {
+                params: {
+                    "organisationUnits:fields": "children[id],id",
+                    "organisationUnits:filter": ["id:eq:WGC0DJ0YSis"],
+                    "dataSets:fields":
+                        "code,dataInputPeriods[closingDate,openingDate],dataSetElements[dataElement[attributeValues[attribute[id],value],code,dataElementGroups[code],id,name]],id",
+                    "dataSets:filter": ["code:like$:_ACTUAL"],
+                },
+            }).replyOnce(200, projectMetadataResponse);
+
             // Country dashboard
 
             mock.onGet("/metadata", {
-                expected: {
+                params: {
                     "organisationUnits:fields": "children[id],id",
                     "organisationUnits:filter": ["id:eq:eu2XF73JOzl"],
                     "dataSets:fields":
-                        "code,dataInputPeriods[openingDate],dataSetElements[dataElement[code,dataElementGroups[code],id,name]],id",
+                        "code,dataInputPeriods[closingDate,openingDate],dataSetElements[dataElement[attributeValues[attribute[id],value],code,dataElementGroups[code],id,name]],id",
                     "dataSets:filter": ["code:like$:_ACTUAL"],
                 },
             }).replyOnce(200, countryMetadataResponse);
 
             mock.onGet("/metadata", {
-                expected: {
+                params: {
+                    "organisationUnits:fields":
+                        ":owner,attributeValues[attribute[id],value],children[id,name]",
+                    "organisationUnits:filter": ["id:eq:eu2XF73JOzl"],
+                },
+            }).replyOnce(200, { organisationUnits: countryMetadataResponse.organisationUnits });
+
+            mock.onGet("/metadata", {
+                params: {
                     "organisationUnits:fields": "children[id,name],id,name",
                     "organisationUnits:filter": ["id:eq:eu2XF73JOzl"],
                 },
