@@ -120,8 +120,8 @@ function getIdName(metadata: Metadata, condition: Condition): { id: Id; name: st
     switch (condition.type) {
         case "country":
         case "project": {
-            const country = metadata.orgUnits.find(ou => ou.id === condition.id);
-            return { id: condition.id, name: country ? country.name : "-" };
+            const orgUnit = metadata.orgUnits.find(ou => ou.id === condition.id);
+            return { id: condition.id, name: orgUnit ? orgUnit.name : "-" };
         }
         case "awardNumber": {
             const name = i18n.t("Award Number {{awardNumber}}", { awardNumber: condition.value });

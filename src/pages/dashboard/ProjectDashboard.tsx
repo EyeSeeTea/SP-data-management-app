@@ -16,7 +16,13 @@ const ProjectDashboard: React.FC = () => {
 
     return (
         <Loader<DashboardObj> state={state}>
-            {dashboard => <Dashboard id={dashboard.id} name={dashboard.name} backUrl={backUrl} />}
+            {dashboard => (
+                <Dashboard
+                    id={dashboard.id}
+                    name={i18n.t("Project dashboard: ") + dashboard.name}
+                    backUrl={backUrl}
+                />
+            )}
         </Loader>
     );
 };

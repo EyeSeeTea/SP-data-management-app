@@ -14,7 +14,7 @@ function goTo(history: History, url: string) {
 
 function getTranslations(name: string) {
     return {
-        title: i18n.t("Dashboard") + ": " + name,
+        title: name,
         help: i18n.t(`Data updates in the dashboards every 15 minutes.  If you do not see your data immediately after data entry, please give the system additional time to update.
 
         If you notice data errors while viewing the dashboards, please return to the home screen and edit the data under the data entry sections for your project.`),

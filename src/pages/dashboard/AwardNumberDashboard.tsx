@@ -8,6 +8,7 @@ import {
 import { Loader } from "../../components/loader/Loader";
 import { generateUrl } from "../../router";
 import Project from "../../models/Project";
+import i18n from "../../locales";
 
 const AwardNumberDashboard: React.FC = () => {
     const state = useDashboardFromParams(getDashboard);
@@ -16,7 +17,13 @@ const AwardNumberDashboard: React.FC = () => {
     // TODO: on error, snackbar BUT ALSO go to backUrl
     return (
         <Loader<DashboardObj> state={state}>
-            {dashboard => <Dashboard id={dashboard.id} name={dashboard.name} backUrl={backUrl} />}
+            {dashboard => (
+                <Dashboard
+                    id={dashboard.id}
+                    name={i18n.t("Award Number Dashboard: ") + dashboard.name}
+                    backUrl={backUrl}
+                />
+            )}
         </Loader>
     );
 };
