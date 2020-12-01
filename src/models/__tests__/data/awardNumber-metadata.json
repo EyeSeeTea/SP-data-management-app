@@ -1,0 +1,413 @@
+{
+    "organisationUnits": [
+        {
+            "name": "HOPE Abaco",
+            "id": "TvSmIyYcRnd",
+            "children": []
+        },
+        {
+            "name": "Abaco Ministry",
+            "id": "cqZ9zQfePzQ",
+            "children": []
+        }
+    ],
+    "dataSets": [
+        {
+            "code": "cqZ9zQfePzQ_ACTUAL",
+            "id": "yAOSOqcfHsi",
+            "publicAccess": "--------",
+            "externalAccess": false,
+            "userAccesses": [
+                {
+                    "id": "M5zQapPyTZI",
+                    "displayName": "admin admin",
+                    "access": "rwrw----"
+                }
+            ],
+            "userGroupAccesses": [
+                {
+                    "id": "ywuI2WspUUG",
+                    "displayName": "System Admin",
+                    "access": "rwrw----"
+                },
+                {
+                    "id": "mKKNXzeIAJs",
+                    "displayName": "Data Management Admin",
+                    "access": "rwrw----"
+                }
+            ],
+            "dataSetElements": [
+                {
+                    "dataElement": {
+                        "code": "P070600",
+                        "name": "# of people engaged through ministry outreach events",
+                        "id": "qkyeCTJHU2d",
+                        "dataElementGroups": [
+                            {
+                                "code": "GLOBAL"
+                            },
+                            {
+                                "code": "SERIES_MINISTRY_706"
+                            },
+                            {
+                                "code": "PEOPLE"
+                            },
+                            {
+                                "code": "SECTOR_MINISTRY"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "dataElement": {
+                        "code": "P100300",
+                        "name": "# of people provided with psychosocial support (PSS) services",
+                        "id": "iCKxYSFIlcu",
+                        "dataElementGroups": [
+                            {
+                                "code": "SECTOR_PROTECTION"
+                            },
+                            {
+                                "code": "GLOBAL"
+                            },
+                            {
+                                "code": "SERIES_PROTECTION_1003"
+                            },
+                            {
+                                "code": "PEOPLE"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "dataElement": {
+                        "code": "B070004",
+                        "name": "# of disciple groups created",
+                        "id": "CI8NCm34d7D",
+                        "dataElementGroups": [
+                            {
+                                "code": "SUB"
+                            },
+                            {
+                                "code": "BENEFIT"
+                            },
+                            {
+                                "code": "SECTOR_MINISTRY"
+                            },
+                            {
+                                "code": "SERIES_MINISTRY_700"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "dataElement": {
+                        "code": "P070005",
+                        "name": "# of people attending discipleship groups (specify adult/children, etc.)",
+                        "id": "SQy5q6kCYI1",
+                        "dataElementGroups": [
+                            {
+                                "code": "SUB"
+                            },
+                            {
+                                "code": "PEOPLE"
+                            },
+                            {
+                                "code": "SECTOR_MINISTRY"
+                            },
+                            {
+                                "code": "SERIES_MINISTRY_700"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "dataElement": {
+                        "code": "B070700",
+                        "name": "# of ministry visits",
+                        "id": "WUMjtbgofs2",
+                        "dataElementGroups": [
+                            {
+                                "code": "GLOBAL"
+                            },
+                            {
+                                "code": "BENEFIT"
+                            },
+                            {
+                                "code": "SERIES_MINISTRY_707"
+                            },
+                            {
+                                "code": "SECTOR_MINISTRY"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "dataElement": {
+                        "code": "P100400",
+                        "name": "# of people trained in psychosocial support services",
+                        "id": "qAM1NbCbS9G",
+                        "dataElementGroups": [
+                            {
+                                "code": "SECTOR_PROTECTION"
+                            },
+                            {
+                                "code": "GLOBAL"
+                            },
+                            {
+                                "code": "PEOPLE"
+                            },
+                            {
+                                "code": "SERIES_PROTECTION_1004"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "dataInputPeriods": [
+                {
+                    "period": {
+                        "id": "202007"
+                    },
+                    "closingDate": "2020-10-01T00:00:00.000",
+                    "openingDate": "2020-07-01T00:00:00.000"
+                },
+                {
+                    "period": {
+                        "id": "202008"
+                    },
+                    "closingDate": "2020-10-01T00:00:00.000",
+                    "openingDate": "2020-07-01T00:00:00.000"
+                },
+                {
+                    "period": {
+                        "id": "202009"
+                    },
+                    "closingDate": "2020-10-01T00:00:00.000",
+                    "openingDate": "2020-07-01T00:00:00.000"
+                },
+                {
+                    "period": {
+                        "id": "202010"
+                    },
+                    "closingDate": "2020-10-01T00:00:00.000",
+                    "openingDate": "2020-07-01T00:00:00.000"
+                }
+            ]
+        },
+        {
+            "code": "TvSmIyYcRnd_ACTUAL",
+            "id": "OGSO1eOec88",
+            "dataSetElements": [
+                {
+                    "dataElement": {
+                        "code": "P089992",
+                        "name": "# of people participating in trainings on hurricane preparedness and response",
+                        "id": "Kg29718LQHl",
+                        "dataElementGroups": [
+                            {
+                                "code": "SECTOR_SHELTER"
+                            },
+                            {
+                                "code": "SERIES_SHELTER_899"
+                            },
+                            {
+                                "code": "CUSTOM"
+                            },
+                            {
+                                "code": "PEOPLE"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "dataElement": {
+                        "code": "P081300",
+                        "name": "# of people provided with non-food items (NFIs)",
+                        "id": "KKmUWsn19fq",
+                        "dataElementGroups": [
+                            {
+                                "code": "SERIES_SHELTER_813"
+                            },
+                            {
+                                "code": "GLOBAL"
+                            },
+                            {
+                                "code": "SECTOR_SHELTER"
+                            },
+                            {
+                                "code": "PEOPLE"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "dataElement": {
+                        "code": "B081500",
+                        "name": "# of institutions receiving infrastructure support",
+                        "id": "mu2b9Ivde6J",
+                        "dataElementGroups": [
+                            {
+                                "code": "SECTOR_HEALTH"
+                            },
+                            {
+                                "code": "GLOBAL"
+                            },
+                            {
+                                "code": "SERIES_HEALTH_600"
+                            },
+                            {
+                                "code": "SECTOR_SHELTER"
+                            },
+                            {
+                                "code": "SERIES_SHELTER_815"
+                            },
+                            {
+                                "code": "BENEFIT"
+                            },
+                            {
+                                "code": "SECTOR_MINISTRY"
+                            },
+                            {
+                                "code": "SERIES_MINISTRY_700"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "dataElement": {
+                        "code": "P081600",
+                        "name": "# of people benefiting from institutions receiving infrastructure support",
+                        "id": "iYEDR850FFL",
+                        "dataElementGroups": [
+                            {
+                                "code": "SECTOR_HEALTH"
+                            },
+                            {
+                                "code": "GLOBAL"
+                            },
+                            {
+                                "code": "SERIES_HEALTH_600"
+                            },
+                            {
+                                "code": "SECTOR_SHELTER"
+                            },
+                            {
+                                "code": "SERIES_SHELTER_816"
+                            },
+                            {
+                                "code": "PEOPLE"
+                            },
+                            {
+                                "code": "SECTOR_MINISTRY"
+                            },
+                            {
+                                "code": "SERIES_MINISTRY_700"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "dataElement": {
+                        "code": "B089991",
+                        "name": "# of trainings conducted on hurricane preparedness and response",
+                        "id": "SCY3TdhSz1K",
+                        "dataElementGroups": [
+                            {
+                                "code": "SECTOR_SHELTER"
+                            },
+                            {
+                                "code": "SERIES_SHELTER_899"
+                            },
+                            {
+                                "code": "CUSTOM"
+                            },
+                            {
+                                "code": "BENEFIT"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "dataElement": {
+                        "code": "P070900",
+                        "name": "# of people participating in sectorial training sessions with at least one foundational biblical message/principle integrated in to the content",
+                        "id": "eAkVLI8mKBa",
+                        "dataElementGroups": [
+                            {
+                                "code": "SERIES_MINISTRY_709"
+                            },
+                            {
+                                "code": "GLOBAL"
+                            },
+                            {
+                                "code": "PEOPLE"
+                            },
+                            {
+                                "code": "SECTOR_MINISTRY"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "dataElement": {
+                        "code": "B081200",
+                        "name": "# of Non-Food Items (NFIs) distributed",
+                        "id": "aYk5MgSCLXP",
+                        "dataElementGroups": [
+                            {
+                                "code": "GLOBAL"
+                            },
+                            {
+                                "code": "SERIES_SHELTER_812"
+                            },
+                            {
+                                "code": "SECTOR_SHELTER"
+                            },
+                            {
+                                "code": "BENEFIT"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "dataElement": {
+                        "code": "B070800",
+                        "name": "# of sectorial training sessions conducted integrating foundational biblical principles",
+                        "id": "umkL2sEVSNR",
+                        "dataElementGroups": [
+                            {
+                                "code": "GLOBAL"
+                            },
+                            {
+                                "code": "BENEFIT"
+                            },
+                            {
+                                "code": "SERIES_MINISTRY_708"
+                            },
+                            {
+                                "code": "SECTOR_MINISTRY"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "dataInputPeriods": [
+                {
+                    "period": {
+                        "id": "202009"
+                    },
+                    "closingDate": "2020-10-01T00:00:00.000",
+                    "openingDate": "2020-09-01T00:00:00.000"
+                },
+                {
+                    "period": {
+                        "id": "202010"
+                    },
+                    "closingDate": "2020-10-01T00:00:00.000",
+                    "openingDate": "2020-09-01T00:00:00.000"
+                }
+            ]
+        }
+    ]
+}
