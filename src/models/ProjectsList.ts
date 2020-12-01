@@ -43,6 +43,7 @@ export interface ProjectForList extends BaseProject {
     sectors: Sector[];
     sharing: Sharing;
     dataElementIdsBySectorId: Record<Id, Id[]>;
+    hasAwardNumberDashboard: boolean;
 }
 
 export default class ProjectsList {
@@ -95,6 +96,7 @@ export default class ProjectsList {
 
         const dataSetByOrgUnitId = _.keyBy(dataSets, dataSet => (dataSet.code || "").split("_")[0]);
         const sectorsByCode = _.keyBy(config.sectors, sector => sector.code);
+        const orgUnitsByAwardNumber = _.countBy(d2OrgUnits, ou => ou.code.slice(0, 5));
 
         const projectsWithSectors = projects.map(orgUnit => {
             const dataSet = _(dataSetByOrgUnitId).get(orgUnit.id, null);
@@ -116,11 +118,16 @@ export default class ProjectsList {
                 .fromPairs()
                 .value();
 
+            // TODO: abstract slice
+            const hasAwardNumberDashboard =
+                (orgUnitsByAwardNumber[orgUnit.code.slice(0, 5)] || 0) > 1;
+
             const project: ProjectForList = {
                 ...orgUnit,
                 sectors,
                 sharing,
                 dataElementIdsBySectorId,
+                hasAwardNumberDashboard,
             };
             return project;
         });

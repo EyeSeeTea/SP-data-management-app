@@ -71,7 +71,7 @@ describe("Project", () => {
             expect(project.orgUnit).toEqual(undefined);
             expect(project.parentOrgUnit).toEqual(undefined);
             expect(project.dataSets).toEqual(undefined);
-            expect(project.dashboard).toEqual(undefined);
+            expect(project.dashboard).toEqual({});
             expect(project.initialData).toEqual(undefined);
         });
 
@@ -575,7 +575,7 @@ async function getProject(): Promise<Project> {
     mock.onGet("/metadata", {
         params: {
             "organisationUnits:fields":
-                "attributeValues[attribute[id],value],closedDate,code,description,displayName,id,name,openingDate,organisationUnitGroups[id],parent[displayName,id,name,path],path",
+                "attributeValues[attribute[id],value],closedDate,code,description,displayName,id,name,openingDate,organisationUnitGroups[attributeValues[attribute[id],value],id,name],parent[attributeValues[attribute[id],value],displayName,id,name,path],path",
             "organisationUnits:filter": ["id:eq:R3rGhxWbAI9"],
             "dataSets:fields":
                 "code,dataInputPeriods[closingDate,openingDate,period],dataSetElements[categoryCombo[id],dataElement[id]],expiryDays,externalAccess,id,openFuturePeriods,publicAccess,sections[code,dataElements[id]],userAccesses[access,displayName,id],userGroupAccesses[access,displayName,id]",

@@ -124,6 +124,15 @@ function getComponentConfig(
             onClick: (ids: Id[]) => onFirst(ids, id => goTo("projectDashboard", { id })),
         },
 
+        awardNumberDashboard: {
+            name: "award-number-dashboard",
+            icon: <Icon>dashboard</Icon>,
+            text: i18n.t("Go to Award Number Dashboard"),
+            multiple: false,
+            isActive: projects => projects[0].hasAwardNumberDashboard,
+            onClick: (ids: Id[]) => onFirst(ids, id => goTo("awardNumberDashboard", { id })),
+        },
+
         targetValues: {
             name: "add-target-values",
             icon: <Icon>assignment</Icon>,

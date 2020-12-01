@@ -10,6 +10,7 @@ import CountriesList from "../../components/countries-list/CountriesList";
 import ProjectsList from "../projects-list/ProjectsList";
 import ProjectDashboard from "../dashboard/ProjectDashboard";
 import CountryDashboard from "../dashboard/CountryDashboard";
+import AwardNumberDashboard from "../dashboard/AwardNumberDashboard";
 
 const Root = () => {
     const idParam = { id: ":id" };
@@ -38,6 +39,10 @@ const Root = () => {
                 <Route
                     path={generateUrl("projectDashboard", idParam)}
                     render={() => <ProjectDashboard />}
+                />
+                <Route
+                    path={generateUrl("awardNumberDashboard", idParam)}
+                    render={() => <AwardNumberDashboard />}
                 />
                 <Route
                     path={generateUrl("countryDashboard", idParam)}

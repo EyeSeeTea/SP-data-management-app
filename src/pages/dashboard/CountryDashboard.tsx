@@ -16,7 +16,7 @@ const CountryDashboard: React.FC = () => {
 
     return (
         <Loader<DashboardObj> state={state}>
-            {country => <Dashboard id={country.id} name={country.name} backUrl={backUrl} />}
+            {dashboard => <Dashboard id={dashboard.id} name={dashboard.name} backUrl={backUrl} />}
         </Loader>
     );
 };

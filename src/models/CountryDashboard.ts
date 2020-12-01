@@ -8,7 +8,7 @@ import {
     D2OrganisationUnitSchema,
     D2OrganisationUnit,
 } from "../types/d2-api";
-import { D2Dashboard, D2ReportTable, Ref, D2Chart, D2DashboardItem, Id } from "../types/d2-api";
+import { D2ReportTable, Ref, D2Chart, D2DashboardItem, Id } from "../types/d2-api";
 import i18n from "../locales";
 import { getUid, getRefs } from "../utils/dhis2";
 import {
@@ -112,7 +112,7 @@ export default class CountryDashboard {
             ...reportTables.map(reportTable => getReportTableItem(reportTable)),
         ]);
 
-        const dashboard: PartialPersistedModel<D2Dashboard> = {
+        const dashboard = {
             id: getUid("country-dashboard", country.id),
             name: country.name,
             dashboardItems: positionItems(items, positionItemsOptions),

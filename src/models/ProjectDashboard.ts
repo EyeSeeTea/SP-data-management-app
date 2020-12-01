@@ -1,7 +1,7 @@
 import _ from "lodash";
 import { Config } from "./Config";
 import { PartialPersistedModel, PartialModel, D2Api } from "../types/d2-api";
-import { D2Dashboard, D2ReportTable, Ref, D2Chart, D2DashboardItem, Id } from "../types/d2-api";
+import { D2ReportTable, Ref, D2Chart, D2DashboardItem, Id } from "../types/d2-api";
 import Project from "./Project";
 import i18n from "../locales";
 import { getUid } from "../utils/dhis2";
@@ -110,7 +110,7 @@ export default class ProjectDashboard {
             defaultHeight: 20, // 20 vertical units ~ 50% of viewport height
         };
 
-        const dashboard: PartialPersistedModel<D2Dashboard> = {
+        const dashboard = {
             id: getUid("dashboard", projectsListDashboard.id),
             name: projectsListDashboard.name,
             dashboardItems: positionItems(items, positionItemsOptions),
@@ -351,10 +351,10 @@ export async function getProjectDashboard(
     const updateSuccessful = !response || response.status !== "OK";
 
     if (updateSuccessful) {
-        if (project.dashboard) {
+        if (project.dashboard.project) {
             // There was an error saving the updated dashboard, but an old one existed, return it.
             console.error("Error saving dashboard", response);
-            return { type: "success", data: { ...project.dashboard, name: project.name } };
+            return { type: "success", data: { ...project.dashboard.project, name: project.name } };
         } else {
             return { type: "error", message: i18n.t("Error saving dashboard") };
         }

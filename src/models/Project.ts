@@ -96,10 +96,17 @@ export interface ProjectData {
     dataElementsMER: DataElementsSet;
     disaggregation: Disaggregation;
     dataSets: { actual: DataSet; target: DataSet } | undefined;
-    dashboard: Ref | undefined;
+    dashboard: Partial<Dashboards>;
     initialData: Omit<ProjectData, "initialData"> | undefined;
     sharing: Sharing;
 }
+
+export interface Dashboard {
+    id: Id;
+    name: string;
+}
+
+export type Dashboards = Record<"project" | "country" | "awardNumber", Dashboard>;
 
 export interface DataInputPeriod {
     period: { id: string };
@@ -143,7 +150,7 @@ const defaultProjectData = {
     orgUnit: undefined,
     parentOrgUnit: undefined,
     dataSets: undefined,
-    dashboard: undefined,
+    dashboard: {},
 };
 
 function defineGetters(sourceObject: any, targetObject: any) {
