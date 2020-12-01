@@ -610,7 +610,7 @@ async function getOrgUnitGroupsMetadata(
         .concat([awardNumberOrgUnitGroupBase])
         .uniqBy(oug => oug.id)
         .map(oug =>
-            oug.id === awardNumberOrgUnitGroupBase.id // Set dashboard ID to awardNumber group
+            oug.id === awardNumberOrgUnitGroupBase.id && dashboards.awardNumber // Set dashboard ID to awardNumber group
                 ? addAttributeValueToObj(oug, {
                       attribute: config.attributes.awardNumberDashboard,
                       value: dashboards.awardNumber.id,

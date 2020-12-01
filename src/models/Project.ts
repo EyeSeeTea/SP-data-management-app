@@ -106,7 +106,7 @@ export interface Dashboard {
     name: string;
 }
 
-export type Dashboards = Record<"project" | "country" | "awardNumber", Dashboard>;
+export type Dashboards = Record<"project" | "country" | "awardNumber", Dashboard | undefined>;
 
 export interface DataInputPeriod {
     period: { id: string };
