@@ -162,7 +162,7 @@ export default class ProjectDb {
 
         const awardNumberDashboardMetadata = (
             await ProjectDashboard.buildForAwardNumber(api, config, project.awardNumber)
-        ).generate({ minimumOrgUnits: 2 });
+        ).generate({ minimumOrgUnits: 0 }); // TODO: If 2, it does not count the new one
 
         if (!project.parentOrgUnit) throw new Error("No parent orgunit for country");
 
