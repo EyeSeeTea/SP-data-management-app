@@ -15,7 +15,7 @@ const ProjectDashboard: React.FC = () => {
     const backUrl = generateUrl("projects");
 
     return (
-        <Loader<DashboardObj> state={state}>
+        <Loader<DashboardObj> state={state} onErrorGoTo={backUrl}>
             {dashboard => (
                 <Dashboard
                     id={dashboard.id}

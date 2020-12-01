@@ -14,9 +14,8 @@ const AwardNumberDashboard: React.FC = () => {
     const state = useDashboardFromParams(getDashboard);
     const backUrl = generateUrl("projects");
 
-    // TODO: on error, snackbar BUT ALSO go to backUrl
     return (
-        <Loader<DashboardObj> state={state}>
+        <Loader<DashboardObj> state={state} onErrorGoTo={backUrl}>
             {dashboard => (
                 <Dashboard
                     id={dashboard.id}
