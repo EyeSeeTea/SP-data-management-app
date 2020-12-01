@@ -1,17 +1,12 @@
 import _ from "lodash";
 import moment from "moment";
-import { Id, Ref, D2Api, SelectedPick, D2DataSetSchema } from "../types/d2-api";
+import { Id, Ref, D2Api, SelectedPick } from "../types/d2-api";
+import { D2DataSetSchema, D2OrganisationUnitSchema } from "../types/d2-api";
 import { PeopleOrBenefit } from "./dataElementsSet";
 import { Config } from "./Config";
 import { Maybe } from "../types/utils";
 import { getPeriodsFromRange, monthPeriod } from "./Period";
-import {
-    Sharing,
-    emptySharing,
-    getSharing,
-    D2Sharing,
-    mergeSharing as unionSharing,
-} from "./Sharing";
+import { Sharing, emptySharing, getSharing, mergeSharing as unionSharing } from "./Sharing";
 import i18n from "../locales";
 import { getUid } from "../utils/dhis2";
 
@@ -47,9 +42,7 @@ const query = {
     organisationUnits: {
         id: true,
         name: true,
-        path: true,
         parent: true,
-        children: { id: true, name: true, parent: true },
     },
     dataSets: {
         id: true,
@@ -70,6 +63,13 @@ const query = {
         },
     },
 } as const;
+
+export type Condition =
+    | { type: "project"; id: Id }
+    | { type: "country"; id: Id }
+    | { type: "awardNumber"; value: string };
+
+export type DashboardType = Condition["type"];
 
 export async function getProjectsListDashboard(
     api: D2Api,
@@ -124,43 +124,34 @@ function getIdName(metadata: Metadata, condition: Condition): { id: Id; name: st
             return { id: condition.id, name: country ? country.name : "-" };
         }
         case "awardNumber": {
-            const orgUnitNames = _(metadata.orgUnits)
-                .map(ou => ou.name)
-                .sort()
-                .join(", ");
-
+            const name = i18n.t("Award Number {{awardNumber}}", { awardNumber: condition.value });
             const ids = _(metadata.orgUnits)
                 .map(ou => ou.id)
                 .sort()
                 .value();
-
-            const name = i18n.t("Award Number {{awardNumber}} - {{orgUnitNames}}", {
-                awardNumber: condition.value,
-                orgUnitNames,
-            });
 
             return { id: getUid("awardNumbers", ids.join(".")), name };
         }
     }
 }
 
-type OrgUnitApi = { id: Id; name: string; parent: Ref } & D2Sharing;
+type OrgUnitApi = Omit<
+    SelectedPick<D2OrganisationUnitSchema, typeof query.organisationUnits>,
+    "children"
+>;
 type DataSetApi = SelectedPick<D2DataSetSchema, typeof query.dataSets>;
+
+type AttributeValue = { attribute: Ref; value: string };
 
 interface Metadata {
     orgUnits: OrgUnitApi[];
     dataSets: DataSetApi[];
 }
 
-type Condition =
-    | { type: "project"; id: Id }
-    | { type: "country"; id: Id }
-    | { type: "awardNumber"; value: string };
-
 async function getMetadata(api: D2Api, condition: Condition): Promise<Metadata> {
     const metadata$ = api.metadata.get({
         organisationUnits: {
-            fields: query.organisationUnits,
+            fields: { ...query.organisationUnits, children: query.organisationUnits },
             filter:
                 condition.type === "country" || condition.type === "project"
                     ? { id: { eq: condition.id } }

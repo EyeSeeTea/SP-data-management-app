@@ -67,8 +67,12 @@ export default class ProjectDashboard {
         return new ProjectDashboard(config, projectsListDashboard);
     }
 
-    generate() {
+    generate(options: { minimumOrgUnits?: number } = {}) {
         const { config, projectsListDashboard } = this;
+        const { minimumOrgUnits } = options;
+
+        if (!_.isNil(minimumOrgUnits) && projectsListDashboard.orgUnits.length < minimumOrgUnits)
+            return { dashboards: [], reportTables: [], charts: [] };
 
         const reportTables: Array<PartialPersistedModel<D2ReportTable>> = _.compact([
             // General Data View

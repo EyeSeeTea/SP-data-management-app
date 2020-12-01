@@ -31,7 +31,7 @@ describe("ProjectDb", () => {
 
             mock.onGet("/metadata", {
                 params: {
-                    "organisationUnits:fields": "children[id,name,parent],id,name,parent,path",
+                    "organisationUnits:fields": "children[id,name,parent],id,name,parent",
                     "organisationUnits:filter": ["id:eq:WGC0DJ0YSis"],
                     "dataSets:fields":
                         "code,dataInputPeriods[period[id]],dataSetElements[dataElement[attributeValues[attribute[id],value],code,dataElementGroups[code],id,name]],externalAccess,id,publicAccess,userAccesses[access,displayName,id],userGroupAccesses[access,displayName,id]",
@@ -46,7 +46,7 @@ describe("ProjectDb", () => {
 
             mock.onGet("/metadata", {
                 params: {
-                    "organisationUnits:fields": "children[id,name,parent],id,name,parent,path",
+                    "organisationUnits:fields": "children[id,name,parent],id,name,parent",
                     "organisationUnits:filter": ["id:eq:eu2XF73JOzl"],
                     "dataSets:fields":
                         "code,dataInputPeriods[period[id]],dataSetElements[dataElement[attributeValues[attribute[id],value],code,dataElementGroups[code],id,name]],externalAccess,id,publicAccess,userAccesses[access,displayName,id],userGroupAccesses[access,displayName,id]",
@@ -61,7 +61,7 @@ describe("ProjectDb", () => {
 
             mock.onGet("/metadata", {
                 params: {
-                    "organisationUnits:fields": "children[id,name,parent],id,name,parent,path",
+                    "organisationUnits:fields": "children[id,name,parent],id,name,parent",
                     "organisationUnits:filter": ["code:$like:12345"],
                     "dataSets:fields":
                         "code,dataInputPeriods[period[id]],dataSetElements[dataElement[attributeValues[attribute[id],value],code,dataElementGroups[code],id,name]],externalAccess,id,publicAccess,userAccesses[access,displayName,id],userGroupAccesses[access,displayName,id]",

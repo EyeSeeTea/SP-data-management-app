@@ -82,17 +82,18 @@ export default class ProjectDb {
 
         const projectWithOrgUnit = project.set("orgUnit", orgUnit);
 
-        const dashboardMetadata = await this.getDashboardsMetadata(projectWithOrgUnit);
-        const projectDashboard = dashboardMetadata.dashboards[0];
+        const { metadata: dashboardMetadata, dashboards } = await this.getDashboardsMetadata(
+            projectWithOrgUnit
+        );
+        const projectDashboard = dashboards.project;
         if (!projectDashboard || !projectDashboard.id) throw new Error("Dashboards error");
 
         const projectOrgUnit = addAttributeValueToObj(orgUnit, {
-            values: orgUnit.attributeValues,
             attribute: config.attributes.projectDashboard,
             value: projectDashboard.id,
         });
 
-        const orgUnitGroupsMetadata = await getOrgUnitGroupsMetadata(api, project);
+        const orgUnitGroupsMetadata = await getOrgUnitGroupsMetadata(api, project, dashboards);
 
         const dataSetAttributeValues = addAttributeValue(
             baseAttributeValues,
@@ -147,30 +148,39 @@ export default class ProjectDb {
         return { orgUnit: projectOrgUnit, payload, response, project: savedProject };
     }
 
-    async getDashboardsMetadata(project: Project) {
+    async getDashboardsMetadata(project: Project): Promise<DashboardsMetadata> {
         const { api, config } = this;
 
         const projectDashboardMetadata = (
             await ProjectDashboard.buildForProject(api, config, project)
         ).generate();
 
-        // TODO: skip if only one project for this award number
         const awardNumberDashboardMetadata = (
             await ProjectDashboard.buildForAwardNumber(api, config, project.awardNumber)
+        ).generate({ minimumOrgUnits: 2 });
+
+        if (!project.parentOrgUnit) throw new Error("No parent orgunit for country");
+
+        const countryDashboardMetadata = (
+            await CountryDashboard.build(api, config, project.parentOrgUnit.id)
         ).generate();
 
-        const countryDashboardMetadata = project.parentOrgUnit
-            ? (await CountryDashboard.build(api, config, project.parentOrgUnit.id)).generate()
-            : null;
-
-        // First item should be the project dashboard
-        return flattenPayloads(
+        const metadata = flattenPayloads(
             _.compact([
                 projectDashboardMetadata,
                 countryDashboardMetadata,
                 awardNumberDashboardMetadata,
             ])
         );
+
+        return {
+            metadata,
+            dashboards: {
+                project: getFirstDashboard(projectDashboardMetadata),
+                country: getFirstDashboard(countryDashboardMetadata),
+                awardNumber: getFirstDashboard(awardNumberDashboardMetadata),
+            },
+        };
     }
 
     async updateDataSet(dataSet: Ref, attrs: PartialModel<D2DataSet>) {
@@ -521,13 +531,20 @@ export function getSectorCodeFromSectionCode(code: string | undefined) {
     return _.initial((code || "").split("_")).join("_");
 }
 
-type OrgUnitGroup = PartialPersistedModel<D2OrganisationUnitGroup>;
+type OrgUnitGroup = PartialPersistedModel<D2OrganisationUnitGroup> & {
+    attributeValues: Array<{ attribute: Ref; value: string }>;
+};
+
 type OrgUnitsMeta = Pick<
     MetadataPayload,
     "organisationUnits" | "organisationUnitGroups" | "organisationUnitGroupSets"
 >;
 
-async function getOrgUnitGroupsMetadata(api: D2Api, project: Project) {
+async function getOrgUnitGroupsMetadata(
+    api: D2Api,
+    project: Project,
+    dashboards: DashboardsMetadata["dashboards"]
+) {
     const { config } = project;
 
     /* The project may have changed funders/locations/awardNumber, so we need to get
@@ -554,6 +571,7 @@ async function getOrgUnitGroupsMetadata(api: D2Api, project: Project) {
         id: getUid("awardNumber", project.awardNumber),
         name: `Award Number ${project.awardNumber}`,
         organisationUnits: [],
+        attributeValues: [],
     };
 
     const orgUnitGroupIds = new Set(
@@ -570,9 +588,17 @@ async function getOrgUnitGroupsMetadata(api: D2Api, project: Project) {
         .getData();
 
     const orgUnitGroupsToSave = _(prevOrgUnitGroups as OrgUnitGroup[])
-        .concat(newOrgUnitGroups)
+        .concat(newOrgUnitGroups as OrgUnitGroup[])
         .concat([awardNumberOrgUnitGroupBase])
         .uniqBy(oug => oug.id)
+        .map(oug =>
+            oug.id === awardNumberOrgUnitGroupBase.id // Set dashboard ID to awardNumber group
+                ? addAttributeValueToObj(oug, {
+                      attribute: config.attributes.awardNumberDashboard,
+                      value: dashboards.awardNumber.id,
+                  })
+                : oug
+        )
         .value();
 
     const organisationUnitGroups = orgUnitGroupsToSave.map(orgUnitGroup => {
@@ -629,4 +655,13 @@ export function flattenPayloads<Model extends keyof MetadataPayload>(
 
 function concat<T>(value1: T[] | undefined, value2: T[]): T[] {
     return (value1 || []).concat(value2);
+}
+
+interface DashboardsMetadata {
+    metadata: Partial<MetadataPayload>;
+    dashboards: Record<"project" | "country" | "awardNumber", Ref>;
+}
+
+function getFirstDashboard<T extends Ref>(metadata: { dashboards: T[] }): T {
+    return metadata.dashboards[0];
 }

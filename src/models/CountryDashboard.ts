@@ -120,7 +120,6 @@ export default class CountryDashboard {
         };
 
         const countryUpdated = addAttributeValueToObj(d2Country, {
-            values: d2Country.attributeValues,
             attribute: this.config.attributes.projectDashboard,
             value: dashboard.id,
         });
