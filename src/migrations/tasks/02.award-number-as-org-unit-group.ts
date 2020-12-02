@@ -1,40 +1,20 @@
-import { Config } from "./../../models/Config";
-import { D2Api, Id } from "../../types/d2-api";
-import { Debug, Migration } from "../types";
-import Project from "../../models/Project";
-import { promiseMap, enumerate } from "../utils";
 import { getConfig } from "../../models/Config";
+import { D2Api } from "../../types/d2-api";
+import { Debug, Migration } from "../types";
 import { checkCurrentUserIsSuperadmin } from "./permissions";
-import { getProjectIds } from "./common";
 
-async function updateProjectsAwardNumber(api: D2Api, debug: Debug): Promise<void> {
+async function setupAwardNumberMetadata(api: D2Api, _debug: Debug): Promise<void> {
     const config = await getConfig(api);
 
     checkCurrentUserIsSuperadmin(config);
 
-    const projectIds = await getProjectIds(api, config, debug);
-    debug(`Projects count: ${projectIds.length}`);
-
-    await updateProjectsAwardNumberFromIds(api, config, debug, projectIds);
-}
-
-async function updateProjectsAwardNumberFromIds(
-    api: D2Api,
-    config: Config,
-    debug: Debug,
-    projectIds: Id[]
-) {
-    return promiseMap(enumerate(projectIds), async ([idx, projectId]) => {
-        const project = await Project.get(api, config, projectId);
-        const name = `[${project.parentOrgUnit?.displayName}] ${project.name} (${project.id})`;
-        debug(`Save project (${idx + 1}/${projectIds.length}): ${name}`);
-        await project.save();
-    });
+    // TODO:
+    // Create orgUnitGroupSet + attribute + add permission to roles
 }
 
 const migration: Migration = {
-    name: "Update project award number",
-    migrate: updateProjectsAwardNumber,
+    name: "Setup project awardNumber metadata",
+    migrate: setupAwardNumberMetadata,
 };
 
 export default migration;
