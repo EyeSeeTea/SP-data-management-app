@@ -2,8 +2,8 @@ import Project from "./Project";
 import ProjectDashboard from "./ProjectDashboard";
 import { D2Api } from "../types/d2-api";
 import i18n from "../locales";
-import { flattenPayloads } from "./ProjectDb";
 import CountryDashboard from "./CountryDashboard";
+import { flattenPayloads } from "../utils/dhis2";
 
 export default class ProjectDashboardSave {
     api: D2Api;

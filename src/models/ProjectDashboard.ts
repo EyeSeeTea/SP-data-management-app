@@ -24,7 +24,12 @@ import {
 } from "./Dashboard";
 import { getActualTargetIndicators, getCostBenefitIndicators } from "./indicators";
 import { Response } from "./Response";
-import { ProjectsListDashboard, getProjectsListDashboard } from "./ProjectsListDashboard";
+import {
+    ProjectsListDashboard,
+    getProjectsListDashboard,
+    DashboardSourceMetadata,
+    Condition,
+} from "./ProjectsListDashboard";
 
 export default class ProjectDashboard {
     dataElements: ProjectsListDashboard["dataElements"];
@@ -44,26 +49,22 @@ export default class ProjectDashboard {
     static async buildForProject(
         api: D2Api,
         config: Config,
-        project: Ref
+        project: Ref,
+        initialMetadata?: DashboardSourceMetadata
     ): Promise<ProjectDashboard> {
-        const projectsListDashboard = await getProjectsListDashboard(api, config, {
-            type: "project",
-            id: project.id,
-        });
-
+        const condition: Condition = { type: "project", id: project.id, initialMetadata };
+        const projectsListDashboard = await getProjectsListDashboard(api, config, condition);
         return new ProjectDashboard(config, projectsListDashboard);
     }
 
     static async buildForAwardNumber(
         api: D2Api,
         config: Config,
-        awardNumber: string
+        awardNumber: string,
+        initialMetadata?: DashboardSourceMetadata
     ): Promise<ProjectDashboard> {
-        const projectsListDashboard = await getProjectsListDashboard(api, config, {
-            type: "awardNumber",
-            value: awardNumber,
-        });
-
+        const condition: Condition = { type: "awardNumber", value: awardNumber, initialMetadata };
+        const projectsListDashboard = await getProjectsListDashboard(api, config, condition);
         return new ProjectDashboard(config, projectsListDashboard);
     }
 
@@ -331,14 +332,10 @@ export async function getProjectDashboard(
     config: Config,
     projectId: Id
 ): Promise<Response<Dashboard>> {
-    let project: Project;
-    try {
-        project = await Project.get(api, config, projectId);
-    } catch (err) {
-        const msg = err.message || err;
-        return { type: "error", message: i18n.t(`Cannot load project: ${msg}`) };
-    }
+    const project = await Project.get(api, config, projectId).catch(_err => null);
+    if (!project) return { type: "error" as const, message: "No dashboard found" };
 
+    // Regenerate the dashboard, as it contains "to date" visualizations
     const metadata = (await ProjectDashboard.buildForProject(api, config, project)).generate();
     const dashboard = metadata.dashboards[0];
     if (!dashboard) return { type: "error", message: "Error generating dashboard" };
@@ -348,18 +345,51 @@ export async function getProjectDashboard(
         .getData()
         .catch(_err => null);
     const newDashboard = { id: dashboard.id, name: project.name };
-    const updateSuccessful = !response || response.status !== "OK";
+    const updateSuccessful = response && response.status === "OK";
 
-    if (updateSuccessful) {
+    if (!updateSuccessful) {
         if (project.dashboard.project) {
             // There was an error saving the updated dashboard, but an old one existed, return it.
             console.error("Error saving dashboard", response);
-            return { type: "success", data: { ...project.dashboard.project, name: project.name } };
+            return { type: "success", data: project.dashboard.project };
         } else {
             return { type: "error", message: i18n.t("Error saving dashboard") };
         }
     } else {
         return { type: "success", data: newDashboard };
+    }
+}
+
+export async function getAwardNumberDashboard(
+    api: D2Api,
+    config: Config,
+    projectId: Id
+): Promise<Response<Dashboard>> {
+    const project = await Project.get(api, config, projectId).catch(_err => null);
+
+    if (!project) {
+        return { type: "error" as const, message: "No dashboard found" };
+    } else if (project.dashboard.awardNumber) {
+        return { type: "success" as const, data: project.dashboard.awardNumber };
+    } else {
+        const { awardNumber } = project;
+        const generator = await ProjectDashboard.buildForAwardNumber(api, config, awardNumber);
+        const metadata = generator.generate();
+        const dashboard = metadata.dashboards[0];
+        if (!dashboard) return { type: "error", message: "Error generating dashboard" };
+
+        const response = await api.metadata
+            .post(metadata)
+            .getData()
+            .catch(_err => null);
+        const newDashboard = { id: dashboard.id, name: dashboard.name };
+        const updateSuccessful = response && response.status === "OK";
+
+        if (!updateSuccessful) {
+            return { type: "error", message: i18n.t("Error saving dashboard") };
+        } else {
+            return { type: "success", data: newDashboard };
+        }
     }
 }
 

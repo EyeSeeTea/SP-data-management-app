@@ -1,17 +1,13 @@
 import React from "react";
 import Dashboard from "../../components/dashboard/Dashboard";
-import {
-    DashboardObj,
-    useDashboardFromParams,
-    GetDashboard,
-} from "../../components/dashboard/dashboard-hooks";
+import { DashboardObj, useDashboardFromParams } from "../../components/dashboard/dashboard-hooks";
 import { Loader } from "../../components/loader/Loader";
 import { generateUrl } from "../../router";
-import Project from "../../models/Project";
 import i18n from "../../locales";
+import { getAwardNumberDashboard } from "../../models/ProjectDashboard";
 
 const AwardNumberDashboard: React.FC = () => {
-    const state = useDashboardFromParams(getDashboard);
+    const state = useDashboardFromParams(getAwardNumberDashboard);
     const backUrl = generateUrl("projects");
 
     return (
@@ -19,26 +15,12 @@ const AwardNumberDashboard: React.FC = () => {
             {dashboard => (
                 <Dashboard
                     id={dashboard.id}
-                    name={i18n.t("Award Number Dashboard: ") + dashboard.name}
+                    name={i18n.t("Award Number Dashboard") + ": " + dashboard.name}
                     backUrl={backUrl}
                 />
             )}
         </Loader>
     );
-};
-
-const getDashboard: GetDashboard = async (api, config, projectId) => {
-    const res = await Project.get(api, config, projectId)
-        .then(project =>
-            project.dashboard.awardNumber
-                ? { type: "success" as const, data: project.dashboard.awardNumber }
-                : { type: "error" as const, message: "No dashboard found" }
-        )
-        .catch(err => ({ type: "error" as const, message: err.message }));
-
-    return res.type === "success"
-        ? { type: "success", data: res.data }
-        : { type: "error", message: res.message };
 };
 
 export default React.memo(AwardNumberDashboard);

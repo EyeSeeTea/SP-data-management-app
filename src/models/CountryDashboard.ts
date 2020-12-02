@@ -28,7 +28,12 @@ import {
 } from "./Dashboard";
 import { PeopleOrBenefit } from "./dataElementsSet";
 import { addAttributeValueToObj, AttributeValue } from "./Attributes";
-import { getProjectsListDashboard, ProjectsListDashboard } from "./ProjectsListDashboard";
+import {
+    getProjectsListDashboard,
+    ProjectsListDashboard,
+    Condition,
+    DashboardSourceMetadata,
+} from "./ProjectsListDashboard";
 import { D2Sharing, getD2Access } from "./Sharing";
 
 interface DataElement {
@@ -73,11 +78,14 @@ export default class CountryDashboard {
         };
     }
 
-    static async build(api: D2Api, config: Config, countryId: Id): Promise<CountryDashboard> {
-        const projectsListDashboard = await getProjectsListDashboard(api, config, {
-            type: "country",
-            id: countryId,
-        });
+    static async build(
+        api: D2Api,
+        config: Config,
+        countryId: Id,
+        initialMetadata?: DashboardSourceMetadata
+    ): Promise<CountryDashboard> {
+        const condition: Condition = { type: "country", id: countryId, initialMetadata };
+        const projectsListDashboard = await getProjectsListDashboard(api, config, condition);
         const orgUnit = await getOrgUnit(api, countryId);
         if (!orgUnit) throw new Error("Cannot get orgunit");
 
@@ -215,7 +223,7 @@ export default class CountryDashboard {
         return d2Table ? { ...d2Table, ...chart.extra } : null;
     }
 
-    getSharing(): D2Sharing {
+    getSharing(): Partial<D2Sharing> {
         return {
             publicAccess: getD2Access({ meta: { read: true, write: true } }),
         };

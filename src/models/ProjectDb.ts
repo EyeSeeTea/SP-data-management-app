@@ -14,7 +14,7 @@ import Project, {
 import { getMonthsRange, toISOString } from "../utils/date";
 import "../utils/lodash-mixins";
 import ProjectDashboard from "./ProjectDashboard";
-import { getUid, getDataStore, getIds, getRefs } from "../utils/dhis2";
+import { getUid, getDataStore, getIds, getRefs, flattenPayloads } from "../utils/dhis2";
 import { Config } from "./Config";
 import { runPromises } from "../utils/promises";
 import DataElementsSet from "./dataElementsSet";
@@ -24,6 +24,7 @@ import { splitParts } from "../utils/string";
 import CountryDashboard from "./CountryDashboard";
 import { addAttributeValueToObj, addAttributeValue } from "./Attributes";
 import { getSharing } from "./Sharing";
+import { DashboardSourceMetadata } from "./ProjectsListDashboard";
 
 const expiryDaysInMonthActual = 10;
 
@@ -82,23 +83,10 @@ export default class ProjectDb {
                     .endOf("month")
             ),
             attributeValues: baseAttributeValues,
-            // No sharing, permissions through user -> organisationUnits
+            // No sharing, permissions through user.organisationUnits
         };
 
         const projectWithOrgUnit = project.set("orgUnit", orgUnit);
-
-        const { metadata: dashboardMetadata, dashboards } = await this.getDashboardsMetadata(
-            projectWithOrgUnit
-        );
-        const projectDashboard = dashboards.project;
-        if (!projectDashboard || !projectDashboard.id) throw new Error("Dashboards error");
-
-        const projectOrgUnit = addAttributeValueToObj(orgUnit, {
-            attribute: config.attributes.projectDashboard,
-            value: projectDashboard.id,
-        });
-
-        const orgUnitGroupsMetadata = await getOrgUnitGroupsMetadata(api, project, dashboards);
 
         const dataSetAttributeValues = addAttributeValue(
             baseAttributeValues,
@@ -123,6 +111,21 @@ export default class ProjectDb {
             ...this.getDataSetOpenAttributes("actual"),
         });
         const dataSetActual = _(dataSetActualMetadata.dataSets).getOrFail(0);
+
+        const projectMetadata = this.getProjectMetadataForDashboard(orgUnit, dataSetActual);
+
+        const { metadata: dashboardMetadata, dashboards } = await this.getDashboardsMetadata(
+            projectWithOrgUnit,
+            projectMetadata
+        );
+        if (!dashboards.project) throw new Error("Dashboards error");
+
+        const projectOrgUnit = addAttributeValueToObj(orgUnit, {
+            attribute: config.attributes.projectDashboard,
+            value: dashboards.project.id,
+        });
+
+        const orgUnitGroupsMetadata = await getOrgUnitGroupsMetadata(api, project, dashboards);
 
         const orgUnitsMetadata: OrgUnitsMeta = {
             organisationUnits: [projectOrgUnit],
@@ -153,21 +156,44 @@ export default class ProjectDb {
         return { orgUnit: projectOrgUnit, payload, response, project: savedProject };
     }
 
-    async getDashboardsMetadata(project: Project): Promise<DashboardsMetadata> {
+    getProjectMetadataForDashboard(
+        orgUnit: DashboardSourceMetadata["orgUnits"][0],
+        dataSet: ReturnType<InstanceType<typeof ProjectDb>["getDataSetMetadata"]>["dataSets"][0]
+    ): DashboardSourceMetadata {
+        const { config } = this;
+        const dataElementsById = _.keyBy(config.dataElements, de => de.id);
+        // Add extra metadata to dataSetElements->dataElement, needed by dashboards generator
+        const dataSets = [dataSet].map(dataSet => ({
+            ...dataSet,
+            dataSetElements: dataSet.dataSetElements.map(dataSetElement => ({
+                ...dataSetElement,
+                dataElement: dataElementsById[dataSetElement.dataElement.id],
+            })),
+        }));
+
+        return { orgUnits: [orgUnit], dataSets };
+    }
+
+    async getDashboardsMetadata(
+        project: Project,
+        projectMetadata: DashboardSourceMetadata
+    ): Promise<DashboardsMetadata> {
         const { api, config } = this;
 
         const projectDashboardMetadata = (
-            await ProjectDashboard.buildForProject(api, config, project)
+            await ProjectDashboard.buildForProject(api, config, project, projectMetadata)
         ).generate();
 
+        const { awardNumber } = project;
+
         const awardNumberDashboardMetadata = (
-            await ProjectDashboard.buildForAwardNumber(api, config, project.awardNumber)
-        ).generate({ minimumOrgUnits: 0 }); // TODO: If 2, it does not count the new one
+            await ProjectDashboard.buildForAwardNumber(api, config, awardNumber, projectMetadata)
+        ).generate({ minimumOrgUnits: 2 });
 
         if (!project.parentOrgUnit) throw new Error("No parent orgunit for country");
 
         const countryDashboardMetadata = (
-            await CountryDashboard.build(api, config, project.parentOrgUnit.id)
+            await CountryDashboard.build(api, config, project.parentOrgUnit.id, projectMetadata)
         ).generate();
 
         const metadata = flattenPayloads(
@@ -181,9 +207,9 @@ export default class ProjectDb {
         return {
             metadata,
             dashboards: {
-                project: getFirstDashboard(projectDashboardMetadata),
-                country: getFirstDashboard(countryDashboardMetadata),
-                awardNumber: getFirstDashboard(awardNumberDashboardMetadata),
+                project: projectDashboardMetadata.dashboards[0],
+                country: countryDashboardMetadata.dashboards[0],
+                awardNumber: awardNumberDashboardMetadata.dashboards[0],
             },
         };
     }
@@ -714,25 +740,7 @@ async function getDashboards<OrgUnit extends OrgUnitsForDashboards>(
     };
 }
 
-export function flattenPayloads<Model extends keyof MetadataPayload>(
-    payloads: Array<Partial<Pick<MetadataPayload, Model>>>
-): Pick<MetadataPayload, Model> {
-    const payload = payloads.reduce(
-        (payloadAcc, payload) => _.mergeWith(payloadAcc, payload, concat),
-        {} as Pick<MetadataPayload, Model>
-    );
-    return payload as Pick<MetadataPayload, Model>;
-}
-
-function concat<T>(value1: T[] | undefined, value2: T[]): T[] {
-    return (value1 || []).concat(value2);
-}
-
 interface DashboardsMetadata {
     metadata: Partial<MetadataPayload>;
     dashboards: Dashboards;
-}
-
-function getFirstDashboard<T extends Dashboard>(metadata: { dashboards: T[] }): T {
-    return metadata.dashboards[0];
 }

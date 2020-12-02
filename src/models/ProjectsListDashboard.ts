@@ -10,6 +10,17 @@ import { Sharing, emptySharing, getSharing, mergeSharing as unionSharing } from 
 import i18n from "../locales";
 import { getUid } from "../utils/dhis2";
 
+type OrgUnitApi = Omit<
+    SelectedPick<D2OrganisationUnitSchema, typeof query.organisationUnits>,
+    "children"
+>;
+type DataSetApi = SelectedPick<D2DataSetSchema, typeof query.dataSets>;
+
+export interface DashboardSourceMetadata {
+    orgUnits: OrgUnitApi[];
+    dataSets: DataSetApi[];
+}
+
 interface DashboardProject {
     id: Id;
     orgUnit: Ref;
@@ -65,9 +76,9 @@ const query = {
 } as const;
 
 export type Condition =
-    | { type: "project"; id: Id }
-    | { type: "country"; id: Id }
-    | { type: "awardNumber"; value: string };
+    | { type: "project"; id: Id; initialMetadata: DashboardSourceMetadata | undefined }
+    | { type: "country"; id: Id; initialMetadata: DashboardSourceMetadata | undefined }
+    | { type: "awardNumber"; value: string; initialMetadata: DashboardSourceMetadata | undefined };
 
 export type DashboardType = Condition["type"];
 
@@ -76,7 +87,9 @@ export async function getProjectsListDashboard(
     config: Config,
     condition: Condition
 ): Promise<ProjectsListDashboard> {
-    const metadata = await getMetadata(api, condition);
+    const { initialMetadata } = condition;
+    const existingMetadata = await getMetadata(api, condition);
+    const metadata = mergeMetadata(initialMetadata, existingMetadata);
 
     const projects: DashboardProject[] = _(metadata.dataSets)
         .map(dataSet => getProject(config, metadata, dataSet))
@@ -116,7 +129,10 @@ export async function getProjectsListDashboard(
     return dashboardProjects;
 }
 
-function getIdName(metadata: Metadata, condition: Condition): { id: Id; name: string } {
+function getIdName(
+    metadata: DashboardSourceMetadata,
+    condition: Condition
+): { id: Id; name: string } {
     switch (condition.type) {
         case "country":
         case "project": {
@@ -125,30 +141,21 @@ function getIdName(metadata: Metadata, condition: Condition): { id: Id; name: st
         }
         case "awardNumber": {
             const name = i18n.t("Award Number {{awardNumber}}", { awardNumber: condition.value });
-            const ids = _(metadata.orgUnits)
-                .map(ou => ou.id)
-                .sort()
-                .value();
-
-            return { id: getUid("awardNumbers", ids.join(".")), name };
+            return { id: getUid("awardNumbers", condition.value), name };
         }
     }
 }
 
-type OrgUnitApi = Omit<
-    SelectedPick<D2OrganisationUnitSchema, typeof query.organisationUnits>,
-    "children"
->;
-type DataSetApi = SelectedPick<D2DataSetSchema, typeof query.dataSets>;
-
-type AttributeValue = { attribute: Ref; value: string };
-
-interface Metadata {
-    orgUnits: OrgUnitApi[];
-    dataSets: DataSetApi[];
+function mergeMetadata(
+    metadata1: DashboardSourceMetadata | undefined,
+    metadata2: DashboardSourceMetadata
+): DashboardSourceMetadata {
+    const { orgUnits: orgUnits1 = [], dataSets: dataSets1 = [] } = metadata1 || {};
+    const { orgUnits: orgUnits2, dataSets: dataSets2 } = metadata2;
+    return { orgUnits: orgUnits1.concat(orgUnits2), dataSets: dataSets1.concat(dataSets2) };
 }
 
-async function getMetadata(api: D2Api, condition: Condition): Promise<Metadata> {
+async function getMetadata(api: D2Api, condition: Condition): Promise<DashboardSourceMetadata> {
     const metadata$ = api.metadata.get({
         organisationUnits: {
             fields: { ...query.organisationUnits, children: query.organisationUnits },
@@ -180,7 +187,7 @@ async function getMetadata(api: D2Api, condition: Condition): Promise<Metadata> 
 
 function getProject(
     config: Config,
-    metadata: Metadata,
+    metadata: DashboardSourceMetadata,
     dataSet: DataSetApi
 ): DashboardProject | null {
     const orgUnitById = _.keyBy(metadata.orgUnits, ou => ou.id);

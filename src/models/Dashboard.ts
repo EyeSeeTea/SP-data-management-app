@@ -35,7 +35,7 @@ interface Visualization {
     periods: string[];
     relativePeriods?: D2ReportTable["relativePeriods"];
     organisationUnits: Ref[];
-    sharing: D2Sharing;
+    sharing: Partial<D2Sharing>;
     extra?: PartialModel<D2ReportTable>;
 }
 

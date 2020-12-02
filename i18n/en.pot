@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2020-12-01T08:05:55.763Z\n"
-"PO-Revision-Date: 2020-12-01T08:05:55.763Z\n"
+"POT-Creation-Date: 2020-12-02T12:47:18.888Z\n"
+"PO-Revision-Date: 2020-12-02T12:47:18.888Z\n"
 
 msgid "Name"
 msgstr ""
@@ -30,9 +30,6 @@ msgid "Go to Dashboard"
 msgstr ""
 
 msgid "Search by name or code"
-msgstr ""
-
-msgid "Dashboard"
 msgstr ""
 
 msgid ""
@@ -410,6 +407,9 @@ msgstr ""
 msgid "Data Sets"
 msgstr ""
 
+msgid "Dashboard"
+msgstr ""
+
 msgid "Initial Data"
 msgstr ""
 
@@ -538,7 +538,7 @@ msgstr ""
 msgid "updated"
 msgstr ""
 
-msgid "Award Number {{awardNumber}} - {{orgUnitNames}}"
+msgid "Award Number {{awardNumber}}"
 msgstr ""
 
 msgid "The following sectors have no indicators selected"
@@ -572,10 +572,13 @@ msgid ""
 "initial returning + new values for past periods: {{newValuesSumFormula}}"
 msgstr ""
 
-msgid "Cannot get country dashboard"
+msgid "Award Number Dashboard"
 msgstr ""
 
-msgid "Cannot get project dashboard"
+msgid "Country dashboard"
+msgstr ""
+
+msgid "Project dashboard"
 msgstr ""
 
 msgid "Period"
@@ -745,6 +748,9 @@ msgid "API Link"
 msgstr ""
 
 msgid "Add Actual Values"
+msgstr ""
+
+msgid "Go to Award Number Dashboard"
 msgstr ""
 
 msgid "Add Target Values"

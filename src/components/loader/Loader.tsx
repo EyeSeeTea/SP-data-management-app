@@ -1,6 +1,5 @@
 import { LinearProgress } from "@material-ui/core";
 import React from "react";
-import { useGoTo } from "../../router";
 import { useHistory } from "react-router-dom";
 
 export interface LoaderProps<Data> {

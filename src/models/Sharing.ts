@@ -3,10 +3,10 @@ import _ from "lodash";
 export type D2Access = string;
 
 export interface D2Sharing {
-    publicAccess?: D2Access;
-    externalAccess?: boolean;
-    userAccesses?: D2EntityAccess[];
-    userGroupAccesses?: D2EntityAccess[];
+    publicAccess: D2Access;
+    externalAccess: boolean;
+    userAccesses: D2EntityAccess[];
+    userGroupAccesses: D2EntityAccess[];
 }
 
 export type D2SharingUpdate = Partial<D2Sharing>;
@@ -74,7 +74,7 @@ export function getEntitiesAccess(d2EntitySharings: D2EntityAccess[]): EntityAcc
     }));
 }
 
-export function getSharing(object: D2Sharing): Sharing {
+export function getSharing(object: Partial<D2Sharing>): Sharing {
     const userAccesses = getEntitiesAccess(object.userAccesses || []);
     const userGroupAccesses = getEntitiesAccess(object.userGroupAccesses || []);
     return { userAccesses, userGroupAccesses };
