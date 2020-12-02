@@ -95,6 +95,7 @@ function getBaseListConfig(currentUser: User, goTo: GoTo): TableConfig<CountryVi
                   name: "dashboard",
                   icon: <Icon>dashboard</Icon>,
                   text: i18n.t("Go to Dashboard"),
+                  isActive: countries => _(countries).every(country => country.projectsCount > 0),
                   multiple: false,
                   onClick: (ids: Id[]) => goTo("countryDashboard", { id: ids[0] }),
               }
