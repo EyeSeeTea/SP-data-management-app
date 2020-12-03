@@ -63,7 +63,7 @@
         "cy:verify": "cypress verify",
         "cy:e2e:open": "CYPRESS_E2E=true cypress open -b chrome",
         "cy:e2e:run": "CYPRESS_E2E=true cypress run -b chrome --headless",
-        "ts": "ts-node -O '{\"module\":\"commonjs\"}'",
+        "ts-node": "ts-node -P tsconfig-cli.json",
         "generate-test-fixtures": "yarn run ts src/models/Config.ts"
     },
     "husky": {
