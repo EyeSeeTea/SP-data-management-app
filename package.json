@@ -61,7 +61,7 @@
         "update-po": "yarn extract-pot && find i18n -name '*.po' | while read pofile; do msgmerge --backup=off -U $pofile i18n/en.pot; done",
         "manifest": "d2-manifest package.json build/manifest.webapp",
         "cy:verify": "cypress verify",
-        "cy:e2e:open": "CYPRESS_E2E=true cypress open -b chrome --headless",
+        "cy:e2e:open": "CYPRESS_E2E=true cypress open -b chrome",
         "cy:e2e:run": "CYPRESS_E2E=true cypress run -b chrome --headless",
         "ts": "ts-node -O '{\"module\":\"commonjs\"}'",
         "generate-test-fixtures": "yarn run ts src/models/Config.ts"

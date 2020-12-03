@@ -316,12 +316,12 @@ describe("Project", () => {
         ];
 
         const organisationUnits = [
-            { id: "1", code: "code1", displayName: "name1" },
-            { id: "2", code: "other2", displayName: "other2" },
-            { id: "3", code: "CODE3", displayName: "name3" },
-            { id: "4", code: "other4", displayName: "other4" },
-            { id: "5", code: "code5", displayName: "NAME5" },
-            { id: "6", code: "code6", displayName: "NAME6" },
+            { id: "1", code: "code1", displayName: "name1", organisationUnitGroups: [] },
+            { id: "2", code: "other2", displayName: "other2", organisationUnitGroups: [] },
+            { id: "3", code: "CODE3", displayName: "name3", organisationUnitGroups: [] },
+            { id: "4", code: "other4", displayName: "other4", organisationUnitGroups: [] },
+            { id: "5", code: "code5", displayName: "NAME5", organisationUnitGroups: [] },
+            { id: "6", code: "code6", displayName: "NAME6", organisationUnitGroups: [] },
         ];
 
         const orgUnitsById = _.keyBy(organisationUnits, ou => ou.id);
@@ -346,9 +346,9 @@ describe("Project", () => {
                 params: {
                     paging: false,
                     fields:
-                        "closedDate,code,created,displayDescription,displayName,href,id,lastUpdated,lastUpdatedBy[name],openingDate,parent[displayName,id],user[displayName,id]",
-                    order: "displayName:idesc",
+                        "closedDate,code,created,displayDescription,displayName,href,id,lastUpdated,lastUpdatedBy[name],openingDate,organisationUnitGroups[groupSets[id],id],parent[displayName,id],user[displayName,id]",
                     filter: ["id:in:[5,3,1]"],
+                    order: "displayName:idesc",
                 },
             }).replyOnce(200, { organisationUnits: _.at(orgUnitsById, ["5", "3"]) });
 
@@ -357,6 +357,8 @@ describe("Project", () => {
                     "dataSets:fields":
                         "access,code,sections[code,dataElements[id]],userAccesses[access,displayName,id],userGroupAccesses[access,displayName,id]",
                     "dataSets:filter": ["code:in:[3_ACTUAL,5_ACTUAL]"],
+                    "organisationUnitGroups:fields": "id,organisationUnits",
+                    "organisationUnitGroups:filter": ["id:in:[]"],
                 },
             }).replyOnce(200, {
                 dataSets: [
@@ -378,6 +380,8 @@ describe("Project", () => {
                     },
                 ],
             });
+
+            logUnknownRequest(mock);
 
             const { objects, pager: pagination } = await Project.getList(
                 api,
