@@ -22,7 +22,6 @@ import User from "../../models/user";
 import { LinearProgress } from "@material-ui/core";
 import Migrations from "../migrations/Migrations";
 import { useMigrations } from "../migrations/hooks";
-import migration from "../../migrations/tasks/02.award-number-as-org-unit-group";
 
 const appKey = "data-management-app";
 
