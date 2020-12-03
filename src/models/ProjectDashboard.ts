@@ -30,6 +30,7 @@ import {
     DashboardSourceMetadata,
     Condition,
 } from "./ProjectsListDashboard";
+import { filterPeriods } from "./Period";
 
 export default class ProjectDashboard {
     dataElements: ProjectsListDashboard["dataElements"];
@@ -290,7 +291,7 @@ export default class ProjectDashboard {
             key: baseChart.key + projectsListDashboard.id,
             name: `${projectsListDashboard.name} - ${baseChart.name}`,
             organisationUnits: projectsListDashboard.orgUnits,
-            periods: projectsListDashboard.periods,
+            periods: filterPeriods(projectsListDashboard.periods, baseChart),
             sharing: new ProjectSharing(
                 config,
                 projectsListDashboard
@@ -309,7 +310,7 @@ export default class ProjectDashboard {
             key: baseTable.key + projectsListDashboard.id,
             name: `${projectsListDashboard.name} - ${baseTable.name}`,
             organisationUnits: projectsListDashboard.orgUnits,
-            periods: projectsListDashboard.periods,
+            periods: filterPeriods(projectsListDashboard.periods, baseTable),
             sharing: new ProjectSharing(
                 config,
                 projectsListDashboard
@@ -397,19 +398,8 @@ interface VisualizationOptions {
     toDate?: boolean;
 }
 
-type BaseTableKey =
-    | "key"
-    | "name"
-    | "items"
-    | "extra"
-    | "reportFilter"
-    | "rowDimensions"
-    | "columnDimensions"
-    | "rowTotals";
+type CommonKey = "key" | "name" | "extra" | "toDate" | "items" | "reportFilter";
 
-type BaseTable = Pick<Table, BaseTableKey> & VisualizationOptions;
+type BaseTable = Pick<Table, CommonKey | "rowDimensions" | "columnDimensions" | "rowTotals">;
 
-type BaseChart = Pick<
-    Chart,
-    "key" | "name" | "items" | "reportFilter" | "categoryDimension" | "extra" | "seriesDimension"
->;
+type BaseChart = Pick<Chart, CommonKey | "categoryDimension" | "seriesDimension">;

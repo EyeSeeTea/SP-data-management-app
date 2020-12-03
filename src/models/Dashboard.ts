@@ -37,6 +37,7 @@ interface Visualization {
     organisationUnits: Ref[];
     sharing: Partial<D2Sharing>;
     extra?: PartialModel<D2ReportTable>;
+    toDate?: boolean;
 }
 
 export interface Table extends Visualization {
