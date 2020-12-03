@@ -1,6 +1,6 @@
 import { D2Api } from "../types/d2-api";
 import { MigrationsRunner } from "./index";
-import { migrationTasks } from "./tasks";
+import { getMigrationTasks } from "./tasks";
 
 async function main() {
     const [baseUrl] = process.argv.slice(2);
@@ -9,7 +9,7 @@ async function main() {
     const runner = await MigrationsRunner.init({
         api,
         debug: console.debug,
-        migrations: migrationTasks,
+        migrations: await getMigrationTasks(),
         dataStoreNamespace: "data-management-app",
     });
     runner.execute();

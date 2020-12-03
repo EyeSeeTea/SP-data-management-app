@@ -22,6 +22,7 @@ import User from "../../models/user";
 import { LinearProgress } from "@material-ui/core";
 import Migrations from "../migrations/Migrations";
 import { useMigrations } from "../migrations/hooks";
+import migration from "../../migrations/tasks/02.award-number-as-org-unit-group";
 
 const appKey = "data-management-app";
 
@@ -116,8 +117,10 @@ const App: React.FC<AppProps> = props => {
             }
         };
 
-        if (data) run().catch(err => setLoadError(err.message));
-    }, [api, d2, data, isDev]);
+        if (data && migrations.state.type === "checked") {
+            run().catch(err => setLoadError(err.message));
+        }
+    }, [api, d2, data, isDev, migrations]);
 
     if (loadError) {
         return <div>Cannot load app: {loadError}</div>;
@@ -136,7 +139,11 @@ const App: React.FC<AppProps> = props => {
         return (
             <div style={{ margin: 20 }}>
                 <h3>Connecting to {baseUrl}...</h3>
-                <LinearProgress />
+                {migrations.state.type === "checked" ? (
+                    <LinearProgress />
+                ) : (
+                    <Migrations migrations={migrations} />
+                )}
             </div>
         );
     } else {
@@ -146,8 +153,6 @@ const App: React.FC<AppProps> = props => {
                     <LoadingProvider>
                         <SnackbarProvider>
                             <HeaderBar appName={"Data Management"} />
-
-                            <Migrations migrations={migrations} />
 
                             <div id="app" className="content">
                                 <ApiContext.Provider value={appContext}>

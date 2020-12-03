@@ -1,8 +1,8 @@
 import { MigrationTasks, migration } from "../types";
-import updateDashboardsMigration from "./01.update-dashboards";
-//import updateProjectsAwardNumber from "./02.award-number-as-org-unit-group";
 
-export const migrationTasks: MigrationTasks = [
-    migration(1, updateDashboardsMigration),
-    //migration(2, updateProjectsAwardNumber),
-];
+export async function getMigrationTasks(): Promise<MigrationTasks> {
+    return [
+        migration(1, (await import("./01.update-dashboards")).default),
+        migration(2, (await import("./02.award-number-as-org-unit-group")).default),
+    ];
+}

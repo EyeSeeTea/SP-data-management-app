@@ -21,7 +21,7 @@ export interface RunnerOptions {
     api: D2Api;
     debug?: Debug;
     dataStoreNamespace: string;
-    migrations?: MigrationWithVersion[];
+    migrations: MigrationWithVersion[];
 }
 
 export type MigrationTasks = MigrationWithVersion[];
