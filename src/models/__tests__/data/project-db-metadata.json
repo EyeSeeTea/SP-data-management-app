@@ -61,9 +61,6 @@
             "organisationUnits": [
                 {
                     "id": "eu2XF73JOzl"
-                },
-                {
-                    "id": "WGC0DJ0YSis"
                 }
             ]
         },
@@ -116,7 +113,7 @@
             ],
             "attributeValues": [
                 {
-                    "value": "mm4MpCYx5jJ",
+                    "value": "OiCmorbkHNf",
                     "attribute": {
                         "id": "m02UusgdeLq"
                     }
@@ -704,14 +701,14 @@
             "publicAccess": "rw------"
         },
         {
-            "id": "mm4MpCYx5jJ",
+            "id": "OiCmorbkHNf",
             "name": "Award Number 12345",
             "dashboardItems": [
                 {
-                    "id": "aUK2CcChUeX",
+                    "id": "W4EN8esNyGQ",
                     "type": "REPORT_TABLE",
                     "reportTable": {
-                        "id": "iMyQtM39bM2"
+                        "id": "uqMTlezGj0I"
                     },
                     "width": 29,
                     "height": 20,
@@ -719,10 +716,10 @@
                     "y": 0
                 },
                 {
-                    "id": "u4WEIKIRquJ",
+                    "id": "GCm9PNnLAgP",
                     "type": "REPORT_TABLE",
                     "reportTable": {
-                        "id": "Cw64PsxdZ89"
+                        "id": "OS2K2s8VIIq"
                     },
                     "width": 29,
                     "height": 20,
@@ -730,10 +727,10 @@
                     "y": 0
                 },
                 {
-                    "id": "ieqKIWVm8AV",
+                    "id": "K0YRx2HGCs5",
                     "type": "REPORT_TABLE",
                     "reportTable": {
-                        "id": "eggTOdnJm6Z"
+                        "id": "ayOoqqk9Rnb"
                     },
                     "width": 29,
                     "height": 20,
@@ -741,10 +738,10 @@
                     "y": 20
                 },
                 {
-                    "id": "qOwXkHg3q9T",
+                    "id": "O0uabsxLqGS",
                     "type": "REPORT_TABLE",
                     "reportTable": {
-                        "id": "WK2xcw5pIYH"
+                        "id": "ew6e1j5HwkE"
                     },
                     "width": 29,
                     "height": 20,
@@ -752,10 +749,10 @@
                     "y": 20
                 },
                 {
-                    "id": "K4hH0P274Fo",
+                    "id": "KEy2fuNrALy",
                     "type": "REPORT_TABLE",
                     "reportTable": {
-                        "id": "q40Mqv4zP2c"
+                        "id": "mUCwcWSsa9T"
                     },
                     "width": 29,
                     "height": 20,
@@ -763,10 +760,10 @@
                     "y": 40
                 },
                 {
-                    "id": "mQM1Pb0Fb9E",
+                    "id": "iIyADNFfXEV",
                     "type": "REPORT_TABLE",
                     "reportTable": {
-                        "id": "GiktHxplS3A"
+                        "id": "KeWVSa2rbYm"
                     },
                     "width": 29,
                     "height": 20,
@@ -774,10 +771,10 @@
                     "y": 40
                 },
                 {
-                    "id": "aEWaktTVhHz",
+                    "id": "eU2Bs4XsX6J",
                     "type": "REPORT_TABLE",
                     "reportTable": {
-                        "id": "CAs3931QwjE"
+                        "id": "i6CWRJp61Hp"
                     },
                     "width": 29,
                     "height": 20,
@@ -785,10 +782,10 @@
                     "y": 60
                 },
                 {
-                    "id": "GOd74xUDUFH",
+                    "id": "yseGHIbXcNQ",
                     "type": "REPORT_TABLE",
                     "reportTable": {
-                        "id": "igyyebFIFYI"
+                        "id": "eYaYrZfbJT1"
                     },
                     "width": 29,
                     "height": 20,
@@ -796,10 +793,10 @@
                     "y": 60
                 },
                 {
-                    "id": "Ce8Vx93oDAm",
+                    "id": "CkcoElgGMuu",
                     "type": "CHART",
                     "chart": {
-                        "id": "KsMZ8TSvklN"
+                        "id": "CYYNLjxd96q"
                     },
                     "width": 58,
                     "height": 20,
@@ -807,10 +804,10 @@
                     "y": 80
                 },
                 {
-                    "id": "iEKoIqWhOO7",
+                    "id": "GqqyIiwIxog",
                     "type": "CHART",
                     "chart": {
-                        "id": "Og8PtJaAOlk"
+                        "id": "Gi2PegQJhbu"
                     },
                     "width": 29,
                     "height": 20,
@@ -818,10 +815,10 @@
                     "y": 100
                 },
                 {
-                    "id": "i6uCIxRTkbw",
+                    "id": "mCeCHYX6DOG",
                     "type": "CHART",
                     "chart": {
-                        "id": "qqYp7Oh3aYg"
+                        "id": "Ww2X5s48uQx"
                     },
                     "width": 29,
                     "height": 20,
@@ -829,14 +826,25 @@
                     "y": 100
                 },
                 {
-                    "id": "SIiq6AvxrpA",
+                    "id": "O8EPBVIg4zK",
                     "type": "CHART",
                     "chart": {
-                        "id": "SGSUAn0OeDx"
+                        "id": "CMqisHj7sP9"
                     },
                     "width": 29,
                     "height": 20,
                     "x": 0,
+                    "y": 120
+                },
+                {
+                    "id": "OI8TXjJJwfS",
+                    "type": "CHART",
+                    "chart": {
+                        "id": "WGWGaYtwJzp"
+                    },
+                    "width": 29,
+                    "height": 20,
+                    "x": 29,
                     "y": 120
                 }
             ],
@@ -919,13 +927,17 @@
                     "id": "pe"
                 }
             ],
-            "columnDimensions": ["pe"],
+            "columnDimensions": [
+                "pe"
+            ],
             "filters": [
                 {
                     "id": "ou"
                 }
             ],
-            "filterDimensions": ["ou"],
+            "filterDimensions": [
+                "ou"
+            ],
             "rows": [
                 {
                     "id": "dx"
@@ -945,7 +957,10 @@
                     ]
                 }
             ],
-            "rowDimensions": ["dx", "GIIHAr9BzzO"],
+            "rowDimensions": [
+                "dx",
+                "GIIHAr9BzzO"
+            ],
             "categoryDimensions": [
                 {
                     "category": {
@@ -998,7 +1013,7 @@
                 {
                     "dataDimensionItemType": "DATA_ELEMENT",
                     "dataElement": {
-                        "id": "GQyudNlGzkI"
+                        "id": "K6mAC5SiO29"
                     }
                 },
                 {
@@ -1010,7 +1025,7 @@
                 {
                     "dataDimensionItemType": "DATA_ELEMENT",
                     "dataElement": {
-                        "id": "K6mAC5SiO29"
+                        "id": "GQyudNlGzkI"
                     }
                 }
             ],
@@ -1058,13 +1073,18 @@
                     ]
                 }
             ],
-            "columnDimensions": ["pe", "Kyg1O6YEGa9"],
+            "columnDimensions": [
+                "pe",
+                "Kyg1O6YEGa9"
+            ],
             "filters": [
                 {
                     "id": "ou"
                 }
             ],
-            "filterDimensions": ["ou"],
+            "filterDimensions": [
+                "ou"
+            ],
             "rows": [
                 {
                     "id": "dx"
@@ -1098,7 +1118,11 @@
                     ]
                 }
             ],
-            "rowDimensions": ["dx", "GIIHAr9BzzO", "uSMHdwhxFSV"],
+            "rowDimensions": [
+                "dx",
+                "GIIHAr9BzzO",
+                "uSMHdwhxFSV"
+            ],
             "categoryDimensions": [
                 {
                     "category": {
@@ -1177,7 +1201,7 @@
                 {
                     "dataDimensionItemType": "DATA_ELEMENT",
                     "dataElement": {
-                        "id": "GQyudNlGzkI"
+                        "id": "K6mAC5SiO29"
                     }
                 },
                 {
@@ -1189,7 +1213,7 @@
                 {
                     "dataDimensionItemType": "DATA_ELEMENT",
                     "dataElement": {
-                        "id": "K6mAC5SiO29"
+                        "id": "GQyudNlGzkI"
                     }
                 }
             ],
@@ -1237,7 +1261,10 @@
                     ]
                 }
             ],
-            "columnDimensions": ["pe", "Kyg1O6YEGa9"],
+            "columnDimensions": [
+                "pe",
+                "Kyg1O6YEGa9"
+            ],
             "filters": [
                 {
                     "id": "ou"
@@ -1251,7 +1278,10 @@
                     ]
                 }
             ],
-            "filterDimensions": ["ou", "uSMHdwhxFSV"],
+            "filterDimensions": [
+                "ou",
+                "uSMHdwhxFSV"
+            ],
             "rows": [
                 {
                     "id": "dx"
@@ -1271,7 +1301,10 @@
                     ]
                 }
             ],
-            "rowDimensions": ["dx", "GIIHAr9BzzO"],
+            "rowDimensions": [
+                "dx",
+                "GIIHAr9BzzO"
+            ],
             "categoryDimensions": [
                 {
                     "category": {
@@ -1387,19 +1420,25 @@
                     "id": "pe"
                 }
             ],
-            "columnDimensions": ["pe"],
+            "columnDimensions": [
+                "pe"
+            ],
             "filters": [
                 {
                     "id": "ou"
                 }
             ],
-            "filterDimensions": ["ou"],
+            "filterDimensions": [
+                "ou"
+            ],
             "rows": [
                 {
                     "id": "dx"
                 }
             ],
-            "rowDimensions": ["dx"],
+            "rowDimensions": [
+                "dx"
+            ],
             "categoryDimensions": [],
             "publicAccess": "--------",
             "externalAccess": false,
@@ -1442,7 +1481,7 @@
                 {
                     "dataDimensionItemType": "INDICATOR",
                     "indicator": {
-                        "id": "K4sH0aQDdeL"
+                        "id": "eYmeRzhBFV4"
                     }
                 },
                 {
@@ -1454,7 +1493,7 @@
                 {
                     "dataDimensionItemType": "INDICATOR",
                     "indicator": {
-                        "id": "eYmeRzhBFV4"
+                        "id": "K4sH0aQDdeL"
                     }
                 }
             ],
@@ -1493,7 +1532,9 @@
                     ]
                 }
             ],
-            "columnDimensions": ["uSMHdwhxFSV"],
+            "columnDimensions": [
+                "uSMHdwhxFSV"
+            ],
             "filters": [
                 {
                     "id": "ou"
@@ -1502,13 +1543,18 @@
                     "id": "pe"
                 }
             ],
-            "filterDimensions": ["ou", "pe"],
+            "filterDimensions": [
+                "ou",
+                "pe"
+            ],
             "rows": [
                 {
                     "id": "dx"
                 }
             ],
-            "rowDimensions": ["dx"],
+            "rowDimensions": [
+                "dx"
+            ],
             "categoryDimensions": [
                 {
                     "category": {
@@ -1602,19 +1648,25 @@
                     "id": "pe"
                 }
             ],
-            "columnDimensions": ["pe"],
+            "columnDimensions": [
+                "pe"
+            ],
             "filters": [
                 {
                     "id": "ou"
                 }
             ],
-            "filterDimensions": ["ou"],
+            "filterDimensions": [
+                "ou"
+            ],
             "rows": [
                 {
                     "id": "dx"
                 }
             ],
-            "rowDimensions": ["dx"],
+            "rowDimensions": [
+                "dx"
+            ],
             "categoryDimensions": [],
             "publicAccess": "--------",
             "externalAccess": false,
@@ -1657,7 +1709,7 @@
                 {
                     "dataDimensionItemType": "INDICATOR",
                     "indicator": {
-                        "id": "K4sH0aQDdeL"
+                        "id": "eYmeRzhBFV4"
                     }
                 },
                 {
@@ -1669,7 +1721,7 @@
                 {
                     "dataDimensionItemType": "INDICATOR",
                     "indicator": {
-                        "id": "eYmeRzhBFV4"
+                        "id": "K4sH0aQDdeL"
                     }
                 }
             ],
@@ -1703,19 +1755,25 @@
                     "id": "pe"
                 }
             ],
-            "columnDimensions": ["pe"],
+            "columnDimensions": [
+                "pe"
+            ],
             "filters": [
                 {
                     "id": "ou"
                 }
             ],
-            "filterDimensions": ["ou"],
+            "filterDimensions": [
+                "ou"
+            ],
             "rows": [
                 {
                     "id": "dx"
                 }
             ],
-            "rowDimensions": ["dx"],
+            "rowDimensions": [
+                "dx"
+            ],
             "categoryDimensions": [],
             "publicAccess": "--------",
             "externalAccess": false,
@@ -1758,7 +1816,7 @@
                 {
                     "dataDimensionItemType": "INDICATOR",
                     "indicator": {
-                        "id": "K4sH0aQDdeL"
+                        "id": "eYmeRzhBFV4"
                     }
                 },
                 {
@@ -1770,7 +1828,7 @@
                 {
                     "dataDimensionItemType": "INDICATOR",
                     "indicator": {
-                        "id": "eYmeRzhBFV4"
+                        "id": "K4sH0aQDdeL"
                     }
                 }
             ],
@@ -1809,7 +1867,9 @@
                     ]
                 }
             ],
-            "columnDimensions": ["uSMHdwhxFSV"],
+            "columnDimensions": [
+                "uSMHdwhxFSV"
+            ],
             "filters": [
                 {
                     "id": "ou"
@@ -1818,13 +1878,18 @@
                     "id": "pe"
                 }
             ],
-            "filterDimensions": ["ou", "pe"],
+            "filterDimensions": [
+                "ou",
+                "pe"
+            ],
             "rows": [
                 {
                     "id": "dx"
                 }
             ],
-            "rowDimensions": ["dx"],
+            "rowDimensions": [
+                "dx"
+            ],
             "categoryDimensions": [
                 {
                     "category": {
@@ -1922,9 +1987,30 @@
                     "dataElement": {
                         "id": "qAM1NbCbS9G"
                     }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "K6mAC5SiO29"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "ik0ICagvIjm"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "GQyudNlGzkI"
+                    }
                 }
             ],
             "organisationUnits": [
+                {
+                    "id": "WGC0DJ0YSis"
+                },
                 {
                     "id": "TvSmIyYcRnd"
                 },
@@ -1941,7 +2027,9 @@
                     "id": "dx"
                 }
             ],
-            "columnDimensions": ["dx"],
+            "columnDimensions": [
+                "dx"
+            ],
             "filters": [
                 {
                     "id": "pe"
@@ -1963,13 +2051,19 @@
                     ]
                 }
             ],
-            "filterDimensions": ["pe", "uSMHdwhxFSV", "GIIHAr9BzzO"],
+            "filterDimensions": [
+                "pe",
+                "uSMHdwhxFSV",
+                "GIIHAr9BzzO"
+            ],
             "rows": [
                 {
                     "id": "ou"
                 }
             ],
-            "rowDimensions": ["ou"],
+            "rowDimensions": [
+                "ou"
+            ],
             "categoryDimensions": [
                 {
                     "category": {
@@ -2041,9 +2135,24 @@
                     "dataElement": {
                         "id": "SCY3TdhSz1K"
                     }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "WS8XV4WWPE7"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "yMqK9DKbA3X"
+                    }
                 }
             ],
             "organisationUnits": [
+                {
+                    "id": "WGC0DJ0YSis"
+                },
                 {
                     "id": "TvSmIyYcRnd"
                 },
@@ -2060,7 +2169,9 @@
                     "id": "dx"
                 }
             ],
-            "columnDimensions": ["dx"],
+            "columnDimensions": [
+                "dx"
+            ],
             "filters": [
                 {
                     "id": "pe"
@@ -2074,13 +2185,18 @@
                     ]
                 }
             ],
-            "filterDimensions": ["pe", "GIIHAr9BzzO"],
+            "filterDimensions": [
+                "pe",
+                "GIIHAr9BzzO"
+            ],
             "rows": [
                 {
                     "id": "ou"
                 }
             ],
-            "rowDimensions": ["ou"],
+            "rowDimensions": [
+                "ou"
+            ],
             "categoryDimensions": [
                 {
                     "category": {
@@ -2096,7 +2212,7 @@
             "publicAccess": "rw------"
         },
         {
-            "id": "iMyQtM39bM2",
+            "id": "uqMTlezGj0I",
             "name": "Award Number 12345 - Target vs Actual - Benefits",
             "numberType": "VALUE",
             "legendDisplayStyle": "FILL",
@@ -2142,9 +2258,24 @@
                     "dataElement": {
                         "id": "SCY3TdhSz1K"
                     }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "WS8XV4WWPE7"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "yMqK9DKbA3X"
+                    }
                 }
             ],
             "organisationUnits": [
+                {
+                    "id": "WGC0DJ0YSis"
+                },
                 {
                     "id": "TvSmIyYcRnd"
                 },
@@ -2153,6 +2284,69 @@
                 }
             ],
             "periods": [
+                {
+                    "id": "201810"
+                },
+                {
+                    "id": "201811"
+                },
+                {
+                    "id": "201812"
+                },
+                {
+                    "id": "201901"
+                },
+                {
+                    "id": "201902"
+                },
+                {
+                    "id": "201903"
+                },
+                {
+                    "id": "201904"
+                },
+                {
+                    "id": "201905"
+                },
+                {
+                    "id": "201906"
+                },
+                {
+                    "id": "201907"
+                },
+                {
+                    "id": "201908"
+                },
+                {
+                    "id": "201909"
+                },
+                {
+                    "id": "201910"
+                },
+                {
+                    "id": "201911"
+                },
+                {
+                    "id": "201912"
+                },
+                {
+                    "id": "202001"
+                },
+                {
+                    "id": "202002"
+                },
+                {
+                    "id": "202003"
+                },
+                {
+                    "id": "202004"
+                },
+                {
+                    "id": "202005"
+                },
+                {
+                    "id": "202006"
+                },
                 {
                     "id": "202007"
                 },
@@ -2171,13 +2365,17 @@
                     "id": "pe"
                 }
             ],
-            "columnDimensions": ["pe"],
+            "columnDimensions": [
+                "pe"
+            ],
             "filters": [
                 {
                     "id": "ou"
                 }
             ],
-            "filterDimensions": ["ou"],
+            "filterDimensions": [
+                "ou"
+            ],
             "rows": [
                 {
                     "id": "dx"
@@ -2197,7 +2395,10 @@
                     ]
                 }
             ],
-            "rowDimensions": ["dx", "GIIHAr9BzzO"],
+            "rowDimensions": [
+                "dx",
+                "GIIHAr9BzzO"
+            ],
             "categoryDimensions": [
                 {
                     "category": {
@@ -2236,7 +2437,7 @@
             ]
         },
         {
-            "id": "Cw64PsxdZ89",
+            "id": "OS2K2s8VIIq",
             "name": "Award Number 12345 - Target vs Actual - People",
             "numberType": "VALUE",
             "legendDisplayStyle": "FILL",
@@ -2294,9 +2495,30 @@
                     "dataElement": {
                         "id": "qAM1NbCbS9G"
                     }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "K6mAC5SiO29"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "ik0ICagvIjm"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "GQyudNlGzkI"
+                    }
                 }
             ],
             "organisationUnits": [
+                {
+                    "id": "WGC0DJ0YSis"
+                },
                 {
                     "id": "TvSmIyYcRnd"
                 },
@@ -2305,6 +2527,69 @@
                 }
             ],
             "periods": [
+                {
+                    "id": "201810"
+                },
+                {
+                    "id": "201811"
+                },
+                {
+                    "id": "201812"
+                },
+                {
+                    "id": "201901"
+                },
+                {
+                    "id": "201902"
+                },
+                {
+                    "id": "201903"
+                },
+                {
+                    "id": "201904"
+                },
+                {
+                    "id": "201905"
+                },
+                {
+                    "id": "201906"
+                },
+                {
+                    "id": "201907"
+                },
+                {
+                    "id": "201908"
+                },
+                {
+                    "id": "201909"
+                },
+                {
+                    "id": "201910"
+                },
+                {
+                    "id": "201911"
+                },
+                {
+                    "id": "201912"
+                },
+                {
+                    "id": "202001"
+                },
+                {
+                    "id": "202002"
+                },
+                {
+                    "id": "202003"
+                },
+                {
+                    "id": "202004"
+                },
+                {
+                    "id": "202005"
+                },
+                {
+                    "id": "202006"
+                },
                 {
                     "id": "202007"
                 },
@@ -2337,13 +2622,18 @@
                     ]
                 }
             ],
-            "columnDimensions": ["pe", "Kyg1O6YEGa9"],
+            "columnDimensions": [
+                "pe",
+                "Kyg1O6YEGa9"
+            ],
             "filters": [
                 {
                     "id": "ou"
                 }
             ],
-            "filterDimensions": ["ou"],
+            "filterDimensions": [
+                "ou"
+            ],
             "rows": [
                 {
                     "id": "dx"
@@ -2377,7 +2667,11 @@
                     ]
                 }
             ],
-            "rowDimensions": ["dx", "GIIHAr9BzzO", "uSMHdwhxFSV"],
+            "rowDimensions": [
+                "dx",
+                "GIIHAr9BzzO",
+                "uSMHdwhxFSV"
+            ],
             "categoryDimensions": [
                 {
                     "category": {
@@ -2442,7 +2736,7 @@
             ]
         },
         {
-            "id": "eggTOdnJm6Z",
+            "id": "ayOoqqk9Rnb",
             "name": "Award Number 12345 - Target vs Actual - Unique People",
             "numberType": "VALUE",
             "legendDisplayStyle": "FILL",
@@ -2500,9 +2794,30 @@
                     "dataElement": {
                         "id": "qAM1NbCbS9G"
                     }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "K6mAC5SiO29"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "ik0ICagvIjm"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "GQyudNlGzkI"
+                    }
                 }
             ],
             "organisationUnits": [
+                {
+                    "id": "WGC0DJ0YSis"
+                },
                 {
                     "id": "TvSmIyYcRnd"
                 },
@@ -2511,6 +2826,69 @@
                 }
             ],
             "periods": [
+                {
+                    "id": "201810"
+                },
+                {
+                    "id": "201811"
+                },
+                {
+                    "id": "201812"
+                },
+                {
+                    "id": "201901"
+                },
+                {
+                    "id": "201902"
+                },
+                {
+                    "id": "201903"
+                },
+                {
+                    "id": "201904"
+                },
+                {
+                    "id": "201905"
+                },
+                {
+                    "id": "201906"
+                },
+                {
+                    "id": "201907"
+                },
+                {
+                    "id": "201908"
+                },
+                {
+                    "id": "201909"
+                },
+                {
+                    "id": "201910"
+                },
+                {
+                    "id": "201911"
+                },
+                {
+                    "id": "201912"
+                },
+                {
+                    "id": "202001"
+                },
+                {
+                    "id": "202002"
+                },
+                {
+                    "id": "202003"
+                },
+                {
+                    "id": "202004"
+                },
+                {
+                    "id": "202005"
+                },
+                {
+                    "id": "202006"
+                },
                 {
                     "id": "202007"
                 },
@@ -2543,7 +2921,10 @@
                     ]
                 }
             ],
-            "columnDimensions": ["pe", "Kyg1O6YEGa9"],
+            "columnDimensions": [
+                "pe",
+                "Kyg1O6YEGa9"
+            ],
             "filters": [
                 {
                     "id": "ou"
@@ -2557,7 +2938,10 @@
                     ]
                 }
             ],
-            "filterDimensions": ["ou", "uSMHdwhxFSV"],
+            "filterDimensions": [
+                "ou",
+                "uSMHdwhxFSV"
+            ],
             "rows": [
                 {
                     "id": "dx"
@@ -2577,7 +2961,10 @@
                     ]
                 }
             ],
-            "rowDimensions": ["dx", "GIIHAr9BzzO"],
+            "rowDimensions": [
+                "dx",
+                "GIIHAr9BzzO"
+            ],
             "categoryDimensions": [
                 {
                     "category": {
@@ -2639,7 +3026,7 @@
             ]
         },
         {
-            "id": "WK2xcw5pIYH",
+            "id": "ew6e1j5HwkE",
             "name": "Award Number 12345 - Achieved to date (%) - Benefits",
             "numberType": "VALUE",
             "legendDisplayStyle": "FILL",
@@ -2683,11 +3070,26 @@
                 {
                     "dataDimensionItemType": "INDICATOR",
                     "indicator": {
-                        "id": "m0a3QcxQORf"
+                        "id": "KOKIhtZYDOh"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "eCufXa6RkTm"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "i01veyO4Cuw"
                     }
                 }
             ],
             "organisationUnits": [
+                {
+                    "id": "WGC0DJ0YSis"
+                },
                 {
                     "id": "TvSmIyYcRnd"
                 },
@@ -2696,6 +3098,69 @@
                 }
             ],
             "periods": [
+                {
+                    "id": "201810"
+                },
+                {
+                    "id": "201811"
+                },
+                {
+                    "id": "201812"
+                },
+                {
+                    "id": "201901"
+                },
+                {
+                    "id": "201902"
+                },
+                {
+                    "id": "201903"
+                },
+                {
+                    "id": "201904"
+                },
+                {
+                    "id": "201905"
+                },
+                {
+                    "id": "201906"
+                },
+                {
+                    "id": "201907"
+                },
+                {
+                    "id": "201908"
+                },
+                {
+                    "id": "201909"
+                },
+                {
+                    "id": "201910"
+                },
+                {
+                    "id": "201911"
+                },
+                {
+                    "id": "201912"
+                },
+                {
+                    "id": "202001"
+                },
+                {
+                    "id": "202002"
+                },
+                {
+                    "id": "202003"
+                },
+                {
+                    "id": "202004"
+                },
+                {
+                    "id": "202005"
+                },
+                {
+                    "id": "202006"
+                },
                 {
                     "id": "202007"
                 },
@@ -2714,19 +3179,25 @@
                     "id": "pe"
                 }
             ],
-            "columnDimensions": ["pe"],
+            "columnDimensions": [
+                "pe"
+            ],
             "filters": [
                 {
                     "id": "ou"
                 }
             ],
-            "filterDimensions": ["ou"],
+            "filterDimensions": [
+                "ou"
+            ],
             "rows": [
                 {
                     "id": "dx"
                 }
             ],
-            "rowDimensions": ["dx"],
+            "rowDimensions": [
+                "dx"
+            ],
             "categoryDimensions": [],
             "publicAccess": "--------",
             "externalAccess": false,
@@ -2755,7 +3226,7 @@
             }
         },
         {
-            "id": "q40Mqv4zP2c",
+            "id": "mUCwcWSsa9T",
             "name": "Award Number 12345 - Achieved total to date (%) - People",
             "numberType": "VALUE",
             "legendDisplayStyle": "FILL",
@@ -2813,9 +3284,30 @@
                     "indicator": {
                         "id": "qW6b6ZRfXA5"
                     }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "eYmeRzhBFV4"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "u404ICrBKj3"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "K4sH0aQDdeL"
+                    }
                 }
             ],
             "organisationUnits": [
+                {
+                    "id": "WGC0DJ0YSis"
+                },
                 {
                     "id": "TvSmIyYcRnd"
                 },
@@ -2824,6 +3316,69 @@
                 }
             ],
             "periods": [
+                {
+                    "id": "201810"
+                },
+                {
+                    "id": "201811"
+                },
+                {
+                    "id": "201812"
+                },
+                {
+                    "id": "201901"
+                },
+                {
+                    "id": "201902"
+                },
+                {
+                    "id": "201903"
+                },
+                {
+                    "id": "201904"
+                },
+                {
+                    "id": "201905"
+                },
+                {
+                    "id": "201906"
+                },
+                {
+                    "id": "201907"
+                },
+                {
+                    "id": "201908"
+                },
+                {
+                    "id": "201909"
+                },
+                {
+                    "id": "201910"
+                },
+                {
+                    "id": "201911"
+                },
+                {
+                    "id": "201912"
+                },
+                {
+                    "id": "202001"
+                },
+                {
+                    "id": "202002"
+                },
+                {
+                    "id": "202003"
+                },
+                {
+                    "id": "202004"
+                },
+                {
+                    "id": "202005"
+                },
+                {
+                    "id": "202006"
+                },
                 {
                     "id": "202007"
                 },
@@ -2847,7 +3402,9 @@
                     ]
                 }
             ],
-            "columnDimensions": ["uSMHdwhxFSV"],
+            "columnDimensions": [
+                "uSMHdwhxFSV"
+            ],
             "filters": [
                 {
                     "id": "ou"
@@ -2856,13 +3413,18 @@
                     "id": "pe"
                 }
             ],
-            "filterDimensions": ["ou", "pe"],
+            "filterDimensions": [
+                "ou",
+                "pe"
+            ],
             "rows": [
                 {
                     "id": "dx"
                 }
             ],
-            "rowDimensions": ["dx"],
+            "rowDimensions": [
+                "dx"
+            ],
             "categoryDimensions": [
                 {
                     "category": {
@@ -2902,7 +3464,7 @@
             }
         },
         {
-            "id": "GiktHxplS3A",
+            "id": "KeWVSa2rbYm",
             "name": "Award Number 12345 - Achieved (%) - Benefits",
             "numberType": "VALUE",
             "legendDisplayStyle": "FILL",
@@ -2946,11 +3508,26 @@
                 {
                     "dataDimensionItemType": "INDICATOR",
                     "indicator": {
-                        "id": "m0a3QcxQORf"
+                        "id": "KOKIhtZYDOh"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "eCufXa6RkTm"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "i01veyO4Cuw"
                     }
                 }
             ],
             "organisationUnits": [
+                {
+                    "id": "WGC0DJ0YSis"
+                },
                 {
                     "id": "TvSmIyYcRnd"
                 },
@@ -2959,6 +3536,69 @@
                 }
             ],
             "periods": [
+                {
+                    "id": "201810"
+                },
+                {
+                    "id": "201811"
+                },
+                {
+                    "id": "201812"
+                },
+                {
+                    "id": "201901"
+                },
+                {
+                    "id": "201902"
+                },
+                {
+                    "id": "201903"
+                },
+                {
+                    "id": "201904"
+                },
+                {
+                    "id": "201905"
+                },
+                {
+                    "id": "201906"
+                },
+                {
+                    "id": "201907"
+                },
+                {
+                    "id": "201908"
+                },
+                {
+                    "id": "201909"
+                },
+                {
+                    "id": "201910"
+                },
+                {
+                    "id": "201911"
+                },
+                {
+                    "id": "201912"
+                },
+                {
+                    "id": "202001"
+                },
+                {
+                    "id": "202002"
+                },
+                {
+                    "id": "202003"
+                },
+                {
+                    "id": "202004"
+                },
+                {
+                    "id": "202005"
+                },
+                {
+                    "id": "202006"
+                },
                 {
                     "id": "202007"
                 },
@@ -2977,19 +3617,25 @@
                     "id": "pe"
                 }
             ],
-            "columnDimensions": ["pe"],
+            "columnDimensions": [
+                "pe"
+            ],
             "filters": [
                 {
                     "id": "ou"
                 }
             ],
-            "filterDimensions": ["ou"],
+            "filterDimensions": [
+                "ou"
+            ],
             "rows": [
                 {
                     "id": "dx"
                 }
             ],
-            "rowDimensions": ["dx"],
+            "rowDimensions": [
+                "dx"
+            ],
             "categoryDimensions": [],
             "publicAccess": "--------",
             "externalAccess": false,
@@ -3018,7 +3664,7 @@
             }
         },
         {
-            "id": "CAs3931QwjE",
+            "id": "i6CWRJp61Hp",
             "name": "Award Number 12345 - Achieved (%) - People",
             "numberType": "VALUE",
             "legendDisplayStyle": "FILL",
@@ -3076,9 +3722,30 @@
                     "indicator": {
                         "id": "qW6b6ZRfXA5"
                     }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "eYmeRzhBFV4"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "u404ICrBKj3"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "K4sH0aQDdeL"
+                    }
                 }
             ],
             "organisationUnits": [
+                {
+                    "id": "WGC0DJ0YSis"
+                },
                 {
                     "id": "TvSmIyYcRnd"
                 },
@@ -3087,6 +3754,69 @@
                 }
             ],
             "periods": [
+                {
+                    "id": "201810"
+                },
+                {
+                    "id": "201811"
+                },
+                {
+                    "id": "201812"
+                },
+                {
+                    "id": "201901"
+                },
+                {
+                    "id": "201902"
+                },
+                {
+                    "id": "201903"
+                },
+                {
+                    "id": "201904"
+                },
+                {
+                    "id": "201905"
+                },
+                {
+                    "id": "201906"
+                },
+                {
+                    "id": "201907"
+                },
+                {
+                    "id": "201908"
+                },
+                {
+                    "id": "201909"
+                },
+                {
+                    "id": "201910"
+                },
+                {
+                    "id": "201911"
+                },
+                {
+                    "id": "201912"
+                },
+                {
+                    "id": "202001"
+                },
+                {
+                    "id": "202002"
+                },
+                {
+                    "id": "202003"
+                },
+                {
+                    "id": "202004"
+                },
+                {
+                    "id": "202005"
+                },
+                {
+                    "id": "202006"
+                },
                 {
                     "id": "202007"
                 },
@@ -3105,19 +3835,25 @@
                     "id": "pe"
                 }
             ],
-            "columnDimensions": ["pe"],
+            "columnDimensions": [
+                "pe"
+            ],
             "filters": [
                 {
                     "id": "ou"
                 }
             ],
-            "filterDimensions": ["ou"],
+            "filterDimensions": [
+                "ou"
+            ],
             "rows": [
                 {
                     "id": "dx"
                 }
             ],
-            "rowDimensions": ["dx"],
+            "rowDimensions": [
+                "dx"
+            ],
             "categoryDimensions": [],
             "publicAccess": "--------",
             "externalAccess": false,
@@ -3146,7 +3882,7 @@
             }
         },
         {
-            "id": "igyyebFIFYI",
+            "id": "eYaYrZfbJT1",
             "name": "Award Number 12345 - Achieved total (%) - People",
             "numberType": "VALUE",
             "legendDisplayStyle": "FILL",
@@ -3204,9 +3940,30 @@
                     "indicator": {
                         "id": "qW6b6ZRfXA5"
                     }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "eYmeRzhBFV4"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "u404ICrBKj3"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "K4sH0aQDdeL"
+                    }
                 }
             ],
             "organisationUnits": [
+                {
+                    "id": "WGC0DJ0YSis"
+                },
                 {
                     "id": "TvSmIyYcRnd"
                 },
@@ -3215,6 +3972,69 @@
                 }
             ],
             "periods": [
+                {
+                    "id": "201810"
+                },
+                {
+                    "id": "201811"
+                },
+                {
+                    "id": "201812"
+                },
+                {
+                    "id": "201901"
+                },
+                {
+                    "id": "201902"
+                },
+                {
+                    "id": "201903"
+                },
+                {
+                    "id": "201904"
+                },
+                {
+                    "id": "201905"
+                },
+                {
+                    "id": "201906"
+                },
+                {
+                    "id": "201907"
+                },
+                {
+                    "id": "201908"
+                },
+                {
+                    "id": "201909"
+                },
+                {
+                    "id": "201910"
+                },
+                {
+                    "id": "201911"
+                },
+                {
+                    "id": "201912"
+                },
+                {
+                    "id": "202001"
+                },
+                {
+                    "id": "202002"
+                },
+                {
+                    "id": "202003"
+                },
+                {
+                    "id": "202004"
+                },
+                {
+                    "id": "202005"
+                },
+                {
+                    "id": "202006"
+                },
                 {
                     "id": "202007"
                 },
@@ -3238,7 +4058,9 @@
                     ]
                 }
             ],
-            "columnDimensions": ["uSMHdwhxFSV"],
+            "columnDimensions": [
+                "uSMHdwhxFSV"
+            ],
             "filters": [
                 {
                     "id": "ou"
@@ -3247,13 +4069,18 @@
                     "id": "pe"
                 }
             ],
-            "filterDimensions": ["ou", "pe"],
+            "filterDimensions": [
+                "ou",
+                "pe"
+            ],
             "rows": [
                 {
                     "id": "dx"
                 }
             ],
-            "rowDimensions": ["dx"],
+            "rowDimensions": [
+                "dx"
+            ],
             "categoryDimensions": [
                 {
                     "category": {
@@ -3343,7 +4170,7 @@
                 {
                     "dataDimensionItemType": "INDICATOR",
                     "indicator": {
-                        "id": "K4sH0aQDdeL"
+                        "id": "eYmeRzhBFV4"
                     }
                 },
                 {
@@ -3355,7 +4182,7 @@
                 {
                     "dataDimensionItemType": "INDICATOR",
                     "indicator": {
-                        "id": "eYmeRzhBFV4"
+                        "id": "K4sH0aQDdeL"
                     }
                 }
             ],
@@ -3369,7 +4196,9 @@
                     "id": "ou"
                 }
             ],
-            "filterDimensions": ["ou"],
+            "filterDimensions": [
+                "ou"
+            ],
             "categoryDimensions": [],
             "organisationUnits": [
                 {
@@ -3455,7 +4284,9 @@
                     "id": "pe"
                 }
             ],
-            "filterDimensions": ["pe"],
+            "filterDimensions": [
+                "pe"
+            ],
             "categoryDimensions": [],
             "organisationUnits": [
                 {
@@ -3521,7 +4352,7 @@
                 {
                     "dataDimensionItemType": "INDICATOR",
                     "indicator": {
-                        "id": "K4sH0aQDdeL"
+                        "id": "eYmeRzhBFV4"
                     }
                 },
                 {
@@ -3533,7 +4364,7 @@
                 {
                     "dataDimensionItemType": "INDICATOR",
                     "indicator": {
-                        "id": "eYmeRzhBFV4"
+                        "id": "K4sH0aQDdeL"
                     }
                 }
             ],
@@ -3555,7 +4386,10 @@
                     ]
                 }
             ],
-            "filterDimensions": ["pe", "uSMHdwhxFSV"],
+            "filterDimensions": [
+                "pe",
+                "uSMHdwhxFSV"
+            ],
             "categoryDimensions": [
                 {
                     "category": {
@@ -3643,7 +4477,7 @@
                 {
                     "dataDimensionItemType": "INDICATOR",
                     "indicator": {
-                        "id": "K4sH0aQDdeL"
+                        "id": "eYmeRzhBFV4"
                     }
                 },
                 {
@@ -3655,7 +4489,7 @@
                 {
                     "dataDimensionItemType": "INDICATOR",
                     "indicator": {
-                        "id": "eYmeRzhBFV4"
+                        "id": "K4sH0aQDdeL"
                     }
                 }
             ],
@@ -3680,7 +4514,11 @@
                     ]
                 }
             ],
-            "filterDimensions": ["ou", "pe", "uSMHdwhxFSV"],
+            "filterDimensions": [
+                "ou",
+                "pe",
+                "uSMHdwhxFSV"
+            ],
             "categoryDimensions": [
                 {
                     "category": {
@@ -3784,7 +4622,9 @@
                     "id": "pe"
                 }
             ],
-            "filterDimensions": ["pe"],
+            "filterDimensions": [
+                "pe"
+            ],
             "categoryDimensions": [],
             "organisationUnits": [
                 {
@@ -3878,6 +4718,24 @@
                     "dataElement": {
                         "id": "qAM1NbCbS9G"
                     }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "K6mAC5SiO29"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "ik0ICagvIjm"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "GQyudNlGzkI"
+                    }
                 }
             ],
             "rows": [
@@ -3906,7 +4764,11 @@
                     ]
                 }
             ],
-            "filterDimensions": ["ou", "uSMHdwhxFSV", "GIIHAr9BzzO"],
+            "filterDimensions": [
+                "ou",
+                "uSMHdwhxFSV",
+                "GIIHAr9BzzO"
+            ],
             "categoryDimensions": [
                 {
                     "category": {
@@ -3989,6 +4851,18 @@
                     "dataElement": {
                         "id": "SCY3TdhSz1K"
                     }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "WS8XV4WWPE7"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "yMqK9DKbA3X"
+                    }
                 }
             ],
             "rows": [
@@ -4009,7 +4883,10 @@
                     ]
                 }
             ],
-            "filterDimensions": ["ou", "GIIHAr9BzzO"],
+            "filterDimensions": [
+                "ou",
+                "GIIHAr9BzzO"
+            ],
             "categoryDimensions": [
                 {
                     "category": {
@@ -4030,9 +4907,72 @@
             "publicAccess": "rw------"
         },
         {
-            "id": "KsMZ8TSvklN",
+            "id": "CYYNLjxd96q",
             "name": "Award Number 12345 - Achieved monthly (%)",
             "periods": [
+                {
+                    "id": "201810"
+                },
+                {
+                    "id": "201811"
+                },
+                {
+                    "id": "201812"
+                },
+                {
+                    "id": "201901"
+                },
+                {
+                    "id": "201902"
+                },
+                {
+                    "id": "201903"
+                },
+                {
+                    "id": "201904"
+                },
+                {
+                    "id": "201905"
+                },
+                {
+                    "id": "201906"
+                },
+                {
+                    "id": "201907"
+                },
+                {
+                    "id": "201908"
+                },
+                {
+                    "id": "201909"
+                },
+                {
+                    "id": "201910"
+                },
+                {
+                    "id": "201911"
+                },
+                {
+                    "id": "201912"
+                },
+                {
+                    "id": "202001"
+                },
+                {
+                    "id": "202002"
+                },
+                {
+                    "id": "202003"
+                },
+                {
+                    "id": "202004"
+                },
+                {
+                    "id": "202005"
+                },
+                {
+                    "id": "202006"
+                },
                 {
                     "id": "202007"
                 },
@@ -4138,7 +5078,37 @@
                 {
                     "dataDimensionItemType": "INDICATOR",
                     "indicator": {
-                        "id": "m0a3QcxQORf"
+                        "id": "KOKIhtZYDOh"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "eCufXa6RkTm"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "i01veyO4Cuw"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "eYmeRzhBFV4"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "u404ICrBKj3"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "K4sH0aQDdeL"
                     }
                 }
             ],
@@ -4152,9 +5122,14 @@
                     "id": "ou"
                 }
             ],
-            "filterDimensions": ["ou"],
+            "filterDimensions": [
+                "ou"
+            ],
             "categoryDimensions": [],
             "organisationUnits": [
+                {
+                    "id": "WGC0DJ0YSis"
+                },
                 {
                     "id": "TvSmIyYcRnd"
                 },
@@ -4185,9 +5160,72 @@
             ]
         },
         {
-            "id": "Og8PtJaAOlk",
+            "id": "Gi2PegQJhbu",
             "name": "Award Number 12345 - Achieved Benefit (%)",
             "periods": [
+                {
+                    "id": "201810"
+                },
+                {
+                    "id": "201811"
+                },
+                {
+                    "id": "201812"
+                },
+                {
+                    "id": "201901"
+                },
+                {
+                    "id": "201902"
+                },
+                {
+                    "id": "201903"
+                },
+                {
+                    "id": "201904"
+                },
+                {
+                    "id": "201905"
+                },
+                {
+                    "id": "201906"
+                },
+                {
+                    "id": "201907"
+                },
+                {
+                    "id": "201908"
+                },
+                {
+                    "id": "201909"
+                },
+                {
+                    "id": "201910"
+                },
+                {
+                    "id": "201911"
+                },
+                {
+                    "id": "201912"
+                },
+                {
+                    "id": "202001"
+                },
+                {
+                    "id": "202002"
+                },
+                {
+                    "id": "202003"
+                },
+                {
+                    "id": "202004"
+                },
+                {
+                    "id": "202005"
+                },
+                {
+                    "id": "202006"
+                },
                 {
                     "id": "202007"
                 },
@@ -4245,7 +5283,19 @@
                 {
                     "dataDimensionItemType": "INDICATOR",
                     "indicator": {
-                        "id": "m0a3QcxQORf"
+                        "id": "KOKIhtZYDOh"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "eCufXa6RkTm"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "i01veyO4Cuw"
                     }
                 }
             ],
@@ -4259,9 +5309,14 @@
                     "id": "pe"
                 }
             ],
-            "filterDimensions": ["pe"],
+            "filterDimensions": [
+                "pe"
+            ],
             "categoryDimensions": [],
             "organisationUnits": [
+                {
+                    "id": "WGC0DJ0YSis"
+                },
                 {
                     "id": "TvSmIyYcRnd"
                 },
@@ -4292,9 +5347,72 @@
             ]
         },
         {
-            "id": "qqYp7Oh3aYg",
+            "id": "Ww2X5s48uQx",
             "name": "Award Number 12345 - Achieved People (%)",
             "periods": [
+                {
+                    "id": "201810"
+                },
+                {
+                    "id": "201811"
+                },
+                {
+                    "id": "201812"
+                },
+                {
+                    "id": "201901"
+                },
+                {
+                    "id": "201902"
+                },
+                {
+                    "id": "201903"
+                },
+                {
+                    "id": "201904"
+                },
+                {
+                    "id": "201905"
+                },
+                {
+                    "id": "201906"
+                },
+                {
+                    "id": "201907"
+                },
+                {
+                    "id": "201908"
+                },
+                {
+                    "id": "201909"
+                },
+                {
+                    "id": "201910"
+                },
+                {
+                    "id": "201911"
+                },
+                {
+                    "id": "201912"
+                },
+                {
+                    "id": "202001"
+                },
+                {
+                    "id": "202002"
+                },
+                {
+                    "id": "202003"
+                },
+                {
+                    "id": "202004"
+                },
+                {
+                    "id": "202005"
+                },
+                {
+                    "id": "202006"
+                },
                 {
                     "id": "202007"
                 },
@@ -4366,6 +5484,24 @@
                     "indicator": {
                         "id": "qW6b6ZRfXA5"
                     }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "eYmeRzhBFV4"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "u404ICrBKj3"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "K4sH0aQDdeL"
+                    }
                 }
             ],
             "rows": [
@@ -4386,7 +5522,10 @@
                     ]
                 }
             ],
-            "filterDimensions": ["pe", "uSMHdwhxFSV"],
+            "filterDimensions": [
+                "pe",
+                "uSMHdwhxFSV"
+            ],
             "categoryDimensions": [
                 {
                     "category": {
@@ -4400,6 +5539,9 @@
                 }
             ],
             "organisationUnits": [
+                {
+                    "id": "WGC0DJ0YSis"
+                },
                 {
                     "id": "TvSmIyYcRnd"
                 },
@@ -4430,9 +5572,72 @@
             ]
         },
         {
-            "id": "SGSUAn0OeDx",
+            "id": "CMqisHj7sP9",
             "name": "Award Number 12345 - Achieved by gender (%)",
             "periods": [
+                {
+                    "id": "201810"
+                },
+                {
+                    "id": "201811"
+                },
+                {
+                    "id": "201812"
+                },
+                {
+                    "id": "201901"
+                },
+                {
+                    "id": "201902"
+                },
+                {
+                    "id": "201903"
+                },
+                {
+                    "id": "201904"
+                },
+                {
+                    "id": "201905"
+                },
+                {
+                    "id": "201906"
+                },
+                {
+                    "id": "201907"
+                },
+                {
+                    "id": "201908"
+                },
+                {
+                    "id": "201909"
+                },
+                {
+                    "id": "201910"
+                },
+                {
+                    "id": "201911"
+                },
+                {
+                    "id": "201912"
+                },
+                {
+                    "id": "202001"
+                },
+                {
+                    "id": "202002"
+                },
+                {
+                    "id": "202003"
+                },
+                {
+                    "id": "202004"
+                },
+                {
+                    "id": "202005"
+                },
+                {
+                    "id": "202006"
+                },
                 {
                     "id": "202007"
                 },
@@ -4515,6 +5720,24 @@
                     "indicator": {
                         "id": "qW6b6ZRfXA5"
                     }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "eYmeRzhBFV4"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "u404ICrBKj3"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "K4sH0aQDdeL"
+                    }
                 }
             ],
             "rows": [
@@ -4538,7 +5761,11 @@
                     ]
                 }
             ],
-            "filterDimensions": ["ou", "pe", "uSMHdwhxFSV"],
+            "filterDimensions": [
+                "ou",
+                "pe",
+                "uSMHdwhxFSV"
+            ],
             "categoryDimensions": [
                 {
                     "category": {
@@ -4565,6 +5792,154 @@
                 }
             ],
             "organisationUnits": [
+                {
+                    "id": "WGC0DJ0YSis"
+                },
+                {
+                    "id": "TvSmIyYcRnd"
+                },
+                {
+                    "id": "cqZ9zQfePzQ"
+                }
+            ],
+            "publicAccess": "--------",
+            "externalAccess": false,
+            "userAccesses": [
+                {
+                    "id": "M5zQapPyTZI",
+                    "displayName": "admin admin",
+                    "access": "rw------"
+                }
+            ],
+            "userGroupAccesses": [
+                {
+                    "id": "ywuI2WspUUG",
+                    "displayName": "System Admin",
+                    "access": "rw------"
+                },
+                {
+                    "id": "mKKNXzeIAJs",
+                    "displayName": "Data Management Admin",
+                    "access": "rw------"
+                }
+            ]
+        },
+        {
+            "id": "WGWGaYtwJzp",
+            "name": "Award Number 12345 - Benefits Per Person",
+            "periods": [
+                {
+                    "id": "201810"
+                },
+                {
+                    "id": "201811"
+                },
+                {
+                    "id": "201812"
+                },
+                {
+                    "id": "201901"
+                },
+                {
+                    "id": "201902"
+                },
+                {
+                    "id": "201903"
+                },
+                {
+                    "id": "201904"
+                },
+                {
+                    "id": "201905"
+                },
+                {
+                    "id": "201906"
+                },
+                {
+                    "id": "201907"
+                },
+                {
+                    "id": "201908"
+                },
+                {
+                    "id": "201909"
+                },
+                {
+                    "id": "201910"
+                },
+                {
+                    "id": "201911"
+                },
+                {
+                    "id": "201912"
+                },
+                {
+                    "id": "202001"
+                },
+                {
+                    "id": "202002"
+                },
+                {
+                    "id": "202003"
+                },
+                {
+                    "id": "202004"
+                },
+                {
+                    "id": "202005"
+                },
+                {
+                    "id": "202006"
+                },
+                {
+                    "id": "202007"
+                },
+                {
+                    "id": "202008"
+                },
+                {
+                    "id": "202009"
+                },
+                {
+                    "id": "202010"
+                }
+            ],
+            "type": "COLUMN",
+            "aggregationType": "DEFAULT",
+            "showData": true,
+            "category": "dx",
+            "series": "ou",
+            "columns": [
+                {
+                    "id": "ou"
+                }
+            ],
+            "dataDimensionItems": [
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "Gob5qHAX60C"
+                    }
+                }
+            ],
+            "rows": [
+                {
+                    "id": "dx"
+                }
+            ],
+            "filters": [
+                {
+                    "id": "pe"
+                }
+            ],
+            "filterDimensions": [
+                "pe"
+            ],
+            "categoryDimensions": [],
+            "organisationUnits": [
+                {
+                    "id": "WGC0DJ0YSis"
+                },
                 {
                     "id": "TvSmIyYcRnd"
                 },

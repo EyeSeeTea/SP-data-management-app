@@ -83,6 +83,7 @@ describe("Project", () => {
     describe("get", () => {
         it("has filled values", async () => {
             const project = await getProject();
+
             expect(project.id).toEqual("R3rGhxWbAI9");
             expect(project.name).toEqual("0Test1-13726c");
             expect(project.description).toEqual("Some description2");
@@ -96,17 +97,16 @@ describe("Project", () => {
                 moment("2020-03-31").format("L")
             );
             expect(project.sectors.map(sector => sector.code)).toEqual(["SECTOR_LIVELIHOOD"]);
-            expect(project.funders.map(funder => funder.displayName)).toEqual([
-                "funder-OE0KdZRX2FC",
-                "funder-WKUXmz4LIUG",
-            ]);
+            expect(project.funders.map(funder => funder.displayName)).toEqual([]);
             expect(project.locations.map(location => location.displayName)).toEqual([
                 "loc-GG0k0oNhgS7",
             ]);
             expect(project.orgUnit && project.orgUnit.id).toEqual("R3rGhxWbAI9");
             expect(project.parentOrgUnit && project.parentOrgUnit.id).toEqual("eu2XF73JOzl");
             expect(project.dataSets && project.dataSets.actual.code).toEqual("R3rGhxWbAI9_ACTUAL");
-            expect(project.dashboard).toEqual({ id: "yk6HaCRtmEL" });
+            expect(project.dashboard).toEqual({
+                project: { id: "yk6HaCRtmEL", name: "dashboard-yk6HaCRtmEL" },
+            });
         });
 
         it("has initial data set", async () => {
@@ -118,7 +118,7 @@ describe("Project", () => {
             const project = await getProject();
             expect(
                 project.dataElementsSelection.get({ onlySelected: true }).map(de => de.id)
-            ).toEqual(["yMqK9DKbA3X", "u24zk6wAgFE"]);
+            ).toEqual(["u24zk6wAgFE", "yMqK9DKbA3X"]);
             expect(project.dataElementsMER.get({ onlySelected: true }).map(de => de.id)).toEqual([
                 "u24zk6wAgFE",
             ]);
@@ -399,6 +399,7 @@ describe("Project", () => {
                     id: "3",
                     code: "CODE3",
                     displayName: "name3",
+                    hasAwardNumberDashboard: false,
                     sectors: expect.arrayContaining([
                         expect.objectContaining({ code: "SECTOR_AGRICULTURE" }),
                     ]),
@@ -575,13 +576,17 @@ async function getProject(): Promise<Project> {
     mock.onGet("/metadata", {
         params: {
             "organisationUnits:fields":
-                "attributeValues[attribute[id],value],closedDate,code,description,displayName,id,name,openingDate,organisationUnitGroups[attributeValues[attribute[id],value],id,name],parent[attributeValues[attribute[id],value],displayName,id,name,path],path",
+                "attributeValues[attribute[id],value],closedDate,code,description,displayName,id,name,openingDate,organisationUnitGroups[attributeValues[attribute[id],value],groupSets[id],id,name],parent[attributeValues[attribute[id],value],displayName,id,name,path],path",
             "organisationUnits:filter": ["id:eq:R3rGhxWbAI9"],
             "dataSets:fields":
                 "code,dataInputPeriods[closingDate,openingDate,period],dataSetElements[categoryCombo[id],dataElement[id]],expiryDays,externalAccess,id,openFuturePeriods,publicAccess,sections[code,dataElements[id]],userAccesses[access,displayName,id],userGroupAccesses[access,displayName,id]",
             "dataSets:filter": ["code:$like:R3rGhxWbAI9"],
         },
     }).replyOnce(200, metadataForGet);
+
+    mock.onGet("/dashboards", {
+        params: { fields: "id,name", filter: ["id:in:[yk6HaCRtmEL]"] },
+    }).replyOnce(200, { dashboards: [{ id: "yk6HaCRtmEL", name: "dashboard-yk6HaCRtmEL" }] });
 
     mock.onGet("/dataStore/data-management-app/project-R3rGhxWbAI9").replyOnce(200, {
         merDataElementIds: ["u24zk6wAgFE"],

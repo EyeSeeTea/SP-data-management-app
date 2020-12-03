@@ -9,7 +9,7 @@ async function setupAwardNumberMetadata(api: D2Api, _debug: Debug): Promise<void
     checkCurrentUserIsSuperadmin(config);
 
     // TODO:
-    // Create orgUnitGroupSet + attribute + add permission to roles
+    // Create orgUnitGroupSet + attribute awardNumberDashboard + add F_ORGUNITGROUP_PUBLIC_ADD permission to roles
 }
 
 const migration: Migration = {

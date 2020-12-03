@@ -152,7 +152,10 @@ function mergeMetadata(
 ): DashboardSourceMetadata {
     const { orgUnits: orgUnits1 = [], dataSets: dataSets1 = [] } = metadata1 || {};
     const { orgUnits: orgUnits2, dataSets: dataSets2 } = metadata2;
-    return { orgUnits: orgUnits1.concat(orgUnits2), dataSets: dataSets1.concat(dataSets2) };
+    return {
+        orgUnits: _.uniqBy(orgUnits1.concat(orgUnits2), ou => ou.id),
+        dataSets: _.uniqBy(dataSets1.concat(dataSets2), ou => ou.id),
+    };
 }
 
 async function getMetadata(api: D2Api, condition: Condition): Promise<DashboardSourceMetadata> {
