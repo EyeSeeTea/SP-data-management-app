@@ -21,6 +21,7 @@ export type Config = {
     legendSets: IndexedObjs<"legendSets", LegendSet>;
     indicators: Indicator[];
     countries: Country[];
+    dataApprovalLevels: IndexedObjs<"dataApprovalLevels", DataApprovalLevel>;
     dataApprovalWorkflows: IndexedObjs<"dataApprovalWorkflows", DataApprovalWorkflow>;
     userGroups: Record<string, UserGroup>;
 };
@@ -95,6 +96,9 @@ const baseConfig = {
     indicators: {
         actualTargetPrefix: "ACTUAL_TARGET_",
         costBenefitPrefix: "COST_BENEFIT_",
+    },
+    dataApprovalLevels: {
+        project: "Project",
     },
     dataApprovalWorkflows: {
         project: "DM_PROJECT",
@@ -190,6 +194,12 @@ const metadataParams = {
             },
         },
     },
+    dataApprovalLevels: {
+        fields: { id: yes, code: yes, name: yes },
+        filter: {
+            name: { in: _.values(baseConfig.dataApprovalLevels) },
+        },
+    },
     dataApprovalWorkflows: {
         fields: { id: yes, code: yes },
         filter: {
@@ -203,6 +213,8 @@ const metadataParams = {
         },
     },
 };
+
+type OptionalName = { name: string | undefined };
 
 export type Metadata = MetadataPick<typeof metadataParams>;
 export type BaseConfig = typeof baseConfig;
@@ -232,6 +244,7 @@ export type Funder = NamedObject;
 export type Country = NamedObject & CodedObject;
 export type Location = NamedObject & { countries: Ref[] };
 export type DataApprovalWorkflow = CodedObject;
+export type DataApprovalLevel = CodedObject;
 
 type IndexedObjs<Key extends keyof BaseConfig, ValueType> = Record<
     keyof BaseConfig[Key],
@@ -272,6 +285,7 @@ class ConfigLoader {
             allCategoryCombos: metadata.categoryCombos,
             categoryOptions: indexObjects(metadata, "categoryOptions"),
             legendSets: indexObjects(metadata, "legendSets"),
+            dataApprovalLevels: indexObjects(metadata, "dataApprovalLevels"),
             dataApprovalWorkflows: indexObjects(metadata, "dataApprovalWorkflows"),
             countries: _.sortBy(metadata.organisationUnits, ou => ou.displayName),
             userGroups: _.keyBy(metadata.userGroups, ug => ug.code),
@@ -313,6 +327,7 @@ interface IndexableTypes {
     categoryOptions: CategoryOption;
     legendSets: LegendSet;
     dataApprovalWorkflows: DataApprovalWorkflow;
+    dataApprovalLevels: DataApprovalLevel;
 }
 
 type IndexableKeys = keyof IndexableTypes;
@@ -324,13 +339,18 @@ function indexObjects<Key extends IndexableKeys, RetValue = IndexedObjs<Key, Ind
     const keyByCodes = _.invert(baseConfig[key]) as Record<string, keyof BaseConfig[Key]>;
     const objects = metadata[key];
     const indexedObjects = _(objects)
-        .keyBy(obj => _(keyByCodes).get(obj.code))
+        .keyBy(obj =>
+            // Key by obj.code or obj.name (add type as virtual field)
+            _(keyByCodes).get(obj.code || (obj as typeof obj & OptionalName).name || "")
+        )
         .pickBy()
         .value() as RetValue;
     const missingKeys = _.difference(_.values(keyByCodes) as string[], _.keys(indexedObjects));
 
     if (!_.isEmpty(missingKeys)) {
-        throw new Error(`[Config] Missing records for ${key}: ${missingKeys.join(", ")}`);
+        const msg = `[Config] Missing records for ${key}: ${missingKeys.join(", ")}`;
+        console.error(msg);
+        throw new Error(msg);
     } else {
         return indexedObjects;
     }

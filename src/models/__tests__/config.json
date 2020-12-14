@@ -67,6 +67,9 @@
             "actualTargetPrefix": "ACTUAL_TARGET_",
             "costBenefitPrefix": "COST_BENEFIT_"
         },
+        "dataApprovalLevels": {
+            "project": "Project"
+        },
         "dataApprovalWorkflows": {
             "project": "DM_PROJECT"
         },
@@ -21739,6 +21742,12 @@
         "achieved": {
             "code": "ACTUAL_TARGET_ACHIEVED",
             "id": "yoAt108kUFm"
+        }
+    },
+    "dataApprovalLevels": {
+        "project": {
+            "name": "Project",
+            "id": "mmEtW6GJq5u"
         }
     },
     "dataApprovalWorkflows": {
