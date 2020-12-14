@@ -186,7 +186,9 @@ describe("Project", () => {
             const project2 = project.set("additional", _.repeat("1", 41));
             const errors2 = await project2.validate(["additional"]);
             expect(errors2["additional"]).toHaveLength(1);
-            expect(errors2["additional"]).toContain("Additional Designation must be less than or equal to 40");
+            expect(errors2["additional"]).toContain(
+                "Additional Designation must be less than or equal to 40"
+            );
         });
 
         it("requires a five-digit string in award number", async () => {
