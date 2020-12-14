@@ -5,21 +5,11 @@
             "levelForProjects": 3
         },
         "userRoles": {
-            "feedback": [
-                "DM Feedback"
-            ],
-            "dataReviewer": [
-                "Data Reviewer"
-            ],
-            "dataViewer": [
-                "Data Viewer"
-            ],
-            "admin": [
-                "DM Admin"
-            ],
-            "dataEntry": [
-                "Data Entry"
-            ]
+            "feedback": ["DM Feedback"],
+            "dataReviewer": ["Data Reviewer"],
+            "dataViewer": ["Data Viewer"],
+            "admin": ["DM Admin"],
+            "dataEntry": ["Data Entry"]
         },
         "dataElementGroupSets": {
             "sector": "SECTOR",
@@ -92,9 +82,7 @@
             "countryAdminPrefix": "ADMIN_COUNTRY_"
         },
         "merReports": {
-            "excludedSectors": [
-                "SECTOR_MINISTRY"
-            ]
+            "excludedSectors": ["SECTOR_MINISTRY"]
         }
     },
     "currentUser": {
@@ -2567,9 +2555,7 @@
             "peopleOrBenefit": "people",
             "pairedDataElements": [],
             "countingMethod": "Individual",
-            "externals": [
-                "UNHCR"
-            ],
+            "externals": ["UNHCR"],
             "categoryCombo": {
                 "id": "S0GIshZAqgK",
                 "displayName": "New-Returning/Gender"
@@ -2637,9 +2623,7 @@
             "peopleOrBenefit": "benefit",
             "pairedDataElements": [],
             "countingMethod": "",
-            "externals": [
-                "GAC"
-            ],
+            "externals": ["GAC"],
             "categoryCombo": {
                 "id": "bjDvmb4bfuf",
                 "displayName": "None"
@@ -2700,10 +2684,7 @@
             "peopleOrBenefit": "people",
             "pairedDataElements": [],
             "countingMethod": "Individual",
-            "externals": [
-                "DFID",
-                "OFDA"
-            ],
+            "externals": ["DFID", "OFDA"],
             "categoryCombo": {
                 "id": "S0GIshZAqgK",
                 "displayName": "New-Returning/Gender"
@@ -2832,9 +2813,7 @@
             "peopleOrBenefit": "people",
             "pairedDataElements": [],
             "countingMethod": "Individual",
-            "externals": [
-                "DFID"
-            ],
+            "externals": ["DFID"],
             "categoryCombo": {
                 "id": "S0GIshZAqgK",
                 "displayName": "New-Returning/Gender"
@@ -3291,10 +3270,7 @@
             "peopleOrBenefit": "people",
             "pairedDataElements": [],
             "countingMethod": "Individual",
-            "externals": [
-                "GAC",
-                "UNHCR"
-            ],
+            "externals": ["GAC", "UNHCR"],
             "categoryCombo": {
                 "id": "S0GIshZAqgK",
                 "displayName": "New-Returning/Gender"
@@ -3371,9 +3347,7 @@
                 }
             ],
             "countingMethod": "",
-            "externals": [
-                "DFID"
-            ],
+            "externals": ["DFID"],
             "categoryCombo": {
                 "id": "bjDvmb4bfuf",
                 "displayName": "None"
@@ -3720,9 +3694,7 @@
             "peopleOrBenefit": "people",
             "pairedDataElements": [],
             "countingMethod": "Individual",
-            "externals": [
-                "OFDA"
-            ],
+            "externals": ["OFDA"],
             "categoryCombo": {
                 "id": "S0GIshZAqgK",
                 "displayName": "New-Returning/Gender"
@@ -3913,9 +3885,7 @@
             "peopleOrBenefit": "people",
             "pairedDataElements": [],
             "countingMethod": "Individual",
-            "externals": [
-                "WFP"
-            ],
+            "externals": ["WFP"],
             "categoryCombo": {
                 "id": "S0GIshZAqgK",
                 "displayName": "New-Returning/Gender"
@@ -4106,9 +4076,7 @@
             "peopleOrBenefit": "people",
             "pairedDataElements": [],
             "countingMethod": "Individual",
-            "externals": [
-                "UNHCR"
-            ],
+            "externals": ["UNHCR"],
             "categoryCombo": {
                 "id": "S0GIshZAqgK",
                 "displayName": "New-Returning/Gender"
@@ -4451,9 +4419,7 @@
                 }
             ],
             "countingMethod": "",
-            "externals": [
-                "DFID"
-            ],
+            "externals": ["DFID"],
             "categoryCombo": {
                 "id": "bjDvmb4bfuf",
                 "displayName": "None"
@@ -9940,9 +9906,7 @@
             "peopleOrBenefit": "people",
             "pairedDataElements": [],
             "countingMethod": "",
-            "externals": [
-                "OFDA"
-            ],
+            "externals": ["OFDA"],
             "categoryCombo": {
                 "id": "S0GIshZAqgK",
                 "displayName": "New-Returning/Gender"
@@ -11519,9 +11483,7 @@
             "peopleOrBenefit": "people",
             "pairedDataElements": [],
             "countingMethod": "Individual, All HH members",
-            "externals": [
-                "OFDA"
-            ],
+            "externals": ["OFDA"],
             "categoryCombo": {
                 "id": "S0GIshZAqgK",
                 "displayName": "New-Returning/Gender"
@@ -12326,9 +12288,7 @@
             "peopleOrBenefit": "benefit",
             "pairedDataElements": [],
             "countingMethod": "",
-            "externals": [
-                "OFDA"
-            ],
+            "externals": ["OFDA"],
             "categoryCombo": {
                 "id": "bjDvmb4bfuf",
                 "displayName": "None"
@@ -13392,9 +13352,7 @@
             "peopleOrBenefit": "benefit",
             "pairedDataElements": [],
             "countingMethod": "",
-            "externals": [
-                "OFDA"
-            ],
+            "externals": ["OFDA"],
             "categoryCombo": {
                 "id": "bjDvmb4bfuf",
                 "displayName": "None"
@@ -15285,9 +15243,7 @@
             "peopleOrBenefit": "people",
             "pairedDataElements": [],
             "countingMethod": "All HH members",
-            "externals": [
-                "OFDA"
-            ],
+            "externals": ["OFDA"],
             "categoryCombo": {
                 "id": "S0GIshZAqgK",
                 "displayName": "New-Returning/Gender"
@@ -15767,9 +15723,7 @@
             "peopleOrBenefit": "people",
             "pairedDataElements": [],
             "countingMethod": "Individual, All HH members",
-            "externals": [
-                "OFDA"
-            ],
+            "externals": ["OFDA"],
             "categoryCombo": {
                 "id": "S0GIshZAqgK",
                 "displayName": "New-Returning/Gender"
