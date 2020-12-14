@@ -3,7 +3,7 @@ import { deleteDataStore, getDataStore, saveDataStore } from "./dataStore";
 import { D2Api } from "../types/d2-api";
 import { promiseMap, zeroPad } from "./utils";
 import { Config, Debug, MigrationWithVersion, RunnerOptions } from "./types";
-import { migrationTasks } from "./tasks";
+import { checkCurrentUserIsSuperadmin } from "./tasks/permissions";
 
 const configKey = "config";
 
@@ -15,7 +15,7 @@ export class MigrationsRunner {
     private namespace: string;
 
     constructor(private api: D2Api, private config: Config, private options: RunnerOptions) {
-        const { debug = _.identity, migrations = migrationTasks } = options;
+        const { debug = _.identity, migrations } = options;
         this.appVersion = _.max(migrations.map(info => info.version)) || 0;
         this.debug = debug;
         this.migrations = this.getMigrationToApply(migrations, config);
@@ -62,6 +62,8 @@ export class MigrationsRunner {
             migration: { version: this.appVersion },
         };
         await saveDataStore(api, namespace, configKey, configWithCurrentMigration);
+
+        await checkCurrentUserIsSuperadmin(api, debug);
 
         for (const migration of migrations) {
             debug(`Apply migration ${zeroPad(migration.version, 2)} - ${migration.name}`);

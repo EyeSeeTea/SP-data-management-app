@@ -153,7 +153,7 @@ describe("MerReport", () => {
                     dateInfo: "Nov 2019 -> Mar 2020",
                     locations: [
                         { id: "GG0k0oNhgS7", name: "loc-GG0k0oNhgS7" },
-                        { id: "uKgHpYUmD87", name: "loc-uKgHpYUmD87" },
+                        { id: "GsGG8967YDU", name: "loc-GsGG8967YDU" },
                     ],
                     dataElements: [
                         {

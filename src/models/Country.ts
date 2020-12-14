@@ -52,19 +52,17 @@ export async function getCountry(
     };
 }
 
-export async function getCountryDashboard({
-    api,
-    config,
-    countryId,
-}: {
-    api: D2Api;
-    config: Config;
-    countryId: Id;
-}): Promise<Response<Dashboard>> {
+export async function getCountryDashboard(
+    api: D2Api,
+    config: Config,
+    countryId: Id
+): Promise<Response<Dashboard>> {
     const country = await getCountry(api, config, countryId);
 
     if (!country) {
         return { type: "error", message: i18n.t(`Country not found: ${countryId}`) };
+    } else if (country.dashboard) {
+        return { type: "success", data: country.dashboard };
     } else {
         const countryDashboard = await CountryDashboard.build(api, config, country.id);
         const metadata = countryDashboard.generate();
@@ -75,16 +73,11 @@ export async function getCountryDashboard({
             .post(metadata)
             .getData()
             .catch(_err => null);
-        const newDashboard = { id: dashboard.id, name: country.name };
-        const updateSuccessful = !response || response.status !== "OK";
+        const newDashboard = { id: dashboard.id, name: dashboard.name };
+        const updateSuccessful = response && response.status === "OK";
 
-        if (updateSuccessful) {
-            // There was an error saving the updated dashboard, but an old one existed, return it.
-            if (country.dashboard) {
-                return { type: "success", data: country.dashboard };
-            } else {
-                return { type: "error", message: i18n.t("Error saving dashboard") };
-            }
+        if (!updateSuccessful) {
+            return { type: "error", message: i18n.t("Error saving dashboard") };
         } else {
             return { type: "success", data: newDashboard };
         }

@@ -22,8 +22,9 @@ import {
     validateNonEmpty,
 } from "../utils/validations";
 import { getKeys, Maybe } from "../types/utils";
-import ProjectSharing, { Sharing } from "./ProjectSharing";
+import ProjectSharing from "./ProjectSharing";
 import { Disaggregation, SetCovid19WithRelationsOptions } from "./Disaggregation";
+import { Sharing } from "./Sharing";
 
 /*
 Project model.
@@ -95,10 +96,17 @@ export interface ProjectData {
     dataElementsMER: DataElementsSet;
     disaggregation: Disaggregation;
     dataSets: { actual: DataSet; target: DataSet } | undefined;
-    dashboard: Ref | undefined;
+    dashboard: Partial<Dashboards>;
     initialData: Omit<ProjectData, "initialData"> | undefined;
     sharing: Sharing;
 }
+
+export interface Dashboard {
+    id: Id;
+    name: string;
+}
+
+export type Dashboards = Record<"project" | "country" | "awardNumber", Dashboard | undefined>;
 
 export interface DataInputPeriod {
     period: { id: string };
@@ -142,7 +150,7 @@ const defaultProjectData = {
     orgUnit: undefined,
     parentOrgUnit: undefined,
     dataSets: undefined,
-    dashboard: undefined,
+    dashboard: {},
 };
 
 function defineGetters(sourceObject: any, targetObject: any) {
@@ -391,7 +399,7 @@ class Project {
     setCountry(country: OrganisationUnit) {
         return this.setObj({
             parentOrgUnit: country,
-            sharing: new ProjectSharing(this).getUpdatedSharingForCountry(country),
+            sharing: new ProjectSharing(this.config, this).getUpdatedSharingForCountry(country),
         });
     }
 

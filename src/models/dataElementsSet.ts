@@ -41,6 +41,8 @@ export interface DataElementBase {
     pairedDataElements: Array<{ id: Id; name: string; code: string }>;
     categoryCombo: { id: Id; displayName: string };
     selectable: boolean;
+    dataElementGroups: Array<{ code: string }>;
+    attributeValues: AttributeValue[];
 }
 
 export interface DataElement extends DataElementBase {
@@ -181,6 +183,8 @@ export default class DataElementsSet {
                         displayName: getCategoryComboName(categoryCombosById, categoryCombo),
                     },
                     selectable: isSelectable,
+                    dataElementGroups: Array.from(groupCodes).map(code => ({ code })),
+                    attributeValues: d2DataElement.attributeValues,
                 };
                 return dataElement;
             }
@@ -462,9 +466,9 @@ function getGroupCodeByDataElementId(
 ): { [dataElementId: string]: Set<string> } {
     return _(dataElementGroupSets)
         .flatMap(degSet => degSet.dataElementGroups)
-        .flatMap(deg => deg.dataElements.map(de => ({ id: de.id, code: deg.code })))
-        .groupBy(obj => obj.id)
-        .mapValues(objs => new Set(objs.map(obj => obj.code)))
+        .flatMap(deg => deg.dataElements.map(de => ({ deId: de.id, degCode: deg.code })))
+        .groupBy(obj => obj.deId)
+        .mapValues(objs => new Set(objs.map(obj => obj.degCode)))
         .value();
 }
 
@@ -487,7 +491,7 @@ function getBy<T, K extends keyof T>(objs: T[], key: K, value: T[K]): T {
     }
 }
 
-type AttributeValue = { attribute: { code: string }; value: string };
+type AttributeValue = { attribute: { id: string; code: string }; value: string };
 
 function getAttrsMap(
     attributes: BaseConfig["attributes"],
