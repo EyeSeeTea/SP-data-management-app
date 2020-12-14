@@ -32,9 +32,6 @@ msgstr ""
 msgid "Search by name or code"
 msgstr ""
 
-msgid "Dashboard"
-msgstr ""
-
 msgid ""
 "Data updates in the dashboards every 15 minutes.  If you do not see your "
 "data immediately after data entry, please give the system additional time "
@@ -410,6 +407,9 @@ msgstr ""
 msgid "Data Sets"
 msgstr ""
 
+msgid "Dashboard"
+msgstr ""
+
 msgid "Initial Data"
 msgstr ""
 
@@ -538,6 +538,9 @@ msgstr ""
 msgid "updated"
 msgstr ""
 
+msgid "Award Number {{awardNumber}}"
+msgstr ""
+
 msgid "The following sectors have no indicators selected"
 msgstr ""
 
@@ -569,10 +572,13 @@ msgid ""
 "initial returning + new values for past periods: {{newValuesSumFormula}}"
 msgstr ""
 
-msgid "Cannot get country dashboard"
+msgid "Award Number Dashboard"
 msgstr ""
 
-msgid "Cannot get project dashboard"
+msgid "Country dashboard"
+msgstr ""
+
+msgid "Project dashboard"
 msgstr ""
 
 msgid "Period"
@@ -743,6 +749,9 @@ msgid "API Link"
 msgstr ""
 
 msgid "Add Actual Values"
+msgstr ""
+
+msgid "Go to Award Number Dashboard"
 msgstr ""
 
 msgid "Add Target Values"

@@ -1,11 +1,10 @@
 import _ from "lodash";
 import { Config } from "./Config";
 import { PartialPersistedModel, PartialModel, D2Api } from "../types/d2-api";
-import { D2Dashboard, D2ReportTable, Ref, D2Chart, D2DashboardItem, Id } from "../types/d2-api";
+import { D2ReportTable, Ref, D2Chart, D2DashboardItem, Id } from "../types/d2-api";
 import Project from "./Project";
 import i18n from "../locales";
-import { getUid, getIds } from "../utils/dhis2";
-import { DataElement } from "./dataElementsSet";
+import { getUid } from "../utils/dhis2";
 import ProjectSharing from "./ProjectSharing";
 import {
     getReportTableItem,
@@ -25,20 +24,20 @@ import {
 } from "./Dashboard";
 import { getActualTargetIndicators, getCostBenefitIndicators } from "./indicators";
 import { Response } from "./Response";
+import {
+    ProjectsListDashboard,
+    getProjectsListDashboard,
+    DashboardSourceMetadata,
+    Condition,
+} from "./ProjectsListDashboard";
+import { filterPeriods } from "./Period";
 
 export default class ProjectDashboard {
-    dataElements: Record<"all" | "people" | "benefit", DataElement[]>;
+    dataElements: ProjectsListDashboard["dataElements"];
     categoryOnlyNew: { id: Id; categoryOptions: Ref[] };
-    config: Config;
 
-    constructor(public project: Project) {
-        const { config } = project;
-
-        this.dataElements = {
-            all: project.getSelectedDataElements(),
-            people: project.getSelectedDataElements({ peopleOrBenefit: "people" }),
-            benefit: project.getSelectedDataElements({ peopleOrBenefit: "benefit" }),
-        };
+    constructor(private config: Config, private projectsListDashboard: ProjectsListDashboard) {
+        this.dataElements = this.projectsListDashboard.dataElements;
 
         this.categoryOnlyNew = {
             id: config.categories.newRecurring.id,
@@ -48,8 +47,34 @@ export default class ProjectDashboard {
         this.config = config;
     }
 
-    generate() {
-        const { project } = this;
+    static async buildForProject(
+        api: D2Api,
+        config: Config,
+        project: Ref,
+        initialMetadata?: DashboardSourceMetadata
+    ): Promise<ProjectDashboard> {
+        const condition: Condition = { type: "project", id: project.id, initialMetadata };
+        const projectsListDashboard = await getProjectsListDashboard(api, config, condition);
+        return new ProjectDashboard(config, projectsListDashboard);
+    }
+
+    static async buildForAwardNumber(
+        api: D2Api,
+        config: Config,
+        awardNumber: string,
+        initialMetadata?: DashboardSourceMetadata
+    ): Promise<ProjectDashboard> {
+        const condition: Condition = { type: "awardNumber", value: awardNumber, initialMetadata };
+        const projectsListDashboard = await getProjectsListDashboard(api, config, condition);
+        return new ProjectDashboard(config, projectsListDashboard);
+    }
+
+    generate(options: { minimumOrgUnits?: number } = {}) {
+        const { config, projectsListDashboard } = this;
+        const { minimumOrgUnits } = options;
+
+        if (!_.isNil(minimumOrgUnits) && projectsListDashboard.orgUnits.length < minimumOrgUnits)
+            return { dashboards: [], reportTables: [], charts: [] };
 
         const reportTables: Array<PartialPersistedModel<D2ReportTable>> = _.compact([
             // General Data View
@@ -87,11 +112,11 @@ export default class ProjectDashboard {
             defaultHeight: 20, // 20 vertical units ~ 50% of viewport height
         };
 
-        const dashboard: PartialPersistedModel<D2Dashboard> = {
-            id: getUid("dashboard", project.uid),
-            name: project.name,
+        const dashboard = {
+            id: getUid("dashboard", projectsListDashboard.id),
+            name: projectsListDashboard.name,
             dashboardItems: positionItems(items, positionItemsOptions),
-            ...new ProjectSharing(project).getSharingAttributesForDashboard(),
+            ...new ProjectSharing(config, projectsListDashboard).getSharingAttributesForDashboard(),
         };
 
         return { dashboards: [dashboard], ...favorites };
@@ -111,8 +136,7 @@ export default class ProjectDashboard {
     }
 
     targetVsActualPeople(): MaybeD2Table {
-        const { project, dataElements } = this;
-        const { config } = project;
+        const { config, dataElements } = this;
 
         return this.getTable({
             key: "reportTable-target-actual-people",
@@ -129,8 +153,7 @@ export default class ProjectDashboard {
     }
 
     targetVsActualUniquePeople(): MaybeD2Table {
-        const { project, dataElements } = this;
-        const { config } = project;
+        const { config, dataElements } = this;
 
         return this.getTable({
             key: "reportTable-target-actual-unique-people",
@@ -143,7 +166,7 @@ export default class ProjectDashboard {
     }
 
     achievedBenefitsTable(options: VisualizationOptions = {}): MaybeD2Table {
-        const { config, project, dataElements } = this;
+        const { config, dataElements } = this;
         const indicators = getActualTargetIndicators(config, dataElements.benefit);
 
         return this.getTable({
@@ -155,13 +178,13 @@ export default class ProjectDashboard {
             reportFilter: [dimensions.orgUnit],
             columnDimensions: [dimensions.period],
             rowDimensions: [dimensions.data],
-            extra: { legendSet: project.config.legendSets.achieved },
+            extra: { legendSet: config.legendSets.achieved },
             ...options,
         });
     }
 
     achievedPeopleTable(): MaybeD2Table {
-        const { project, dataElements } = this;
+        const { config, dataElements } = this;
         const indicators = getActualTargetIndicators(this.config, dataElements.people);
 
         return this.getTable({
@@ -171,13 +194,13 @@ export default class ProjectDashboard {
             reportFilter: [dimensions.orgUnit],
             columnDimensions: [dimensions.period],
             rowDimensions: [dimensions.data],
-            extra: { legendSet: project.config.legendSets.achieved },
+            extra: { legendSet: config.legendSets.achieved },
             rowTotals: false,
         });
     }
 
     achievedPeopleTotalTable(options: VisualizationOptions = {}): MaybeD2Table {
-        const { project, dataElements } = this;
+        const { config, dataElements } = this;
 
         return this.getTable({
             key: "reportTable-indicators-people-total" + (options.toDate ? "-todate" : ""),
@@ -188,7 +211,7 @@ export default class ProjectDashboard {
             reportFilter: [dimensions.orgUnit, dimensions.period],
             columnDimensions: [this.categoryOnlyNew],
             rowDimensions: [dimensions.data],
-            extra: { legendSet: project.config.legendSets.achieved },
+            extra: { legendSet: config.legendSets.achieved },
             rowTotals: false,
             ...options,
         });
@@ -234,14 +257,14 @@ export default class ProjectDashboard {
     }
 
     genderChart(): MaybeD2Chart {
-        const { project, config, dataElements } = this;
+        const { config, dataElements } = this;
 
         return this.getChart({
             key: "chart-achieved-gender",
             name: i18n.t("Achieved by gender (%)"),
             items: indicatorItems(getActualTargetIndicators(config, dataElements.people)),
             reportFilter: [dimensions.orgUnit, dimensions.period, this.categoryOnlyNew],
-            seriesDimension: project.config.categories.gender,
+            seriesDimension: config.categories.gender,
             categoryDimension: dimensions.data,
         });
     }
@@ -249,9 +272,7 @@ export default class ProjectDashboard {
     costBenefit(): MaybeD2Chart {
         const { config, dataElements } = this;
 
-        const pairedDataElements = dataElements.benefit.filter(
-            de => de.pairedDataElements.length > 0
-        );
+        const pairedDataElements = dataElements.benefit.filter(de => de.hasPairedDataElements);
 
         return this.getChart({
             key: "cost-benefit",
@@ -264,14 +285,17 @@ export default class ProjectDashboard {
     }
 
     getChart(baseChart: BaseChart): MaybeD2Chart {
-        const { project } = this;
+        const { config, projectsListDashboard } = this;
         const chart: Chart = {
             ...baseChart,
-            key: baseChart.key + project.uid,
-            name: `${project.name} - ${baseChart.name}`,
-            organisationUnits: [{ id: getOrgUnitId(project) }],
-            periods: getIds(project.getPeriods()),
-            sharing: new ProjectSharing(project).getSharingAttributesForDashboard(),
+            key: baseChart.key + projectsListDashboard.id,
+            name: `${projectsListDashboard.name} - ${baseChart.name}`,
+            organisationUnits: projectsListDashboard.orgUnits,
+            periods: filterPeriods(projectsListDashboard.periods, baseChart),
+            sharing: new ProjectSharing(
+                config,
+                projectsListDashboard
+            ).getSharingAttributesForDashboard(),
         };
         const d2Chart = getD2Chart(chart);
 
@@ -279,15 +303,18 @@ export default class ProjectDashboard {
     }
 
     getTable(baseTable: BaseTable): MaybeD2Table {
-        const { project } = this;
+        const { config, projectsListDashboard } = this;
 
         const table: Table = {
             ..._.omit(baseTable, ["toDate"]),
-            key: baseTable.key + project.uid,
-            name: `${project.name} - ${baseTable.name}`,
-            organisationUnits: [{ id: getOrgUnitId(project) }],
-            periods: getIds(project.getPeriods(baseTable)),
-            sharing: new ProjectSharing(project).getSharingAttributesForDashboard(),
+            key: baseTable.key + projectsListDashboard.id,
+            name: `${projectsListDashboard.name} - ${baseTable.name}`,
+            organisationUnits: projectsListDashboard.orgUnits,
+            periods: filterPeriods(projectsListDashboard.periods, baseTable),
+            sharing: new ProjectSharing(
+                config,
+                projectsListDashboard
+            ).getSharingAttributesForDashboard(),
         };
 
         const d2Table = getD2ReportTable(table);
@@ -306,15 +333,11 @@ export async function getProjectDashboard(
     config: Config,
     projectId: Id
 ): Promise<Response<Dashboard>> {
-    let project: Project;
-    try {
-        project = await Project.get(api, config, projectId);
-    } catch (err) {
-        const msg = err.message || err;
-        return { type: "error", message: i18n.t(`Cannot load project: ${msg}`) };
-    }
+    const project = await Project.get(api, config, projectId).catch(_err => null);
+    if (!project) return { type: "error" as const, message: "No dashboard found" };
 
-    const metadata = new ProjectDashboard(project).generate();
+    // Regenerate the dashboard, as it contains "to date" visualizations
+    const metadata = (await ProjectDashboard.buildForProject(api, config, project)).generate();
     const dashboard = metadata.dashboards[0];
     if (!dashboard) return { type: "error", message: "Error generating dashboard" };
 
@@ -323,13 +346,13 @@ export async function getProjectDashboard(
         .getData()
         .catch(_err => null);
     const newDashboard = { id: dashboard.id, name: project.name };
-    const updateSuccessful = !response || response.status !== "OK";
+    const updateSuccessful = response && response.status === "OK";
 
-    if (updateSuccessful) {
-        if (project.dashboard) {
+    if (!updateSuccessful) {
+        if (project.dashboard.project) {
             // There was an error saving the updated dashboard, but an old one existed, return it.
             console.error("Error saving dashboard", response);
-            return { type: "success", data: { ...project.dashboard, name: project.name } };
+            return { type: "success", data: project.dashboard.project };
         } else {
             return { type: "error", message: i18n.t("Error saving dashboard") };
         }
@@ -338,12 +361,36 @@ export async function getProjectDashboard(
     }
 }
 
-function getOrgUnitId(project: Project): string {
-    const ou = project.orgUnit;
-    if (!ou) {
-        throw new Error("No organisation defined for project");
+export async function getAwardNumberDashboard(
+    api: D2Api,
+    config: Config,
+    projectId: Id
+): Promise<Response<Dashboard>> {
+    const project = await Project.get(api, config, projectId).catch(_err => null);
+
+    if (!project) {
+        return { type: "error" as const, message: "No dashboard found" };
+    } else if (project.dashboard.awardNumber) {
+        return { type: "success" as const, data: project.dashboard.awardNumber };
     } else {
-        return _.last(ou.path.split("/")) || "";
+        const { awardNumber } = project;
+        const generator = await ProjectDashboard.buildForAwardNumber(api, config, awardNumber);
+        const metadata = generator.generate();
+        const dashboard = metadata.dashboards[0];
+        if (!dashboard) return { type: "error", message: "Error generating dashboard" };
+
+        const response = await api.metadata
+            .post(metadata)
+            .getData()
+            .catch(_err => null);
+        const newDashboard = { id: dashboard.id, name: dashboard.name };
+        const updateSuccessful = response && response.status === "OK";
+
+        if (!updateSuccessful) {
+            return { type: "error", message: i18n.t("Error saving dashboard") };
+        } else {
+            return { type: "success", data: newDashboard };
+        }
     }
 }
 
@@ -351,19 +398,8 @@ interface VisualizationOptions {
     toDate?: boolean;
 }
 
-type BaseTableKey =
-    | "key"
-    | "name"
-    | "items"
-    | "extra"
-    | "reportFilter"
-    | "rowDimensions"
-    | "columnDimensions"
-    | "rowTotals";
+type CommonKey = "key" | "name" | "extra" | "toDate" | "items" | "reportFilter";
 
-type BaseTable = Pick<Table, BaseTableKey> & VisualizationOptions;
+type BaseTable = Pick<Table, CommonKey | "rowDimensions" | "columnDimensions" | "rowTotals">;
 
-type BaseChart = Pick<
-    Chart,
-    "key" | "name" | "items" | "reportFilter" | "categoryDimension" | "extra" | "seriesDimension"
->;
+type BaseChart = Pick<Chart, CommonKey | "categoryDimension" | "seriesDimension">;

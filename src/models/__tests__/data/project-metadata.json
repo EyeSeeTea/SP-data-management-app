@@ -1,0 +1,299 @@
+{
+    "system": {
+        "id": "55186637-1313-4fdd-b91f-3c17f02d153b",
+        "rev": "f8007bc",
+        "version": "2.32.6",
+        "date": "2020-11-30T10:23:50.091"
+    },
+    "organisationUnits": [
+        {
+            "id": "WGC0DJ0YSis",
+            "name": "MyProject",
+            "children": []
+        }
+    ],
+    "dataSets": [
+        {
+            "code": "WGC0DJ0YSis_ACTUAL",
+            "id": "CwUxT9UIX3z",
+            "publicAccess": "--------",
+            "externalAccess": false,
+            "userAccesses": [
+                {
+                    "id": "M5zQapPyTZI",
+                    "displayName": "admin admin",
+                    "access": "rwrw----"
+                }
+            ],
+            "userGroupAccesses": [
+                {
+                    "id": "ywuI2WspUUG",
+                    "displayName": "System Admin",
+                    "access": "rwrw----"
+                },
+                {
+                    "id": "mKKNXzeIAJs",
+                    "displayName": "Data Management Admin",
+                    "access": "rwrw----"
+                }
+            ],
+            "dataSetElements": [
+                {
+                    "dataElement": {
+                        "code": "B020200",
+                        "name": "# of livelihood inputs/ assets provided",
+                        "id": "yMqK9DKbA3X",
+                        "attributeValues": [
+                            {
+                                "value": "Externals: -\nNote: To capture people this global indicator series must be paired with global indicator P020300 # of people provided with Livelihood inputs/ assets.",
+                                "attribute": {
+                                    "id": "KSctjkirGIK"
+                                }
+                            },
+                            {
+                                "value": "P020300",
+                                "attribute": {
+                                    "id": "qeayiIiTONg"
+                                }
+                            },
+                            {
+                                "value": "SECTOR_LIVELIHOOD",
+                                "attribute": {
+                                    "id": "qqqopVltY52"
+                                }
+                            }
+                        ],
+                        "dataElementGroups": [
+                            {
+                                "code": "SERIES_LIVELIHOOD_202"
+                            },
+                            {
+                                "code": "BENEFIT"
+                            },
+                            {
+                                "code": "GLOBAL"
+                            },
+                            {
+                                "code": "SECTOR_LIVELIHOOD"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "dataElement": {
+                        "code": "B010200",
+                        "name": "# of agriculture groups receiving support for improved livelihoods",
+                        "id": "WS8XV4WWPE7",
+                        "attributeValues": [
+                            {
+                                "value": "Externals: -\nNote: No pairing needed. Beneficiary numbers for this activity are already captured under other activities under global indicator series P010100 # of people trained on improved agriculture technologies/ practices.  No need to record corresponding beneficiary numbers in Platform.",
+                                "attribute": {
+                                    "id": "KSctjkirGIK"
+                                }
+                            },
+                            {
+                                "value": "SECTOR_AGRICULTURE",
+                                "attribute": {
+                                    "id": "qqqopVltY52"
+                                }
+                            }
+                        ],
+                        "dataElementGroups": [
+                            {
+                                "code": "SERIES_AGRICULTURE_102"
+                            },
+                            {
+                                "code": "SECTOR_AGRICULTURE"
+                            },
+                            {
+                                "code": "BENEFIT"
+                            },
+                            {
+                                "code": "GLOBAL"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "dataElement": {
+                        "code": "P020300",
+                        "name": "# of people provided with Livelihood inputs/ assets",
+                        "id": "GQyudNlGzkI",
+                        "attributeValues": [
+                            {
+                                "value": "Individual, All HH members",
+                                "attribute": {
+                                    "id": "OOi8Yw1TrmS"
+                                }
+                            },
+                            {
+                                "value": "Externals: -\nLivelihoods assets: consider those other than the ones expressed in agriculture & livestock indicators. Some examples include: Furniture, cooking utensils, mechanics tools and construction tools. These are differentiated from NFIs in that these are intended for use in a livelihoods/income-earning capacity.            \n\nNote: This does not include cash transferences which are measured with separate cash-specific indicators. Please specify asset type(s) distributed.\n\nNote: This global indicator must be paired with global indicator series B020200 # of livelihood inputs/ assets provided.\n\nCounting Method- Individual OR Household (I/HH)- see I/HH counting method matrix for guidance on how beneficiary counting by data type.",
+                                "attribute": {
+                                    "id": "KSctjkirGIK"
+                                }
+                            },
+                            {
+                                "value": "SECTOR_LIVELIHOOD",
+                                "attribute": {
+                                    "id": "qqqopVltY52"
+                                }
+                            }
+                        ],
+                        "dataElementGroups": [
+                            {
+                                "code": "SERIES_LIVELIHOOD_203"
+                            },
+                            {
+                                "code": "PEOPLE"
+                            },
+                            {
+                                "code": "GLOBAL"
+                            },
+                            {
+                                "code": "SECTOR_LIVELIHOOD"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "dataElement": {
+                        "code": "P010101",
+                        "name": "# of people trained on agronomic practices",
+                        "id": "ik0ICagvIjm",
+                        "attributeValues": [
+                            {
+                                "value": "SECTOR_AGRICULTURE",
+                                "attribute": {
+                                    "id": "qqqopVltY52"
+                                }
+                            },
+                            {
+                                "value": "Externals: GAC, UNHCR\nDefinition: Agronomic refers to soil management and crop production. Examples may include various cultivation techniques, use of cover crops, intercropping and other practices associated with improved management of field crops. Please specify practices promoted.\n\nIndividual Counting Method (I)- see \"I\" counting matrix for guidance on beneficiary counting by data type.",
+                                "attribute": {
+                                    "id": "KSctjkirGIK"
+                                }
+                            },
+                            {
+                                "value": "Individual",
+                                "attribute": {
+                                    "id": "OOi8Yw1TrmS"
+                                }
+                            }
+                        ],
+                        "dataElementGroups": [
+                            {
+                                "code": "SECTOR_AGRICULTURE"
+                            },
+                            {
+                                "code": "SUB"
+                            },
+                            {
+                                "code": "EXTERNAL_GAC"
+                            },
+                            {
+                                "code": "EXTERNAL_UNHCR"
+                            },
+                            {
+                                "code": "SERIES_AGRICULTURE_101"
+                            },
+                            {
+                                "code": "PEOPLE"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "dataElement": {
+                        "code": "P010100",
+                        "name": "# of people trained on improved agriculture technologies/practices",
+                        "id": "K6mAC5SiO29",
+                        "attributeValues": [
+                            {
+                                "value": "SECTOR_AGRICULTURE",
+                                "attribute": {
+                                    "id": "qqqopVltY52"
+                                }
+                            },
+                            {
+                                "value": "Externals: OFDA, DFID\nIndividual Counting Method (I) - see \"I\" counting matrix for guidance on beneficiary counting by data type.",
+                                "attribute": {
+                                    "id": "KSctjkirGIK"
+                                }
+                            },
+                            {
+                                "value": "Individual",
+                                "attribute": {
+                                    "id": "OOi8Yw1TrmS"
+                                }
+                            }
+                        ],
+                        "dataElementGroups": [
+                            {
+                                "code": "EXTERNAL_OFDA"
+                            },
+                            {
+                                "code": "SECTOR_AGRICULTURE"
+                            },
+                            {
+                                "code": "GLOBAL"
+                            },
+                            {
+                                "code": "SERIES_AGRICULTURE_101"
+                            },
+                            {
+                                "code": "PEOPLE"
+                            },
+                            {
+                                "code": "EXTERNAL_DFID"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "dataInputPeriods": [
+                {
+                    "period": {
+                        "id": "201812"
+                    },
+                    "closingDate": "2019-01-10T00:00:00.000",
+                    "openingDate": "2018-10-01T00:00:00.000"
+                },
+                {
+                    "period": {
+                        "id": "201901"
+                    },
+                    "closingDate": "2019-02-10T00:00:00.000",
+                    "openingDate": "2018-10-01T00:00:00.000"
+                },
+                {
+                    "period": {
+                        "id": "201903"
+                    },
+                    "closingDate": "2019-04-10T00:00:00.000",
+                    "openingDate": "2018-10-01T00:00:00.000"
+                },
+                {
+                    "period": {
+                        "id": "201810"
+                    },
+                    "closingDate": "2018-11-10T00:00:00.000",
+                    "openingDate": "2018-10-01T00:00:00.000"
+                },
+                {
+                    "period": {
+                        "id": "201811"
+                    },
+                    "closingDate": "2018-12-10T00:00:00.000",
+                    "openingDate": "2018-10-01T00:00:00.000"
+                },
+                {
+                    "period": {
+                        "id": "201902"
+                    },
+                    "closingDate": "2019-03-10T00:00:00.000",
+                    "openingDate": "2018-10-01T00:00:00.000"
+                }
+            ]
+        }
+    ]
+}

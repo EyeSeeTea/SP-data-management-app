@@ -1,19 +1,14 @@
 {
     "organisationUnits": [
         {
-            "name": "Bahamas",
-            "id": "eu2XF73JOzl",
-            "attributeValues": [],
-            "children": [
-                {
-                    "name": "HOPE Abaco",
-                    "id": "TvSmIyYcRnd"
-                },
-                {
-                    "name": "Abaco Ministry",
-                    "id": "cqZ9zQfePzQ"
-                }
-            ]
+            "name": "HOPE Abaco",
+            "id": "TvSmIyYcRnd",
+            "children": []
+        },
+        {
+            "name": "Abaco Ministry",
+            "id": "cqZ9zQfePzQ",
+            "children": []
         }
     ],
     "dataSets": [

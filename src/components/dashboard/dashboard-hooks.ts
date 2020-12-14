@@ -11,7 +11,10 @@ import { Response } from "../../models/Response";
 
 type RouterParams = { id: string };
 
-export type DashboardObj = { id: string; name: string };
+export interface DashboardObj {
+    id: string;
+    name: string;
+}
 
 export type DashboardState = LoaderState<DashboardObj>;
 

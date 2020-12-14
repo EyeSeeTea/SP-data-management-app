@@ -4,10 +4,10 @@ import { DashboardObj, useDashboardFromParams } from "../../components/dashboard
 import { Loader } from "../../components/loader/Loader";
 import { generateUrl } from "../../router";
 import i18n from "../../locales";
-import { getProjectDashboard } from "../../models/ProjectDashboard";
+import { getAwardNumberDashboard } from "../../models/ProjectDashboard";
 
-const ProjectDashboard: React.FC = () => {
-    const state = useDashboardFromParams(getProjectDashboard);
+const AwardNumberDashboard: React.FC = () => {
+    const state = useDashboardFromParams(getAwardNumberDashboard);
     const backUrl = generateUrl("projects");
 
     return (
@@ -15,7 +15,7 @@ const ProjectDashboard: React.FC = () => {
             {dashboard => (
                 <Dashboard
                     id={dashboard.id}
-                    name={i18n.t("Project dashboard") + ": " + dashboard.name}
+                    name={i18n.t("Award Number Dashboard") + ": " + dashboard.name}
                     backUrl={backUrl}
                 />
             )}
@@ -23,4 +23,4 @@ const ProjectDashboard: React.FC = () => {
     );
 };
 
-export default React.memo(ProjectDashboard);
+export default React.memo(AwardNumberDashboard);

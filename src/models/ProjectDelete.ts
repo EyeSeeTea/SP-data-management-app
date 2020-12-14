@@ -3,9 +3,9 @@ import { Config } from "./Config";
 import { D2Api, Id, Ref, MetadataPayload } from "../types/d2-api";
 import { getIds, getRefs, postMetadataRequests, getDataStore } from "../utils/dhis2";
 import i18n from "../locales";
-import { getDashboardId } from "./ProjectDb";
 import { getProjectStorageKey } from "./MerReport";
 import { runPromises } from "../utils/promises";
+import { getDashboardId } from "./ProjectDb";
 
 type FavoriteModel = "reportTables" | "chart";
 

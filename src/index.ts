@@ -40,7 +40,7 @@ function configI18n(userSettings: UserSettings) {
 
 async function main() {
     const baseUrl = await getBaseUrl();
-    const d2 = await init({ baseUrl: baseUrl + "/api" });
+    const d2 = await init({ baseUrl: baseUrl + "/api", schemas: [] });
     const api = new D2Api({ baseUrl, backend: "xhr", timeout: 60 * 1000 });
     const userSettings = (await api.get("/userSettings").getData()) as UserSettings;
     configI18n(userSettings);

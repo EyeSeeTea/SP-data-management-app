@@ -15,11 +15,10 @@ export function addAttributeValue(
 export function addAttributeValueToObj<Obj extends { attributeValues: AttributeValue[] }>(
     obj: Obj,
     options: {
-        values: AttributeValue[];
         attribute: Ref;
         value: string;
     }
 ) {
-    const newValues = addAttributeValue(options.values, options.attribute, options.value);
+    const newValues = addAttributeValue(obj.attributeValues, options.attribute, options.value);
     return { ...obj, attributeValues: newValues };
 }

@@ -7,7 +7,7 @@ describe("Dashboard", () => {
     });
 
     it("should have title and correct url", () => {
-        cy.get("h5").contains("Dashboard");
+        cy.get("h5").contains("Project dashboard");
     });
 
     it("should have an iframe", () => {
