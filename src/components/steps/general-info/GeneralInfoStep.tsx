@@ -14,7 +14,7 @@ import { getProjectFieldName } from "../../../utils/form";
 const { TextField } = require("@dhis2/d2-ui-core");
 const { FormBuilder, Validators } = require("@dhis2/d2-ui-forms");
 
-type StringField = "name" | "description" | "awardNumber" | "subsequentLettering" | "speedKey";
+type StringField = "name" | "description" | "awardNumber" | "subsequentLettering" | "additional";
 
 type DateField = "startDate" | "endDate";
 
@@ -54,10 +54,10 @@ class GeneralInfoStep extends React.Component<StepProps> {
                     validators.regexp(subsequentLettering.regexp, subsequentLettering.msg),
                 ],
             }),
-            getTextField("speedKey", project.speedKey, {
+            getTextField("additional", project.additional, {
                 validators: [
                     validators.length({
-                        max: Project.lengths.speedKey,
+                        max: Project.lengths.additional,
                     }),
                 ],
             }),

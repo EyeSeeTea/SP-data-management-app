@@ -62,7 +62,7 @@ describe("Project", () => {
             expect(project.description).toEqual("");
             expect(project.awardNumber).toEqual("");
             expect(project.subsequentLettering).toEqual("");
-            expect(project.speedKey).toEqual("");
+            expect(project.additional).toEqual("");
             expect(project.startDate).toEqual(undefined);
             expect(project.endDate).toEqual(undefined);
             expect(project.sectors).toEqual([]);
@@ -88,7 +88,7 @@ describe("Project", () => {
             expect(project.description).toEqual("Some description2");
             expect(project.awardNumber).toEqual("34549");
             expect(project.subsequentLettering).toEqual("fr");
-            expect(project.speedKey).toEqual("");
+            expect(project.additional).toEqual("");
             expect(project.startDate && project.startDate.format("L")).toEqual(
                 moment("2020-01-01").format("L")
             );
@@ -132,17 +132,17 @@ describe("Project", () => {
     });
 
     describe("code", () => {
-        it("joins {subsequentLettering}{this.awardNumber}-{this.speedKey}", async () => {
+        it("joins {subsequentLettering}{this.awardNumber}-{this.additional}", async () => {
             const project = await getNewProject();
             const project2 = project.setObj({
                 subsequentLettering: "es",
                 awardNumber: "12345",
-                speedKey: "some-key",
+                additional: "some-key",
             });
             expect(project2.code).toEqual("12345es-some-key");
         });
 
-        it("joins {subsequentLettering}{this.awardNumber} if speedKey not set", async () => {
+        it("joins {subsequentLettering}{this.awardNumber} if additional not set", async () => {
             const project = await getNewProject();
             const project2 = project.set("subsequentLettering", "es").set("awardNumber", "12345");
             expect(project2.code).toEqual("12345es");
@@ -178,15 +178,15 @@ describe("Project", () => {
             expectFieldPresence("endDate");
         });
 
-        it("limits speedKey to 40 chars", async () => {
-            const project = (await getNewProject()).set("speedKey", "1");
-            const errors = await project.validate(["speedKey"]);
-            expect(errors["speedKey"]).toHaveLength(0);
+        it("limits additional designation to 40 chars", async () => {
+            const project = (await getNewProject()).set("additional", "1");
+            const errors = await project.validate(["additional"]);
+            expect(errors["additional"]).toHaveLength(0);
 
-            const project2 = project.set("speedKey", _.repeat("1", 41));
-            const errors2 = await project2.validate(["speedKey"]);
-            expect(errors2["speedKey"]).toHaveLength(1);
-            expect(errors2["speedKey"]).toContain("Speed Key must be less than or equal to 40");
+            const project2 = project.set("additional", _.repeat("1", 41));
+            const errors2 = await project2.validate(["additional"]);
+            expect(errors2["additional"]).toHaveLength(1);
+            expect(errors2["additional"]).toContain("Additional Designation must be less than or equal to 40");
         });
 
         it("requires a five-digit string in award number", async () => {
@@ -238,7 +238,7 @@ describe("Project", () => {
             const project = (await getNewProject()).setObj({
                 subsequentLettering: "au",
                 awardNumber: "19234",
-                speedKey: "key",
+                additional: "key",
             });
 
             mock.reset();
@@ -293,7 +293,7 @@ describe("Project", () => {
                     "endDate",
                     "awardNumber",
                     "subsequentLettering",
-                    "speedKey",
+                    "additional",
                     "sectors",
                     "funders",
                     "parentOrgUnit",

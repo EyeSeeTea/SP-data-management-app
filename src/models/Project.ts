@@ -83,7 +83,7 @@ export interface ProjectData {
     description: string;
     awardNumber: string;
     subsequentLettering: string;
-    speedKey: string;
+    additional: string;
     startDate: Moment | undefined;
     endDate: Moment | undefined;
     sectors: Sector[];
@@ -133,7 +133,7 @@ const defaultProjectData = {
     description: "",
     awardNumber: "",
     subsequentLettering: "",
-    speedKey: "",
+    additional: "",
     startDate: undefined,
     endDate: undefined,
     sectors: [],
@@ -174,7 +174,7 @@ class Project {
 
     static lengths = {
         awardNumber: 5,
-        speedKey: 40,
+        additional: 40,
     };
 
     static formats() {
@@ -195,7 +195,7 @@ class Project {
         description: i18n.t("Description"),
         awardNumber: i18n.t("Award Number"),
         subsequentLettering: i18n.t("Subsequent Lettering"),
-        speedKey: i18n.t("Speed Key"),
+        additional: i18n.t("Additional Designation"),
         startDate: i18n.t("Start Date"),
         endDate: i18n.t("End Date"),
         sectors: i18n.t("Sectors"),
@@ -236,9 +236,9 @@ class Project {
                 Project.formats().subsequentLettering.regexp,
                 Project.formats().subsequentLettering.msg
             ),
-        speedKey: () =>
-            validateNumber(this.speedKey.length, this.f("speedKey"), {
-                max: Project.lengths.speedKey,
+        additional: () =>
+            validateNumber(this.additional.length, this.f("additional"), {
+                max: Project.lengths.additional,
             }),
         sectors: () => validateNonEmpty(this.sectors, this.f("sectors")),
         funders: () => validateNonEmpty(this.funders, this.f("funders")),
@@ -304,7 +304,7 @@ class Project {
         return _([
             this.awardNumber,
             this.subsequentLettering,
-            this.speedKey ? "-" + this.speedKey : null,
+            this.additional ? "-" + this.additional : null,
         ])
             .compact()
             .join("");
