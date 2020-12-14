@@ -65,10 +65,13 @@ const DataApproval: React.FC = () => {
     const goToLandingPage = () => goTo(history, "/");
     const { project, date, dataSetType, projectDataSet, report, error } = state;
 
-    const categoryComboItems = [
-        { text: i18n.t("Target"), value: "target" },
-        { text: i18n.t("Actual"), value: "actual" },
-    ];
+    const categoryComboItems = React.useMemo(
+        () => [
+            { text: i18n.t("Target"), value: "target" },
+            { text: i18n.t("Actual"), value: "actual" },
+        ],
+        []
+    );
 
     const periodItems = React.useMemo(() => {
         if (project && project.dataSets) {
@@ -95,6 +98,18 @@ const DataApproval: React.FC = () => {
 
     const dataApprovalDialog = useDialog();
 
+    const setDate = React.useCallback(value => setState(prev => ({ ...prev, date: value })), []);
+
+    const setDataSet = React.useCallback(
+        dataSetType => {
+            if (project && isValueInUnionType(dataSetType, dataSetTypes)) {
+                const projectDataSet = project.dataSetsByType[dataSetType];
+                setState(prev => ({ ...prev, projectDataSet, dataSetType }));
+            }
+        },
+        [project]
+    );
+
     return (
         <React.Fragment>
             {dataApprovalDialog.isOpen && (
@@ -110,7 +125,7 @@ const DataApproval: React.FC = () => {
                 <Dropdown
                     items={periodItems}
                     value={date}
-                    onChange={value => setState({ ...state, date: value })}
+                    onChange={setDate}
                     label={i18n.t("Period")}
                     hideEmpty={true}
                 />
@@ -118,12 +133,7 @@ const DataApproval: React.FC = () => {
                 <Dropdown
                     items={categoryComboItems ? categoryComboItems : []}
                     value={dataSetType}
-                    onChange={dataSetType => {
-                        if (project && isValueInUnionType(dataSetType, dataSetTypes)) {
-                            const projectDataSet = project.dataSetsByType[dataSetType];
-                            setState({ ...state, projectDataSet, dataSetType });
-                        }
-                    }}
+                    onChange={setDataSet}
                     label={i18n.t("Actual/Target")}
                     hideEmpty={true}
                 />

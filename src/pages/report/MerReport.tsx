@@ -88,18 +88,24 @@ const MerReportComponent: React.FC = () => {
         if (merReport) run(merReport);
     }, [merReport, snackbar, wasReportModifiedSet, loading]);
 
-    function confirmIfUnsavedChanges(action: () => void) {
-        if (wasReportModified) {
-            setProceedWarning({ type: "visible", action });
-        } else {
-            action();
-        }
-    }
+    const confirmIfUnsavedChanges = React.useCallback(
+        (action: () => void) => {
+            if (wasReportModified) {
+                setProceedWarning({ type: "visible", action });
+            } else {
+                action();
+            }
+        },
+        [wasReportModified, setProceedWarning]
+    );
 
-    function runProceedAction(action: () => void) {
-        setProceedWarning({ type: "hidden" });
-        action();
-    }
+    const runProceedAction = React.useCallback(
+        (action: () => void) => {
+            setProceedWarning({ type: "hidden" });
+            action();
+        },
+        [setProceedWarning]
+    );
 
     const setDateAndClosePicker = React.useCallback(
         (date: Moment) => {
@@ -110,6 +116,11 @@ const MerReportComponent: React.FC = () => {
     );
 
     const saveReportMsg = i18n.t("The report must be saved before it can be downloaded");
+
+    const setOrgUnitConfirmed = React.useCallback(
+        orgUnit => confirmIfUnsavedChanges(() => setOrgUnit(orgUnit)),
+        [confirmIfUnsavedChanges]
+    );
 
     return (
         <React.Fragment>
@@ -147,7 +158,7 @@ const MerReportComponent: React.FC = () => {
                 />
 
                 <UserOrgUnits
-                    onChange={orgUnit => confirmIfUnsavedChanges(() => setOrgUnit(orgUnit))}
+                    onChange={setOrgUnitConfirmed}
                     selected={orgUnit}
                     selectableLevels={selectableLevels}
                     withElevation={false}
