@@ -29,9 +29,12 @@ const StaffTable: React.FC<StaffTableProps> = props => {
     const { date, organisationUnit } = merReport.data;
     const translations = React.useMemo(() => getStaffTranslations(), []);
 
-    function onTimeChange(staffKey: StaffKey, staffInfo: StaffInfo): void {
-        onChange(merReport.setStaffHours(staffKey, staffInfo));
-    }
+    const onTimeChange = React.useCallback(
+        (staffKey: StaffKey, staffInfo: StaffInfo) => {
+            onChange(merReport.setStaffHours(staffKey, staffInfo));
+        },
+        [merReport, onChange]
+    );
 
     const staffTotals = React.useMemo(() => merReport.getStaffTotals(), [merReport]);
 

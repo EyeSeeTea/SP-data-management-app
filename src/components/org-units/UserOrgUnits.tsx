@@ -26,7 +26,7 @@ const controls = {
     selectAll: false,
 };
 
-interface OrganisationUnit {
+export interface OrganisationUnit {
     id: string;
     path: string;
     displayName: string;
