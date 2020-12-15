@@ -541,7 +541,7 @@ export default class ProjectDb {
             description: orgUnit.description,
             awardNumber: code1.slice(0, 5),
             subsequentLettering: code1.slice(5),
-            speedKey: code2 || "",
+            additional: code2 || "",
             startDate: startDate,
             endDate: endDate,
             sectors: sectors,

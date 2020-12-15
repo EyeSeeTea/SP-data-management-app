@@ -15,16 +15,22 @@ interface OrganisationUnit {
 const OrgUnitsStep: React.FC<StepProps> = ({ project, onChange }) => {
     const { d2, config } = useAppContext();
 
-    const setOrgUnit = async (orgUnit: OrganisationUnit) => {
-        const newProject = project.setCountry(orgUnit);
-        onChange(newProject);
-    };
+    const setOrgUnit = React.useCallback(
+        (orgUnit: OrganisationUnit) => {
+            const newProject = project.setCountry(orgUnit);
+            onChange(newProject);
+        },
+        [onChange, project]
+    );
 
-    function setLocations(selected: string[]) {
-        const newValue = getValuesFromSelection(config.locations, selected);
-        const newProject = project.set("locations", newValue);
-        onChange(newProject);
-    }
+    const setLocations = React.useCallback(
+        (selected: string[]) => {
+            const newValue = getValuesFromSelection(config.locations, selected);
+            const newProject = project.set("locations", newValue);
+            onChange(newProject);
+        },
+        [onChange, project, config.locations]
+    );
 
     const locationOptions = React.useMemo(() => {
         return project
@@ -32,20 +38,22 @@ const OrgUnitsStep: React.FC<StepProps> = ({ project, onChange }) => {
             .map(location => ({ value: location.id, text: location.displayName }));
     }, [project]);
 
+    const selectedLocations = React.useMemo(() => project.locations.map(location => location.id), [
+        project,
+    ]);
+
     return (
         <React.Fragment>
-            <Title style={{ marginTop: 35, marginBottom: 10 }}>
-                {getProjectFieldName("parentOrgUnit")}
-            </Title>
+            <Title style={styles.title1}>{getProjectFieldName("parentOrgUnit")}</Title>
             <UserOrgUnits
                 onChange={setOrgUnit}
                 selected={project.parentOrgUnit}
-                selectableLevels={[2]}
+                selectableLevels={selectableLevels}
                 height={300}
             />
 
-            <Title style={{ marginTop: 35 }}>{getProjectFieldName("locations")}</Title>
-            <div data-test-selector="locations" style={{ paddingBottom: 10 }}>
+            <Title style={styles.title2}>{getProjectFieldName("locations")}</Title>
+            <div data-test-selector="locations" style={styles.locations}>
                 <MultiSelector
                     searchFilterLabel={true}
                     d2={d2}
@@ -53,11 +61,19 @@ const OrgUnitsStep: React.FC<StepProps> = ({ project, onChange }) => {
                     height={300}
                     onChange={setLocations}
                     options={locationOptions}
-                    selected={project.locations.map(location => location.id)}
+                    selected={selectedLocations}
                 />
             </div>
         </React.Fragment>
     );
 };
+
+const styles = {
+    title1: { marginTop: 35, marginBottom: 10 },
+    title2: { marginTop: 35 },
+    locations: { paddingBottom: 10 },
+};
+
+const selectableLevels = [2];
 
 export default React.memo(OrgUnitsStep);
