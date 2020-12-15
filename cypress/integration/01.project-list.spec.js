@@ -88,4 +88,3 @@ describe("Project Configuration - List page", () => {
         cy.contains("No results found");
     });
 });
-

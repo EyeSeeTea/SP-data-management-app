@@ -13,6 +13,7 @@ export type Config = {
     sectors: Sector[];
     funders: Funder[];
     locations: Location[];
+    organisationUnitGroupSets: IndexedObjs<"organisationUnitGroupSets", CodedObject>;
     attributes: IndexedObjs<"attributes", Attribute>;
     categories: IndexedObjs<"categories", Category>;
     categoryCombos: IndexedObjs<"categoryCombos", CategoryCombo>;
@@ -52,6 +53,7 @@ const baseConfig = {
         createdByApp: "DM_CREATED_BY_DATA_MANAGEMENT",
         orgUnitProject: "DM_ORGUNIT_PROJECT_ID",
         projectDashboard: "DM_PROJECT_DASHBOARD_ID",
+        awardNumberDashboard: "DM_AWARD_NUMBER_DASHBOARD_ID",
         countingMethod: "DM_COUNTING_METHOD",
         mainSector: "DM_MAIN_SECTOR",
     },
@@ -91,6 +93,7 @@ const baseConfig = {
     organisationUnitGroupSets: {
         funder: "FUNDER",
         location: "LOCATION",
+        awardNumber: "AWARD_NUMBER",
     },
     indicators: {
         actualTargetPrefix: "ACTUAL_TARGET_",
@@ -173,6 +176,7 @@ const metadataParams = {
     },
     organisationUnitGroupSets: {
         fields: {
+            id: yes,
             code: yes,
             organisationUnitGroups: {
                 id: yes,
@@ -186,6 +190,7 @@ const metadataParams = {
                 in: [
                     baseConfig.organisationUnitGroupSets.funder,
                     baseConfig.organisationUnitGroupSets.location,
+                    baseConfig.organisationUnitGroupSets.awardNumber,
                 ],
             },
         },
@@ -275,6 +280,7 @@ class ConfigLoader {
             dataApprovalWorkflows: indexObjects(metadata, "dataApprovalWorkflows"),
             countries: _.sortBy(metadata.organisationUnits, ou => ou.displayName),
             userGroups: _.keyBy(metadata.userGroups, ug => ug.code),
+            organisationUnitGroupSets: indexObjects(metadata, "organisationUnitGroupSets"),
         };
     }
 
@@ -313,6 +319,7 @@ interface IndexableTypes {
     categoryOptions: CategoryOption;
     legendSets: LegendSet;
     dataApprovalWorkflows: DataApprovalWorkflow;
+    organisationUnitGroupSets: CodedObject;
 }
 
 type IndexableKeys = keyof IndexableTypes;

@@ -84,3 +84,17 @@ export function getUid(prefix: string, key: string): string {
 
     return result.uid;
 }
+
+export function flattenPayloads<Model extends keyof MetadataPayload>(
+    payloads: Array<Partial<Pick<MetadataPayload, Model>>>
+): Pick<MetadataPayload, Model> {
+    const payload = payloads.reduce(
+        (payloadAcc, payload) => _.mergeWith(payloadAcc, payload, concat),
+        {} as Pick<MetadataPayload, Model>
+    );
+    return payload as Pick<MetadataPayload, Model>;
+}
+
+function concat<T>(value1: T[] | undefined, value2: T[]): T[] {
+    return (value1 || []).concat(value2);
+}

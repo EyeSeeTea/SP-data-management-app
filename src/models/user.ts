@@ -10,6 +10,7 @@ export type Action =
     | "actualValues"
     | "targetValues"
     | "dashboard"
+    | "awardNumberDashboard"
     | "countryDashboard"
     | "downloadData"
     | "edit"
@@ -23,6 +24,7 @@ const actionsByRole: Record<Role, Action[]> = {
         "targetValues",
         "actualValues",
         "dashboard",
+        "awardNumberDashboard",
         "countryDashboard",
         "downloadData",
         "edit",
@@ -43,8 +45,14 @@ const actionsByRole: Record<Role, Action[]> = {
         "accessMER",
         "reopen",
     ],
-    dataViewer: ["dashboard", "downloadData"],
-    dataEntry: ["targetValues", "actualValues", "dashboard", "downloadData"],
+    dataViewer: ["dashboard", "awardNumberDashboard", "downloadData"],
+    dataEntry: [
+        "targetValues",
+        "actualValues",
+        "dashboard",
+        "awardNumberDashboard",
+        "downloadData",
+    ],
 };
 
 type UserConfig = Pick<Config, "base" | "currentUser">;

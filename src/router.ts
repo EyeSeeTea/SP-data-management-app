@@ -10,6 +10,7 @@ const routes = {
     actualValues: ({ id }: { id: string }) => `/actual-values/${id}`,
     targetValues: ({ id }: { id: string }) => `/target-values/${id}`,
     projectDashboard: ({ id }: { id: string }) => `/project-dashboard/${id}`,
+    awardNumberDashboard: ({ id }: { id: string }) => `/award-number-dashboard/${id}`,
     countryDashboard: ({ id }: { id: string }) => `/country-dashboard/${id}`,
     dataApproval: ({ id }: { id: string }) => `/data-approval/${id}`,
     countries: () => `/countries`,

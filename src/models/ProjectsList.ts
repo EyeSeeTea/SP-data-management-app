@@ -1,14 +1,15 @@
 import _ from "lodash";
 import { TableSorting } from "d2-ui-components";
-import { D2Api, D2OrganisationUnitSchema, SelectedPick, Id, Pager } from "../types/d2-api";
+import { D2Api, D2OrganisationUnitSchema, SelectedPick, Id, Pager, Ref } from "../types/d2-api";
 import { Config } from "./Config";
 import moment, { Moment } from "moment";
 import { Sector, getOrgUnitDatesFromProject, getProjectFromOrgUnit } from "./Project";
 import { getSectorCodeFromSectionCode } from "./ProjectDb";
 import User from "./user";
 import { getIds } from "../utils/dhis2";
-import { Sharing, getSharing, hasCurrentUserFullAccessToDataSet } from "./ProjectSharing";
+import { hasCurrentUserFullAccessToDataSet } from "./ProjectSharing";
 import { Pagination, paginate } from "../utils/pagination";
+import { Sharing, getSharing } from "./Sharing";
 
 export type FiltersForList = Partial<{
     search: string;
@@ -31,17 +32,22 @@ const orgUnitFields = {
     lastUpdated: true,
     lastUpdatedBy: { name: true },
     parent: { id: true, displayName: true },
+    organisationUnitGroups: { id: true, groupSets: { id: true } },
     openingDate: true,
     closedDate: true,
     code: true,
 } as const;
 
-type BaseProject = SelectedPick<D2OrganisationUnitSchema, typeof orgUnitFields>;
+type BaseProject = Omit<
+    SelectedPick<D2OrganisationUnitSchema, typeof orgUnitFields>,
+    "organisationUnitGroups"
+>;
 
 export interface ProjectForList extends BaseProject {
     sectors: Sector[];
     sharing: Sharing;
     dataElementIdsBySectorId: Record<Id, Id[]>;
+    hasAwardNumberDashboard: boolean;
 }
 
 export default class ProjectsList {
@@ -74,9 +80,10 @@ export default class ProjectsList {
 
         const projects = d2OrgUnits.map(getProjectFromOrgUnit);
         const dataSetCodes = _.sortBy(projects.map(ou => `${ou.id}_ACTUAL`));
+        const orgUnitGroupsForAwardNumber = this.getOrgUnitGroupsForAwardNumber(d2OrgUnits);
 
-        const { dataSets } = _(dataSetCodes).isEmpty()
-            ? { dataSets: [] }
+        const { dataSets, organisationUnitGroups } = _(dataSetCodes).isEmpty()
+            ? { dataSets: [], organisationUnitGroups: [] }
             : await api.metadata
                   .get({
                       dataSets: {
@@ -89,11 +96,21 @@ export default class ProjectsList {
                           },
                           filter: { code: { in: dataSetCodes } },
                       },
+                      organisationUnitGroups: {
+                          fields: {
+                              id: true,
+                              organisationUnits: true,
+                          },
+                          filter: {
+                              id: { in: getIds(orgUnitGroupsForAwardNumber) },
+                          },
+                      },
                   })
                   .getData();
 
         const dataSetByOrgUnitId = _.keyBy(dataSets, dataSet => (dataSet.code || "").split("_")[0]);
         const sectorsByCode = _.keyBy(config.sectors, sector => sector.code);
+        const orgUnitsByAwardNumber = this.getOrgUnitsCountByAwardNumber(organisationUnitGroups);
 
         const projectsWithSectors = projects.map(orgUnit => {
             const dataSet = _(dataSetByOrgUnitId).get(orgUnit.id, null);
@@ -115,16 +132,29 @@ export default class ProjectsList {
                 .fromPairs()
                 .value();
 
+            const hasAwardNumberDashboard = (orgUnitsByAwardNumber[orgUnit.id] || 0) > 1;
+
             const project: ProjectForList = {
-                ...orgUnit,
+                ..._.omit(orgUnit, ["organisationUnitGroups"]),
                 sectors,
                 sharing,
                 dataElementIdsBySectorId,
+                hasAwardNumberDashboard,
             };
             return project;
         });
 
         return paginate(_.compact(projectsWithSectors), pagination);
+    }
+
+    private getOrgUnitsCountByAwardNumber(
+        organisationUnitGroups: Array<{ id: string; organisationUnits: Ref[] }>
+    ) {
+        return _(organisationUnitGroups)
+            .flatMap(oug => oug.organisationUnits.map(ou => ({ ouId: ou.id, oug: oug })))
+            .keyBy(o => o.ouId)
+            .mapValues(o => o.oug.organisationUnits.length)
+            .value();
     }
 
     async getBaseOrgUnitIds(api: D2Api, config: Config, filters: FiltersForList, order: string) {
@@ -217,6 +247,22 @@ export default class ProjectsList {
         );
 
         return orgUnits.filter(ou => orgUnitIdsWithinSections.has(ou.i));
+    }
+
+    private getOrgUnitGroupsForAwardNumber(
+        d2OrgUnits: Array<{
+            organisationUnitGroups: Array<{ id: Id; groupSets: Ref[] }>;
+        }>
+    ) {
+        const { config } = this;
+        return _(d2OrgUnits)
+            .flatMap(ou => ou.organisationUnitGroups)
+            .filter(oug =>
+                _(oug.groupSets).some(
+                    groupSet => groupSet.id === config.organisationUnitGroupSets.awardNumber.id
+                )
+            )
+            .value();
     }
 }
 
