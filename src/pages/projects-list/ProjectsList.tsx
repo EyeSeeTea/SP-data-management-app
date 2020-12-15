@@ -234,7 +234,9 @@ const ProjectsList: React.FC<ProjectsListProps> = () => {
     const goToMerReports = React.useCallback(() => goTo("report"), [goTo]);
 
     const canAccessReports = currentUser.can("accessMER");
-    const newProjectPageHandler = currentUser.can("create") && (() => goTo("projects.new"));
+    const canCreateProjects = currentUser.can("create");
+    const goToNewProject = React.useCallback(() => goTo("projects.new"), [goTo]);
+    const newProjectPageHandler = canCreateProjects ? goToNewProject : undefined;
 
     return (
         <React.Fragment>

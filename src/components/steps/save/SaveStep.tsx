@@ -77,7 +77,7 @@ const ProjectInfo: React.FC<{ project: Project }> = ({ project }) => (
         <LiEntry label={i18n.t("Description")} value={project.description} />
         <LiEntry label={i18n.t("Award Number")} value={project.awardNumber} />
         <LiEntry label={i18n.t("Subsequent Lettering")} value={project.subsequentLettering} />
-        <LiEntry label={i18n.t("Speed Key")} value={project.speedKey} />
+        <LiEntry label={i18n.t("Additional Designation")} value={project.additional} />
 
         <LiEntry label={i18n.t("Period dates")} value={getProjectPeriodDateString(project)} />
 

@@ -46,7 +46,7 @@ export function getDevProject(initialProject: Project, enabled: boolean) {
         .set("description", "Some description")
         .set("awardNumber", awardNumber)
         .set("subsequentLettering", "en")
-        .set("speedKey", "key1")
+        .set("additional", "key1")
         .set(
             "startDate",
             moment()
