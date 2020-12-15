@@ -29,9 +29,12 @@ const StaffTable: React.FC<StaffTableProps> = props => {
     const { date, organisationUnit } = merReport.data;
     const translations = React.useMemo(() => getStaffTranslations(), []);
 
-    function onTimeChange(staffKey: StaffKey, staffInfo: StaffInfo): void {
-        onChange(merReport.setStaffHours(staffKey, staffInfo));
-    }
+    const onTimeChange = React.useCallback(
+        (staffKey: StaffKey, staffInfo: StaffInfo) => {
+            onChange(merReport.setStaffHours(staffKey, staffInfo));
+        },
+        [merReport, onChange]
+    );
 
     const staffTotals = React.useMemo(() => merReport.getStaffTotals(), [merReport]);
 
@@ -98,14 +101,19 @@ const StaffField: React.FC<{
 }> = ({ staff, staffKey: key, timeKey, onChange }) => {
     const values = _(staff).get(key, null);
     const value = values ? values[timeKey] : null;
+    const setValue = React.useCallback(
+        value => {
+            const newValues = { ...staff[key], [timeKey]: value ? parseFloat(value) : null };
+            onChange(key, newValues);
+        },
+        [onChange, staff, key, timeKey]
+    );
 
     return (
         <TextFieldOnBlur
             value={_.isNil(value) ? "" : value.toString()}
             type="number"
-            onBlurChange={value =>
-                onChange(key, { ...staff[key], [timeKey]: value ? parseFloat(value) : null })
-            }
+            onBlurChange={setValue}
         />
     );
 };

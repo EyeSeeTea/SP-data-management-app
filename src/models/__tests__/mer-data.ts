@@ -119,6 +119,7 @@ export function mockApiForMerReportWithData(mock: MockAdapter) {
                 "GIIHAr9BzzO",
                 "dx:WS8XV4WWPE7;We61YNYyOX0;yUGuwPFkBrj",
             ],
+            approvalLevel: "mmEtW6GJq5u",
         },
     }).replyOnce(200, {
         headers: [
