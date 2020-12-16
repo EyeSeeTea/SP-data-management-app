@@ -38,7 +38,12 @@ const DataValues: React.FC<DataValuesProps> = ({ type }) => {
     const attributes = getAttributes(config, type);
     const projectId = match ? match.params.id : null;
 
-    useEffect(() => loadData(projectId, type, api, config, setState), [projectId]);
+    useEffect(() => loadData(projectId, type, api, config, setState), [
+        api,
+        config,
+        type,
+        projectId,
+    ]);
 
     return (
         <React.Fragment>

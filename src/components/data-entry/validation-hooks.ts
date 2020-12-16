@@ -45,7 +45,7 @@ export function useValidation(
                 }
             }
         },
-        [validator]
+        [validator, snackbar]
     );
 
     const [validationResult, setValidationResult] = React.useState<ValidationResult>({});

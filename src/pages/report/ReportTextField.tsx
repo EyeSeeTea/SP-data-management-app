@@ -3,14 +3,21 @@ import TextFieldOnBlur from "./TextFieldOnBlur";
 import { getMultilineRows } from "./utils";
 import { TextFieldProps } from "@material-ui/core/TextField";
 
-type ReportTextFieldProps = TextFieldProps & {
+export type ReportTextFieldProps = TextFieldProps & {
     title: string;
     value: string;
-    onBlurChange(value: string): void;
+    field: string;
+    onBlurChange(field: string, value: string): void;
 };
 
 const ReportTextField: React.FC<ReportTextFieldProps> = props => {
-    const { title, value, onBlurChange, ...otherProps } = props;
+    const { title, field, value, onBlurChange, ...otherProps } = props;
+    const notifyChange = React.useCallback(
+        (value: string) => {
+            onBlurChange(field, value);
+        },
+        [onBlurChange, field]
+    );
 
     return (
         <div style={{ marginTop: 10, marginBottom: 10, padding: 10 }}>
@@ -25,7 +32,7 @@ const ReportTextField: React.FC<ReportTextFieldProps> = props => {
                 style={{ border: "1px solid #EEE" }}
                 rows={getMultilineRows(value, 4, 10)}
                 rowsMax={10}
-                onBlurChange={onBlurChange}
+                onBlurChange={notifyChange}
                 InputProps={{ style: { margin: 10 } }}
                 {...otherProps}
             />

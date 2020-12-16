@@ -466,6 +466,15 @@ function getReportStorageKey(organisationUnit: Ref): string {
     return ["mer", organisationUnit.id].join("-");
 }
 
+function getAnalytics(config: Config, api: D2Api, options: { dimension: string[] }) {
+    return api.analytics
+        .get({
+            dimension: options.dimension,
+            approvalLevel: config.dataApprovalLevels.project.id,
+        })
+        .getData();
+}
+
 async function getAnalyticRows(
     config: Config,
     api: D2Api,
@@ -487,26 +496,19 @@ async function getAnalyticRows(
 
     const { rows: benefitRows } = _(benefitDataElements).isEmpty()
         ? { rows: [] }
-        : await api.analytics
-              .get({
-                  dimension: [
-                      ...baseDimension,
-                      "dx:" + benefitDataElements.map(de => de.id).join(";"),
-                  ],
-              })
-              .getData();
+        : await getAnalytics(config, api, {
+              dimension: [...baseDimension, "dx:" + benefitDataElements.map(de => de.id).join(";")],
+          });
 
     const { rows: peopleRows } = _(peopleDataElements).isEmpty()
         ? { rows: [] }
-        : await api.analytics
-              .get({
-                  dimension: [
-                      ...baseDimension,
-                      categories.newRecurring.id,
-                      "dx:" + peopleDataElements.map(de => de.id).join(";"),
-                  ],
-              })
-              .getData();
+        : await getAnalytics(config, api, {
+              dimension: [
+                  ...baseDimension,
+                  categories.newRecurring.id,
+                  "dx:" + peopleDataElements.map(de => de.id).join(";"),
+              ],
+          });
 
     const analyticsRows = _.concat(benefitRows, peopleRows);
 

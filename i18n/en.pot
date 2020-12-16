@@ -5,8 +5,48 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2020-10-07T11:41:39.330Z\n"
-"PO-Revision-Date: 2020-10-07T11:41:39.330Z\n"
+"POT-Creation-Date: 2020-12-14T08:24:21.243Z\n"
+"PO-Revision-Date: 2020-12-14T08:24:21.243Z\n"
+
+msgid "Name"
+msgstr ""
+
+msgid "Code"
+msgstr ""
+
+msgid "# Projects"
+msgstr ""
+
+msgid "Last Updated"
+msgstr ""
+
+msgid "Created"
+msgstr ""
+
+msgid "Details"
+msgstr ""
+
+msgid "Go to Dashboard"
+msgstr ""
+
+msgid "Search by name or code"
+msgstr ""
+
+msgid ""
+"Data updates in the dashboards every 15 minutes.  If you do not see your "
+"data immediately after data entry, please give the system additional time "
+"to update.\n"
+"\n"
+"        If you notice data errors while viewing the dashboards, please "
+"return to the home screen and edit the data under the data entry sections "
+"for your project."
+msgstr ""
+
+msgid "Loading dashboard to analyse your data..."
+msgstr ""
+
+msgid "Cannot load dashboard"
+msgstr ""
 
 msgid "Data Entry"
 msgstr ""
@@ -65,6 +105,12 @@ msgstr ""
 msgid "Help"
 msgstr ""
 
+msgid "Projects view"
+msgstr ""
+
+msgid "Countries view"
+msgstr ""
+
 msgid "There are pending migrations"
 msgstr ""
 
@@ -103,6 +149,9 @@ msgid ""
 "update the app."
 msgstr ""
 
+msgid "Search by name"
+msgstr ""
+
 msgid "This user has no Data output and analytic organisation units assigned"
 msgstr ""
 
@@ -119,12 +168,6 @@ msgid "Externals"
 msgstr ""
 
 msgid "Only selected"
-msgstr ""
-
-msgid "Name"
-msgstr ""
-
-msgid "Code"
 msgstr ""
 
 msgid "People / Benefit"
@@ -163,9 +206,6 @@ msgstr ""
 msgid "Field should be a 5-digit number"
 msgstr ""
 
-msgid "Field must be composed by two letter characters"
-msgstr ""
-
 msgid "Field cannot be blank"
 msgstr ""
 
@@ -184,7 +224,7 @@ msgstr ""
 msgid "Subsequent Lettering"
 msgstr ""
 
-msgid "Speed Key"
+msgid "Additional Designation"
 msgstr ""
 
 msgid "Period dates"
@@ -234,6 +274,21 @@ msgstr ""
 msgid ""
 "You are about to exit the Project creation wizard. All your changes will be "
 "lost. Are you sure you want to proceed?"
+msgstr ""
+
+msgid "Error saving dashboard"
+msgstr ""
+
+msgid "Aggregated Actual Values - People"
+msgstr ""
+
+msgid "Aggregated Actual Values - Benefit"
+msgstr ""
+
+msgid "Projects - People"
+msgstr ""
+
+msgid "Projects - Benefit"
 msgstr ""
 
 msgid "Data Approval"
@@ -322,6 +377,9 @@ msgstr ""
 msgid "Total"
 msgstr ""
 
+msgid "Subsequent Lettering must be a string of two or three letters"
+msgstr ""
+
 msgid "Id"
 msgstr ""
 
@@ -358,9 +416,6 @@ msgstr ""
 msgid "Award Number should be a number of 5 digits"
 msgstr ""
 
-msgid "Subsequent Lettering must be a string of two letters only"
-msgstr ""
-
 msgid "One Organisation Unit should be selected"
 msgstr ""
 
@@ -376,10 +431,16 @@ msgstr ""
 msgid "Target vs Actual - Unique People"
 msgstr ""
 
+msgid "Achieved to date (%) - Benefits"
+msgstr ""
+
 msgid "Achieved (%) - Benefits"
 msgstr ""
 
 msgid "Achieved (%) - People"
+msgstr ""
+
+msgid "Achieved total to date (%) - People"
 msgstr ""
 
 msgid "Achieved total (%) - People"
@@ -398,9 +459,6 @@ msgid "Achieved by gender (%)"
 msgstr ""
 
 msgid "Benefits Per Person"
-msgstr ""
-
-msgid "Error saving dashboard"
 msgstr ""
 
 msgid ""
@@ -480,6 +538,9 @@ msgstr ""
 msgid "updated"
 msgstr ""
 
+msgid "Award Number {{awardNumber}}"
+msgstr ""
+
 msgid "The following sectors have no indicators selected"
 msgstr ""
 
@@ -511,23 +572,13 @@ msgid ""
 "initial returning + new values for past periods: {{newValuesSumFormula}}"
 msgstr ""
 
-msgid "Dashboard for Project"
+msgid "Award Number Dashboard"
 msgstr ""
 
-msgid ""
-"Data updates in the dashboards every 15 minutes.  If you do not see your "
-"data immediately after data entry, please give the system additional time "
-"to update.\n"
-"\n"
-"        If you notice data errors while viewing the dashboards, please "
-"return to the home screen and edit the data under the data entry sections "
-"for your project."
+msgid "Country dashboard"
 msgstr ""
 
-msgid "Dashboard project to analyse your data..."
-msgstr ""
-
-msgid "Cannot load project relations"
+msgid "Project dashboard"
 msgstr ""
 
 msgid "Period"
@@ -546,6 +597,9 @@ msgid "Send Message"
 msgstr ""
 
 msgid "Cannot load category option combo"
+msgstr ""
+
+msgid "Cannot load project relations"
 msgstr ""
 
 msgid ""
@@ -643,11 +697,12 @@ msgid ""
 "        - Subsequent Lettering- refers to the two letters after the award "
 "number in the award code.  For example, AA would be the subsequent "
 "lettering for code 11111AAHQ.\n"
-"        - Speed key- in some instances, there are large projects that are "
-"split into multiple sectors for reporting.  Use the speed key to designate "
-"the different sectors within the project.  For example, if 11111AAHQ has "
-"three separate reporting sectors (11111AAHQ01, 11111AAHQ02, 11111AAHQ03), "
-"use the last two digits (01, 02, 03) in the speed key section.\n"
+"        - Additional Designation: In some instances, there are large "
+"projects that are split into multiple sectors or multiple locations for "
+"reporting. Use the 'Additional Designation' to designate different sectors "
+"or locations within the project. For example, if 11111AAHQ has three "
+"separate reporting sectors (11111AAHQ01, 11111AAHQ02, 11111AAHQ03), use the "
+"last two digits (01, 02, 03) in the 'Additional Designation' section.\n"
 "        - Funders- to add funders, ensure you click the funder first and "
 "the orange arrow button second."
 msgstr ""
@@ -678,12 +733,6 @@ msgid ""
 "“Previous” button located on the bottom right side of the screen."
 msgstr ""
 
-msgid "Last Updated"
-msgstr ""
-
-msgid "Created"
-msgstr ""
-
 msgid "Opening Date"
 msgstr ""
 
@@ -699,13 +748,10 @@ msgstr ""
 msgid "API Link"
 msgstr ""
 
-msgid "Details"
-msgstr ""
-
 msgid "Add Actual Values"
 msgstr ""
 
-msgid "Go to Dashboard"
+msgid "Go to Award Number Dashboard"
 msgstr ""
 
 msgid "Add Target Values"
@@ -718,9 +764,6 @@ msgid "Edit"
 msgstr ""
 
 msgid "Delete"
-msgstr ""
-
-msgid "Search by name or code"
 msgstr ""
 
 msgid "MER Reports"

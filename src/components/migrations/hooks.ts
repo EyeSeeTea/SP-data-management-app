@@ -1,6 +1,7 @@
 import React from "react";
 import { MigrationsRunner } from "../../migrations";
 import { D2Api } from "../../types/d2-api";
+import { getMigrationTasks } from "../../migrations/tasks";
 
 export type MigrationsState =
     | { type: "checking" }
@@ -18,7 +19,7 @@ export function useMigrations(api: D2Api, dataStoreNamespace: string): UseMigrat
 
     React.useEffect(() => {
         runMigrations(api, dataStoreNamespace).then(setState);
-    }, []);
+    }, [api, dataStoreNamespace]);
 
     const result = React.useMemo(() => ({ state, onFinish }), [state, onFinish]);
 
@@ -29,6 +30,7 @@ async function runMigrations(api: D2Api, dataStoreNamespace: string): Promise<Mi
     const runner = await MigrationsRunner.init({
         api,
         debug: console.log,
+        migrations: await getMigrationTasks(),
         dataStoreNamespace,
     });
 

@@ -8,7 +8,7 @@ import { Moment } from "moment";
 
 import MerReport, { MerReportData } from "../../models/MerReport";
 import { useAppContext } from "../../contexts/api-context";
-import UserOrgUnits from "../../components/org-units/UserOrgUnits";
+import UserOrgUnits, { OrganisationUnit } from "../../components/org-units/UserOrgUnits";
 import { getDevMerReport } from "../../models/dev-project";
 import ReportDataTable from "./ReportDataTable";
 import StaffTable from "./StaffTable";
@@ -20,6 +20,7 @@ import { downloadFile } from "../../utils/download";
 import { useBoolean } from "../../utils/hooks";
 import { Maybe } from "../../types/utils";
 import { withSnackbarOnError } from "../../components/utils/errors";
+import ReportTextFieldForSector from "./ReportTextFieldForSector";
 
 type ProceedWarning = { type: "hidden" } | { type: "visible"; action: () => void };
 
@@ -49,7 +50,7 @@ const MerReportComponent: React.FC = () => {
                 MerReport.create(api, config, selectData).then(setMerReportBase)
             );
         }
-    }, [date, orgUnit]);
+    }, [api, config, snackbar, date, orgUnit]);
 
     const setMerReport = React.useCallback((report: MerReport) => {
         setMerReportBase(report);
@@ -69,7 +70,7 @@ const MerReportComponent: React.FC = () => {
         if (merReport) {
             new MerReportSpreadsheet(merReport).generate().then(downloadFile);
         }
-    }, [merReport, downloadFile]);
+    }, [merReport]);
 
     const save = React.useCallback(() => {
         async function run(merReport: MerReport) {
@@ -86,20 +87,26 @@ const MerReportComponent: React.FC = () => {
             }
         }
         if (merReport) run(merReport);
-    }, [merReport, snackbar, wasReportModifiedSet]);
+    }, [merReport, snackbar, wasReportModifiedSet, loading]);
 
-    function confirmIfUnsavedChanges(action: () => void) {
-        if (wasReportModified) {
-            setProceedWarning({ type: "visible", action });
-        } else {
+    const confirmIfUnsavedChanges = React.useCallback(
+        (action: () => void) => {
+            if (wasReportModified) {
+                setProceedWarning({ type: "visible", action });
+            } else {
+                action();
+            }
+        },
+        [wasReportModified, setProceedWarning]
+    );
+
+    const runProceedAction = React.useCallback(
+        (action: () => void) => {
+            setProceedWarning({ type: "hidden" });
             action();
-        }
-    }
-
-    function runProceedAction(action: () => void) {
-        setProceedWarning({ type: "hidden" });
-        action();
-    }
+        },
+        [setProceedWarning]
+    );
 
     const setDateAndClosePicker = React.useCallback(
         (date: Moment) => {
@@ -110,6 +117,15 @@ const MerReportComponent: React.FC = () => {
     );
 
     const saveReportMsg = i18n.t("The report must be saved before it can be downloaded");
+
+    const setOrgUnitConfirmed = React.useCallback(
+        (orgUnit: OrganisationUnit) => confirmIfUnsavedChanges(() => setOrgUnit(orgUnit)),
+        [confirmIfUnsavedChanges]
+    );
+
+    const executiveSummaries = React.useMemo(() => {
+        return merReport ? merReport.getExecutiveSummaries() : [];
+    }, [merReport]);
 
     return (
         <React.Fragment>
@@ -147,7 +163,7 @@ const MerReportComponent: React.FC = () => {
                 />
 
                 <UserOrgUnits
-                    onChange={orgUnit => confirmIfUnsavedChanges(() => setOrgUnit(orgUnit))}
+                    onChange={setOrgUnitConfirmed}
                     selected={orgUnit}
                     selectableLevels={selectableLevels}
                     withElevation={false}
@@ -166,30 +182,30 @@ const MerReportComponent: React.FC = () => {
                     <ReportDataTable merReport={merReport} onChange={setMerReport} />
 
                     <Paper>
-                        {merReport.getExecutiveSummaries().map(({ sector, value }) => (
-                            <ReportTextField
+                        {executiveSummaries.map(({ sector, value }) => (
+                            <ReportTextFieldForSector
                                 key={sector.id}
                                 title={i18n.t("Executive Summary") + " - " + sector.displayName}
                                 value={value || ""}
-                                onBlurChange={newValue =>
-                                    onChange("executiveSummaries", {
-                                        ...merReport.data.executiveSummaries,
-                                        [sector.id]: newValue,
-                                    })
-                                }
+                                field="executiveSummaries"
+                                sector={sector}
+                                parent={merReport.data.executiveSummaries}
+                                onBlurChange={onChange}
                             />
                         ))}
 
                         <ReportTextField
                             title={i18n.t("Additional comments")}
                             value={merReport.data.additionalComments}
-                            onBlurChange={value => onChange("additionalComments", value)}
+                            field="additionalComments"
+                            onBlurChange={onChange}
                         />
 
                         <ReportTextField
                             title={i18n.t("Ministry Summary")}
                             value={merReport.data.ministrySummary}
-                            onBlurChange={value => onChange("ministrySummary", value)}
+                            field="ministrySummary"
+                            onBlurChange={onChange}
                         />
 
                         <StaffTable merReport={merReport} onChange={setMerReport} />
@@ -197,13 +213,15 @@ const MerReportComponent: React.FC = () => {
                         <ReportTextField
                             title={i18n.t("Projected Activities for the next month")}
                             value={merReport.data.projectedActivitiesNextMonth}
-                            onBlurChange={value => onChange("projectedActivitiesNextMonth", value)}
+                            field="projectedActivitiesNextMonth"
+                            onBlurChange={onChange}
                         />
 
                         <ReportTextField
                             title={i18n.t("Country Director")}
                             value={merReport.data.countryDirector}
-                            onBlurChange={value => onChange("countryDirector", value)}
+                            field="countryDirector"
+                            onBlurChange={onChange}
                             multiline={false}
                         />
 

@@ -72,5 +72,8 @@ Cypress.Commands.add("waitForStep", stepName => {
 
 Cypress.Commands.add("deleteDataValues", () => {
     const sqlPath = "cypress/fixtures/delete-data-values.sql";
-    cy.exec(`d2-docker run-sql ${sqlPath}`);
+    const runSql = Cypress.env("RUN_SQL");
+    if (!runSql) throw new Error("CYPRESS_RUN_SQL not set");
+    const cmd = `${runSql} ${sqlPath}`;
+    cy.exec(cmd);
 });

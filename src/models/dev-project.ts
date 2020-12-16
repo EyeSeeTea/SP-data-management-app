@@ -46,7 +46,7 @@ export function getDevProject(initialProject: Project, enabled: boolean) {
         .set("description", "Some description")
         .set("awardNumber", awardNumber)
         .set("subsequentLettering", "en")
-        .set("speedKey", "key1")
+        .set("additional", "key1")
         .set(
             "startDate",
             moment()
@@ -70,9 +70,9 @@ export function getDevMerReport() {
     return {
         date: moment(),
         orgUnit: {
-            path: "/J0hschZVMBt/eu2XF73JOzl",
-            id: "eu2XF73JOzl",
-            displayName: "Bahamas",
+            path: "/AGZEUf9meZ6/WmczKCGK8FQ",
+            id: "WmczKCGK8FQ",
+            displayName: "Niger",
         },
     };
 }

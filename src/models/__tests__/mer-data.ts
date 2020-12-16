@@ -104,7 +104,7 @@ export function mockApiForMerReportWithData(mock: MockAdapter) {
                 closedDate: "2020-04-30T00:00:00.000",
                 displayName: "0Test1-48852",
                 openingDate: "2019-10-01T00:00:00.000",
-                organisationUnitGroups: [{ id: "GG0k0oNhgS7" }, { id: "uKgHpYUmD87" }],
+                organisationUnitGroups: [{ id: "GG0k0oNhgS7" }, { id: "GsGG8967YDU" }],
             },
         ],
     });
@@ -119,6 +119,7 @@ export function mockApiForMerReportWithData(mock: MockAdapter) {
                 "GIIHAr9BzzO",
                 "dx:WS8XV4WWPE7;We61YNYyOX0;yUGuwPFkBrj",
             ],
+            approvalLevel: "mmEtW6GJq5u",
         },
     }).replyOnce(200, {
         headers: [

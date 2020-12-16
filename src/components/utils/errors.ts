@@ -10,7 +10,7 @@ export async function withSnackbarOnError<T>(
     snackbar: SnackbarState,
     fn: () => T,
     options?: Options
-): Promise<T> {
+): Promise<T | undefined> {
     const { onCatch, onFinally } = options || {};
     try {
         return await fn();
@@ -22,7 +22,6 @@ export async function withSnackbarOnError<T>(
             .compact()
             .join(" - ");
         snackbar.error(message);
-        throw new Error(err);
     } finally {
         if (onFinally) onFinally();
     }

@@ -1,8 +1,8 @@
 import { Config, Sector as SectorC, Funder as FunderC, Location as LocationC } from "./Config";
 import moment, { Moment } from "moment";
 import _ from "lodash";
-import { D2Api, SelectedPick, Id, Ref } from "../types/d2-api";
-import { D2OrganisationUnit, D2IndicatorSchema } from "../types/d2-api";
+import { D2Api, Id, Ref } from "../types/d2-api";
+import { D2OrganisationUnit } from "../types/d2-api";
 // @ts-ignore
 import { generateUid } from "d2/uid";
 import { TableSorting } from "d2-ui-components";
@@ -22,8 +22,9 @@ import {
     validateNonEmpty,
 } from "../utils/validations";
 import { getKeys, Maybe } from "../types/utils";
-import ProjectSharing, { Sharing } from "./ProjectSharing";
+import ProjectSharing from "./ProjectSharing";
 import { Disaggregation, SetCovid19WithRelationsOptions } from "./Disaggregation";
+import { Sharing } from "./Sharing";
 
 /*
 Project model.
@@ -83,7 +84,7 @@ export interface ProjectData {
     description: string;
     awardNumber: string;
     subsequentLettering: string;
-    speedKey: string;
+    additional: string;
     startDate: Moment | undefined;
     endDate: Moment | undefined;
     sectors: Sector[];
@@ -95,10 +96,17 @@ export interface ProjectData {
     dataElementsMER: DataElementsSet;
     disaggregation: Disaggregation;
     dataSets: { actual: DataSet; target: DataSet } | undefined;
-    dashboard: Ref | undefined;
+    dashboard: Partial<Dashboards>;
     initialData: Omit<ProjectData, "initialData"> | undefined;
     sharing: Sharing;
 }
+
+export interface Dashboard {
+    id: Id;
+    name: string;
+}
+
+export type Dashboards = Record<"project" | "country" | "awardNumber", Dashboard | undefined>;
 
 export interface DataInputPeriod {
     period: { id: string };
@@ -133,7 +141,7 @@ const defaultProjectData = {
     description: "",
     awardNumber: "",
     subsequentLettering: "",
-    speedKey: "",
+    additional: "",
     startDate: undefined,
     endDate: undefined,
     sectors: [],
@@ -142,7 +150,7 @@ const defaultProjectData = {
     orgUnit: undefined,
     parentOrgUnit: undefined,
     dataSets: undefined,
-    dashboard: undefined,
+    dashboard: {},
 };
 
 function defineGetters(sourceObject: any, targetObject: any) {
@@ -174,13 +182,17 @@ class Project {
 
     static lengths = {
         awardNumber: 5,
-        subsequentLettering: 2,
-        speedKey: 40,
+        additional: 40,
     };
 
-    static formats = {
-        subsequentLettering: /^[a-zA-Z]{2}$/,
-    };
+    static formats() {
+        return {
+            subsequentLettering: {
+                regexp: /^[a-zA-Z]{2,3}$/,
+                msg: i18n.t("Subsequent Lettering must be a string of two or three letters"),
+            },
+        };
+    }
 
     static fieldNames: Record<ProjectField, string> = {
         id: i18n.t("Id"),
@@ -191,7 +203,7 @@ class Project {
         description: i18n.t("Description"),
         awardNumber: i18n.t("Award Number"),
         subsequentLettering: i18n.t("Subsequent Lettering"),
-        speedKey: i18n.t("Speed Key"),
+        additional: i18n.t("Additional Designation"),
         startDate: i18n.t("Start Date"),
         endDate: i18n.t("End Date"),
         sectors: i18n.t("Sectors"),
@@ -229,12 +241,12 @@ class Project {
             validateRegexp(
                 this.subsequentLettering,
                 this.f("subsequentLettering"),
-                Project.formats.subsequentLettering,
-                i18n.t("Subsequent Lettering must be a string of two letters only")
+                Project.formats().subsequentLettering.regexp,
+                Project.formats().subsequentLettering.msg
             ),
-        speedKey: () =>
-            validateNumber(this.speedKey.length, this.f("speedKey"), {
-                max: Project.lengths.speedKey,
+        additional: () =>
+            validateNumber(this.additional.length, this.f("additional"), {
+                max: Project.lengths.additional,
             }),
         sectors: () => validateNonEmpty(this.sectors, this.f("sectors")),
         funders: () => validateNonEmpty(this.funders, this.f("funders")),
@@ -300,7 +312,7 @@ class Project {
         return _([
             this.awardNumber,
             this.subsequentLettering,
-            this.speedKey ? "-" + this.speedKey : null,
+            this.additional ? "-" + this.additional : null,
         ])
             .compact()
             .join("");
@@ -387,7 +399,7 @@ class Project {
     setCountry(country: OrganisationUnit) {
         return this.setObj({
             parentOrgUnit: country,
-            sharing: new ProjectSharing(this).getUpdatedSharingForCountry(country),
+            sharing: new ProjectSharing(this.config, this).getUpdatedSharingForCountry(country),
         });
     }
 
@@ -496,51 +508,19 @@ class Project {
             : [];
     }
 
-    getPeriods(): Array<{ date: Moment; id: string }> {
-        return getMonthsRange(this.startDate, this.endDate).map(date => ({
-            date,
-            id: date.format("YYYYMM"),
-        }));
+    getPeriods(options: { toDate?: boolean } = {}): Array<{ date: Moment; id: string }> {
+        const { startDate, endDate } = this;
+        const { toDate = false } = options;
+        const months = getMonthsRange(startDate, endDate);
+        const periods = months.map(date => ({ date, id: date.format("YYYYMM") }));
+        const now = moment();
+        return !toDate ? periods : periods.filter(period => period.date <= now);
     }
 
     getDates(): { startDate: Moment; endDate: Moment } {
         const { startDate, endDate } = this;
         if (!startDate || !endDate) throw new Error("No project dates");
         return { startDate, endDate };
-    }
-
-    private getIndicators(
-        dataElements: Array<{ code: string }>,
-        codePrefix: string
-    ): Array<SelectedPick<D2IndicatorSchema, { id: true; code: true }>> {
-        const indicatorsByCode = _.keyBy(this.config.indicators, indicator => indicator.code);
-
-        return _(dataElements)
-            .map(de => {
-                const indicatorCode = codePrefix + de.code;
-                const indicator = _(indicatorsByCode).get(indicatorCode, undefined);
-                if (indicator) {
-                    return indicator;
-                } else {
-                    const msg = `Indicator ${indicatorCode} not found for data element ${de.code}`;
-                    console.error(msg);
-                    return null;
-                }
-            })
-            .compact()
-            .value();
-    }
-
-    getActualTargetIndicators(
-        dataElements: Array<{ code: string }>
-    ): Array<SelectedPick<D2IndicatorSchema, { id: true; code: true }>> {
-        return this.getIndicators(dataElements, this.config.base.indicators.actualTargetPrefix);
-    }
-
-    getCostBenefitIndicators(
-        dataElements: Array<{ code: string }>
-    ): Array<SelectedPick<D2IndicatorSchema, { id: true; code: true }>> {
-        return this.getIndicators(dataElements, this.config.base.indicators.costBenefitPrefix);
     }
 
     getProjectDataSet(dataSet: DataSet) {

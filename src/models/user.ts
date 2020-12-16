@@ -10,6 +10,8 @@ export type Action =
     | "actualValues"
     | "targetValues"
     | "dashboard"
+    | "awardNumberDashboard"
+    | "countryDashboard"
     | "downloadData"
     | "edit"
     | "dataApproval"
@@ -22,6 +24,8 @@ const actionsByRole: Record<Role, Action[]> = {
         "targetValues",
         "actualValues",
         "dashboard",
+        "awardNumberDashboard",
+        "countryDashboard",
         "downloadData",
         "edit",
         "delete",
@@ -34,18 +38,25 @@ const actionsByRole: Record<Role, Action[]> = {
         "targetValues",
         "actualValues",
         "dashboard",
+        "countryDashboard",
         "downloadData",
         "edit",
         "dataApproval",
         "accessMER",
         "reopen",
     ],
-    dataViewer: ["dashboard", "downloadData"],
-    dataEntry: ["targetValues", "actualValues", "dashboard", "downloadData"],
+    dataViewer: ["dashboard", "awardNumberDashboard", "downloadData"],
+    dataEntry: [
+        "targetValues",
+        "actualValues",
+        "dashboard",
+        "awardNumberDashboard",
+        "downloadData",
+    ],
 };
 
 type UserConfig = Pick<Config, "base" | "currentUser">;
-type OrganisationUnit = GetItemType<Config["currentUser"]["organisationUnits"]>;
+export type OrganisationUnit = GetItemType<Config["currentUser"]["organisationUnits"]>;
 
 export default class User {
     data: Config["currentUser"];

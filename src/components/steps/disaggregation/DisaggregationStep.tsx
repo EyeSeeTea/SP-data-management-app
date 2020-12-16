@@ -34,7 +34,7 @@ const DisaggregationStep: React.FC<StepProps> = ({ project, onChange }) => {
             showSelectionMessage(snackbar, selectionInfo);
             onChange(newProject);
         },
-        [onChange, project, sectorId, dataElementsSet]
+        [onChange, project, sectorId, dataElementsSet, snackbar]
     );
 
     const customColumns = React.useMemo(() => {
@@ -70,7 +70,7 @@ const DisaggregationStep: React.FC<StepProps> = ({ project, onChange }) => {
                 },
             },
         ];
-    }, [Covid19Column, project, sectorId]);
+    }, [disaggregationItems, project, setValues]);
 
     const actions = React.useMemo(() => {
         return [
@@ -91,7 +91,7 @@ const DisaggregationStep: React.FC<StepProps> = ({ project, onChange }) => {
                 onClick: (ids: Id[]) => setValues(ids, false),
             },
         ];
-    }, [Covid19Column, setValues]);
+    }, [setValues]);
 
     return (
         <SectionsSidebar items={sectorItems} sectorId={sectorId} setSector={setSector}>

@@ -11,6 +11,8 @@ import "./utils/lodash-mixins";
 import { D2Api } from "./types/d2-api";
 import i18n from "./locales";
 
+import whyDidYouRender from "@welldone-software/why-did-you-render";
+
 async function getBaseUrl(): Promise<string> {
     if (process.env.NODE_ENV === "development") {
         const baseUrl = process.env.REACT_APP_DHIS2_BASE_URL || "http://localhost:8080";
@@ -38,7 +40,7 @@ function configI18n(userSettings: UserSettings) {
 
 async function main() {
     const baseUrl = await getBaseUrl();
-    const d2 = await init({ baseUrl: baseUrl + "/api" });
+    const d2 = await init({ baseUrl: baseUrl + "/api", schemas: [] });
     const api = new D2Api({ baseUrl, backend: "xhr", timeout: 60 * 1000 });
     const userSettings = (await api.get("/userSettings").getData()) as UserSettings;
     configI18n(userSettings);
@@ -61,6 +63,13 @@ async function main() {
             document.getElementById("root")
         );
     }
+}
+
+if (process.env.REACT_APP_TRACK_RERENDERS) {
+    console.debug("[whyDidYouRender] Track re-renders");
+    whyDidYouRender(React, {
+        trackAllPureComponents: true,
+    });
 }
 
 main();

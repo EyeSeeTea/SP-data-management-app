@@ -28,7 +28,7 @@ const DeleteDialog: React.FunctionComponent<DeleteDialogProps> = props => {
             },
             { onFinally: onClose }
         );
-    }, []);
+    }, [api, config, onClose, projectIds, snackbar]);
 
     return (
         <ConfirmationDialog

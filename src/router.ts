@@ -1,3 +1,4 @@
+import React from "react";
 import { useHistory } from "react-router";
 import { stringify } from "querystring";
 
@@ -8,9 +9,11 @@ const routes = {
     report: () => "/report",
     actualValues: ({ id }: { id: string }) => `/actual-values/${id}`,
     targetValues: ({ id }: { id: string }) => `/target-values/${id}`,
-    dashboard: ({ id }: { id: string }) => `/dashboard/${id}`,
-    dashboards: () => `/dashboard`,
+    projectDashboard: ({ id }: { id: string }) => `/project-dashboard/${id}`,
+    awardNumberDashboard: ({ id }: { id: string }) => `/award-number-dashboard/${id}`,
+    countryDashboard: ({ id }: { id: string }) => `/country-dashboard/${id}`,
     dataApproval: ({ id }: { id: string }) => `/data-approval/${id}`,
+    countries: () => `/countries`,
 };
 
 type Routes = typeof routes;
@@ -29,10 +32,13 @@ export function generateUrl<Name extends keyof Routes>(
 
 export function useGoTo(): GoTo {
     const history = useHistory();
-    const goTo: GoTo = (name, params) => {
-        const url = generateUrl(name, params);
-        history.push(url);
-        return url;
-    };
+    const goTo: GoTo = React.useCallback(
+        (name, params) => {
+            const url = generateUrl(name, params);
+            history.push(url);
+            return url;
+        },
+        [history]
+    );
     return goTo;
 }

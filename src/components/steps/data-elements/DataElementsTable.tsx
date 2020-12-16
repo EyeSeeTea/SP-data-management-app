@@ -84,8 +84,7 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
 
     const dataElements = useMemo(() => dataElementsSet.get(fullFilter), [
         dataElementsSet,
-        sectorId,
-        filter,
+        fullFilter,
     ]);
 
     const filterOptions = useMemo(() => {
@@ -93,23 +92,23 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
         return {
             externals: _.sortBy(_.uniq(_.flatten(dataElements.map(de => de.externals)))),
         };
-    }, [dataElementsSet, sectorId]);
+    }, [dataElementsSet, sectorId, filter]);
 
     const selection = useMemo(() => {
         return onSelectionChange
             ? dataElementsSet.get({ onlySelected: true, sectorId }).map(de => ({ id: de.id }))
             : undefined;
-    }, [dataElementsSet, sectorId]);
+    }, [dataElementsSet, onSelectionChange, sectorId]);
 
     const initialState = useMemo(() => {
         return { pagination: initialPagination, sorting: initialSorting };
-    }, [initialPagination, initialSorting]);
+    }, []);
 
     const onChange = React.useCallback(
         (state: TableState<DataElement>) => {
             if (onSelectionChange) return onTableChange(onSelectionChange, snackbar, state);
         },
-        [onTableChange, onSelectionChange, snackbar]
+        [onSelectionChange, snackbar]
     );
 
     const filterComponents = React.useMemo(
@@ -122,7 +121,7 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
                 visibleFilters={visibleFilters}
             />
         ),
-        [filter, filterOptions, setFilter]
+        [filter, filterOptions, setFilter, visibleFilters]
     );
 
     const rowConfig = React.useCallback(
@@ -130,7 +129,7 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
             selectable: de.selectable,
             style: de.selectable ? undefined : { backgroundColor: "#F5DFDF" },
         }),
-        [dataElements]
+        []
     );
 
     const allColumns = React.useMemo(() => {
@@ -179,7 +178,7 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
             .at(initialColumns)
             .value();
         return _.concat(columnsToShow, customColumns || []);
-    }, [initialColumns, customColumns, showGuidance]);
+    }, [initialColumns, customColumns, showGuidance, dataElementsSet.arePairedGrouped]);
 
     if (!sectorId) return null;
 
