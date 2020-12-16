@@ -28,11 +28,13 @@ export const projectData = {
     },
     funders: _(config.funders)
         .keyBy(funder => funder.id)
-        .at(["OE0KdZRX2FC", "WKUXmz4LIUG"])
+        .at(["aOYJkeWdv2t", "yQKIZzBl22A"])
+        .compact()
         .value(),
     locations: _(config.locations)
         .keyBy(location => location.id)
-        .at(["GG0k0oNhgS7"])
+        .at(["GsGG8967YDU"])
+        .compact()
         .value(),
     awardNumber: "12345",
     subsequentLettering: "en",

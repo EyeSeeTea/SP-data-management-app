@@ -1,51 +1,29 @@
-import Project, { OrganisationUnit } from "./Project";
+import { OrganisationUnit } from "./Project";
 import _ from "lodash";
 import { Config } from "./Config";
-import { D2DataSetSchema } from "../types/d2-api";
+import { D2DataSetSchema, Ref } from "../types/d2-api";
+import {
+    Sharing,
+    EntityAccess,
+    D2SharingUpdate,
+    mergeSharing,
+    D2Sharing,
+    getD2EntitiesAccess,
+    fullAccess,
+    fullMetadataAccess,
+    getEntitiesAccess,
+    emptySharing,
+} from "./Sharing";
+import { Maybe } from "../types/utils";
 
-type D2Access = string;
-
-export interface D2Sharing {
-    publicAccess?: D2Access;
-    externalAccess?: boolean;
-    userAccesses?: D2EntityAccess[];
-    userGroupAccesses?: D2EntityAccess[];
-}
-
-type D2SharingUpdate = Partial<D2Sharing>;
-
-export interface D2EntityAccess {
-    access: D2Access;
-    displayName: string;
+export interface ProjectForSharing {
     id: string;
+    sharing: Sharing;
+    parentOrgUnit: Maybe<Ref>;
 }
-
-export interface Sharing {
-    userAccesses: EntityAccess[];
-    userGroupAccesses: EntityAccess[];
-}
-
-export interface EntityAccess {
-    id: string;
-    name: string;
-}
-
-export interface Access {
-    meta: { read: boolean; write: boolean };
-    data?: { read: boolean; write: boolean };
-}
-
-const fullAccess: Access = {
-    meta: { read: true, write: true },
-    data: { read: true, write: true },
-};
-
-const fullMetadataAccess: Access = {
-    meta: { read: true, write: true },
-};
 
 export default class ProjectSharing {
-    constructor(public project: Project) {}
+    constructor(private config: Config, public project: ProjectForSharing) {}
 
     static getInitialSharing(config: Config): Sharing {
         const { currentUser, userGroups } = config;
@@ -63,9 +41,11 @@ export default class ProjectSharing {
     }
 
     getBaseSharing(): Sharing {
-        const { project } = this;
-        const initialSharing = ProjectSharing.getInitialSharing(project.config);
-        const countrySharing = this.getSharingForCountry(project.parentOrgUnit);
+        const { config, project } = this;
+        const initialSharing = ProjectSharing.getInitialSharing(config);
+        const countrySharing = project.parentOrgUnit
+            ? this.getSharingForCountry(project.parentOrgUnit)
+            : emptySharing;
         return mergeSharing(initialSharing, countrySharing);
     }
 
@@ -111,7 +91,6 @@ export default class ProjectSharing {
             },
             object: {
                 id: project.id,
-                displayName: project.name,
                 publicAccess: "--------",
                 externalAccess: false,
                 userAccesses: getD2EntitiesAccess(project.sharing.userAccesses, fullAccess),
@@ -123,7 +102,7 @@ export default class ProjectSharing {
         };
     }
 
-    getProjectFromD2Update(d2SharingUpdate: D2SharingUpdate): Project {
+    getSharingFromD2Update(d2SharingUpdate: D2SharingUpdate): Sharing {
         const { userAccesses, userGroupAccesses } = d2SharingUpdate;
         const newSharing: Sharing = {
             ...this.project.sharing,
@@ -132,12 +111,12 @@ export default class ProjectSharing {
                 ? { userGroupAccesses: getEntitiesAccess(userGroupAccesses) }
                 : {}),
         };
-        return this.project.setObj({ sharing: newSharing });
+        return newSharing;
     }
 
     getUpdatedSharingForCountry(country: OrganisationUnit | undefined): Sharing {
-        const { config } = this.project;
-        const currentSharing = this.project.sharing;
+        const { config, project } = this;
+        const currentSharing = project.sharing;
         const countrySharing = this.getSharingForCountry(country);
 
         const userGroupCodesById = _(config.userGroups)
@@ -160,67 +139,14 @@ export default class ProjectSharing {
         return mergeSharing(sharingWithoutCountries, countrySharing);
     }
 
-    getSharingForCountry(country: OrganisationUnit | undefined): Sharing {
-        const { config } = this.project;
+    getSharingForCountry(country: Ref | undefined): Sharing {
+        const { config } = this;
         const configCountry = country ? config.countries.find(c => c.id === country.id) : null;
         const userGroupCode = configCountry ? "ADMIN_" + configCountry.code : null;
         const userGroup = userGroupCode ? _(config.userGroups).get(userGroupCode, null) : null;
         const groupAccesses = userGroup ? [{ id: userGroup.id, name: userGroup.displayName }] : [];
         return { userAccesses: [], userGroupAccesses: groupAccesses };
     }
-}
-
-function getD2EntitiesAccess(entitySharings: EntityAccess[], access: Access): D2EntityAccess[] {
-    return entitySharings.map(entitySharing => ({
-        id: entitySharing.id,
-        displayName: entitySharing.name,
-        access: getD2Access(access),
-    }));
-}
-
-function getD2Access(d2Access: Access): D2Access {
-    const parts = [
-        d2Access.meta.read ? "r" : "-",
-        d2Access.meta.write ? "w" : "-",
-        d2Access.data && d2Access.data.read ? "r" : "-",
-        d2Access.data && d2Access.data.write ? "w" : "-",
-    ];
-    return parts.join("") + "----";
-}
-
-function getEntitiesAccess(d2EntitySharings: D2EntityAccess[]): EntityAccess[] {
-    return d2EntitySharings.map(d2EntitySharing => ({
-        id: d2EntitySharing.id,
-        name: d2EntitySharing.displayName,
-    }));
-}
-
-export function getSharing(object: D2Sharing): Sharing {
-    const userAccesses = getEntitiesAccess(object.userAccesses || []);
-    const userGroupAccesses = getEntitiesAccess(object.userGroupAccesses || []);
-    return { userAccesses, userGroupAccesses };
-}
-
-export function getAccessFromD2Access(d2Access: D2Access): Access {
-    const [metaRead, metaWrite, dataRead, dataWrite] = d2Access.slice(0, 4).split("");
-    return {
-        meta: { read: metaRead === "r", write: metaWrite === "w" },
-        data: { read: dataRead === "r", write: dataWrite === "w" },
-    };
-}
-
-export function mergeSharing(sharing1: Sharing, sharing2: Sharing): Sharing {
-    const userAccesses = _(sharing1.userAccesses)
-        .concat(sharing2.userAccesses)
-        .uniqBy(sharing => sharing.id)
-        .value();
-
-    const userGroupAccesses = _(sharing1.userGroupAccesses)
-        .concat(sharing2.userGroupAccesses)
-        .uniqBy(sharing => sharing.id)
-        .value();
-
-    return { userAccesses, userGroupAccesses };
 }
 
 type D2DataSetAccess = D2DataSetSchema["fields"]["access"] & {

@@ -23,25 +23,36 @@ export interface FilterOptions {
     sectors: Option[];
 }
 
+const emptyValues: string[] = [];
+
 const ProjectsListFilters: React.FC<ProjectsListFiltersProps> = props => {
     const { filter, filterOptions, onChange } = props;
     const classes = useStyles();
     const countryItems = useMemoOptions(filterOptions.countries);
     const sectorItems = useMemoOptions(filterOptions.sectors);
+    const notifyCountriesChange = React.useCallback(
+        countries => onChange({ ...filter, countries }),
+        [onChange, filter]
+    );
+
+    const notifySectorsChange = React.useCallback(sectors => onChange({ ...filter, sectors }), [
+        onChange,
+        filter,
+    ]);
 
     return (
         <div>
             <MultipleDropdown
                 items={countryItems}
-                values={filter.countries || []}
-                onChange={countries => onChange({ ...filter, countries })}
+                values={filter.countries || emptyValues}
+                onChange={notifyCountriesChange}
                 label={i18n.t("Countries")}
             />
 
             <MultipleDropdown
                 items={sectorItems}
-                values={filter.sectors || []}
-                onChange={sectors => onChange({ ...filter, sectors })}
+                values={filter.sectors || emptyValues}
+                onChange={notifySectorsChange}
                 label={i18n.t("Sectors")}
             />
 

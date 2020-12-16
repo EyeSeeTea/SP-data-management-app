@@ -62,7 +62,7 @@ describe("Project", () => {
             expect(project.description).toEqual("");
             expect(project.awardNumber).toEqual("");
             expect(project.subsequentLettering).toEqual("");
-            expect(project.speedKey).toEqual("");
+            expect(project.additional).toEqual("");
             expect(project.startDate).toEqual(undefined);
             expect(project.endDate).toEqual(undefined);
             expect(project.sectors).toEqual([]);
@@ -71,7 +71,7 @@ describe("Project", () => {
             expect(project.orgUnit).toEqual(undefined);
             expect(project.parentOrgUnit).toEqual(undefined);
             expect(project.dataSets).toEqual(undefined);
-            expect(project.dashboard).toEqual(undefined);
+            expect(project.dashboard).toEqual({});
             expect(project.initialData).toEqual(undefined);
         });
 
@@ -83,12 +83,13 @@ describe("Project", () => {
     describe("get", () => {
         it("has filled values", async () => {
             const project = await getProject();
+
             expect(project.id).toEqual("R3rGhxWbAI9");
             expect(project.name).toEqual("0Test1-13726c");
             expect(project.description).toEqual("Some description2");
             expect(project.awardNumber).toEqual("34549");
             expect(project.subsequentLettering).toEqual("fr");
-            expect(project.speedKey).toEqual("");
+            expect(project.additional).toEqual("");
             expect(project.startDate && project.startDate.format("L")).toEqual(
                 moment("2020-01-01").format("L")
             );
@@ -96,17 +97,16 @@ describe("Project", () => {
                 moment("2020-03-31").format("L")
             );
             expect(project.sectors.map(sector => sector.code)).toEqual(["SECTOR_LIVELIHOOD"]);
-            expect(project.funders.map(funder => funder.displayName)).toEqual([
-                "funder-OE0KdZRX2FC",
-                "funder-WKUXmz4LIUG",
-            ]);
+            expect(project.funders.map(funder => funder.displayName)).toEqual([]);
             expect(project.locations.map(location => location.displayName)).toEqual([
                 "loc-GG0k0oNhgS7",
             ]);
             expect(project.orgUnit && project.orgUnit.id).toEqual("R3rGhxWbAI9");
             expect(project.parentOrgUnit && project.parentOrgUnit.id).toEqual("eu2XF73JOzl");
             expect(project.dataSets && project.dataSets.actual.code).toEqual("R3rGhxWbAI9_ACTUAL");
-            expect(project.dashboard).toEqual({ id: "yk6HaCRtmEL" });
+            expect(project.dashboard).toEqual({
+                project: { id: "yk6HaCRtmEL", name: "dashboard-yk6HaCRtmEL" },
+            });
         });
 
         it("has initial data set", async () => {
@@ -118,7 +118,7 @@ describe("Project", () => {
             const project = await getProject();
             expect(
                 project.dataElementsSelection.get({ onlySelected: true }).map(de => de.id)
-            ).toEqual(["yMqK9DKbA3X", "u24zk6wAgFE"]);
+            ).toEqual(["u24zk6wAgFE", "yMqK9DKbA3X"]);
             expect(project.dataElementsMER.get({ onlySelected: true }).map(de => de.id)).toEqual([
                 "u24zk6wAgFE",
             ]);
@@ -132,17 +132,17 @@ describe("Project", () => {
     });
 
     describe("code", () => {
-        it("joins {subsequentLettering}{this.awardNumber}-{this.speedKey}", async () => {
+        it("joins {subsequentLettering}{this.awardNumber}-{this.additional}", async () => {
             const project = await getNewProject();
             const project2 = project.setObj({
                 subsequentLettering: "es",
                 awardNumber: "12345",
-                speedKey: "somekey",
+                additional: "some-key",
             });
-            expect(project2.code).toEqual("12345es-somekey");
+            expect(project2.code).toEqual("12345es-some-key");
         });
 
-        it("joins {subsequentLettering}{this.awardNumber} if speedKey not set", async () => {
+        it("joins {subsequentLettering}{this.awardNumber} if additional not set", async () => {
             const project = await getNewProject();
             const project2 = project.set("subsequentLettering", "es").set("awardNumber", "12345");
             expect(project2.code).toEqual("12345es");
@@ -178,15 +178,17 @@ describe("Project", () => {
             expectFieldPresence("endDate");
         });
 
-        it("limits speedKey to 40 chars", async () => {
-            const project = (await getNewProject()).set("speedKey", "1");
-            const errors = await project.validate(["speedKey"]);
-            expect(errors["speedKey"]).toHaveLength(0);
+        it("limits additional designation to 40 chars", async () => {
+            const project = (await getNewProject()).set("additional", "1");
+            const errors = await project.validate(["additional"]);
+            expect(errors["additional"]).toHaveLength(0);
 
-            const project2 = project.set("speedKey", _.repeat("1", 41));
-            const errors2 = await project2.validate(["speedKey"]);
-            expect(errors2["speedKey"]).toHaveLength(1);
-            expect(errors2["speedKey"]).toContain("Speed Key must be less than or equal to 40");
+            const project2 = project.set("additional", _.repeat("1", 41));
+            const errors2 = await project2.validate(["additional"]);
+            expect(errors2["additional"]).toHaveLength(1);
+            expect(errors2["additional"]).toContain(
+                "Additional Designation must be less than or equal to 40"
+            );
         });
 
         it("requires a five-digit string in award number", async () => {
@@ -205,7 +207,7 @@ describe("Project", () => {
             expect(errors3["awardNumber"]).toContain("Award Number should be a number of 5 digits");
         });
 
-        it("requires a string of two letters in subsequent lettering", async () => {
+        it("requires a string of two/three letters in subsequent lettering", async () => {
             const project = (await getNewProject()).set("subsequentLettering", "NG");
             const errors = await project.validate(["subsequentLettering"]);
             expect(errors["subsequentLettering"]).toHaveLength(0);
@@ -214,15 +216,12 @@ describe("Project", () => {
             const errors2 = await project2.validate(["subsequentLettering"]);
             expect(errors2["subsequentLettering"]).toHaveLength(1);
             expect(errors2["subsequentLettering"]).toContain(
-                "Subsequent Lettering must be a string of two letters only"
+                "Subsequent Lettering must be a string of two or three letters"
             );
 
             const project3 = project.set("subsequentLettering", "NGO");
             const errors3 = await project3.validate(["subsequentLettering"]);
-            expect(errors3["subsequentLettering"]).toHaveLength(1);
-            expect(errors3["subsequentLettering"]).toContain(
-                "Subsequent Lettering must be a string of two letters only"
-            );
+            expect(errors3["subsequentLettering"]).toHaveLength(0);
         });
 
         it("requires at least one sector", async () => {
@@ -241,7 +240,7 @@ describe("Project", () => {
             const project = (await getNewProject()).setObj({
                 subsequentLettering: "au",
                 awardNumber: "19234",
-                speedKey: "key",
+                additional: "key",
             });
 
             mock.reset();
@@ -296,7 +295,7 @@ describe("Project", () => {
                     "endDate",
                     "awardNumber",
                     "subsequentLettering",
-                    "speedKey",
+                    "additional",
                     "sectors",
                     "funders",
                     "parentOrgUnit",
@@ -319,12 +318,12 @@ describe("Project", () => {
         ];
 
         const organisationUnits = [
-            { id: "1", code: "code1", displayName: "name1" },
-            { id: "2", code: "other2", displayName: "other2" },
-            { id: "3", code: "CODE3", displayName: "name3" },
-            { id: "4", code: "other4", displayName: "other4" },
-            { id: "5", code: "code5", displayName: "NAME5" },
-            { id: "6", code: "code6", displayName: "NAME6" },
+            { id: "1", code: "code1", displayName: "name1", organisationUnitGroups: [] },
+            { id: "2", code: "other2", displayName: "other2", organisationUnitGroups: [] },
+            { id: "3", code: "CODE3", displayName: "name3", organisationUnitGroups: [] },
+            { id: "4", code: "other4", displayName: "other4", organisationUnitGroups: [] },
+            { id: "5", code: "code5", displayName: "NAME5", organisationUnitGroups: [] },
+            { id: "6", code: "code6", displayName: "NAME6", organisationUnitGroups: [] },
         ];
 
         const orgUnitsById = _.keyBy(organisationUnits, ou => ou.id);
@@ -349,9 +348,9 @@ describe("Project", () => {
                 params: {
                     paging: false,
                     fields:
-                        "closedDate,code,created,displayDescription,displayName,href,id,lastUpdated,lastUpdatedBy[name],openingDate,parent[displayName,id],user[displayName,id]",
-                    order: "displayName:idesc",
+                        "closedDate,code,created,displayDescription,displayName,href,id,lastUpdated,lastUpdatedBy[name],openingDate,organisationUnitGroups[groupSets[id],id],parent[displayName,id],user[displayName,id]",
                     filter: ["id:in:[5,3,1]"],
+                    order: "displayName:idesc",
                 },
             }).replyOnce(200, { organisationUnits: _.at(orgUnitsById, ["5", "3"]) });
 
@@ -360,6 +359,8 @@ describe("Project", () => {
                     "dataSets:fields":
                         "access,code,sections[code,dataElements[id]],userAccesses[access,displayName,id],userGroupAccesses[access,displayName,id]",
                     "dataSets:filter": ["code:in:[3_ACTUAL,5_ACTUAL]"],
+                    "organisationUnitGroups:fields": "id,organisationUnits",
+                    "organisationUnitGroups:filter": ["id:in:[]"],
                 },
             }).replyOnce(200, {
                 dataSets: [
@@ -382,6 +383,8 @@ describe("Project", () => {
                 ],
             });
 
+            logUnknownRequest(mock);
+
             const { objects, pager: pagination } = await Project.getList(
                 api,
                 config,
@@ -395,13 +398,14 @@ describe("Project", () => {
                 { page: 1, pageSize: 2 }
             );
 
-            expect(pagination).toEqual({ page: 1, pageSize: 2, total: 1 });
+            expect(pagination).toEqual({ page: 1, pageSize: 2, total: 1, pageCount: 1 });
             const emptySharing = { userAccesses: [], userGroupAccesses: [] };
             expect(objects).toEqual([
                 {
                     id: "3",
                     code: "CODE3",
                     displayName: "name3",
+                    hasAwardNumberDashboard: false,
                     sectors: expect.arrayContaining([
                         expect.objectContaining({ code: "SECTOR_AGRICULTURE" }),
                     ]),
@@ -578,13 +582,17 @@ async function getProject(): Promise<Project> {
     mock.onGet("/metadata", {
         params: {
             "organisationUnits:fields":
-                "attributeValues[attribute[id],value],closedDate,code,description,displayName,id,name,openingDate,organisationUnitGroups[id],parent[displayName,id,name,path],path",
+                "attributeValues[attribute[id],value],closedDate,code,description,displayName,id,name,openingDate,organisationUnitGroups[attributeValues[attribute[id],value],groupSets[id],id,name],parent[attributeValues[attribute[id],value],displayName,id,name,path],path",
             "organisationUnits:filter": ["id:eq:R3rGhxWbAI9"],
             "dataSets:fields":
                 "code,dataInputPeriods[closingDate,openingDate,period],dataSetElements[categoryCombo[id],dataElement[id]],expiryDays,externalAccess,id,openFuturePeriods,publicAccess,sections[code,dataElements[id]],userAccesses[access,displayName,id],userGroupAccesses[access,displayName,id]",
             "dataSets:filter": ["code:$like:R3rGhxWbAI9"],
         },
     }).replyOnce(200, metadataForGet);
+
+    mock.onGet("/dashboards", {
+        params: { fields: "id,name", filter: ["id:in:[yk6HaCRtmEL]"] },
+    }).replyOnce(200, { dashboards: [{ id: "yk6HaCRtmEL", name: "dashboard-yk6HaCRtmEL" }] });
 
     mock.onGet("/dataStore/data-management-app/project-R3rGhxWbAI9").replyOnce(200, {
         merDataElementIds: ["u24zk6wAgFE"],

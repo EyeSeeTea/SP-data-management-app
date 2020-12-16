@@ -5,7 +5,8 @@ import i18n from "../../locales";
 import Project, { DataSet, monthFormat } from "../../models/Project";
 import { useAppContext } from "../../contexts/api-context";
 import { makeStyles } from "@material-ui/styles";
-import { useMemoAsync, useConfirmation, useSnackbarOnError } from "../../utils/hooks";
+import { useConfirmation, useSnackbarOnError } from "../../utils/hooks";
+import { DataSetOpenInfo } from "../../models/ProjectDataSet";
 
 interface DataSetStateButtonProps {
     project: Project;
@@ -22,14 +23,15 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
     const projectDataSet = project.getProjectDataSet(dataSet);
     const showErrorAndSetInactive = useSnackbarOnError(() => setActive(false));
 
-    const dataSetInfo = useMemoAsync(() => {
-        return projectDataSet.getOpenInfo(moment(period, monthFormat));
+    const [dataSetInfo, setDataSetInfo] = React.useState<DataSetOpenInfo>();
+    React.useEffect(() => {
+        projectDataSet.getOpenInfo(moment(period, monthFormat)).then(setDataSetInfo);
     }, [projectDataSet, period]);
 
-    function notifyOnChange() {
+    const notifyOnChange = React.useCallback(() => {
         setActive(false);
         onChange();
-    }
+    }, [onChange]);
 
     const reopen = React.useCallback(() => {
         setActive(true);
@@ -38,7 +40,7 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
             .reopen({ unapprovePeriod })
             .then(notifyOnChange)
             .catch(showErrorAndSetInactive);
-    }, [projectDataSet, period, onChange, dataSetInfo]);
+    }, [projectDataSet, period, dataSetInfo, notifyOnChange, showErrorAndSetInactive]);
 
     const reset = React.useCallback(() => {
         setActive(true);
@@ -46,7 +48,7 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
             .reset()
             .then(notifyOnChange)
             .catch(showErrorAndSetInactive);
-    }, [projectDataSet, onChange]);
+    }, [projectDataSet, notifyOnChange, showErrorAndSetInactive]);
 
     const reopenConfirmation = useConfirmation({
         title: i18n.t("Reopen data set"),

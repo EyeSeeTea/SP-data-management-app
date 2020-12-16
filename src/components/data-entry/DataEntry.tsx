@@ -86,8 +86,7 @@ async function setDataset(iframe: HTMLIFrameElement, dataSet: DataSet, onDone: (
 
     // Avoid database errors
     try {
-        const formExists = await contentWindow.dhis2.de.storageManager.formExists(dataSet.id);
-        console.log("[data-entry", { formExists });
+        await contentWindow.dhis2.de.storageManager.formExists(dataSet.id);
     } catch (err) {
         console.log("[data-entry] error", err);
         setTimeout(() => setDataset(iframe, dataSet, onDone), 500);
@@ -179,29 +178,26 @@ const DataEntry = (props: DataEntryProps) => {
         if (state.dropdownValue) {
             setDataSetOpen(setSelectPeriod(iframeRef.current, state.dropdownValue, attributes));
         }
-    }, [state, project, iframeKey]);
+    }, [state, project, iframeKey, attributes]);
 
     useEffect(() => {
         const iframe = iframeRef.current;
 
         if (iframe) {
             if (!showControls) iframe.style.display = "none";
-            setState({ ...state, loading: true });
+            setState(prevState => ({ ...prevState, loading: true }));
             iframe.addEventListener("load", () => {
                 setEntryStyling(iframe);
                 getDataEntryForm(iframe, project, dataSet, orgUnitId, () =>
-                    setState({ ...state, dropdownHasValues: true })
+                    setState(prevState => ({ ...prevState, dropdownHasValues: true }))
                 );
             });
         }
-    }, [iframeKey]);
+    }, [iframeKey, dataSet, orgUnitId, project]);
 
     const period = state.dropdownValue;
 
-    const validation = useValidation(iframeRef, project, dataSetType, period, {
-        interceptSave: true,
-        getOnSaveEvent: false,
-    });
+    const validation = useValidation(iframeRef, project, dataSetType, period, validationOptions);
 
     useEffect(() => {
         const iframe = iframeRef.current;
@@ -218,19 +214,25 @@ const DataEntry = (props: DataEntryProps) => {
         }));
     }, [periodIds]);
 
+    const setPeriod = React.useCallback(
+        value => setState(prevState => ({ ...prevState, dropdownValue: value })),
+        [setState]
+    );
+
     return (
         <React.Fragment>
             <ValidationDialog result={validation.result} onClose={validation.clear} />
 
             <div style={styles.selector}>
                 {!state.dropdownHasValues && <Spinner isLoading={state.loading} />}
+
                 {state.dropdownHasValues && (
                     <div style={styles.dropdown}>
                         <Dropdown
                             id="month-selector"
                             items={periodItems}
                             value={state.dropdownValue}
-                            onChange={value => setState({ ...state, dropdownValue: value })}
+                            onChange={setPeriod}
                             label="Period"
                             hideEmpty={true}
                         />
@@ -340,5 +342,7 @@ function setSelectPeriod(
         return false;
     }
 }
+
+const validationOptions = { interceptSave: true, getOnSaveEvent: false };
 
 export default React.memo(DataEntry);

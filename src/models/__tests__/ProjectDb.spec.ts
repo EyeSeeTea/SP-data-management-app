@@ -3,6 +3,9 @@ import ProjectDb from "../ProjectDb";
 import { getProject } from "./project-data";
 import { logUnknownRequest } from "../../utils/tests";
 import expectedMetadataPost from "./data/project-db-metadata.json";
+import projectMetadataResponse from "./data/project-metadata.json";
+import countryMetadataResponse from "./data/country-metadata.json";
+import awardNumberMetadataResponse from "./data/awardNumber-metadata.json";
 
 const { api, mock } = getMockApi();
 
@@ -18,24 +21,101 @@ describe("ProjectDb", () => {
 
             // Validation
             mock.onGet("/metadata", {
-                expected: {
+                params: {
                     "organisationUnits:fields": "displayName",
                     "organisationUnits:filter": ["code:eq:12345en", "id:ne:WGC0DJ0YSis"],
                 },
             }).replyOnce(200, []);
 
+            // Project dashboard
+
+            mock.onGet("/metadata", {
+                params: {
+                    "organisationUnits:fields": "children[id,name,parent],id,name,parent",
+                    "organisationUnits:filter": ["id:eq:WGC0DJ0YSis"],
+                    "dataSets:fields":
+                        "code,dataInputPeriods[period[id]],dataSetElements[dataElement[attributeValues[attribute[id],value],code,dataElementGroups[code],id,name]],externalAccess,id,publicAccess,userAccesses[access,displayName,id],userGroupAccesses[access,displayName,id]",
+                    "dataSets:filter": [
+                        "code:like$:_ACTUAL",
+                        "organisationUnits.path:like:WGC0DJ0YSis",
+                    ],
+                },
+            }).replyOnce(200, projectMetadataResponse);
+
+            // Country dashboard
+
+            mock.onGet("/metadata", {
+                params: {
+                    "organisationUnits:fields": "children[id,name,parent],id,name,parent",
+                    "organisationUnits:filter": ["id:eq:eu2XF73JOzl"],
+                    "dataSets:fields":
+                        "code,dataInputPeriods[period[id]],dataSetElements[dataElement[attributeValues[attribute[id],value],code,dataElementGroups[code],id,name]],externalAccess,id,publicAccess,userAccesses[access,displayName,id],userGroupAccesses[access,displayName,id]",
+                    "dataSets:filter": [
+                        "code:like$:_ACTUAL",
+                        "organisationUnits.path:like:eu2XF73JOzl",
+                    ],
+                },
+            }).replyOnce(200, countryMetadataResponse);
+
+            // Award number dashboard
+
+            mock.onGet("/metadata", {
+                params: {
+                    "organisationUnits:fields": "children[id,name,parent],id,name,parent",
+                    "organisationUnits:filter": ["code:$like:12345"],
+                    "dataSets:fields":
+                        "code,dataInputPeriods[period[id]],dataSetElements[dataElement[attributeValues[attribute[id],value],code,dataElementGroups[code],id,name]],externalAccess,id,publicAccess,userAccesses[access,displayName,id],userGroupAccesses[access,displayName,id]",
+                    "dataSets:filter": ["code:like$:_ACTUAL", "organisationUnits.code:$like:12345"],
+                },
+            }).replyOnce(200, awardNumberMetadataResponse);
+
+            mock.onGet("/metadata", {
+                params: {
+                    "organisationUnits:fields":
+                        ":owner,attributeValues[attribute[id],value],children[id,name]",
+                    "organisationUnits:filter": ["id:eq:eu2XF73JOzl"],
+                },
+            }).replyOnce(200, { organisationUnits: countryMetadataResponse.organisationUnits });
+
+            mock.onGet("/metadata", {
+                params: {
+                    "organisationUnits:fields": "children[id,name],id,name",
+                    "organisationUnits:filter": ["id:eq:eu2XF73JOzl"],
+                },
+            }).replyOnce(200, { organisationUnits: countryMetadataResponse.organisationUnits });
+
             mock.onGet("/metadata", {
                 params: {
                     "organisationUnitGroups:fields": ":owner",
                     "organisationUnitGroups:filter": ["organisationUnits.id:eq:WGC0DJ0YSis"],
+                    "organisationUnitGroupSets:fields": ":owner",
+                    "organisationUnitGroupSets:filter": ["code:eq:AWARD_NUMBER"],
                 },
-            }).replyOnce(200, []);
+            }).replyOnce(200, {
+                organisationUnitGroupSets: [
+                    {
+                        id: "OUGGW1cHaYy",
+                        name: "Award number",
+                        code: "AWARD_NUMBER",
+                        organisationUnitGroups: [{ id: "existing-1234" }],
+                    },
+                ],
+            });
+
+            mock.onGet("/metadata", {
+                params: {
+                    "organisationUnits:fields": ":owner",
+                    "organisationUnits:filter": ["id:eq:eu2XF73JOzl"],
+                },
+            }).replyOnce(200, {
+                organisationUnits: [{ id: "eu2XF73JOzl", name: "Bahamas", attributeValues: [] }],
+            });
 
             mock.onGet("/metadata", {
                 params: {
                     "organisationUnitGroups:fields": ":owner",
                     "organisationUnitGroups:filter": [
-                        "id:in:[OE0KdZRX2FC,WKUXmz4LIUG,GG0k0oNhgS7]",
+                        "id:in:[aOYJkeWdv2t,yQKIZzBl22A,GsGG8967YDU,WIEp6vpQw6n]",
                     ],
                 },
             }).replyOnce(200, orgUnitsMetadata);

@@ -1,4 +1,5 @@
 import _ from "lodash";
+import { runAndWaitForRequest } from "../support/utils";
 
 const projectName = "00Cypress Project";
 
@@ -87,13 +88,3 @@ describe("Project Configuration - List page", () => {
         cy.contains("No results found");
     });
 });
-
-function runAndWaitForRequest(urlPattern, action) {
-    cy.server()
-        .route("GET", urlPattern)
-        .as(urlPattern);
-
-    action();
-
-    cy.wait("@" + urlPattern);
-}

@@ -95,7 +95,7 @@ export function useDhis2EntryEvents(
                 }
             }
         },
-        [iframeRef.current, onMessage]
+        [iframeRef, onMessage]
     );
 
     React.useEffect(() => {
@@ -113,7 +113,7 @@ export function useDhis2EntryEvents(
         return () => {
             window.removeEventListener("message", onMessageFromIframe);
         };
-    }, [iframeRef.current, onMessageFromIframe]);
+    }, [iframeRef, onMessage, options, onMessageFromIframe]);
 }
 
 function isInputMsgFromIframe(msg: any): msg is MsgFromIframe {
