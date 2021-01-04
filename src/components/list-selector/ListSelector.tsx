@@ -47,7 +47,7 @@ const ListSelector: React.FunctionComponent<ListSelectorProps> = props => {
                     classes={{ root: classes.tab }}
                     icon={<PublicIcon />}
                     aria-label={i18n.t("Country View")}
-                    title={i18n.t("Country View ")}
+                    title={i18n.t("Country View")}
                     data-test="list-selector-countries"
                 />
             </Tabs>
