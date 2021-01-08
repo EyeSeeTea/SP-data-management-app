@@ -188,8 +188,8 @@ class Project {
     static formats() {
         return {
             subsequentLettering: {
-                regexp: /^[a-zA-Z]{2,3}$/,
-                msg: i18n.t("Subsequent Lettering must be a string of two or three letters"),
+                regexp: /^[a-zA-Z]{2}$/,
+                msg: i18n.t("Subsequent Lettering must contain exactly two letters"),
             },
         };
     }

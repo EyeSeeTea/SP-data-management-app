@@ -207,7 +207,7 @@ describe("Project", () => {
             expect(errors3["awardNumber"]).toContain("Award Number should be a number of 5 digits");
         });
 
-        it("requires a string of two/three letters in subsequent lettering", async () => {
+        it("requires a string of two letters in subsequent lettering", async () => {
             const project = (await getNewProject()).set("subsequentLettering", "NG");
             const errors = await project.validate(["subsequentLettering"]);
             expect(errors["subsequentLettering"]).toHaveLength(0);
@@ -216,12 +216,15 @@ describe("Project", () => {
             const errors2 = await project2.validate(["subsequentLettering"]);
             expect(errors2["subsequentLettering"]).toHaveLength(1);
             expect(errors2["subsequentLettering"]).toContain(
-                "Subsequent Lettering must be a string of two or three letters"
+                "Subsequent Lettering must contain exactly two letters"
             );
 
             const project3 = project.set("subsequentLettering", "NGO");
             const errors3 = await project3.validate(["subsequentLettering"]);
-            expect(errors3["subsequentLettering"]).toHaveLength(0);
+            expect(errors3["subsequentLettering"]).toHaveLength(1);
+            expect(errors3["subsequentLettering"]).toContain(
+                "Subsequent Lettering must contain exactly two letters"
+            );
         });
 
         it("requires at least one sector", async () => {
