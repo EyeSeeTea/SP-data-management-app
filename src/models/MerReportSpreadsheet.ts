@@ -65,11 +65,17 @@ class MerReportSpreadsheet {
     }
 
     addNarrativeSheet(workbook: Workbook) {
-        const { merReport } = this;
         const { config } = this.merReport;
-        const title = i18n.t("Monthly Executive Report");
+        const { merReport } = this;
+        const {
+            date,
+            organisationUnit,
+            countryDirector,
+            projectedActivitiesNextMonth,
+        } = merReport.data;
+        const countryName = organisationUnit.displayName;
+        const title = i18n.t("Monthly Executive Report") + " - " + countryName;
         const now = moment();
-        const { date, countryDirector, projectedActivitiesNextMonth } = merReport.data;
 
         const rows = [
             [
@@ -107,7 +113,7 @@ class MerReportSpreadsheet {
             [],
         ];
 
-        const sheet = addWorkSheet(workbook, i18n.t("Narrative"), rows);
+        const sheet = addWorkSheet(workbook, this.getTabName(i18n.t("Narrative")), rows);
 
         _.range(1, sheet.columnCount + 1).forEach(
             columnIndex => (sheet.getColumn(columnIndex).width = 15)
@@ -145,9 +151,17 @@ class MerReportSpreadsheet {
             header(i18n.t("Comment"), { width: 50 }),
         ];
 
-        const sheet = addWorkSheet(workbook, i18n.t("Activities"), dataRows, { columns });
+        const sheet = addWorkSheet(workbook, this.getTabName(i18n.t("Activities")), dataRows, {
+            columns,
+        });
 
         return sheet;
+    }
+
+    private getTabName(name: string): string {
+        const { date, organisationUnit } = this.merReport.data;
+        const countryName = organisationUnit.displayName;
+        return countryName + "-" + name + " " + date.format("MM-YYYY");
     }
 }
 
