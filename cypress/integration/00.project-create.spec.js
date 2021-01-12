@@ -19,7 +19,7 @@ describe("Projects - Create", () => {
         cy.contains("Start Date cannot be blank");
         cy.contains("End Date cannot be blank");
         cy.contains("Award Number should be a number of 5 digits");
-        cy.contains("Subsequent Lettering must be a string of two or three letters");
+        cy.contains("Subsequent Lettering must contain exactly two letters");
 
         cy.get("[data-field='name']").type("00Cypress Project");
         cy.get("[data-field='description']").type("Some description");
