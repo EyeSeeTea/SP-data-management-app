@@ -1,5 +1,6 @@
 import ExcelJS, { CellValue, Font, Alignment, Worksheet, Workbook, Column } from "exceljs";
 import _ from "lodash";
+import "../utils/lodash-mixins";
 import moment from "moment";
 import MerReport, { staffKeys, getStaffTranslations } from "./MerReport";
 import i18n from "../locales";
@@ -142,19 +143,20 @@ class MerReportSpreadsheet {
         });
 
         const columns = [
-            header(i18n.t("Locations"), { width: 40 }),
+            header(i18n.t("Locations"), { width: 40, center: true }),
             header(i18n.t("Project"), { width: 40 }),
             header(i18n.t("Dates"), { width: 30 }),
             header(i18n.t("Indicator\ncode"), { width: 10 }),
             header(i18n.t("Indicator name"), { width: 50 }),
-            header(i18n.t("Target"), { width: 12, isNumber: true }),
-            header(i18n.t("Actual"), { width: 12, isNumber: true }),
-            header(i18n.t("Target\nto date"), { width: 12, isNumber: true }),
-            header(i18n.t("Actual\nto date"), { width: 12, isNumber: true }),
+            header(i18n.t("Target"), { width: 12, isNumber: true, center: true }),
+            header(i18n.t("Actual"), { width: 12, isNumber: true, center: true }),
+            header(i18n.t("Target\nto date"), { width: 12, isNumber: true, center: true }),
+            header(i18n.t("Actual\nto date"), { width: 12, isNumber: true, center: true }),
             header(i18n.t("Achieved\nto date (%)"), {
                 width: 12,
                 isNumber: true,
                 numberFormat: "integer",
+                center: true,
             }),
             header(i18n.t("Comment"), { width: 50 }),
         ];
@@ -162,6 +164,9 @@ class MerReportSpreadsheet {
         const sheet = addWorkSheet(workbook, this.getTabName(i18n.t("Activities")), dataRows, {
             columns,
         });
+
+        mergeConsecutiveRows(sheet, { column: 1 });
+        mergeConsecutiveRows(sheet, { column: 2 });
 
         return sheet;
     }
@@ -171,6 +176,34 @@ class MerReportSpreadsheet {
         const countryName = organisationUnit.displayName;
         return countryName + "-" + name + " " + date.format("MM-YYYY");
     }
+}
+
+function mergeConsecutiveRows(sheet: Worksheet, options: { column: number }) {
+    const columnIndex = options.column;
+    const column = sheet.getColumn(columnIndex);
+    const cells: ExcelJS.Cell[] = getColumnCells(column);
+    type RowValue = { row: number; value: ExcelJS.CellValue; cell: ExcelJS.Cell };
+
+    _(cells)
+        .map((cell): RowValue => ({ row: parseInt(cell.row), value: cell.value, cell }))
+        .groupConsecutiveBy(o => o.value)
+        .forEach(([_value, objs]) => {
+            const [first, last] = [_.first(objs), _.last(objs)];
+            if (!first || !last) return;
+
+            sheet.mergeCells({
+                top: first.row,
+                left: columnIndex,
+                bottom: last.row,
+                right: columnIndex,
+            });
+
+            const firstCell = first.cell;
+            firstCell.style = {
+                ...firstCell.style,
+                alignment: { ...firstCell.style.alignment, vertical: "middle" },
+            };
+        });
 }
 
 interface HeaderOptions {
@@ -185,11 +218,22 @@ const numFmtByType: Record<NonNullable<HeaderOptions["numberFormat"]>, string | 
     integer: "0",
 };
 
+function getColumnCells(column: Partial<ExcelJS.Column>) {
+    const cells: ExcelJS.Cell[] = [];
+
+    if (column.eachCell) {
+        column.eachCell(cell => {
+            cells.push(cell);
+        });
+    }
+    return cells;
+}
+
 function header(name: string | string[], headerOptions: HeaderOptions): Partial<Column> {
     const {
         width,
         isNumber = false,
-        center = true,
+        center = false,
         numberFormat = "dynamicDecimals",
     } = headerOptions;
 
@@ -225,8 +269,6 @@ function addWorkSheet(
 }
 
 function applyStyles(sheet: Worksheet, rows: Row[], options: { hasColumns: boolean }): void {
-    applyHeaderStyles(sheet);
-
     const rowOffset = options.hasColumns ? 2 : 1;
 
     // Data rows
@@ -268,16 +310,21 @@ function applyStyles(sheet: Worksheet, rows: Row[], options: { hasColumns: boole
 
         if (maxHeight) sheet.getRow(rowIndex + 1).height = maxHeight;
 
-        if (options.hasColumns) sheet.getRow(1).font = { bold: true, ...defaultFont };
+        if (options.hasColumns) {
+            const headerRow = sheet.getRow(1);
+            headerRow.font = { bold: true, ...defaultFont };
+            applyHeaderStyles(headerRow);
+        }
     });
 }
 
-function applyHeaderStyles(sheet: ExcelJS.Worksheet) {
-    const headerRow = sheet.getRow(1);
+function applyHeaderStyles(headerRow: ExcelJS.Row) {
+    const cells = _(1)
+        .range(headerRow.actualCellCount + 1)
+        .map(idx => headerRow.getCell(idx));
+
     const nLines =
-        _(1)
-            .range(headerRow.actualCellCount)
-            .map(idx => headerRow.getCell(idx))
+        cells
             .map(
                 cell =>
                     (cell.value || "")
@@ -290,6 +337,10 @@ function applyHeaderStyles(sheet: ExcelJS.Worksheet) {
     if (nLines > 1) {
         headerRow.height = 14 * nLines;
     }
+
+    cells.forEach(cell => {
+        cell.style = { ...cell.style, alignment: { horizontal: "center", vertical: "middle" } };
+    });
 }
 
 function getStaffSummary(report: MerReport): Row[] {
