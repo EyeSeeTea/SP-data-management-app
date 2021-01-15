@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2021-01-08T09:23:01.586Z\n"
-"PO-Revision-Date: 2021-01-08T09:23:01.586Z\n"
+"POT-Creation-Date: 2021-01-15T10:57:39.151Z\n"
+"PO-Revision-Date: 2021-01-15T10:57:39.151Z\n"
 
 msgid "Name"
 msgstr ""
@@ -347,7 +347,15 @@ msgstr ""
 msgid "Project"
 msgstr ""
 
-msgid "Indicators"
+msgid "Dates"
+msgstr ""
+
+msgid ""
+"Indicator\n"
+"code"
+msgstr ""
+
+msgid "Indicator name"
 msgstr ""
 
 msgid "Target"
@@ -356,10 +364,19 @@ msgstr ""
 msgid "Actual"
 msgstr ""
 
-msgid "to date"
+msgid ""
+"Target\n"
+"to date"
 msgstr ""
 
-msgid "Achieved to date (%)"
+msgid ""
+"Actual\n"
+"to date"
+msgstr ""
+
+msgid ""
+"Achieved\n"
+"to date (%)"
 msgstr ""
 
 msgid "Comment"
@@ -826,10 +843,16 @@ msgid ""
 "clicking your country and month of reporting."
 msgstr ""
 
+msgid "Indicators"
+msgstr ""
+
 msgid "Target to date"
 msgstr ""
 
 msgid "Actual to date"
+msgstr ""
+
+msgid "Achieved to date (%)"
 msgstr ""
 
 msgid "{{field}} cannot be blank"

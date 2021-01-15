@@ -128,7 +128,9 @@ class MerReportSpreadsheet {
             const { project } = de;
             return [
                 text(de.locations.map(location => location.name).join(", ")),
-                text(`${project.name} (${project.dateInfo})`),
+                text(`#${project.code} ${project.name}`),
+                text(project.dateInfo),
+                text(de.code),
                 text(de.name),
                 float(de.target),
                 float(de.actual),
@@ -142,12 +144,18 @@ class MerReportSpreadsheet {
         const columns = [
             header(i18n.t("Locations"), { width: 40 }),
             header(i18n.t("Project"), { width: 40 }),
-            header(i18n.t("Indicators"), { width: 50 }),
+            header(i18n.t("Dates"), { width: 30 }),
+            header(i18n.t("Indicator\ncode"), { width: 10 }),
+            header(i18n.t("Indicator name"), { width: 50 }),
             header(i18n.t("Target"), { width: 12, isNumber: true }),
             header(i18n.t("Actual"), { width: 12, isNumber: true }),
-            header(i18n.t("Target") + " " + i18n.t("to date"), { width: 16, isNumber: true }),
-            header(i18n.t("Actual") + " " + i18n.t("to date"), { width: 16, isNumber: true }),
-            header(i18n.t("Achieved to date (%)"), { width: 23, isNumber: true }),
+            header(i18n.t("Target\nto date"), { width: 12, isNumber: true }),
+            header(i18n.t("Actual\nto date"), { width: 12, isNumber: true }),
+            header(i18n.t("Achieved\nto date (%)"), {
+                width: 12,
+                isNumber: true,
+                numberFormat: "integer",
+            }),
             header(i18n.t("Comment"), { width: 50 }),
         ];
 
@@ -165,17 +173,32 @@ class MerReportSpreadsheet {
     }
 }
 
-type HeaderOptions = { width: number; isNumber?: boolean; center?: boolean };
+interface HeaderOptions {
+    width: number;
+    isNumber?: boolean;
+    center?: boolean;
+    numberFormat?: "dynamicDecimals" | "integer";
+}
+
+const numFmtByType: Record<NonNullable<HeaderOptions["numberFormat"]>, string | undefined> = {
+    dynamicDecimals: undefined,
+    integer: "0",
+};
 
 function header(name: string | string[], headerOptions: HeaderOptions): Partial<Column> {
-    const { width, isNumber = false, center = false } = headerOptions;
+    const {
+        width,
+        isNumber = false,
+        center = true,
+        numberFormat = "dynamicDecimals",
+    } = headerOptions;
 
     return {
         header: name,
         width,
         style: {
-            numFmt: isNumber ? "0.00" : undefined,
-            ...(center ? { alignment: { horizontal: "center" } } : {}),
+            numFmt: isNumber ? numFmtByType[numberFormat] : undefined,
+            ...(center ? { alignment: { horizontal: "center", vertical: "middle" } } : {}),
         },
     };
 }
@@ -202,8 +225,11 @@ function addWorkSheet(
 }
 
 function applyStyles(sheet: Worksheet, rows: Row[], options: { hasColumns: boolean }): void {
+    applyHeaderStyles(sheet);
+
     const rowOffset = options.hasColumns ? 2 : 1;
 
+    // Data rows
     rows.forEach((row, rowIndex) => {
         row.forEach((cell, columnIndex) => {
             const iRow = rowIndex + rowOffset;
@@ -244,6 +270,26 @@ function applyStyles(sheet: Worksheet, rows: Row[], options: { hasColumns: boole
 
         if (options.hasColumns) sheet.getRow(1).font = { bold: true, ...defaultFont };
     });
+}
+
+function applyHeaderStyles(sheet: ExcelJS.Worksheet) {
+    const headerRow = sheet.getRow(1);
+    const nLines =
+        _(1)
+            .range(headerRow.actualCellCount)
+            .map(idx => headerRow.getCell(idx))
+            .map(
+                cell =>
+                    (cell.value || "")
+                        .toString()
+                        .trim()
+                        .split(/\n/).length
+            )
+            .max() || 0;
+
+    if (nLines > 1) {
+        headerRow.height = 14 * nLines;
+    }
 }
 
 function getStaffSummary(report: MerReport): Row[] {
