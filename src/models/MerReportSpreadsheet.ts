@@ -92,7 +92,7 @@ class MerReportSpreadsheet {
             [],
             [bold(i18n.t("Executive Summary"), { colspan: 6 })],
             ...merReport
-                .getExecutiveSummariesForDownload(3)
+                .getExecutiveSummariesForDownload()
                 .map(({ sector, value }) => [
                     text(sector.displayName),
                     text(value, { colspan: 5 }),

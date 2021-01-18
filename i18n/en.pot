@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2021-01-08T09:23:01.586Z\n"
-"PO-Revision-Date: 2021-01-08T09:23:01.586Z\n"
+"POT-Creation-Date: 2021-01-18T12:15:51.763Z\n"
+"PO-Revision-Date: 2021-01-18T12:15:51.763Z\n"
 
 msgid "Name"
 msgstr ""
@@ -156,6 +156,9 @@ msgid "This user has no Data output and analytic organisation units assigned"
 msgstr ""
 
 msgid "Back"
+msgstr ""
+
+msgid "Executive Summary"
 msgstr ""
 
 msgid "Internals"
@@ -324,9 +327,6 @@ msgid "Country Director"
 msgstr ""
 
 msgid "Prepared by"
-msgstr ""
-
-msgid "Executive Summary"
 msgstr ""
 
 msgid "Ministry Summary"
@@ -830,6 +830,9 @@ msgid "Target to date"
 msgstr ""
 
 msgid "Actual to date"
+msgstr ""
+
+msgid "Sector"
 msgstr ""
 
 msgid "{{field}} cannot be blank"

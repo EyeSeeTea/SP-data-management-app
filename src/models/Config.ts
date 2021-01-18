@@ -113,6 +113,7 @@ const baseConfig = {
     },
     merReports: {
         excludedSectors: ["SECTOR_MINISTRY"],
+        maxExecutiveSummaries: 3,
     },
 };
 

@@ -209,19 +209,19 @@ class MerReport {
         }));
     }
 
-    public getExecutiveSummariesForDownload(limit: number): ExecutiveSummariesList {
+    public getExecutiveSummariesForDownload(): ExecutiveSummariesList {
         return _(this.getExecutiveSummaries())
             .keyBy(o => o.sector.id)
             .at(_.compact(this.data.executiveSummariesSelected))
             .compact()
-            .take(limit)
+            .take(this.config.base.merReports.maxExecutiveSummaries)
             .filter(o => !!o.value)
             .value();
     }
 
-    public getExecutiveSummariesInfo(limit = 3): ExecutiveSummariesInfo {
+    public getExecutiveSummariesInfo(): ExecutiveSummariesInfo {
         const { sectors, executiveSummariesSelected } = this.data;
-
+        const limit = this.config.base.merReports.maxExecutiveSummaries;
         const sectorsById = _.keyBy(sectors, sector => sector.id);
 
         const selectedSectors = executiveSummariesSelected.map(sectorId =>
