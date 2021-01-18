@@ -24,6 +24,7 @@ export const staffKeys = [
 const textFields: Array<keyof Data> = [
     "countryDirector",
     "executiveSummaries",
+    "executiveSummariesSelected",
     "ministrySummary",
     "projectedActivitiesNextMonth",
     "additionalComments",
@@ -41,13 +42,14 @@ interface OrganisationUnit {
     displayName: string;
 }
 
-interface Data {
+export interface Data {
     sectors: Sector[];
     date: Moment;
     organisationUnit: OrganisationUnit;
     projectsData: ProjectsData;
     countryDirector: string;
     executiveSummaries: ExecutiveSummaries;
+    executiveSummariesSelected: Maybe<Id>[];
     ministrySummary: string;
     projectedActivitiesNextMonth: string;
     staffSummary: StaffSummary;
@@ -57,7 +59,10 @@ interface Data {
 export type MerReportData = Data;
 
 type SectorId = Id;
-type ExecutiveSummaries = Record<SectorId, string | undefined>;
+
+export type ExecutiveSummaries = Record<SectorId, string | undefined>;
+
+type ExecutiveSummariesList = Array<{ sector: Sector; value: string }>;
 
 interface Row {
     deId: string;
@@ -99,6 +104,7 @@ interface Report {
     updatedBy: Id;
     countryDirector: string;
     executiveSummaries: ExecutiveSummaries;
+    executiveSummariesSelected: Maybe<Id>[];
     ministrySummary: string;
     projectedActivitiesNextMonth: string;
     additionalComments: string;
@@ -152,12 +158,19 @@ function getInitialData(sectors: Sector[]) {
     return {
         countryDirector: "",
         executiveSummaries,
+        executiveSummariesSelected: [],
         ministrySummary: "",
         projectedActivitiesNextMonth: "",
         additionalComments: "",
         staffSummary: emptyStaffSummary,
     };
 }
+
+type ExecutiveSummariesInfo = Array<{
+    sector?: Sector;
+    value?: string;
+    selectable: Sector[];
+}>;
 
 class MerReport {
     dataStore: DataStore;
@@ -189,11 +202,48 @@ class MerReport {
         return new MerReport(this.api, this.config, { ...this.data, [field]: value });
     }
 
-    public getExecutiveSummaries(): Array<{ sector: Sector; value: string }> {
+    public getExecutiveSummaries(): ExecutiveSummariesList {
         return this.data.sectors.map(sector => ({
             sector,
             value: _(this.data.executiveSummaries).get(sector.id, ""),
         }));
+    }
+
+    public getExecutiveSummariesForDownload(limit: number): ExecutiveSummariesList {
+        return _(this.getExecutiveSummaries())
+            .keyBy(o => o.sector.id)
+            .at(_.compact(this.data.executiveSummariesSelected))
+            .compact()
+            .take(limit)
+            .filter(o => !!o.value)
+            .value();
+    }
+
+    public getExecutiveSummariesInfo(limit = 3): ExecutiveSummariesInfo {
+        const { sectors, executiveSummariesSelected } = this.data;
+
+        const sectorsById = _.keyBy(sectors, sector => sector.id);
+
+        const selectedSectors = executiveSummariesSelected.map(sectorId =>
+            sectorId ? sectorsById[sectorId] : undefined
+        );
+        const selectableSectors = _.differenceBy(
+            sectors,
+            _.compact(selectedSectors),
+            sector => sector.id
+        );
+        const infoForSelected: ExecutiveSummariesInfo = selectedSectors.map(sector => ({
+            sector,
+            value: sector ? this.data.executiveSummaries[sector.id] : undefined,
+            selectable: sector ? [sector, ...selectableSectors] : selectableSectors,
+        }));
+
+        const padCount = Math.min(limit - selectedSectors.length, sectors.length);
+        const infoForRemaining: ExecutiveSummariesInfo = _.range(0, padCount).map(() => ({
+            selectable: selectableSectors,
+        }));
+
+        return _.concat(infoForSelected, infoForRemaining);
     }
 
     hasProjects(): boolean {
@@ -240,7 +290,7 @@ class MerReport {
     async save(): Promise<void> {
         const { dataStore, config, api } = this;
         const { projectsData, organisationUnit, date, staffSummary } = this.data;
-        const { countryDirector, executiveSummaries } = this.data;
+        const { countryDirector, executiveSummaries, executiveSummariesSelected } = this.data;
         const { ministrySummary, projectedActivitiesNextMonth, additionalComments } = this.data;
         const now = moment();
         const storeReportKey = getReportStorageKey(organisationUnit);
@@ -265,6 +315,7 @@ class MerReport {
             updatedBy: config.currentUser.id,
             countryDirector,
             executiveSummaries,
+            executiveSummariesSelected,
             ministrySummary,
             projectedActivitiesNextMonth,
             additionalComments,
