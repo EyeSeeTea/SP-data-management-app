@@ -221,12 +221,13 @@ class MerReport {
 
     public getExecutiveSummariesInfo(): ExecutiveSummariesInfo {
         const { sectors, executiveSummariesSelected } = this.data;
-        const limit = this.config.base.merReports.maxExecutiveSummaries;
+        const limit = Math.min(this.config.base.merReports.maxExecutiveSummaries, sectors.length);
         const sectorsById = _.keyBy(sectors, sector => sector.id);
 
-        const selectedSectors = executiveSummariesSelected.map(sectorId =>
-            sectorId ? sectorsById[sectorId] : undefined
-        );
+        const selectedSectors = _(executiveSummariesSelected)
+            .map(sectorId => (sectorId ? sectorsById[sectorId] : undefined))
+            .take(limit)
+            .value();
         const selectableSectors = _.differenceBy(
             sectors,
             _.compact(selectedSectors),
@@ -238,7 +239,7 @@ class MerReport {
             selectable: sector ? [sector, ...selectableSectors] : selectableSectors,
         }));
 
-        const padCount = Math.min(limit - selectedSectors.length, sectors.length);
+        const padCount = limit - selectedSectors.length;
         const infoForRemaining: ExecutiveSummariesInfo = _.range(0, padCount).map(() => ({
             selectable: selectableSectors,
         }));
