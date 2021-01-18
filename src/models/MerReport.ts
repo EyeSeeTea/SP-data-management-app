@@ -477,6 +477,7 @@ function getAnalytics(config: Config, api: D2Api, options: { dimension: string[]
         .get({
             dimension: options.dimension,
             approvalLevel: config.dataApprovalLevels.project.id,
+            skipRounding: true,
         })
         .getData();
 }
