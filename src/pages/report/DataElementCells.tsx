@@ -1,19 +1,13 @@
 import React from "react";
 import _ from "lodash";
-import {
-    ProjectForMer,
-    DataElementInfo,
-    DataElementMER,
-    MaybeDataValue,
-} from "../../models/MerReport";
+import { DataElementMER, MaybeDataValue } from "../../models/MerReport";
 import { TableCell } from "@material-ui/core";
-import TextFieldOnBlur from "./TextFieldOnBlur";
-import { getMultilineRows } from "./utils";
 import i18n from "../../locales";
+import CommentField, { CommentFieldProps } from "./CommentField";
 
 interface DataElementCellsProps {
     dataElement: DataElementMER;
-    onChange(project: ProjectForMer, dataElement: DataElementInfo, value: string): void;
+    onChange: CommentFieldProps["onChange"];
 }
 
 const DataElementCells: React.FC<DataElementCellsProps> = props => {
@@ -29,14 +23,7 @@ const DataElementCells: React.FC<DataElementCellsProps> = props => {
                 {formatDataNumber(dataElement.achieved, { suffix: "%", decimals: 0 })}
             </TableCell>
             <TableCell>
-                <TextFieldOnBlur
-                    value={dataElement.comment}
-                    fullWidth={true}
-                    multiline={true}
-                    rows={getMultilineRows(dataElement.comment, 1, 4)}
-                    rowsMax={4}
-                    onBlurChange={value => onChange(dataElement.project, dataElement, value)}
-                />
+                <CommentField dataElement={dataElement} onChange={onChange} />
             </TableCell>
         </React.Fragment>
     );
@@ -63,7 +50,11 @@ function formatDataNumber(dataValue: MaybeDataValue, options: FormatNumberOption
 }
 
 function getDataElementName(dataElement: DataElementMER): string {
-    const parts = [dataElement.name, dataElement.isCovid19 ? i18n.t("[COVID-19]") : null];
+    const parts = [
+        dataElement.name,
+        `(${dataElement.code})`,
+        dataElement.isCovid19 ? i18n.t("[COVID-19]") : null,
+    ];
     return _.compact(parts).join(" ");
 }
 

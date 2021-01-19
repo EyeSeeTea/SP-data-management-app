@@ -2,7 +2,7 @@ import { Disaggregation } from "./Disaggregation";
 import { GetItemType, Maybe } from "./../types/utils";
 import moment, { Moment } from "moment";
 import _ from "lodash";
-import { Id, Ref, D2Api, DataStore, AnalyticsOptions } from "../types/d2-api";
+import { Id, Ref, D2Api, DataStore } from "../types/d2-api";
 import { Config, Sector } from "./Config";
 import { getDataStore, getId, getIds } from "../utils/dhis2";
 import { runPromises } from "../utils/promises";

@@ -1,7 +1,7 @@
 import React from "react";
 import TextField, { TextFieldProps } from "@material-ui/core/TextField";
 
-type TextFieldOnBlurProps = TextFieldProps & {
+export type TextFieldOnBlurProps = TextFieldProps & {
     value: string;
     onBlurChange: (s: string) => void;
     maxContentRows?: number;
