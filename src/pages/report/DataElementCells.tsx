@@ -1,6 +1,11 @@
 import React from "react";
 import _ from "lodash";
-import { ProjectForMer, DataElementInfo, DataElementMER } from "../../models/MerReport";
+import {
+    ProjectForMer,
+    DataElementInfo,
+    DataElementMER,
+    MaybeDataValue,
+} from "../../models/MerReport";
 import { TableCell } from "@material-ui/core";
 import TextFieldOnBlur from "./TextFieldOnBlur";
 import { getMultilineRows } from "./utils";
@@ -16,12 +21,12 @@ const DataElementCells: React.FC<DataElementCellsProps> = props => {
     return (
         <React.Fragment>
             <TableCell>{getDataElementName(dataElement)}</TableCell>
-            <TableCell>{formatNumber(dataElement.target)}</TableCell>
-            <TableCell>{formatNumber(dataElement.actual)}</TableCell>
-            <TableCell>{formatNumber(dataElement.targetAchieved)}</TableCell>
-            <TableCell>{formatNumber(dataElement.actualAchieved)}</TableCell>
+            <TableCell>{formatDataNumber(dataElement.target)}</TableCell>
+            <TableCell>{formatDataNumber(dataElement.actual)}</TableCell>
+            <TableCell>{formatDataNumber(dataElement.targetAchieved)}</TableCell>
+            <TableCell>{formatDataNumber(dataElement.actualAchieved)}</TableCell>
             <TableCell>
-                {formatNumber(dataElement.achieved, { suffix: "%", decimals: 0 })}
+                {formatDataNumber(dataElement.achieved, { suffix: "%", decimals: 0 })}
             </TableCell>
             <TableCell>
                 <TextFieldOnBlur
@@ -49,6 +54,12 @@ function removeTrailingZeros(s: string): string {
 function formatNumber(n: number | null | undefined, options: FormatNumberOptions = {}): string {
     const { suffix, decimals = 3 } = options;
     return _.isNil(n) ? "-" : removeTrailingZeros(n.toFixed(decimals)) + (suffix || "");
+}
+
+function formatDataNumber(dataValue: MaybeDataValue, options: FormatNumberOptions = {}): string {
+    const onlyApproved = formatNumber(dataValue.onlyApproved, options);
+    const all = formatNumber(dataValue.all, options);
+    return `${onlyApproved} / ${all}`;
 }
 
 function getDataElementName(dataElement: DataElementMER): string {

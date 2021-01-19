@@ -1,4 +1,5 @@
 import React from "react";
+import _ from "lodash";
 import { Table, TableRow, TableHead, TableCell, Paper } from "@material-ui/core";
 
 import MerReport, { DataElementInfo, ProjectForMer, DataElementMER } from "../../models/MerReport";
@@ -57,15 +58,15 @@ const ReportDataTable: React.FC<ReportDataTableProps> = props => {
             <Table>
                 <TableHead>
                     <TableRow>
-                        <TableCell style={w("15em")}>{i18n.t("Locations")}</TableCell>
-                        <TableCell style={w("15em")}>{i18n.t("Project")}</TableCell>
-                        <TableCell style={w("35em")}>{i18n.t("Indicators")}</TableCell>
-                        <TableCell style={w("3em")}>{i18n.t("Target")}</TableCell>
-                        <TableCell style={w("3em")}>{i18n.t("Actual")}</TableCell>
-                        <TableCell style={w("4em")}>{i18n.t("Target to date")}</TableCell>
-                        <TableCell style={w("4em")}>{i18n.t("Actual to date")}</TableCell>
-                        <TableCell style={w("5em")}> {i18n.t("Achieved to date (%)")}</TableCell>
-                        <TableCell style={w("30em")}>{i18n.t("Comment")}</TableCell>
+                        <Cell width={15} name={i18n.t("Locations")} />
+                        <Cell width={15} name={i18n.t("Project")} />
+                        <Cell width={35} name={i18n.t("Indicator")} />
+                        <Cell width={3} name={i18n.t("Target")} data />
+                        <Cell width={3} name={i18n.t("Actual")} data />
+                        <Cell width={4} name={i18n.t("Target to date")} data />
+                        <Cell width={4} name={i18n.t("Actual to date")} data />
+                        <Cell width={5} name={i18n.t("Achieved to date %")} data />
+                        <Cell width={30} name={i18n.t("Comment")} />
                     </TableRow>
                 </TableHead>
                 <TableBodyGrouped rows={rows} groupers={groupers} />
@@ -74,9 +75,23 @@ const ReportDataTable: React.FC<ReportDataTableProps> = props => {
     );
 };
 
-function w<Value extends number | string>(value: Value): { width: Value } {
-    return { width: value };
-}
+const Cell_: React.FC<{ name: string; width: number; data?: boolean }> = props => {
+    const { name, width, data = false } = props;
+    const style = React.useMemo(() => ({ width: `${width}m` }), [width]);
+
+    const title = _.compact([
+        name,
+        data ? i18n.t("(Approved/Total) Total = Approved + Unapproved") : null,
+    ]).join(" ");
+
+    return (
+        <TableCell title={title} style={style}>
+            {name} {data ? ` ${i18n.t("(A/T)")}` : null}
+        </TableCell>
+    );
+};
+
+const Cell = React.memo(Cell_);
 
 const LocationCell: RowComponent<DataElementMER> = props => {
     const { row: dataElementMER, rowSpan } = props;

@@ -126,12 +126,12 @@ describe("MerReport", () => {
                         {
                             id: "WS8XV4WWPE7",
                             name: "de-B010200",
-                            actual: 1,
-                            actualAchieved: 2,
+                            actual: dataValue(1),
+                            actualAchieved: dataValue(2),
                             code: "B010200",
-                            target: 3,
-                            targetAchieved: 5,
-                            achieved: 40,
+                            target: dataValue(3),
+                            targetAchieved: dataValue(5),
+                            achieved: dataValue(40, null),
                             comment: "comment1",
                             isCovid19: false,
                         },
@@ -139,11 +139,11 @@ describe("MerReport", () => {
                             id: "We61YNYyOX0",
                             code: "B020205",
                             name: "de-B020205",
-                            actual: 2,
-                            actualAchieved: 6,
-                            target: 4,
-                            targetAchieved: 7,
-                            achieved: 85.71428571428571,
+                            actual: dataValue(2),
+                            actualAchieved: dataValue(6),
+                            target: dataValue(4),
+                            targetAchieved: dataValue(7),
+                            achieved: dataValue(85.71428571428571, null),
                             comment: "comment2",
                             isCovid19: false,
                         },
@@ -162,11 +162,11 @@ describe("MerReport", () => {
                             id: "yUGuwPFkBrj",
                             code: "B020210",
                             name: "de-B020210",
-                            actual: 0,
-                            actualAchieved: 0,
-                            target: 0,
-                            targetAchieved: 0,
-                            achieved: null,
+                            actual: dataValue(0),
+                            actualAchieved: dataValue(0),
+                            target: dataValue(0),
+                            targetAchieved: dataValue(0),
+                            achieved: dataValue(null, null),
                             comment: "",
                             isCovid19: false,
                         },
@@ -176,3 +176,7 @@ describe("MerReport", () => {
         });
     });
 });
+
+function dataValue(onlyApproved: number | null, all: number | null = 0) {
+    return { onlyApproved, all };
+}
