@@ -83,6 +83,7 @@ export interface DataElementMER extends DataElementInfo {
 
 interface OrgUnit {
     id: Id;
+    code: string;
     displayName: string;
     openingDate: string;
     closedDate: string;
@@ -116,6 +117,7 @@ interface Report {
 
 export interface DataElementInfo {
     id: string;
+    code: string;
     name: string;
     target: number;
     actual: number;
@@ -128,6 +130,7 @@ export interface DataElementInfo {
 
 export interface ProjectForMer {
     id: string;
+    code: string;
     dateInfo: string;
     name: string;
     dataElements: DataElementInfo[];
@@ -405,6 +408,7 @@ class MerReport {
 
                 return {
                     id: dataElement.id,
+                    code: dataElement.code,
                     name: dataElement.name,
                     actual: sumRows(rowsForDeOrgUnitPeriod, row => row.actualOrTarget === "actual"),
                     target: sumRows(rowsForDeOrgUnitPeriod, row => row.actualOrTarget === "target"),
@@ -421,6 +425,7 @@ class MerReport {
             const projectForMer: ProjectForMer = {
                 id: orgUnit.id,
                 name: project.displayName,
+                code: orgUnit.code,
                 locations: locations.map(({ id, displayName }) => ({ id, name: displayName })),
                 dateInfo: `${formatDate(project.openingDate)} -> ${formatDate(project.closedDate)}`,
                 dataElements: _.compact(dataElementIds.map(getDataElementInfo)),
@@ -459,6 +464,7 @@ async function getOrgUnitsForProjects(api: D2Api, projects: Ref[]): Promise<OrgU
             organisationUnits: {
                 fields: {
                     id: true,
+                    code: true,
                     displayName: true,
                     openingDate: true,
                     closedDate: true,
@@ -523,6 +529,7 @@ function getAnalytics(config: Config, api: D2Api, options: { dimension: string[]
         .get({
             dimension: options.dimension,
             approvalLevel: config.dataApprovalLevels.project.id,
+            skipRounding: true,
         })
         .getData();
 }

@@ -20,7 +20,9 @@ const DataElementCells: React.FC<DataElementCellsProps> = props => {
             <TableCell>{formatNumber(dataElement.actual)}</TableCell>
             <TableCell>{formatNumber(dataElement.targetAchieved)}</TableCell>
             <TableCell>{formatNumber(dataElement.actualAchieved)}</TableCell>
-            <TableCell>{formatNumber(dataElement.achieved, "%")}</TableCell>
+            <TableCell>
+                {formatNumber(dataElement.achieved, { suffix: "%", decimals: 0 })}
+            </TableCell>
             <TableCell>
                 <TextFieldOnBlur
                     value={dataElement.comment}
@@ -35,8 +37,18 @@ const DataElementCells: React.FC<DataElementCellsProps> = props => {
     );
 };
 
-function formatNumber(n: number | null | undefined, suffix?: string): string {
-    return n === null || n === undefined ? "-" : n.toFixed(2) + (suffix || "");
+interface FormatNumberOptions {
+    decimals?: number;
+    suffix?: string;
+}
+
+function removeTrailingZeros(s: string): string {
+    return s.includes(".") ? s.replace(/\.0+$/, "") : s;
+}
+
+function formatNumber(n: number | null | undefined, options: FormatNumberOptions = {}): string {
+    const { suffix, decimals = 3 } = options;
+    return _.isNil(n) ? "-" : removeTrailingZeros(n.toFixed(decimals)) + (suffix || "");
 }
 
 function getDataElementName(dataElement: DataElementMER): string {

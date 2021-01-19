@@ -347,7 +347,15 @@ msgstr ""
 msgid "Project"
 msgstr ""
 
-msgid "Indicators"
+msgid "Dates"
+msgstr ""
+
+msgid ""
+"Indicator\n"
+"code"
+msgstr ""
+
+msgid "Indicator name"
 msgstr ""
 
 msgid "Target"
@@ -356,10 +364,19 @@ msgstr ""
 msgid "Actual"
 msgstr ""
 
-msgid "to date"
+msgid ""
+"Target\n"
+"to date"
 msgstr ""
 
-msgid "Achieved to date (%)"
+msgid ""
+"Actual\n"
+"to date"
+msgstr ""
+
+msgid ""
+"Achieved\n"
+"to date (%)"
 msgstr ""
 
 msgid "Comment"
@@ -826,6 +843,9 @@ msgid ""
 "clicking your country and month of reporting."
 msgstr ""
 
+msgid "Indicators"
+msgstr ""
+
 msgid "Target to date"
 msgstr ""
 
@@ -833,6 +853,9 @@ msgid "Actual to date"
 msgstr ""
 
 msgid "Sector"
+msgstr ""
+
+msgid "Achieved to date (%)"
 msgstr ""
 
 msgid "{{field}} cannot be blank"
