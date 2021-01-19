@@ -128,6 +128,7 @@ describe("MerReport", () => {
                             name: "de-B010200",
                             actual: 1,
                             actualAchieved: 2,
+                            code: "B010200",
                             target: 3,
                             targetAchieved: 5,
                             achieved: 40,
@@ -136,6 +137,7 @@ describe("MerReport", () => {
                         },
                         {
                             id: "We61YNYyOX0",
+                            code: "B020205",
                             name: "de-B020205",
                             actual: 2,
                             actualAchieved: 6,
@@ -158,6 +160,7 @@ describe("MerReport", () => {
                     dataElements: [
                         {
                             id: "yUGuwPFkBrj",
+                            code: "B020210",
                             name: "de-B020210",
                             actual: 0,
                             actualAchieved: 0,
