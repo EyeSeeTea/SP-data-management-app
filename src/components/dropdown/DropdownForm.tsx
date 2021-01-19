@@ -9,7 +9,7 @@ interface DropdownFormProps {
 
 const DropdownForm: React.FC<DropdownFormProps> = props => {
     const { label, children } = props;
-    const materialTheme = getMaterialTheme();
+    const materialTheme = React.useMemo(getMaterialTheme, []);
 
     return (
         <MuiThemeProvider theme={materialTheme}>
