@@ -8,3 +8,5 @@ export function renderJoin(nodes: ReactNode[], separator: ReactNode): ReactNode 
         .map((node, idx) => <React.Fragment key={idx}>{node || "-"}</React.Fragment>)
         .value();
 }
+
+export const reactMemo: <T>(_component: T) => T = React.memo;
