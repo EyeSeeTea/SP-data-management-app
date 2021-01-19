@@ -158,6 +158,9 @@ msgstr ""
 msgid "Back"
 msgstr ""
 
+msgid "Executive Summary"
+msgstr ""
+
 msgid "Internals"
 msgstr ""
 
@@ -324,9 +327,6 @@ msgid "Country Director"
 msgstr ""
 
 msgid "Prepared by"
-msgstr ""
-
-msgid "Executive Summary"
 msgstr ""
 
 msgid "Ministry Summary"
@@ -859,6 +859,9 @@ msgid "(Approved/Total) Total = Approved + Unapproved"
 msgstr ""
 
 msgid "(A/T)"
+msgstr ""
+
+msgid "Sector"
 msgstr ""
 
 msgid "{{field}} cannot be blank"

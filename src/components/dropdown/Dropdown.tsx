@@ -14,22 +14,20 @@ export interface DropdownProps {
     label?: string;
     value?: Value;
     hideEmpty?: boolean;
+    hideLabelWhenValueSelected?: boolean;
 }
 
 const Dropdown: React.FC<DropdownProps> = props => {
-    const { items, value, onChange, label, hideEmpty, id } = props;
+    const { items, value, onChange, hideEmpty, id } = props;
+    const { label, hideLabelWhenValueSelected = false } = props;
+
     const selectValue =
         value === undefined || !items.map(item => item.value).includes(value) ? "" : value;
 
-    const SelectWrapper = (props: any) =>
-        label ? (
-            <DropdownForm label={label}>{props.children}</DropdownForm>
-        ) : (
-            <React.Fragment>{props.children}</React.Fragment>
-        );
+    const isLabelVisible = hideLabelWhenValueSelected ? !selectValue : true;
 
     return (
-        <SelectWrapper>
+        <SelectWrapper label={label} visible={isLabelVisible}>
             <Select
                 data-cy={id}
                 value={selectValue}
@@ -48,6 +46,16 @@ const Dropdown: React.FC<DropdownProps> = props => {
             </Select>
         </SelectWrapper>
     );
+};
+
+const SelectWrapper: React.FC<{ label?: string; visible: boolean }> = props => {
+    const { label, visible, children } = props;
+
+    if (label) {
+        return <DropdownForm label={visible ? label : ""}>{children}</DropdownForm>;
+    } else {
+        return <React.Fragment>{children}</React.Fragment>;
+    }
 };
 
 export default React.memo(Dropdown);
