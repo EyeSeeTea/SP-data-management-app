@@ -80,6 +80,7 @@ export type Location = Omit<LocationC, "countries">;
 
 export interface ProjectData {
     id: Id;
+    created: Moment | undefined;
     name: string;
     description: string;
     awardNumber: string;
@@ -137,6 +138,7 @@ export const monthFormat = "YYYYMM";
 
 const defaultProjectData = {
     id: undefined,
+    created: undefined,
     name: "",
     description: "",
     awardNumber: "",
@@ -196,6 +198,7 @@ class Project {
 
     static fieldNames: Record<ProjectField, string> = {
         id: i18n.t("Id"),
+        created: i18n.t("Created"),
         name: i18n.t("Name"),
         dataElementsSelection: i18n.t("Data Elements Selection"),
         dataElementsMER: i18n.t("Data Elements MER"),

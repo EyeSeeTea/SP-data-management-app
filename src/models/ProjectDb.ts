@@ -67,6 +67,7 @@ export default class ProjectDb {
 
         const orgUnit = {
             id: project.id,
+            created: project.created ? toISOString(project.created) : undefined,
             name: project.name,
             displayName: project.name,
             path: project.parentOrgUnit.path + "/" + project.id,
@@ -309,8 +310,10 @@ export default class ProjectDb {
             sectionsToDelete.map(section => () => api.models.sections.delete(section).getData())
         );
 
+        const mainPayload = await mergePreviousDates(api, nonSectionsPayload as GenericMetadata);
+
         const response = await api.metadata
-            .post(nonSectionsPayload)
+            .post(mainPayload)
             .getData()
             .catch(_err => null);
 
@@ -445,6 +448,7 @@ export default class ProjectDb {
                 organisationUnits: {
                     fields: {
                         id: true,
+                        created: true,
                         path: true,
                         displayName: true,
                         name: true,
@@ -538,6 +542,7 @@ export default class ProjectDb {
         const projectData = {
             id: orgUnit.id,
             name: orgUnit.name,
+            created: orgUnit.created ? moment(orgUnit.created) : undefined,
             description: orgUnit.description,
             awardNumber: code1.slice(0, 5),
             subsequentLettering: code1.slice(5),
@@ -738,6 +743,39 @@ async function getDashboards<OrgUnit extends OrgUnitsForDashboards>(
         country: getById(countryDashboardId),
         awardNumber: getById(awardNumberDashboardId),
     };
+}
+
+type GenericMetadata = Record<string, Array<{ id: Id; created?: string }>>;
+const dateFieldsToKeep = ["created"] as const;
+
+/* On POST /metadata, objects not containing field "created", have this field set to the current time.
+   Workaround: request all the objects we plan to post and merge the previous value of this field. */
+async function mergePreviousDates(api: D2Api, metadata: GenericMetadata) {
+    const ids = _(metadata)
+        .values()
+        .flatten()
+        .map(obj => obj.id)
+        .value();
+
+    const existingMetadata = await api
+        .get<GenericMetadata>(`/metadata?filter=id:in:[${ids.join(",")}]`)
+        .getData();
+
+    const attributesById = _(existingMetadata)
+        .values()
+        .flatten()
+        .map(value => {
+            const properties = _.pick(value, dateFieldsToKeep);
+            return [value.id, properties] as [Id, typeof properties];
+        })
+        .fromPairs()
+        .value();
+
+    const metadataWithPrevDates = _(metadata)
+        .mapValues(objs => objs.map(obj => ({ ...attributesById[obj.id], ...obj })))
+        .value();
+
+    return metadataWithPrevDates;
 }
 
 interface DashboardsMetadata {
