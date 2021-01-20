@@ -20,7 +20,7 @@ import { downloadFile } from "../../utils/download";
 import { useBoolean } from "../../utils/hooks";
 import { Maybe } from "../../types/utils";
 import { withSnackbarOnError } from "../../components/utils/errors";
-import ReportTextFieldForSector from "./ReportTextFieldForSector";
+import ExecutiveSummaries from "../../components/report/ExecutiveSummaries";
 
 type ProceedWarning = { type: "hidden" } | { type: "visible"; action: () => void };
 
@@ -123,10 +123,6 @@ const MerReportComponent: React.FC = () => {
         [confirmIfUnsavedChanges]
     );
 
-    const executiveSummaries = React.useMemo(() => {
-        return merReport ? merReport.getExecutiveSummaries() : [];
-    }, [merReport]);
-
     return (
         <React.Fragment>
             {proceedWarning.type === "visible" && (
@@ -182,17 +178,7 @@ const MerReportComponent: React.FC = () => {
                     <ReportDataTable merReport={merReport} onChange={setMerReport} />
 
                     <Paper>
-                        {executiveSummaries.map(({ sector, value }) => (
-                            <ReportTextFieldForSector
-                                key={sector.id}
-                                title={i18n.t("Executive Summary") + " - " + sector.displayName}
-                                value={value || ""}
-                                field="executiveSummaries"
-                                sector={sector}
-                                parent={merReport.data.executiveSummaries}
-                                onBlurChange={onChange}
-                            />
-                        ))}
+                        <ExecutiveSummaries merReport={merReport} onChange={setMerReport} />
 
                         <ReportTextField
                             title={i18n.t("Additional comments")}

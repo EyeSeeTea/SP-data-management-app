@@ -80,6 +80,7 @@ export type Location = Omit<LocationC, "countries">;
 
 export interface ProjectData {
     id: Id;
+    created: Moment | undefined;
     name: string;
     description: string;
     awardNumber: string;
@@ -137,6 +138,7 @@ export const monthFormat = "YYYYMM";
 
 const defaultProjectData = {
     id: undefined,
+    created: undefined,
     name: "",
     description: "",
     awardNumber: "",
@@ -168,6 +170,7 @@ const validationKeys = [
     "code" as const,
     "dataElementsSelection" as const,
     "dataElementsMER" as const,
+    "endDateAfterStartDate" as const,
 ];
 
 export type ProjectField = keyof ProjectData;
@@ -196,6 +199,7 @@ class Project {
 
     static fieldNames: Record<ProjectField, string> = {
         id: i18n.t("Id"),
+        created: i18n.t("Created"),
         name: i18n.t("Name"),
         dataElementsSelection: i18n.t("Data Elements Selection"),
         dataElementsMER: i18n.t("Data Elements MER"),
@@ -228,6 +232,7 @@ class Project {
     validations: Validations = {
         name: () => validatePresence(this.name, this.f("name")),
         startDate: () => validatePresence(this.startDate, this.f("startDate")),
+        endDateAfterStartDate: this.endDateAfterStartDate.bind(this),
         endDate: () => validatePresence(this.endDate, this.f("endDate")),
         code: () => this.validateCodeUniqueness(),
         awardNumber: () =>
@@ -506,6 +511,14 @@ class Project {
                   }),
               ]
             : [];
+    }
+
+    endDateAfterStartDate(): ValidationError {
+        if (this.startDate && this.endDate && this.endDate.isBefore(this.startDate)) {
+            return [i18n.t("End Date should be set after the Start Date")];
+        } else {
+            return [];
+        }
     }
 
     getPeriods(options: { toDate?: boolean } = {}): Array<{ date: Moment; id: string }> {

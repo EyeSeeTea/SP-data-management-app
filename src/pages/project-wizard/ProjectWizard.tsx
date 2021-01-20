@@ -102,6 +102,7 @@ class ProjectWizardImpl extends React.Component<Props, State> {
                     "name",
                     "startDate",
                     "endDate",
+                    "endDateAfterStartDate",
                     "awardNumber",
                     "subsequentLettering",
                     "code",
