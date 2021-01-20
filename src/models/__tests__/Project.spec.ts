@@ -59,6 +59,7 @@ describe("Project", () => {
 
         it("has empty values", () => {
             expect(project.name).toEqual("");
+            expect(project.created).toEqual(undefined);
             expect(project.description).toEqual("");
             expect(project.awardNumber).toEqual("");
             expect(project.subsequentLettering).toEqual("");
@@ -176,6 +177,14 @@ describe("Project", () => {
 
         it("requires a end date", async () => {
             expectFieldPresence("endDate");
+        });
+
+        it("requires a end date after the start date", async () => {
+            const project = (await getNewProject())
+                .set("startDate", moment(moment([2020, 1, 2])))
+                .set("endDate", moment([2020, 1, 1]));
+            const errors = await project.validate();
+            expect(errors).toHaveProperty("endDateAfterStartDate");
         });
 
         it("limits additional designation to 40 chars", async () => {
@@ -585,7 +594,7 @@ async function getProject(): Promise<Project> {
     mock.onGet("/metadata", {
         params: {
             "organisationUnits:fields":
-                "attributeValues[attribute[id],value],closedDate,code,description,displayName,id,name,openingDate,organisationUnitGroups[attributeValues[attribute[id],value],groupSets[id],id,name],parent[attributeValues[attribute[id],value],displayName,id,name,path],path",
+                "attributeValues[attribute[id],value],closedDate,code,created,description,displayName,id,name,openingDate,organisationUnitGroups[attributeValues[attribute[id],value],groupSets[id],id,name],parent[attributeValues[attribute[id],value],displayName,id,name,path],path",
             "organisationUnits:filter": ["id:eq:R3rGhxWbAI9"],
             "dataSets:fields":
                 "code,dataInputPeriods[closingDate,openingDate,period],dataSetElements[categoryCombo[id],dataElement[id]],expiryDays,externalAccess,id,openFuturePeriods,publicAccess,sections[code,dataElements[id]],userAccesses[access,displayName,id],userGroupAccesses[access,displayName,id]",

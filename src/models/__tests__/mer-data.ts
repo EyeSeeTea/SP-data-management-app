@@ -16,7 +16,7 @@ export function mockApiForMerReportEmpty(mock: MockAdapter) {
     mock.onGet("/metadata", {
         params: {
             "organisationUnits:fields":
-                "closedDate,displayName,id,openingDate,organisationUnitGroups[id]",
+                "closedDate,code,displayName,id,openingDate,organisationUnitGroups[id]",
             "organisationUnits:filter": ["id:in:[]"],
         },
     }).replyOnce(200, {});
@@ -87,7 +87,7 @@ export function mockApiForMerReportWithData(mock: MockAdapter) {
     mock.onGet("/metadata", {
         params: {
             "organisationUnits:fields":
-                "closedDate,displayName,id,openingDate,organisationUnitGroups[id]",
+                "closedDate,code,displayName,id,openingDate,organisationUnitGroups[id]",
             "organisationUnits:filter": ["id:in:[]"],
         },
     }).replyOnce(200, {
@@ -120,91 +120,106 @@ export function mockApiForMerReportWithData(mock: MockAdapter) {
                 "dx:WS8XV4WWPE7;We61YNYyOX0;yUGuwPFkBrj",
             ],
             approvalLevel: "mmEtW6GJq5u",
+            skipRounding: true,
         },
-    }).replyOnce(200, {
-        headers: [
-            {
-                name: "dx",
-                column: "Data",
-                valueType: "TEXT",
-                type: "java.lang.String",
-                hidden: false,
-                meta: true,
-            },
-            {
-                name: "ou",
-                column: "Organisation unit",
-                valueType: "TEXT",
-                type: "java.lang.String",
-                hidden: false,
-                meta: true,
-            },
-            {
-                name: "pe",
-                column: "Period",
-                valueType: "TEXT",
-                type: "java.lang.String",
-                hidden: false,
-                meta: true,
-            },
-            {
-                name: "GIIHAr9BzzO",
-                column: "Actual/Target",
-                valueType: "TEXT",
-                type: "java.lang.String",
-                hidden: false,
-                meta: true,
-            },
-            {
-                name: "value",
-                column: "Value",
-                valueType: "NUMBER",
-                type: "java.lang.Double",
-                hidden: false,
-                meta: false,
-            },
-        ],
-        metaData: {
-            items: {
-                imyqCWQ229K: { name: "Target" },
-                GIIHAr9BzzO: { name: "Actual/Target" },
-                WS8XV4WWPE7: {
-                    name: "# of agriculture groups receiving support for improved livelihoods",
-                },
-                ou: { name: "Organisation unit" },
-                "201910": { name: "October 2019" },
-                "201912": { name: "December 2019" },
-                "201911": { name: "November 2019" },
-                eWeQoOlAcxV: { name: "Actual" },
-                dx: { name: "Data" },
-                uWuM0QT2pVl: { name: "0Test1-25236" },
-                pe: { name: "Period" },
-                We61YNYyOX0: { name: "# of biogas digesters installed" },
-                HllvX50cXC0: { name: "default" },
-                SKuiiu7Vbwv: { name: "0Test1-48852" },
-            },
-            dimensions: {
-                GIIHAr9BzzO: ["eWeQoOlAcxV", "imyqCWQ229K"],
-                dx: ["WS8XV4WWPE7", "We61YNYyOX0"],
-                pe: ["201910", "201911", "201912"],
-                ou: ["uWuM0QT2pVl", "SKuiiu7Vbwv"],
-                co: ["HllvX50cXC0"],
-            },
+    }).replyOnce(200, analyticsResponse);
+
+    mock.onGet("/analytics", {
+        params: {
+            dimension: [
+                "ou:uWuM0QT2pVl;SKuiiu7Vbwv",
+                "pe:201910;201911;201912",
+                "GIIHAr9BzzO",
+                "dx:WS8XV4WWPE7;We61YNYyOX0;yUGuwPFkBrj",
+            ],
+            skipRounding: true,
         },
-        rows: [
-            ["We61YNYyOX0", "uWuM0QT2pVl", "201911", "imyqCWQ229K", "3.0"],
-            ["WS8XV4WWPE7", "uWuM0QT2pVl", "201911", "imyqCWQ229K", "2.0"],
-            ["We61YNYyOX0", "uWuM0QT2pVl", "201912", "imyqCWQ229K", "4.0"],
-            ["We61YNYyOX0", "uWuM0QT2pVl", "201912", "eWeQoOlAcxV", "2.0"],
-            ["WS8XV4WWPE7", "uWuM0QT2pVl", "201912", "imyqCWQ229K", "3.0"],
-            ["We61YNYyOX0", "uWuM0QT2pVl", "201911", "eWeQoOlAcxV", "4.0"],
-            ["WS8XV4WWPE7", "uWuM0QT2pVl", "201912", "eWeQoOlAcxV", "1.0"],
-            ["WS8XV4WWPE7", "uWuM0QT2pVl", "201911", "eWeQoOlAcxV", "1.0"],
-        ],
-        width: 5,
-        height: 8,
-        headerWidth: 5,
-    });
+    }).replyOnce(200, { ...analyticsResponse, rows: [] });
 
     logUnknownRequest(mock);
 }
+
+const analyticsResponse = {
+    headers: [
+        {
+            name: "dx",
+            column: "Data",
+            valueType: "TEXT",
+            type: "java.lang.String",
+            hidden: false,
+            meta: true,
+        },
+        {
+            name: "ou",
+            column: "Organisation unit",
+            valueType: "TEXT",
+            type: "java.lang.String",
+            hidden: false,
+            meta: true,
+        },
+        {
+            name: "pe",
+            column: "Period",
+            valueType: "TEXT",
+            type: "java.lang.String",
+            hidden: false,
+            meta: true,
+        },
+        {
+            name: "GIIHAr9BzzO",
+            column: "Actual/Target",
+            valueType: "TEXT",
+            type: "java.lang.String",
+            hidden: false,
+            meta: true,
+        },
+        {
+            name: "value",
+            column: "Value",
+            valueType: "NUMBER",
+            type: "java.lang.Double",
+            hidden: false,
+            meta: false,
+        },
+    ],
+    metaData: {
+        items: {
+            imyqCWQ229K: { name: "Target" },
+            GIIHAr9BzzO: { name: "Actual/Target" },
+            WS8XV4WWPE7: {
+                name: "# of agriculture groups receiving support for improved livelihoods",
+            },
+            ou: { name: "Organisation unit" },
+            "201910": { name: "October 2019" },
+            "201912": { name: "December 2019" },
+            "201911": { name: "November 2019" },
+            eWeQoOlAcxV: { name: "Actual" },
+            dx: { name: "Data" },
+            uWuM0QT2pVl: { name: "0Test1-25236" },
+            pe: { name: "Period" },
+            We61YNYyOX0: { name: "# of biogas digesters installed" },
+            HllvX50cXC0: { name: "default" },
+            SKuiiu7Vbwv: { name: "0Test1-48852" },
+        },
+        dimensions: {
+            GIIHAr9BzzO: ["eWeQoOlAcxV", "imyqCWQ229K"],
+            dx: ["WS8XV4WWPE7", "We61YNYyOX0"],
+            pe: ["201910", "201911", "201912"],
+            ou: ["uWuM0QT2pVl", "SKuiiu7Vbwv"],
+            co: ["HllvX50cXC0"],
+        },
+    },
+    rows: [
+        ["We61YNYyOX0", "uWuM0QT2pVl", "201911", "imyqCWQ229K", "3.0"],
+        ["WS8XV4WWPE7", "uWuM0QT2pVl", "201911", "imyqCWQ229K", "2.0"],
+        ["We61YNYyOX0", "uWuM0QT2pVl", "201912", "imyqCWQ229K", "4.0"],
+        ["We61YNYyOX0", "uWuM0QT2pVl", "201912", "eWeQoOlAcxV", "2.0"],
+        ["WS8XV4WWPE7", "uWuM0QT2pVl", "201912", "imyqCWQ229K", "3.0"],
+        ["We61YNYyOX0", "uWuM0QT2pVl", "201911", "eWeQoOlAcxV", "4.0"],
+        ["WS8XV4WWPE7", "uWuM0QT2pVl", "201912", "eWeQoOlAcxV", "1.0"],
+        ["WS8XV4WWPE7", "uWuM0QT2pVl", "201911", "eWeQoOlAcxV", "1.0"],
+    ],
+    width: 5,
+    height: 8,
+    headerWidth: 5,
+};

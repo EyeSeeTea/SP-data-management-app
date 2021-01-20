@@ -5,39 +5,59 @@ import { TextFieldProps } from "@material-ui/core/TextField";
 
 export type ReportTextFieldProps = TextFieldProps & {
     title: string;
-    value: string;
+    value: string | undefined;
     field: string;
+    minVisibleRows?: number;
+    maxVisibleRows?: number;
+    maxContentRows?: number;
     onBlurChange(field: string, value: string): void;
 };
 
 const ReportTextField: React.FC<ReportTextFieldProps> = props => {
-    const { title, field, value, onBlurChange, ...otherProps } = props;
-    const notifyChange = React.useCallback(
-        (value: string) => {
-            onBlurChange(field, value);
-        },
-        [onBlurChange, field]
-    );
+    const {
+        title,
+        field,
+        value,
+        onBlurChange,
+        children,
+        minVisibleRows = 4,
+        maxVisibleRows = 10,
+        ...otherProps
+    } = props;
+
+    const notifyChange = React.useCallback((value: string) => onBlurChange(field, value), [
+        onBlurChange,
+        field,
+    ]);
 
     return (
-        <div style={{ marginTop: 10, marginBottom: 10, padding: 10 }}>
-            <div style={{ fontSize: "1.1em", color: "grey", marginTop: 10, marginBottom: 10 }}>
+        <div style={styles.main}>
+            <div style={styles.title}>
                 {title}
+                {children}
             </div>
 
             <TextFieldOnBlur
-                value={value}
+                value={value || ""}
+                disabled={value === undefined}
                 multiline={true}
                 fullWidth={true}
-                style={{ border: "1px solid #EEE" }}
-                rows={getMultilineRows(value, 4, 10)}
-                rowsMax={10}
+                style={styles.textField}
+                rows={getMultilineRows(value, minVisibleRows, maxVisibleRows)}
+                rowsMax={maxVisibleRows}
                 onBlurChange={notifyChange}
-                InputProps={{ style: { margin: 10 } }}
+                InputProps={styles.inputProps}
                 {...otherProps}
             />
         </div>
     );
+};
+
+const styles = {
+    main: { marginTop: 10, marginBottom: 10, padding: 10 },
+    title: { fontSize: "1.1em", color: "grey", marginTop: 10, marginBottom: 10 },
+    textField: { border: "1px solid #EEE" },
+    inputProps: { style: { margin: 10 } },
 };
 
 export default React.memo(ReportTextField);
