@@ -133,11 +133,11 @@ class MerReportSpreadsheet {
                 text(project.dateInfo),
                 text(de.code),
                 text(de.name),
-                float(de.target.onlyApproved),
-                float(de.actual.onlyApproved),
-                float(de.targetAchieved.onlyApproved),
-                float(de.actualAchieved.onlyApproved),
-                float(de.achieved?.onlyApproved),
+                float(de.target.approved),
+                float(de.actual.approved),
+                float(de.targetAchieved.approved),
+                float(de.actualAchieved.approved),
+                float(de.achieved.approved),
                 text(de.comment),
             ];
         });

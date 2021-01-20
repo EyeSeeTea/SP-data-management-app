@@ -177,6 +177,6 @@ describe("MerReport", () => {
     });
 });
 
-function dataValue(onlyApproved: number | null, all: number | null = 0) {
-    return { onlyApproved, all };
+function dataValue(approved: number | null, all: number | null = 0) {
+    return { approved, all };
 }

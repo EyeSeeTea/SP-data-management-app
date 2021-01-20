@@ -72,7 +72,7 @@ interface Row {
     newOrRecurring: "new" | "recurring" | undefined;
     isPeople: boolean;
     value: number;
-    onlyApproved: boolean;
+    approved: boolean;
 }
 
 type Location = { id: Id; name: string };
@@ -117,7 +117,7 @@ interface Report {
 }
 
 export interface DataValue {
-    onlyApproved: number;
+    approved: number;
     all: number;
 }
 
@@ -412,8 +412,8 @@ class MerReport {
                 );
 
                 const achieved: DataElementInfo["achieved"] = {
-                    onlyApproved: targetAchieved.onlyApproved
-                        ? (100 * actualAchieved.onlyApproved) / targetAchieved.onlyApproved
+                    approved: targetAchieved.approved
+                        ? (100 * actualAchieved.approved) / targetAchieved.approved
                         : null,
                     all: targetAchieved.all
                         ? (100 * actualAchieved.all) / targetAchieved.all
@@ -554,7 +554,7 @@ async function getAnalytics(
     api: D2Api,
     dataElements: Ref[],
     dimension: string[]
-): Promise<Array<{ onlyApproved: boolean; rawRow: string[] }>> {
+): Promise<Array<{ approved: boolean; rawRow: string[] }>> {
     if (_.isEmpty(dataElements)) return [];
 
     const fullDimension = [...dimension, "dx:" + dataElements.map(de => de.id).join(";")];
@@ -571,8 +571,8 @@ async function getAnalytics(
     const { rows: allRows } = await api.analytics.get(analyticOptionsAll).getData();
 
     return [
-        ...approvedRows.map(rawRow => ({ onlyApproved: true, rawRow })),
-        ...allRows.map(rawRow => ({ onlyApproved: false, rawRow })),
+        ...approvedRows.map(rawRow => ({ approved: true, rawRow })),
+        ...allRows.map(rawRow => ({ approved: false, rawRow })),
     ];
 }
 
@@ -614,7 +614,7 @@ async function getAnalyticRows(
         [categoryOptions.recurring.id]: "recurring",
     };
 
-    const rows = analyticsRows.map(({ onlyApproved, rawRow: analyticsRow }) => {
+    const rows = analyticsRows.map(({ approved, rawRow: analyticsRow }) => {
         const deId = analyticsRow[0];
         const dataElement = _(dataElementsById).get(deId, null);
         const isPeople = dataElement ? dataElement.peopleOrBenefit === "people" : false;
@@ -635,7 +635,7 @@ async function getAnalyticRows(
             newOrRecurring: newOrRecurringId ? newRecurring[newOrRecurringId] : undefined,
             isPeople,
             value: parseFloat(value),
-            onlyApproved,
+            approved,
         };
 
         return row;
@@ -713,9 +713,9 @@ function sumRows(rows: Row[], filterPredicate?: (row: Row) => boolean) {
 }
 
 function getDataValueFromRows(rows: Row[], filterPredicate?: (row: Row) => boolean): DataValue {
-    const [onlyApproved, all] = _.partition(rows, row => row.onlyApproved);
+    const [approved, all] = _.partition(rows, row => row.approved);
     return {
-        onlyApproved: sumRows(onlyApproved, filterPredicate),
+        approved: sumRows(approved, filterPredicate),
         all: sumRows(all, filterPredicate),
     };
 }
