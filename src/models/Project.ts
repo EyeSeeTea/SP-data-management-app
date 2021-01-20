@@ -170,6 +170,7 @@ const validationKeys = [
     "code" as const,
     "dataElementsSelection" as const,
     "dataElementsMER" as const,
+    "endDateAfterStartDate" as const,
 ];
 
 export type ProjectField = keyof ProjectData;
@@ -231,6 +232,7 @@ class Project {
     validations: Validations = {
         name: () => validatePresence(this.name, this.f("name")),
         startDate: () => validatePresence(this.startDate, this.f("startDate")),
+        endDateAfterStartDate: this.endDateAfterStartDate.bind(this),
         endDate: () => validatePresence(this.endDate, this.f("endDate")),
         code: () => this.validateCodeUniqueness(),
         awardNumber: () =>
@@ -509,6 +511,14 @@ class Project {
                   }),
               ]
             : [];
+    }
+
+    endDateAfterStartDate(): ValidationError {
+        if (this.startDate && this.endDate && this.endDate.isBefore(this.startDate)) {
+            return [i18n.t("End Date should be set after the Start Date")];
+        } else {
+            return [];
+        }
     }
 
     getPeriods(options: { toDate?: boolean } = {}): Array<{ date: Moment; id: string }> {

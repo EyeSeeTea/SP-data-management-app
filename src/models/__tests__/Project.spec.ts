@@ -179,6 +179,14 @@ describe("Project", () => {
             expectFieldPresence("endDate");
         });
 
+        it("requires a end date after the start date", async () => {
+            const project = (await getNewProject())
+                .set("startDate", moment(moment([2020, 1, 2])))
+                .set("endDate", moment([2020, 1, 1]));
+            const errors = await project.validate();
+            expect(errors).toHaveProperty("endDateAfterStartDate");
+        });
+
         it("limits additional designation to 40 chars", async () => {
             const project = (await getNewProject()).set("additional", "1");
             const errors = await project.validate(["additional"]);
