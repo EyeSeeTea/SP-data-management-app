@@ -846,7 +846,7 @@ msgid ""
 "clicking your country and month of reporting."
 msgstr ""
 
-msgid "Indicators"
+msgid "Indicator"
 msgstr ""
 
 msgid "Target to date"
@@ -855,7 +855,13 @@ msgstr ""
 msgid "Actual to date"
 msgstr ""
 
-msgid "Achieved to date (%)"
+msgid "Achieved to date %"
+msgstr ""
+
+msgid "(Approved/Total) Total = Approved + Unapproved"
+msgstr ""
+
+msgid "(A/T)"
 msgstr ""
 
 msgid "Sector"

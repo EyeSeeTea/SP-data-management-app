@@ -72,6 +72,7 @@ interface Row {
     newOrRecurring: "new" | "recurring" | undefined;
     isPeople: boolean;
     value: number;
+    approved: boolean;
 }
 
 type Location = { id: Id; name: string };
@@ -115,15 +116,22 @@ interface Report {
     };
 }
 
+export interface DataValue {
+    approved: number;
+    all: number;
+}
+
+export type MaybeDataValue = { [K in keyof DataValue]: Maybe<DataValue[K]> };
+
 export interface DataElementInfo {
     id: string;
     code: string;
     name: string;
-    target: number;
-    actual: number;
-    targetAchieved: number;
-    actualAchieved: number;
-    achieved: Maybe<number>;
+    target: DataValue;
+    actual: DataValue;
+    targetAchieved: DataValue;
+    actualAchieved: DataValue;
+    achieved: MaybeDataValue;
     comment: string;
     isCovid19: boolean;
 }
@@ -390,28 +398,45 @@ class MerReport {
                 const rowsForDeOU = rows.filter(
                     row => row.deId === dataElement.id && row.orgUnitId === orgUnit.id
                 );
-                const targetAchieved = sumRows(
+                const targetAchieved = getDataValueFromRows(
                     rowsForDeOU,
                     row =>
                         row.actualOrTarget === "target" &&
                         (!row.isPeople || row.newOrRecurring === "new")
                 );
-                const actualAchieved = sumRows(
+                const actualAchieved = getDataValueFromRows(
                     rowsForDeOU,
                     row =>
                         row.actualOrTarget === "actual" &&
                         (!row.isPeople || row.newOrRecurring === "new")
                 );
-                const achieved = targetAchieved ? (100 * actualAchieved) / targetAchieved : null;
+
+                const achieved: DataElementInfo["achieved"] = {
+                    approved: targetAchieved.approved
+                        ? (100 * actualAchieved.approved) / targetAchieved.approved
+                        : null,
+                    all: targetAchieved.all
+                        ? (100 * actualAchieved.all) / targetAchieved.all
+                        : null,
+                };
                 const rowsForDeOrgUnitPeriod = rowsForDeOU.filter(r => r.periodId === reportPeriod);
                 const disaggregation = _(disaggregationsByProject).get(project.id, null);
+
+                const actual = getDataValueFromRows(
+                    rowsForDeOrgUnitPeriod,
+                    row => row.actualOrTarget === "actual"
+                );
+                const target = getDataValueFromRows(
+                    rowsForDeOrgUnitPeriod,
+                    row => row.actualOrTarget === "target"
+                );
 
                 return {
                     id: dataElement.id,
                     code: dataElement.code,
                     name: dataElement.name,
-                    actual: sumRows(rowsForDeOrgUnitPeriod, row => row.actualOrTarget === "actual"),
-                    target: sumRows(rowsForDeOrgUnitPeriod, row => row.actualOrTarget === "target"),
+                    actual,
+                    target,
                     actualAchieved,
                     targetAchieved,
                     achieved,
@@ -524,14 +549,31 @@ function getReportStorageKey(organisationUnit: Ref): string {
     return ["mer", organisationUnit.id].join("-");
 }
 
-function getAnalytics(config: Config, api: D2Api, options: { dimension: string[] }) {
-    return api.analytics
-        .get({
-            dimension: options.dimension,
-            approvalLevel: config.dataApprovalLevels.project.id,
-            skipRounding: true,
-        })
-        .getData();
+async function getAnalytics(
+    config: Config,
+    api: D2Api,
+    dataElements: Ref[],
+    dimension: string[]
+): Promise<Array<{ approved: boolean; rawRow: string[] }>> {
+    if (_.isEmpty(dataElements)) return [];
+
+    const fullDimension = [...dimension, "dx:" + dataElements.map(de => de.id).join(";")];
+    const baseOptions = { dimension: fullDimension, skipRounding: true };
+
+    const analyticOptionsApproved = {
+        ...baseOptions,
+        approvalLevel: config.dataApprovalLevels.project.id,
+    };
+
+    const analyticOptionsAll = baseOptions;
+
+    const { rows: approvedRows } = await api.analytics.get(analyticOptionsApproved).getData();
+    const { rows: allRows } = await api.analytics.get(analyticOptionsAll).getData();
+
+    return [
+        ...approvedRows.map(rawRow => ({ approved: true, rawRow })),
+        ...allRows.map(rawRow => ({ approved: false, rawRow })),
+    ];
 }
 
 async function getAnalyticRows(
@@ -540,7 +582,7 @@ async function getAnalyticRows(
     organisationUnits: Ref[],
     periods: string[],
     merDataElements: DataElementBase[]
-) {
+): Promise<Row[]> {
     const { categories, categoryOptions } = config;
     const dataElementsById = getDataElementsById(config);
 
@@ -553,21 +595,12 @@ async function getAnalyticRows(
     const benefitDataElements = merDataElements.filter(de => de.peopleOrBenefit === "benefit");
     const peopleDataElements = merDataElements.filter(de => de.peopleOrBenefit === "people");
 
-    const { rows: benefitRows } = _(benefitDataElements).isEmpty()
-        ? { rows: [] }
-        : await getAnalytics(config, api, {
-              dimension: [...baseDimension, "dx:" + benefitDataElements.map(de => de.id).join(";")],
-          });
+    const benefitRows = await getAnalytics(config, api, benefitDataElements, baseDimension);
 
-    const { rows: peopleRows } = _(peopleDataElements).isEmpty()
-        ? { rows: [] }
-        : await getAnalytics(config, api, {
-              dimension: [
-                  ...baseDimension,
-                  categories.newRecurring.id,
-                  "dx:" + peopleDataElements.map(de => de.id).join(";"),
-              ],
-          });
+    const peopleRows = await getAnalytics(config, api, peopleDataElements, [
+        ...baseDimension,
+        categories.newRecurring.id,
+    ]);
 
     const analyticsRows = _.concat(benefitRows, peopleRows);
 
@@ -581,7 +614,7 @@ async function getAnalyticRows(
         [categoryOptions.recurring.id]: "recurring",
     };
 
-    const rows = analyticsRows.map(analyticsRow => {
+    const rows = analyticsRows.map(({ approved, rawRow: analyticsRow }) => {
         const deId = analyticsRow[0];
         const dataElement = _(dataElementsById).get(deId, null);
         const isPeople = dataElement ? dataElement.peopleOrBenefit === "people" : false;
@@ -602,6 +635,7 @@ async function getAnalyticRows(
             newOrRecurring: newOrRecurringId ? newRecurring[newOrRecurringId] : undefined,
             isPeople,
             value: parseFloat(value),
+            approved,
         };
 
         return row;
@@ -671,11 +705,19 @@ function mergeStaffSummaries(
         .value();
 }
 
-function sumRows<T extends { value: number }>(rows: T[], filterPredicate: (row: T) => boolean) {
+function sumRows(rows: Row[], filterPredicate?: (row: Row) => boolean) {
     return _(rows)
-        .filter(filterPredicate)
+        .filter(row => (filterPredicate ? filterPredicate(row) : true))
         .map(row => row.value)
         .sum();
+}
+
+function getDataValueFromRows(rows: Row[], filterPredicate?: (row: Row) => boolean): DataValue {
+    const [approved, all] = _.partition(rows, row => row.approved);
+    return {
+        approved: sumRows(approved, filterPredicate),
+        all: sumRows(all, filterPredicate),
+    };
 }
 
 function getDataElementsById(config: Config) {
