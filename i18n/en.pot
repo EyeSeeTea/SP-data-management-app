@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2021-01-19T11:20:38.799Z\n"
-"PO-Revision-Date: 2021-01-19T11:20:38.799Z\n"
+"POT-Creation-Date: 2021-01-20T12:48:50.770Z\n"
+"PO-Revision-Date: 2021-01-20T12:48:50.770Z\n"
 
 msgid "Name"
 msgstr ""
@@ -437,6 +437,9 @@ msgid "One Organisation Unit should be selected"
 msgstr ""
 
 msgid "There is a project with the same code '{{code}}' -> {{orgUnit}}"
+msgstr ""
+
+msgid "End Date should be set after the Start Date"
 msgstr ""
 
 msgid "Target vs Actual - Benefits"
