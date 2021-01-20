@@ -758,7 +758,10 @@ async function mergePreviousDates(api: D2Api, metadata: GenericMetadata) {
         .value();
 
     const existingMetadata = await api
-        .get<GenericMetadata>(`/metadata?filter=id:in:[${ids.join(",")}]`)
+        .get<GenericMetadata>("/metadata", {
+            filter: `id:in:[${ids.join(",")}]`,
+            fields: ["id", ...dateFieldsToKeep].join(","),
+        })
         .getData();
 
     const attributesById = _(existingMetadata)
