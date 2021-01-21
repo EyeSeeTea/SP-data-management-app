@@ -117,8 +117,9 @@ interface Report {
 }
 
 export interface DataValue {
-    approved: number;
     all: number;
+    approved: number;
+    unapproved: number;
 }
 
 export type MaybeDataValue = { [K in keyof DataValue]: Maybe<DataValue[K]> };
@@ -411,14 +412,8 @@ class MerReport {
                         (!row.isPeople || row.newOrRecurring === "new")
                 );
 
-                const achieved: DataElementInfo["achieved"] = {
-                    approved: targetAchieved.approved
-                        ? (100 * actualAchieved.approved) / targetAchieved.approved
-                        : null,
-                    all: targetAchieved.all
-                        ? (100 * actualAchieved.all) / targetAchieved.all
-                        : null,
-                };
+                const achieved = getAchieved(targetAchieved, actualAchieved);
+
                 const rowsForDeOrgUnitPeriod = rowsForDeOU.filter(r => r.periodId === reportPeriod);
                 const disaggregation = _(disaggregationsByProject).get(project.id, null);
 
@@ -452,7 +447,7 @@ class MerReport {
                 name: project.displayName,
                 code: orgUnit.code,
                 locations: locations.map(({ id, displayName }) => ({ id, name: displayName })),
-                dateInfo: `${formatDate(project.openingDate)} -> ${formatDate(project.closedDate)}`,
+                dateInfo: `${formatDate(project.openingDate)} - ${formatDate(project.closedDate)}`,
                 dataElements: _.compact(dataElementIds.map(getDataElementInfo)),
             };
 
@@ -481,6 +476,23 @@ class MerReport {
             item => item.name,
         ]);
     }
+}
+
+function getAchieved(
+    targetAchieved: DataValue,
+    actualAchieved: DataValue
+): DataElementInfo["achieved"] {
+    const achievedApproved = targetAchieved.approved
+        ? (100 * actualAchieved.approved) / targetAchieved.approved
+        : null;
+
+    const achievedAll = targetAchieved.all ? (100 * actualAchieved.all) / targetAchieved.all : null;
+
+    const achievedUnapproved = targetAchieved.unapproved
+        ? (100 * actualAchieved.unapproved) / targetAchieved.unapproved
+        : null;
+
+    return { all: achievedAll, approved: achievedApproved, unapproved: achievedUnapproved };
 }
 
 async function getOrgUnitsForProjects(api: D2Api, projects: Ref[]): Promise<OrgUnit[]> {
@@ -714,9 +726,13 @@ function sumRows(rows: Row[], filterPredicate?: (row: Row) => boolean) {
 
 function getDataValueFromRows(rows: Row[], filterPredicate?: (row: Row) => boolean): DataValue {
     const [approved, all] = _.partition(rows, row => row.approved);
+    const approvedT = sumRows(approved, filterPredicate);
+    const allT = sumRows(all, filterPredicate);
+
     return {
-        approved: sumRows(approved, filterPredicate),
-        all: sumRows(all, filterPredicate),
+        all: allT,
+        approved: approvedT,
+        unapproved: allT - approvedT,
     };
 }
 
