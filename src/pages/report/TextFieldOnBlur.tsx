@@ -1,6 +1,8 @@
 import React from "react";
 import TextField, { TextFieldProps } from "@material-ui/core/TextField";
 import wrap from "word-wrap";
+import { useSnackbar } from "d2-ui-components";
+import i18n from "../../locales";
 
 export type TextFieldOnBlurProps = TextFieldProps & {
     value: string;
@@ -12,6 +14,7 @@ export type TextFieldOnBlurProps = TextFieldProps & {
 type OnBlur = NonNullable<TextFieldProps["onBlur"]>;
 
 const TextFieldOnBlur: React.FC<TextFieldOnBlurProps> = props => {
+    const snackbar = useSnackbar();
     const { onBlurChange, value, maxContentRows, maxLineChars, ...otherProps } = props;
     const [stateValue, setStateValue] = React.useState(value);
 
@@ -29,11 +32,18 @@ const TextFieldOnBlur: React.FC<TextFieldOnBlurProps> = props => {
             const canChangeValue =
                 newValue.length <= stateValue.length ||
                 !maxContentRows ||
-                wrap(newValue, { width: maxLineChars }).split(/\n/).length <= maxContentRows;
+                wrap(newValue, { width: maxLineChars, cut: true }).split(/\n/).length <=
+                    maxContentRows;
 
-            if (canChangeValue) setStateValue(newValue);
+            if (canChangeValue) {
+                setStateValue(newValue);
+            } else {
+                snackbar.warning(i18n.t("You have reached the limit for this field"), {
+                    autoHideDuration: 1500,
+                });
+            }
         },
-        [setStateValue, maxContentRows, maxLineChars, stateValue]
+        [setStateValue, maxContentRows, maxLineChars, stateValue, snackbar]
     );
 
     return (
