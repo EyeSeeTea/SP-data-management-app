@@ -45,8 +45,8 @@ function formatNumber(n: number | null | undefined, options: FormatNumberOptions
 
 function formatDataNumber(dataValue: MaybeDataValue, options: FormatNumberOptions = {}): string {
     const approved = formatNumber(dataValue.approved, options);
-    const all = formatNumber(dataValue.all, options);
-    return `${approved} / ${all}`;
+    const unapproved = formatNumber(dataValue.unapproved, options);
+    return `${approved} / ${unapproved}`;
 }
 
 function getDataElementName(dataElement: DataElementMER): string {

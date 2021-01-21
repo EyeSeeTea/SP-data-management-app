@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2021-01-20T12:48:50.770Z\n"
-"PO-Revision-Date: 2021-01-20T12:48:50.770Z\n"
+"POT-Creation-Date: 2021-01-21T10:59:12.693Z\n"
+"PO-Revision-Date: 2021-01-21T10:59:12.693Z\n"
 
 msgid "Name"
 msgstr ""
@@ -351,7 +351,7 @@ msgid "Dates"
 msgstr ""
 
 msgid ""
-"Indicator\n"
+"Indicator\r\n"
 "code"
 msgstr ""
 
@@ -365,17 +365,17 @@ msgid "Actual"
 msgstr ""
 
 msgid ""
-"Target\n"
+"Target\r\n"
 "to date"
 msgstr ""
 
 msgid ""
-"Actual\n"
+"Actual\r\n"
 "to date"
 msgstr ""
 
 msgid ""
-"Achieved\n"
+"Achieved\r\n"
 "to date (%)"
 msgstr ""
 
@@ -753,12 +753,6 @@ msgid ""
 "“Previous” button located on the bottom right side of the screen."
 msgstr ""
 
-msgid "Opening Date"
-msgstr ""
-
-msgid "Closed Date"
-msgstr ""
-
 msgid "Created By"
 msgstr ""
 
@@ -858,10 +852,12 @@ msgstr ""
 msgid "Achieved to date %"
 msgstr ""
 
-msgid "(Approved/Total) Total = Approved + Unapproved"
+msgid "(A/U)"
 msgstr ""
 
-msgid "(A/T)"
+msgid ""
+"A = Approved (data that has been validated and approved) / U = Unapproved "
+"(data that has been entered but has not yet been approved)"
 msgstr ""
 
 msgid "Sector"
