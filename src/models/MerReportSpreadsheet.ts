@@ -146,13 +146,13 @@ class MerReportSpreadsheet {
             header(i18n.t("Locations"), { width: 40, center: true }),
             header(i18n.t("Project"), { width: 40 }),
             header(i18n.t("Dates"), { width: 30 }),
-            header(i18n.t("Indicator\ncode"), { width: 10 }),
+            header(i18n.t("Indicator\r\ncode"), { width: 10 }),
             header(i18n.t("Indicator name"), { width: 50 }),
             header(i18n.t("Target"), { width: 12, isNumber: true, center: true }),
             header(i18n.t("Actual"), { width: 12, isNumber: true, center: true }),
-            header(i18n.t("Target\nto date"), { width: 12, isNumber: true, center: true }),
-            header(i18n.t("Actual\nto date"), { width: 12, isNumber: true, center: true }),
-            header(i18n.t("Achieved\nto date (%)"), {
+            header(i18n.t("Target\r\nto date"), { width: 12, isNumber: true, center: true }),
+            header(i18n.t("Actual\r\nto date"), { width: 12, isNumber: true, center: true }),
+            header(i18n.t("Achieved\r\nto date (%)"), {
                 width: 12,
                 isNumber: true,
                 numberFormat: "integer",
@@ -229,7 +229,7 @@ function getColumnCells(column: Partial<ExcelJS.Column>) {
     return cells;
 }
 
-function header(name: string | string[], headerOptions: HeaderOptions): Partial<Column> {
+function header(name: string, headerOptions: HeaderOptions): Partial<Column> {
     const {
         width,
         isNumber = false,
@@ -242,7 +242,9 @@ function header(name: string | string[], headerOptions: HeaderOptions): Partial<
         width,
         style: {
             numFmt: isNumber ? numFmtByType[numberFormat] : undefined,
-            ...(center ? { alignment: { horizontal: "center", vertical: "middle" } } : {}),
+            ...(center
+                ? { alignment: { horizontal: "center", vertical: "middle", wrapText: true } }
+                : { wrapText: true }),
         },
     };
 }
@@ -290,7 +292,7 @@ function applyStyles(sheet: Worksheet, rows: Row[], options: { hasColumns: boole
             if (cell.type === "text") {
                 const nLines = cell.value.trim().split(/\n/).length;
                 if (nLines > 1) {
-                    cell.height = 14 * nLines;
+                    cell.height = 16 * nLines;
                 }
             }
 
@@ -339,7 +341,10 @@ function applyHeaderStyles(headerRow: ExcelJS.Row) {
     }
 
     cells.forEach(cell => {
-        cell.style = { ...cell.style, alignment: { horizontal: "center", vertical: "middle" } };
+        cell.style = {
+            ...cell.style,
+            alignment: { horizontal: "center", vertical: "middle", wrapText: true },
+        };
     });
 }
 
@@ -398,7 +403,9 @@ function float(n: number | null | undefined, options: Options = {}): Value {
 }
 
 function text(s: string, options: Options = {}): Value {
-    return { type: "text", value: s, ...options };
+    const defaultOptions = { alignment: { wrapText: true } };
+    const fullOptions = _.merge({}, defaultOptions, options);
+    return { type: "text", value: toExcelString(s), ...fullOptions };
 }
 
 function bold(s: string, options: Options = {}): Value {
@@ -407,6 +414,10 @@ function bold(s: string, options: Options = {}): Value {
 
 function italic(s: string, options: Options = {}): Value {
     return text(s, { font: { italic: true }, ...options });
+}
+
+function toExcelString(s: string): string {
+    return s.replace(/\n/g, "\r\n");
 }
 
 export default MerReportSpreadsheet;
