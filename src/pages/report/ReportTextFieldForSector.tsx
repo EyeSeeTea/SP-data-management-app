@@ -51,6 +51,7 @@ export function ReportTextFieldForSector<Value>(props: ReportTextFieldForSectorP
             minVisibleRows={3}
             maxVisibleRows={3}
             maxContentRows={3}
+            maxLineChars={140}
             onBlurChange={notifyChange}
         >
             <span style={styles.dropdown}>

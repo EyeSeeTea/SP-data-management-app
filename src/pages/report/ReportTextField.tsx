@@ -10,6 +10,7 @@ export type ReportTextFieldProps = TextFieldProps & {
     minVisibleRows?: number;
     maxVisibleRows?: number;
     maxContentRows?: number;
+    maxLineChars?: number;
     onBlurChange(field: string, value: string): void;
 };
 
@@ -54,7 +55,7 @@ const ReportTextField: React.FC<ReportTextFieldProps> = props => {
 };
 
 const styles = {
-    main: { marginTop: 10, marginBottom: 10, padding: 10 },
+    main: { marginTop: 10, marginBottom: 10, padding: 10, width: "1050px" },
     title: { fontSize: "1.1em", color: "grey", marginTop: 10, marginBottom: 10 },
     textField: { border: "1px solid #EEE" },
     inputProps: { style: { margin: 10 } },

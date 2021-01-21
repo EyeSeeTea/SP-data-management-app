@@ -1,5 +1,6 @@
 import ExcelJS, { CellValue, Font, Alignment, Worksheet, Workbook, Column } from "exceljs";
 import _ from "lodash";
+import wrap from "word-wrap";
 import "../utils/lodash-mixins";
 import moment from "moment";
 import MerReport, { staffKeys, getStaffTranslations } from "./MerReport";
@@ -38,6 +39,8 @@ const defaultFont: Partial<Font> = {
     name: "Times New Roman",
     size: 12,
 };
+
+const rowHeightPerLine = 16;
 
 class MerReportSpreadsheet {
     constructor(public merReport: MerReport) {}
@@ -114,11 +117,13 @@ class MerReportSpreadsheet {
             [],
         ];
 
+        const columnWidths: Record<number, number> = { 2: 25, 6: 60 };
+
         const sheet = addWorkSheet(workbook, this.getTabName(i18n.t("Narrative")), rows);
 
-        _.range(1, sheet.columnCount + 1).forEach(
-            columnIndex => (sheet.getColumn(columnIndex).width = 15)
-        );
+        _.range(1, sheet.columnCount + 1).forEach(columnIndex => {
+            sheet.getColumn(columnIndex).width = columnWidths[columnIndex] || 15;
+        });
     }
 
     addActivitesSheet(workbook: Workbook) {
@@ -290,9 +295,13 @@ function applyStyles(sheet: Worksheet, rows: Row[], options: { hasColumns: boole
             }
 
             if (cell.type === "text") {
-                const nLines = cell.value.trim().split(/\n/).length;
+                const value = cell.value.trim();
+                const width = columnIndex === 2 ? 140 : 167; // executive summary or other
+                const nLines = wrap(value, { width }).split(/\n/).length;
+
                 if (nLines > 1) {
-                    cell.height = 16 * nLines;
+                    const height = rowHeightPerLine * nLines;
+                    if (!cell.height || cell.height < height) cell.height = height;
                 }
             }
 
@@ -337,7 +346,7 @@ function applyHeaderStyles(headerRow: ExcelJS.Row) {
             .max() || 0;
 
     if (nLines > 1) {
-        headerRow.height = 14 * nLines;
+        headerRow.height = rowHeightPerLine * nLines;
     }
 
     cells.forEach(cell => {
