@@ -120,18 +120,18 @@ describe("MerReport", () => {
                 {
                     id: "uWuM0QT2pVl",
                     name: "0Test1-25236",
-                    dateInfo: "Nov 2019 -> Mar 2020",
                     locations: [],
+                    dateInfo: "Nov 2019 - Mar 2020",
                     dataElements: [
                         {
                             id: "WS8XV4WWPE7",
-                            name: "de-B010200",
-                            actual: dataValue(1),
-                            actualAchieved: dataValue(2),
                             code: "B010200",
-                            target: dataValue(3),
-                            targetAchieved: dataValue(5),
-                            achieved: dataValue(40, null),
+                            name: "de-B010200",
+                            actual: { all: 0, approved: 1, unapproved: -1 },
+                            target: { all: 0, approved: 3, unapproved: -3 },
+                            actualAchieved: { all: 0, approved: 2, unapproved: -2 },
+                            targetAchieved: { all: 0, approved: 5, unapproved: -5 },
+                            achieved: { all: null, approved: 40, unapproved: 40 },
                             comment: "comment1",
                             isCovid19: false,
                         },
@@ -139,11 +139,15 @@ describe("MerReport", () => {
                             id: "We61YNYyOX0",
                             code: "B020205",
                             name: "de-B020205",
-                            actual: dataValue(2),
-                            actualAchieved: dataValue(6),
-                            target: dataValue(4),
-                            targetAchieved: dataValue(7),
-                            achieved: dataValue(85.71428571428571, null),
+                            actual: { all: 0, approved: 2, unapproved: -2 },
+                            target: { all: 0, approved: 4, unapproved: -4 },
+                            actualAchieved: { all: 0, approved: 6, unapproved: -6 },
+                            targetAchieved: { all: 0, approved: 7, unapproved: -7 },
+                            achieved: {
+                                all: null,
+                                approved: 85.71428571428571,
+                                unapproved: 85.71428571428571,
+                            },
                             comment: "comment2",
                             isCovid19: false,
                         },
@@ -152,21 +156,21 @@ describe("MerReport", () => {
                 {
                     id: "SKuiiu7Vbwv",
                     name: "0Test1-48852",
-                    dateInfo: "Nov 2019 -> Mar 2020",
                     locations: [
                         { id: "GG0k0oNhgS7", name: "loc-GG0k0oNhgS7" },
                         { id: "GsGG8967YDU", name: "loc-GsGG8967YDU" },
                     ],
+                    dateInfo: "Nov 2019 - Mar 2020",
                     dataElements: [
                         {
                             id: "yUGuwPFkBrj",
                             code: "B020210",
                             name: "de-B020210",
-                            actual: dataValue(0),
-                            actualAchieved: dataValue(0),
-                            target: dataValue(0),
-                            targetAchieved: dataValue(0),
-                            achieved: dataValue(null, null),
+                            actual: { all: 0, approved: 0, unapproved: 0 },
+                            target: { all: 0, approved: 0, unapproved: 0 },
+                            actualAchieved: { all: 0, approved: 0, unapproved: 0 },
+                            targetAchieved: { all: 0, approved: 0, unapproved: 0 },
+                            achieved: { all: null, approved: null, unapproved: null },
                             comment: "",
                             isCovid19: false,
                         },
@@ -176,7 +180,3 @@ describe("MerReport", () => {
         });
     });
 });
-
-function dataValue(approved: number | null, all: number | null = 0) {
-    return { approved, all };
-}

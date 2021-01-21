@@ -81,12 +81,18 @@ const Cell_: React.FC<{ name: string; width: number; data?: boolean }> = props =
 
     const title = _.compact([
         name,
-        data ? i18n.t("(Approved/Total) Total = Approved + Unapproved") : null,
+        data
+            ? i18n.t("(A/U)") +
+              " - " +
+              i18n.t(
+                  "A = Approved (data that has been validated and approved) / U = Unapproved (data that has been entered but has not yet been approved)"
+              )
+            : null,
     ]).join(" ");
 
     return (
         <TableCell title={title} style={style}>
-            {name} {data ? ` ${i18n.t("(A/T)")}` : null}
+            {name} {data ? ` ${i18n.t("(A/U)")}` : null}
         </TableCell>
     );
 };
