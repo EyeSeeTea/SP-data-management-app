@@ -62,14 +62,14 @@ function getComponentConfig(
             getValue: (project: ProjectForList) =>
                 project.sectors.map(sector => sector.displayName).join(", "),
         },
-        { ...columnDate("lastUpdated", "datetime"), text: i18n.t("Last Updated"), sortable: true },
+        { ...columnDate("openingDate", "date"), text: i18n.t("Start Date"), sortable: true },
+        { ...columnDate("closedDate", "date"), text: i18n.t("End Date"), sortable: true },
         {
             ...columnDate("created", "datetime"),
             text: i18n.t("Created"),
             sortable: true,
         },
-        { ...columnDate("openingDate", "date"), text: i18n.t("Opening Date"), sortable: true },
-        { ...columnDate("closedDate", "date"), text: i18n.t("Closed Date"), sortable: true },
+        { ...columnDate("lastUpdated", "datetime"), text: i18n.t("Last Updated"), sortable: true },
     ];
 
     const details = [
