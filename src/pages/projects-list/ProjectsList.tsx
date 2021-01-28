@@ -253,7 +253,7 @@ const ProjectsList: React.FC<ProjectsListProps> = () => {
 
                 {canAccessReports && (
                     <ActionButton
-                        label={i18n.t("MER Reports")}
+                        label={i18n.t("Monthly Report")}
                         onClick={goToMerReports}
                         style={styles.merReports}
                     />
