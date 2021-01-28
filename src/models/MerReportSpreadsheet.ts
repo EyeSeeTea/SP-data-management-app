@@ -40,7 +40,7 @@ const defaultFont: Partial<Font> = {
     size: 12,
 };
 
-const rowHeightPerLine = 16;
+const rowHeightPerLine = 16 * 1.5;
 
 class MerReportSpreadsheet {
     constructor(public merReport: MerReport) {}
