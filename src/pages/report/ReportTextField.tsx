@@ -11,6 +11,7 @@ export type ReportTextFieldProps = TextFieldProps & {
     maxVisibleRows?: number;
     maxContentRows?: number;
     maxLineChars?: number;
+    resizable?: boolean;
     onBlurChange(field: string, value: string): void;
 };
 
@@ -23,6 +24,7 @@ const ReportTextField: React.FC<ReportTextFieldProps> = props => {
         children,
         minVisibleRows = 4,
         maxVisibleRows = 10,
+        resizable = true,
         ...otherProps
     } = props;
 
@@ -48,6 +50,7 @@ const ReportTextField: React.FC<ReportTextFieldProps> = props => {
                 rowsMax={maxVisibleRows}
                 onBlurChange={notifyChange}
                 InputProps={styles.inputProps}
+                className={resizable ? "resizable" : undefined}
                 {...otherProps}
             />
         </div>
