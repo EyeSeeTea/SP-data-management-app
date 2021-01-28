@@ -48,6 +48,7 @@ export function ReportTextFieldForSector<Value>(props: ReportTextFieldForSectorP
     return (
         <ReportTextField
             {...otherProps}
+            resizable={false}
             minVisibleRows={3}
             maxVisibleRows={3}
             maxContentRows={3}

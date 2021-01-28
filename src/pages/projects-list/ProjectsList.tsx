@@ -119,7 +119,7 @@ function getComponentConfig(
         dashboard: {
             name: "dashboard",
             icon: <Icon>dashboard</Icon>,
-            text: i18n.t("Go to Dashboard"),
+            text: i18n.t("Go to Project Dashboard (current)"),
             multiple: false,
             onClick: (ids: Id[]) => onFirst(ids, id => goTo("projectDashboard", { id })),
         },
@@ -127,7 +127,7 @@ function getComponentConfig(
         awardNumberDashboard: {
             name: "award-number-dashboard",
             icon: <Icon>dashboard</Icon>,
-            text: i18n.t("Go to Award Number Dashboard"),
+            text: i18n.t("Go to Project Dashboard (all years)"),
             multiple: false,
             isActive: projects => projects[0].hasAwardNumberDashboard,
             onClick: (ids: Id[]) => onFirst(ids, id => goTo("awardNumberDashboard", { id })),
@@ -253,7 +253,7 @@ const ProjectsList: React.FC<ProjectsListProps> = () => {
 
                 {canAccessReports && (
                     <ActionButton
-                        label={i18n.t("MER Reports")}
+                        label={i18n.t("Monthly Report")}
                         onClick={goToMerReports}
                         style={styles.merReports}
                     />

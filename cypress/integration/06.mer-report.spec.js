@@ -2,7 +2,7 @@ describe("Report", () => {
     before(() => {
         cy.login("admin");
         cy.loadPage();
-        cy.contains("MER Reports").click();
+        cy.contains("Monthly Report").click();
         cy.contains("Monthly Executive Report");
     });
 

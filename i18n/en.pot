@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2021-01-21T13:36:49.499Z\n"
-"PO-Revision-Date: 2021-01-21T13:36:49.499Z\n"
+"POT-Creation-Date: 2021-01-28T19:00:01.815Z\n"
+"PO-Revision-Date: 2021-01-28T19:00:01.815Z\n"
 
 msgid "Name"
 msgstr ""
@@ -227,9 +227,6 @@ msgstr ""
 msgid "Subsequent Lettering"
 msgstr ""
 
-msgid "Additional Designation"
-msgstr ""
-
 msgid "Period dates"
 msgstr ""
 
@@ -404,6 +401,9 @@ msgid "Data Elements Selection"
 msgstr ""
 
 msgid "Data Elements MER"
+msgstr ""
+
+msgid "Additional Designation (Location/Sector)"
 msgstr ""
 
 msgid "Start Date"
@@ -765,7 +765,10 @@ msgstr ""
 msgid "Add Actual Values"
 msgstr ""
 
-msgid "Go to Award Number Dashboard"
+msgid "Go to Project Dashboard (current)"
+msgstr ""
+
+msgid "Go to Project Dashboard (all years)"
 msgstr ""
 
 msgid "Add Target Values"
@@ -780,7 +783,7 @@ msgstr ""
 msgid "Delete"
 msgstr ""
 
-msgid "MER Reports"
+msgid "Monthly Report"
 msgstr ""
 
 msgid "Create Project"

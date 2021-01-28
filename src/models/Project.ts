@@ -207,7 +207,7 @@ class Project {
         description: i18n.t("Description"),
         awardNumber: i18n.t("Award Number"),
         subsequentLettering: i18n.t("Subsequent Lettering"),
-        additional: i18n.t("Additional Designation"),
+        additional: i18n.t("Additional Designation (Location/Sector)"),
         startDate: i18n.t("Start Date"),
         endDate: i18n.t("End Date"),
         sectors: i18n.t("Sectors"),
