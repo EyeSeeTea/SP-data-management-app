@@ -15,3 +15,7 @@ li {
 .content {
     margin: 1rem;
 }
+
+.resizable textarea {
+    resize: vertical;
+}
