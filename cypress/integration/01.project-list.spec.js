@@ -18,7 +18,7 @@ describe("Project Configuration - List page", () => {
 
         cy.contains("Details");
         cy.contains("Add Actual Values");
-        cy.contains("Go to Dashboard");
+        cy.contains("Go to Project Dashboard (current)");
         cy.contains("Add Target Values");
         cy.contains("Download Data");
         cy.contains("Edit");
@@ -36,8 +36,8 @@ describe("Project Configuration - List page", () => {
         cy.contains("Last Updated By");
         cy.contains("Created");
         cy.contains("Created By");
-        cy.contains("Opening Date");
-        cy.contains("Closed Date");
+        cy.contains("Start Date");
+        cy.contains("End Date");
         cy.contains("API Link");
     });
 
@@ -46,7 +46,7 @@ describe("Project Configuration - List page", () => {
 
         cy.contains("Details");
         cy.contains("Add Actual Values");
-        cy.contains("Go to Dashboard");
+        cy.contains("Go to Project Dashboard (current)");
         cy.contains("Add Target Values");
         cy.contains("Download Data");
         cy.contains("Edit");
