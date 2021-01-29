@@ -6,10 +6,11 @@ import {
     PaginationOptions,
     TablePagination,
     TableAction,
+    useObjectsTable,
+    TableConfig,
+    ObjectsList,
 } from "d2-ui-components";
 
-import { ObjectsList } from "../objects-list/ObjectsList";
-import { TableConfig, useObjectsTable } from "../objects-list/objects-list-hooks";
 import { useAppContext } from "../../contexts/api-context";
 import i18n from "../../locales";
 import ListSelector from "../list-selector/ListSelector";
