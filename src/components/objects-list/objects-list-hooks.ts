@@ -9,7 +9,7 @@ import {
     ObjectsTableDetailField,
     TableState,
     TableAction,
-} from "d2-ui-components";
+} from "@eyeseetea/d2-ui-components";
 import { ObjectsListProps } from "./ObjectsList";
 import i18n from "../../locales";
 import { useLocation } from "react-router-dom";

@@ -6,7 +6,7 @@ import {
     PaginationOptions,
     TablePagination,
     TableAction,
-} from "d2-ui-components";
+} from "@eyeseetea/d2-ui-components";
 
 import { ObjectsList } from "../objects-list/ObjectsList";
 import { TableConfig, useObjectsTable } from "../objects-list/objects-list-hooks";

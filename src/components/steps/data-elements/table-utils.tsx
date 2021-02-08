@@ -4,7 +4,7 @@ import { NameColumn } from "./NameColumn";
 import { DataElement, SortableField } from "./DataElementsTable";
 import { ReactNode } from "react";
 import { SelectionInfo } from "../../../models/dataElementsSet";
-import { TableState, SnackbarState } from "d2-ui-components";
+import { TableState, SnackbarState } from "@eyeseetea/d2-ui-components";
 import { Id } from "../../../types/d2-api";
 import i18n from "../../../locales";
 import { renderJoin } from "../../../utils/react";

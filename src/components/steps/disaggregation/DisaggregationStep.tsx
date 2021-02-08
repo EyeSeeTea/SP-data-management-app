@@ -12,7 +12,7 @@ import Project from "../../../models/Project";
 import { renderJoin } from "../../../utils/react";
 import { useSectionsSidebar } from "../../sections-sidebar/sections-sidebar-hooks";
 import SectionsSidebar from "../../sections-sidebar/SectionsSidebar";
-import { useSnackbar } from "d2-ui-components";
+import { useSnackbar } from "@eyeseetea/d2-ui-components";
 import { showSelectionMessage } from "../data-elements/table-utils";
 
 const DisaggregationStep: React.FC<StepProps> = ({ project, onChange }) => {

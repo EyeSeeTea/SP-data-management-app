@@ -11,7 +11,7 @@ import {
     TableGlobalAction,
     MouseActionsMapping,
     ObjectsTable,
-} from "d2-ui-components";
+} from "@eyeseetea/d2-ui-components";
 import { makeStyles } from "@material-ui/core";
 import { Spinner } from "../objects-list/Spinner";
 
