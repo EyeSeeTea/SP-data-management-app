@@ -106,8 +106,5 @@ function buildRoles(config: UserConfig) {
 }
 
 function buildActions(roles: Role[]) {
-    return _(actionsByRole)
-        .at(roles)
-        .flatten()
-        .value();
+    return _(actionsByRole).at(roles).flatten().value();
 }

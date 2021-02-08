@@ -40,10 +40,7 @@ export default class ProjectAnalytics {
         const allValues = rows.map(row => {
             const baseIds = _.take(row, 3);
             const [deId, orgUnitId, periodId] = baseIds;
-            const categoryOptionIds = _(row)
-                .drop(baseIds.length)
-                .take(dimensions.length)
-                .value();
+            const categoryOptionIds = _(row).drop(baseIds.length).take(dimensions.length).value();
             const stringValue = row[baseIds.length + categoryOptionIds.length];
             return {
                 dataElementId: deId,

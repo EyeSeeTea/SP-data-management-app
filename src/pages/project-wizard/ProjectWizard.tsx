@@ -256,11 +256,7 @@ async function getValidationMessages(
 
     const validationObj = await project.validate(validationKeys);
 
-    return _(validationObj)
-        .at(validationKeys)
-        .flatten()
-        .compact()
-        .value();
+    return _(validationObj).at(validationKeys).flatten().compact().value();
 }
 
 const ProjectWizardImplMemo = React.memo(ProjectWizardImpl);

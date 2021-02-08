@@ -49,7 +49,7 @@ export function withPaired<Field extends keyof DataElement>(
     mapper?: (val: DataElement[Field]) => string
 ) {
     const mapper_ = mapper || _.identity;
-    const render = function(dataElement: DataElement, _value: ReactNode) {
+    const render = function (dataElement: DataElement, _value: ReactNode) {
         const pairedDes = dataElement.pairedDataElements;
         const values = [dataElement, ...pairedDes].map(de => mapper_(de[field]) || "-");
         // <DataTable /> uses the column node key (if present) as sorting key, so let's set it

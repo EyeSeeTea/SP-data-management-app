@@ -156,7 +156,7 @@ const defaultProjectData = {
 };
 
 function defineGetters(sourceObject: any, targetObject: any) {
-    Object.keys(sourceObject).forEach(function(key) {
+    Object.keys(sourceObject).forEach(function (key) {
         Object.defineProperty(targetObject, key, {
             get: () => sourceObject[key],
             enumerable: true,
@@ -582,19 +582,8 @@ export function getProjectFromOrgUnit<OU extends OrgUnitWithDates>(orgUnit: OU):
 
 export function getOrgUnitDatesFromProject(startDate: Moment, endDate: Moment): OrgUnitWithDates {
     return {
-        openingDate: toISOString(
-            startDate
-                .clone()
-                .subtract(1, "month")
-                .startOf("day")
-        ),
-        closedDate: toISOString(
-            endDate
-                .clone()
-                .add(1, "month")
-                .endOf("month")
-                .startOf("day")
-        ),
+        openingDate: toISOString(startDate.clone().subtract(1, "month").startOf("day")),
+        closedDate: toISOString(endDate.clone().add(1, "month").endOf("month").startOf("day")),
     };
 }
 

@@ -3,7 +3,12 @@ import { useHistory } from "react-router";
 import { History } from "history";
 import { makeStyles } from "@material-ui/core/styles";
 import { Paper, Button, LinearProgress } from "@material-ui/core";
-import { DatePicker, useSnackbar, ConfirmationDialog, useLoading } from "@eyeseetea/d2-ui-components";
+import {
+    DatePicker,
+    useSnackbar,
+    ConfirmationDialog,
+    useLoading,
+} from "@eyeseetea/d2-ui-components";
 import { Moment } from "moment";
 
 import MerReport, { MerReportData } from "../../models/MerReport";
