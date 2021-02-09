@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import React from "react";
 import { useHistory, useLocation } from "react-router";
 import _ from "lodash";
 import { Wizard, useSnackbar } from "@eyeseetea/d2-ui-components";
