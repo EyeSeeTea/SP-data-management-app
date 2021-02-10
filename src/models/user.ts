@@ -2,7 +2,7 @@ import { GetItemType } from "./../types/utils";
 import _ from "lodash";
 import { Config } from "./Config";
 
-export type Role = "admin" | "dataReviewer" | "dataViewer" | "dataEntry";
+export type Role = "admin" | "dataReviewer" | "dataViewer" | "dataEntry" | "merApprover";
 
 export type Action =
     | "create"
@@ -46,6 +46,7 @@ const actionsByRole: Record<Role, Action[]> = {
         "reopen",
     ],
     dataViewer: ["dashboard", "awardNumberDashboard", "downloadData"],
+    merApprover: ["dashboard", "awardNumberDashboard", "downloadData"],
     dataEntry: [
         "targetValues",
         "actualValues",
