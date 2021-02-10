@@ -3,7 +3,7 @@ import { Debug, Migration } from "../types";
 import { getUid } from "../../utils/dhis2";
 import { post } from "./common";
 
-class AwardNumberMigration {
+class AddRoleMerApproverMigration {
     constructor(private api: D2Api, private debug: Debug) {}
 
     async execute() {
@@ -32,7 +32,8 @@ class AwardNumberMigration {
 
 const migration: Migration = {
     name: "Add role MER Approver",
-    migrate: async (api: D2Api, debug: Debug) => new AwardNumberMigration(api, debug).execute(),
+    migrate: async (api: D2Api, debug: Debug) =>
+        new AddRoleMerApproverMigration(api, debug).execute(),
 };
 
 export default migration;
