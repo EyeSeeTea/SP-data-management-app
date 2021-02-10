@@ -78,6 +78,10 @@ export default class User {
         return this.actions.includes(action);
     }
 
+    cannot(action: Action): boolean {
+        return !this.can(action);
+    }
+
     getOrgUnits(): OrganisationUnit[] {
         return this.config.currentUser.organisationUnits;
     }
