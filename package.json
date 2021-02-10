@@ -65,7 +65,7 @@
         "cy:e2e:open": "yarn cypress-run-migrations && CYPRESS_E2E=true cypress open -b chrome",
         "cy:e2e:run": "yarn cypress-run-migrations && CYPRESS_E2E=true cypress run -b chrome --headless",
         "ts-node": "ts-node -P tsconfig-cli.json",
-        "cypress-run-migrations": "yarn ts-node src/migrations/cli.ts ${CYPRESS_EXTERNAL_API/:\\/\\//:\\/\\/$CYPRESS_DHIS2_AUTH@}",
+        "cypress-run-migrations": "yarn ts-node src/migrations/cli.ts $CYPRESS_EXTERNAL_API $CYPRESS_DHIS2_AUTH",
         "generate-test-fixtures": "yarn run ts src/models/Config.ts"
     },
     "husky": {
