@@ -79,10 +79,10 @@ export default class ProjectsList {
                       .getData();
 
         const projects = d2OrgUnits.map(getProjectFromOrgUnit);
-        const dataSetCodes = _.sortBy(projects.map(ou => `${ou.id}_ACTUAL`));
-        const orgUnitGroupsForAwardNumber = this.getOrgUnitGroupsForAwardNumber(d2OrgUnits);
+        const dataSetCodes = new Set(_.sortBy(projects.map(ou => `${ou.id}_ACTUAL`)));
+        const orgUnitGroupIds = new Set(getIds(this.getOrgUnitGroupsForAwardNumber(d2OrgUnits)));
 
-        const { dataSets, organisationUnitGroups } = _(dataSetCodes).isEmpty()
+        const res = _(dataSetCodes).isEmpty()
             ? { dataSets: [], organisationUnitGroups: [] }
             : await api.metadata
                   .get({
@@ -94,19 +94,25 @@ export default class ProjectsList {
                               userGroupAccesses: { id: true, displayName: true, access: true },
                               access: true,
                           },
-                          filter: { code: { in: dataSetCodes } },
+                          // When there are many projects, this results in a 414 error, filter on the response.
+                          // filter: { code: { in: dataSetCodes } },
+                          filter: { code: { like$: "_ACTUAL" } },
                       },
                       organisationUnitGroups: {
                           fields: {
                               id: true,
                               organisationUnits: true,
                           },
-                          filter: {
-                              id: { in: getIds(orgUnitGroupsForAwardNumber) },
-                          },
+                          // Same problem, 414, filter on the response
+                          //filter: { id: { in: orgUnitGroupFilterIds } },
                       },
                   })
                   .getData();
+
+        const dataSets = res.dataSets.filter(ds => dataSetCodes.has(ds.code));
+        const organisationUnitGroups = res.organisationUnitGroups.filter(oug =>
+            orgUnitGroupIds.has(oug.id)
+        );
 
         const dataSetByOrgUnitId = _.keyBy(dataSets, dataSet => (dataSet.code || "").split("_")[0]);
         const sectorsByCode = _.keyBy(config.sectors, sector => sector.code);
