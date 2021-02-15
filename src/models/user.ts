@@ -46,7 +46,13 @@ const actionsByRole: Record<Role, Action[]> = {
         "reopen",
     ],
     dataViewer: ["dashboard", "awardNumberDashboard", "downloadData"],
-    merApprover: ["dashboard", "downloadData", "accessMER"],
+    merApprover: [
+        "dashboard",
+        "countryDashboard",
+        "awardNumberDashboard",
+        "downloadData",
+        "accessMER",
+    ],
     dataEntry: [
         "targetValues",
         "actualValues",
