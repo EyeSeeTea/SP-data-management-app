@@ -2,7 +2,7 @@ import { GetItemType } from "./../types/utils";
 import _ from "lodash";
 import { Config } from "./Config";
 
-export type Role = "admin" | "dataReviewer" | "dataViewer" | "dataEntry";
+export type Role = "admin" | "dataReviewer" | "dataViewer" | "dataEntry" | "merApprover";
 
 export type Action =
     | "create"
@@ -46,6 +46,13 @@ const actionsByRole: Record<Role, Action[]> = {
         "reopen",
     ],
     dataViewer: ["dashboard", "awardNumberDashboard", "downloadData"],
+    merApprover: [
+        "dashboard",
+        "countryDashboard",
+        "awardNumberDashboard",
+        "downloadData",
+        "accessMER",
+    ],
     dataEntry: [
         "targetValues",
         "actualValues",
@@ -75,6 +82,10 @@ export default class User {
 
     can(action: Action): boolean {
         return this.actions.includes(action);
+    }
+
+    cannot(action: Action): boolean {
+        return !this.can(action);
     }
 
     getOrgUnits(): OrganisationUnit[] {

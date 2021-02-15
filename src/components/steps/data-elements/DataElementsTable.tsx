@@ -1,6 +1,12 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { ObjectsTable, useSnackbar, RowConfig, TableAction } from "d2-ui-components";
-import { TablePagination, TableColumn, TableState, TableSorting } from "d2-ui-components";
+import {
+    ObjectsTable,
+    useSnackbar,
+    RowConfig,
+    TableAction,
+    ObjectsTableProps,
+} from "d2-ui-components";
+import { TablePagination, TableColumn, TableSorting } from "d2-ui-components";
 import _ from "lodash";
 
 import DataElementsFilters, { Filter, FilterKey } from "./DataElementsFilters";
@@ -104,8 +110,8 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
         return { pagination: initialPagination, sorting: initialSorting };
     }, []);
 
-    const onChange = React.useCallback(
-        (state: TableState<DataElement>) => {
+    const onChange = React.useCallback<NonNullable<ObjectsTableProps<DataElement>["onChange"]>>(
+        state => {
             if (onSelectionChange) return onTableChange(onSelectionChange, snackbar, state);
         },
         [onSelectionChange, snackbar]

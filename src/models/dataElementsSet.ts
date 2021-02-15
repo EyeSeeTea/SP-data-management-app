@@ -270,11 +270,12 @@ export default class DataElementsSet {
         });
     }
 
-    keepSelectionInSectors(sector: Ref[]): DataElementsSet {
-        const newSelected = _.pick(
-            this.data.selected,
-            sector.map(sector => sector.id)
-        );
+    keepSelectionInSectors(sectors: Ref[]): DataElementsSet {
+        const newSelected = _(sectors)
+            .map(sector => [sector.id, this.data.selected[sector.id] || []])
+            .fromPairs()
+            .value();
+
         return new DataElementsSet(this.config, { ...this.data, selected: newSelected });
     }
 
