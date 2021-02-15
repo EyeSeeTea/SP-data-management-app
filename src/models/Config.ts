@@ -40,6 +40,7 @@ const baseConfig = {
         dataViewer: ["Data Viewer"],
         admin: ["DM Admin"],
         dataEntry: ["Data Entry"],
+        merApprover: ["MER Approver"],
     },
     dataElementGroupSets: {
         sector: "SECTOR",
