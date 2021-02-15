@@ -18,3 +18,12 @@ export async function getProjectIds(api: D2Api, config: Config, debug: Debug): P
         .map(project => project.id)
         .value();
 }
+
+export async function post<Payload>(api: D2Api, debug: Debug, payload: Payload) {
+    const res = await api.metadata.post(payload).getData();
+    if (res.status !== "OK") {
+        debug(JSON.stringify(res));
+        throw Error("Error on post");
+    }
+    return res;
+}

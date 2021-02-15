@@ -369,10 +369,9 @@ describe("Project", () => {
             mock.onGet("/metadata", {
                 params: {
                     "dataSets:fields":
-                        "access,code,sections[code,dataElements[id]],userAccesses[access,displayName,id],userGroupAccesses[access,displayName,id]",
-                    "dataSets:filter": ["code:in:[3_ACTUAL,5_ACTUAL]"],
+                        "access,code,sections[code],userAccesses[access,displayName,id],userGroupAccesses[access,displayName,id]",
+                    "dataSets:filter": ["code:like$:_ACTUAL"],
                     "organisationUnitGroups:fields": "id,organisationUnits",
-                    "organisationUnitGroups:filter": ["id:in:[]"],
                 },
             }).replyOnce(200, {
                 dataSets: [
@@ -422,9 +421,6 @@ describe("Project", () => {
                         expect.objectContaining({ code: "SECTOR_AGRICULTURE" }),
                     ]),
                     sharing: emptySharing,
-                    dataElementIdsBySectorId: {
-                        ieyBABjYyHO: ["de1"],
-                    },
                 },
             ]);
         });
