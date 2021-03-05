@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import {
     ObjectsTable,
     useSnackbar,
@@ -87,8 +87,6 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
     } = props;
     const snackbar = useSnackbar();
     const [filter, setFilter] = useState<Filter>({});
-
-    useEffect(() => setFilter({}), [sectorId]);
 
     const fullFilter = { onlySelected, ...filter, sectorId };
 
