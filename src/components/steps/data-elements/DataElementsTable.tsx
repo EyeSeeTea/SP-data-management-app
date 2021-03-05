@@ -90,10 +90,9 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
 
     const fullFilter = { onlySelected, ...filter, sectorId };
 
-    const dataElements = useMemo(() => dataElementsSet.get(fullFilter), [
-        dataElementsSet,
-        fullFilter,
-    ]);
+    const dataElements = useMemo(() => {
+        return dataElementsSet.get(fullFilter);
+    }, [dataElementsSet, fullFilter]);
 
     const filterOptions = useMemo(() => {
         const dataElements = dataElementsSet.get({ ...filter, sectorId });
@@ -219,12 +218,13 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
 
 function searchDataElements(textSearch: string, dataElements: DataElement[]) {
     const text = textSearch.toLowerCase().trim();
+    const matches = (s: string) => s.toLowerCase().includes(text);
 
     if (!text) {
         return {};
     } else {
         return _(dataElements)
-            .filter(de => de.name.toLowerCase().includes(text))
+            .filter(de => matches(de.name) || matches(de.code) || matches(de.search))
             .countBy(de => de.sector.id)
             .value();
     }
