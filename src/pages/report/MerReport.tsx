@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-import { useHistory } from "react-router";
-import { History } from "history";
 import { makeStyles } from "@material-ui/core/styles";
 import { Paper, Button, LinearProgress } from "@material-ui/core";
 import { DatePicker, useSnackbar, ConfirmationDialog, useLoading } from "d2-ui-components";
@@ -22,14 +20,14 @@ import { Maybe } from "../../types/utils";
 import { withSnackbarOnError } from "../../components/utils/errors";
 import ExecutiveSummaries from "../../components/report/ExecutiveSummaries";
 import { useGoTo } from "../../router";
+import { useAppHistory } from "../../utils/use-app-history";
 
 type ProceedWarning = { type: "hidden" } | { type: "visible"; action: () => void };
 
 const MerReportComponent: React.FC = () => {
     const { api, config, isDev } = useAppContext();
     const translations = getTranslations();
-    const history = useHistory();
-    const goToLandingPage = React.useCallback(() => goTo(history, "/"), [history]);
+    const appHistory = useAppHistory();
     const classes = useStyles();
     const snackbar = useSnackbar();
     const initial = isDev ? getDevMerReport() : { date: null, orgUnit: null };
@@ -145,7 +143,7 @@ const MerReportComponent: React.FC = () => {
             <PageHeader
                 title={title}
                 help={translations.help}
-                onBackClick={() => confirmIfUnsavedChanges(goToLandingPage)}
+                onBackClick={() => confirmIfUnsavedChanges(appHistory.goBack)}
             />
 
             <Paper style={{ marginBottom: 20 }}>
@@ -242,10 +240,6 @@ const MerReportComponent: React.FC = () => {
         </React.Fragment>
     );
 };
-
-function goTo(history: History, url: string) {
-    history.push(url);
-}
 
 function getTranslations() {
     return {
