@@ -11,6 +11,7 @@ import { D2Api } from "../../types/d2-api";
 import { Config } from "../../models/Config";
 import { link } from "../../utils/form";
 import { useAppHistory } from "../../utils/use-app-history";
+import { generateUrl } from "../../router";
 
 interface DataValuesProps {
     type: DataSetType;
@@ -29,7 +30,7 @@ type State = GetState<{
 
 const DataValues: React.FC<DataValuesProps> = ({ type }) => {
     const { api, config } = useAppContext();
-    const appHistory = useAppHistory();
+    const appHistory = useAppHistory(generateUrl("projects"));
     const match = useRouteMatch<RouterParams>();
     const [state, setState] = useState<State>({ loading: true });
     const { data, loading, error } = state;

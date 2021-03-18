@@ -17,6 +17,7 @@ import "./widgets.css";
 import { useDialog } from "./data-approval-hooks";
 import { DataApprovalMessage } from "./DataApprovalMessage";
 import { useAppHistory } from "../../utils/use-app-history";
+import { generateUrl } from "../../router";
 
 declare global {
     interface Window {
@@ -53,7 +54,7 @@ const DataApproval: React.FC = () => {
         showUnapproveButton: false,
     });
 
-    const appHistory = useAppHistory();
+    const appHistory = useAppHistory(generateUrl("projects"));
     const { project, date, dataSetType, projectDataSet, report, error } = state;
 
     const categoryComboItems = React.useMemo(

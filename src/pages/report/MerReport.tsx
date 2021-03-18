@@ -19,7 +19,7 @@ import { useBoolean } from "../../utils/hooks";
 import { Maybe } from "../../types/utils";
 import { withSnackbarOnError } from "../../components/utils/errors";
 import ExecutiveSummaries from "../../components/report/ExecutiveSummaries";
-import { useGoTo } from "../../router";
+import { useGoTo, generateUrl } from "../../router";
 import { useAppHistory } from "../../utils/use-app-history";
 
 type ProceedWarning = { type: "hidden" } | { type: "visible"; action: () => void };
@@ -27,7 +27,7 @@ type ProceedWarning = { type: "hidden" } | { type: "visible"; action: () => void
 const MerReportComponent: React.FC = () => {
     const { api, config, isDev } = useAppContext();
     const translations = getTranslations();
-    const appHistory = useAppHistory();
+    const appHistory = useAppHistory(generateUrl("projects"));
     const classes = useStyles();
     const snackbar = useSnackbar();
     const initial = isDev ? getDevMerReport() : { date: null, orgUnit: null };

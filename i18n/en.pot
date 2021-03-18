@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2021-01-28T19:00:01.815Z\n"
-"PO-Revision-Date: 2021-01-28T19:00:01.815Z\n"
+"POT-Creation-Date: 2021-03-13T19:59:09.759Z\n"
+"PO-Revision-Date: 2021-03-13T19:59:09.759Z\n"
 
 msgid "Name"
 msgstr ""
@@ -147,9 +147,6 @@ msgid ""
 "The database version ({{instanceVersion}}) is greater than the app version "
 "({{appVersion}}), cannot continue. Please contact the administrator to "
 "update the app."
-msgstr ""
-
-msgid "Search by name"
 msgstr ""
 
 msgid "This user has no Data output and analytic organisation units assigned"
@@ -753,6 +750,12 @@ msgid ""
 "“Previous” button located on the bottom right side of the screen."
 msgstr ""
 
+msgid "Monthly Report"
+msgstr ""
+
+msgid "Create Project"
+msgstr ""
+
 msgid "Created By"
 msgstr ""
 
@@ -781,12 +784,6 @@ msgid "Edit"
 msgstr ""
 
 msgid "Delete"
-msgstr ""
-
-msgid "Monthly Report"
-msgstr ""
-
-msgid "Create Project"
 msgstr ""
 
 msgid "Countries"
