@@ -45,7 +45,7 @@ describe("Projects - Indicators", () => {
                 ...["P010400", "P020105"],
             ])
 
-            .selectSector("Livelihood")
+            .selectSector("Livelihoods")
             // Check that only the initial indicator are selected. The previous selection
             // of Agriculture->P020105 should not have modified the indicators in this section
             .assertExactSelected(["P020100", "P020103", "P020100"])
@@ -84,7 +84,7 @@ describe("Projects - Indicators", () => {
                 ...["B010201", "B010200", "B010301", "B010300", "P010401"],
                 ...["P010400", "P020105"],
             ])
-            .selectSector("Livelihood")
+            .selectSector("Livelihoods")
             .assertVisible(["P020100"])
             .assertExactSelected(["P020100"]);
 
@@ -100,7 +100,7 @@ describe("Projects - Indicators", () => {
         cy.contains("P010400");
         cy.contains("P020105");
 
-        // Livelihood
+        // Livelihoods
         cy.contains("P020100 [COVID-19] [MER]");
     });
 });
