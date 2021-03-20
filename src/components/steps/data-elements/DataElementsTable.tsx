@@ -94,7 +94,7 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
 
     const dataElements = useMemo(() => {
         return dataElementsSet.get({ onlySelected, ...filter, sectorId });
-    }, [dataElementsSet, onlySelected, filter, sectorId ]);
+    }, [dataElementsSet, onlySelected, filter, sectorId]);
 
     const filterOptions = useMemo(() => {
         const dataElements = dataElementsSet.get({ ...filter, sectorId });
