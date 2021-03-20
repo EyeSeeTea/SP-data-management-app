@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import {
     ObjectsTable,
     useSnackbar,
@@ -19,11 +19,13 @@ import DataElementsSet, {
 } from "../../../models/dataElementsSet";
 import { Id } from "../../../types/d2-api";
 import { onTableChange, withPaired, getName } from "./table-utils";
+import Project from "../../../models/Project";
 
 // Column names must be known to the model interface, so we need to add keys used in custom columns
 export type DataElement = DataElement_ & { isCovid19?: boolean };
 
 export interface DataElementsTableProps {
+    project: Project;
     dataElementsSet: DataElementsSet;
     sectorId: Id;
     onlySelected?: boolean;
@@ -33,6 +35,7 @@ export interface DataElementsTableProps {
     customColumns?: TableColumn<DataElement>[];
     actions?: TableAction<DataElement>[];
     visibleFilters?: FilterKey[];
+    onSectorsMatchChange(matches: Record<Id, number | undefined>): void;
 }
 
 const paginationOptions = {
@@ -82,11 +85,10 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
         showGuidance = true,
         customColumns,
         actions,
+        onSectorsMatchChange,
     } = props;
     const snackbar = useSnackbar();
     const [filter, setFilter] = useState<Filter>({});
-
-    useEffect(() => setFilter({}), [sectorId]);
 
     const resetKey = { onlySelected, ...filter, sectorId };
 
@@ -187,6 +189,13 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
         return _.concat(columnsToShow, customColumns || []);
     }, [initialColumns, customColumns, showGuidance, dataElementsSet.arePairedGrouped]);
 
+    const [textSearch, setTextSearch] = React.useState("");
+
+    React.useEffect(() => {
+        const matches = searchDataElements(textSearch, dataElementsSet.get(filter));
+        onSectorsMatchChange(matches);
+    }, [filter, dataElementsSet, onSectorsMatchChange, textSearch]);
+
     if (!sectorId) return null;
 
     return (
@@ -204,8 +213,23 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
             filterComponents={filterComponents}
             actions={actions}
             paginationOptions={paginationOptions}
+            onChangeSearch={setTextSearch}
         />
     );
 };
+
+function searchDataElements(textSearch: string, dataElements: DataElement[]) {
+    const text = textSearch.toLowerCase().trim();
+    const matches = (s: string) => s.toLowerCase().includes(text);
+
+    if (!text) {
+        return {};
+    } else {
+        return _(dataElements)
+            .filter(de => matches(de.name) || matches(de.code) || matches(de.search))
+            .countBy(de => de.sector.id)
+            .value();
+    }
+}
 
 export default React.memo(DataElementsTable);
