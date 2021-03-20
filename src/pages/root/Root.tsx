@@ -24,6 +24,7 @@ const Root = () => {
                 <Route
                     path={generateUrl("projects.edit", idParam)}
                     render={props => (
+                        //@ts-ignore
                         <ProjectWizard action={{ type: "edit", id: props.match.params.id }} />
                     )}
                 />
