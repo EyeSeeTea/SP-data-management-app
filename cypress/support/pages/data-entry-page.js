@@ -18,9 +18,7 @@ export default class DataEntryPage {
             .clear({ force: true })
             .type(value, { force: true });
 
-        cy.iframe()
-            .find("#tabs")
-            .click();
+        cy.iframe().find("#tabs").click();
 
         if (validationError) {
             this.hasValidationError(validationError);
@@ -30,10 +28,7 @@ export default class DataEntryPage {
     }
 
     selectTab(title) {
-        cy.iframe()
-            .find("#tabs")
-            .contains(title)
-            .click();
+        cy.iframe().find("#tabs").contains(title).click();
 
         return this;
     }
@@ -51,9 +46,7 @@ export default class DataEntryPage {
         const selector = ".MuiPaper-root";
         cy.get(selector).contains(text);
 
-        cy.get(selector)
-            .contains("OK")
-            .click();
+        cy.get(selector).contains("OK").click();
         return this;
     }
 }

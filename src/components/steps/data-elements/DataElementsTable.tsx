@@ -5,8 +5,10 @@ import {
     RowConfig,
     TableAction,
     ObjectsTableProps,
-} from "d2-ui-components";
-import { TablePagination, TableColumn, TableSorting } from "d2-ui-components";
+    TablePagination,
+    TableColumn,
+    TableSorting,
+} from "@eyeseetea/d2-ui-components";
 import _ from "lodash";
 
 import DataElementsFilters, { Filter, FilterKey } from "./DataElementsFilters";

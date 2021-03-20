@@ -9,6 +9,7 @@ declare module "lodash" {
         ): TObject[TKey];
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     interface LoDashImplicitWrapper<TValue> {
         getOrFail<TObject extends object, TKey extends keyof TObject>(
             this: LoDashImplicitWrapper<TObject>,
