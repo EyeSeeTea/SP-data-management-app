@@ -1166,6 +1166,13 @@
   dependencies:
     regenerator-runtime "^0.13.4"
 
+"@babel/runtime@^7.9.1":
+  version "7.12.5"
+  resolved "https://registry.npmjs.org/@babel/runtime/-/runtime-7.12.5.tgz#410e7e487441e1b360c29be715d870d9b985882e"
+  integrity sha512-plcc+hbExy3McchJCEQG3knOsuh3HH+Prx1P6cLIkET/0dLuQDEnrT+s27Axgc9bqfsmNUNHfscgMUdBpC9xfg==
+  dependencies:
+    regenerator-runtime "^0.13.4"
+
 "@babel/template@^7.10.4", "@babel/template@^7.3.3", "@babel/template@^7.4.0", "@babel/template@^7.8.6":
   version "7.10.4"
   resolved "https://registry.npmjs.org/@babel/template/-/template-7.10.4.tgz#3251996c4200ebc71d1a8fc405fba940f36ba278"
@@ -1299,17 +1306,22 @@
     debug "^3.1.0"
     lodash.once "^4.1.1"
 
-"@date-io/core@1.x", "@date-io/core@^1.3.13", "@date-io/core@^1.3.6":
+"@date-io/core@1.3.6":
+  version "1.3.6"
+  resolved "https://registry.npmjs.org/@date-io/core/-/core-1.3.6.tgz#5c518cee6fa011e754293aebc6f1192360061797"
+  integrity sha512-cihiu8YaTHh7IqrzekbZcA7dh+7uhViHgWyxcKAO2cg1DYGYC5J7z4/rnGGL7swrK5xFVLIeyoxJ+sacziIRKg==
+
+"@date-io/core@1.x", "@date-io/core@^1.0.2":
   version "1.3.13"
   resolved "https://registry.npmjs.org/@date-io/core/-/core-1.3.13.tgz#90c71da493f20204b7a972929cc5c482d078b3fa"
   integrity sha512-AlEKV7TxjeK+jxWVKcCFrfYAk8spX9aCyiToFIiLPtfQbsjmRGLIhb5VZgptQcJdHtLXo7+m0DuurwFgUToQuA==
 
-"@date-io/moment@^1.0.2":
-  version "1.3.13"
-  resolved "https://registry.npmjs.org/@date-io/moment/-/moment-1.3.13.tgz#56c2772bc4f6675fc6970257e6033e7a7c2960f0"
-  integrity sha512-3kJYusJtQuOIxq6byZlzAHoW/18iExJer9qfRF5DyyzdAk074seTuJfdofjz4RFfTd/Idk8WylOQpWtERqvFuQ==
+"@date-io/moment@1.0.2":
+  version "1.0.2"
+  resolved "https://registry.npmjs.org/@date-io/moment/-/moment-1.0.2.tgz#898ca98d2031376cfed3c7258a8078a26892a501"
+  integrity sha512-iQFRMH49cFYH/jzgYhdvmO+YfLRmsBZX293Vcfrvkfk+ovrd2g5KOtP5Je3CBlywfqNOQlCC3tKAxsIvaIDSYw==
   dependencies:
-    "@date-io/core" "^1.3.13"
+    "@date-io/core" "^1.0.2"
 
 "@dhis2/app-runtime@^2.0.4":
   version "2.2.2"
@@ -1903,7 +1915,7 @@
     react-is "^16.8.0"
     react-transition-group "^4.4.0"
 
-"@material-ui/icons@4.9.1", "@material-ui/icons@^4.9.1":
+"@material-ui/icons@^4.9.1":
   version "4.9.1"
   resolved "https://registry.npmjs.org/@material-ui/icons/-/icons-4.9.1.tgz#fdeadf8cb3d89208945b33dbc50c7c616d0bd665"
   integrity sha512-GBitL3oBWO0hzBhvA9KxqcowRUsA0qzwKkURyC8nppnC3fw54KPKZ+d4V1Eeg/UnDRSzDaI9nGCdel/eh9AQMg==
@@ -4317,7 +4329,7 @@ class-utils@^0.3.5:
     isobject "^3.0.0"
     static-extend "^0.1.1"
 
-classnames@^2.2.5, classnames@^2.2.6:
+classnames@2.2.6, classnames@^2.2.5, classnames@^2.2.6:
   version "2.2.6"
   resolved "https://registry.npmjs.org/classnames/-/classnames-2.2.6.tgz#43935bffdd291f326dad0a205309b38d00f650ce"
   integrity sha512-JR/iSQOSt+LQIWwrwEzJ9uk0xfN3mTVYMwt1Ir5mUcSN6pU+V4zQFFaJsclJbPuAUQH+yfWef6tm7l1quW3C8Q==
@@ -4621,7 +4633,7 @@ compression@^1.7.4:
     safe-buffer "5.1.2"
     vary "~1.1.2"
 
-compute-scroll-into-view@^1.0.14:
+compute-scroll-into-view@^1.0.13:
   version "1.0.16"
   resolved "https://registry.npmjs.org/compute-scroll-into-view/-/compute-scroll-into-view-1.0.16.tgz#5b7bf4f7127ea2c19b750353d7ce6776a90ee088"
   integrity sha512-a85LHKY81oQnikatZYA90pufpZ6sQx++BoCxOEMsjpZx+ZnaKGQnCyCehTRr/1p9GBIAHTjcU9k71kSYWloLiQ==
@@ -5270,25 +5282,24 @@ d2-manifest@^1.0.0:
     minimist "^1.1.0"
     readline-sync "^1.4.1"
 
-d2-ui-components@2.3.0:
-  version "2.3.0"
-  resolved "https://registry.yarnpkg.com/d2-ui-components/-/d2-ui-components-2.3.0.tgz#0eb4d3b898338c00487a76e354b13fdcce0793e1"
-  integrity sha512-m70jou6JpRf7e4LuRlJcE/uS9u3LEzXgbdwni5u0wsoPhUAJII4SKu267o1eKjekVi8uDuZ7Z8BU1LUFtivixQ==
+d2-ui-components@2.4.0-beta.5:
+  version "2.4.0-beta.5"
+  resolved "https://registry.npmjs.org/d2-ui-components/-/d2-ui-components-2.4.0-beta.5.tgz#169335473d973a32f335f9e2462fb4589a498f0e"
+  integrity sha512-DWIcb4bLOP/qx41LBZ5XAer3uc+U1H3fhszU0R0SLFEc7ua2kAYG4zw2vfjyY3U1oQDi6PZVPcp2uYZ9KZE2qg==
   dependencies:
-    "@date-io/core" "^1.3.6"
-    "@date-io/moment" "^1.0.2"
+    "@date-io/core" "1.3.6"
+    "@date-io/moment" "1.0.2"
     "@dhis2/d2-i18n" "1.0.6"
     "@dhis2/d2-ui-core" "6.3.0"
-    "@material-ui/icons" "4.9.1"
     "@material-ui/pickers" "3.2.10"
-    classnames "^2.2.6"
-    downshift "^5.4.2"
-    lodash "4.17.19"
-    moment "^2.22.2"
-    nano-memoize "1.1.10"
-    react-linkify "^1.0.0-alpha"
-    rxjs-compat "6.5.4"
-    throttle-debounce "^2.1.0"
+    classnames "2.2.6"
+    downshift "5.4.2"
+    lodash "4.17.20"
+    moment "2.22.2"
+    nano-memoize "1.2.1"
+    react-linkify "1.0.0-alpha"
+    rxjs-compat "6.6.3"
+    throttle-debounce "2.1.0"
 
 d2@^31.8.1:
   version "31.8.2"
@@ -5739,13 +5750,13 @@ dotenv@8.2.0, dotenv@^8.0.0:
   resolved "https://registry.npmjs.org/dotenv/-/dotenv-8.2.0.tgz#97e619259ada750eea3e4ea3e26bceea5424b16a"
   integrity sha512-8sJ78ElpbDJBHNeBzUbUVLsqKdccaa/BXF1uPTw3GrvQTBgrQrtObr2mUrE38vzYd8cEv+m/JBfDLioYcfXoaw==
 
-downshift@^5.4.2:
-  version "5.4.7"
-  resolved "https://registry.npmjs.org/downshift/-/downshift-5.4.7.tgz#2ab7b0512cad33011ee6f29630f9a7bb74dff2b5"
-  integrity sha512-xaH0RNqwJ5pAsyk9qBmR9XJWmg1OOWMfrhzYv0NH2NjJxn77S3zBcfClw341UfhGyKg5v+qVqg/CQzvAgBNCXQ==
+downshift@5.4.2:
+  version "5.4.2"
+  resolved "https://registry.npmjs.org/downshift/-/downshift-5.4.2.tgz#3f6b7bf4ad7e0ff5503414efe3a398421763ebae"
+  integrity sha512-IVwIc4iw5OF5Bi/MbITarW2E8/5akm++5b6UL7aXyPoZmuVe4ilFGaQaktdFW/IwuzHieIwaWj4AQgI0lQNslQ==
   dependencies:
-    "@babel/runtime" "^7.10.2"
-    compute-scroll-into-view "^1.0.14"
+    "@babel/runtime" "^7.9.1"
+    compute-scroll-into-view "^1.0.13"
     prop-types "^15.7.2"
     react-is "^16.13.1"
 
@@ -10167,12 +10178,7 @@ lodash.uniq@^4.5.0:
   resolved "https://registry.npmjs.org/lodash.uniq/-/lodash.uniq-4.5.0.tgz#d0225373aeb652adc1bc82e4945339a842754773"
   integrity sha1-0CJTc662Uq3BvILklFM5qEJ1R3M=
 
-lodash@4.17.19:
-  version "4.17.19"
-  resolved "https://registry.npmjs.org/lodash/-/lodash-4.17.19.tgz#e48ddedbe30b3321783c5b4301fbd353bc1e4a4b"
-  integrity sha512-JNvd8XER9GQX0v2qJgsaN/mzFCNA5BRe/j8JN9d+tWyGLSodKQHKFicdwNYzWwI3wjRnaKPsGj1XkBjx/F96DQ==
-
-"lodash@>=3.5 <5", lodash@^4, lodash@^4.0.0, lodash@^4.15.0, lodash@^4.17.10, lodash@^4.17.11, lodash@^4.17.13, lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.19, lodash@^4.17.4, lodash@^4.17.5:
+lodash@4.17.20, "lodash@>=3.5 <5", lodash@^4, lodash@^4.0.0, lodash@^4.15.0, lodash@^4.17.10, lodash@^4.17.11, lodash@^4.17.13, lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.19, lodash@^4.17.4, lodash@^4.17.5:
   version "4.17.20"
   resolved "https://registry.npmjs.org/lodash/-/lodash-4.17.20.tgz#b44a9b6297bcb698f1c51a3545a2b3b368d59c52"
   integrity sha512-PlhdFcillOINfeV7Ni6oF1TAEayyZBoZ8bcshTHqOYJYlrqzRK5hagpagky5o4HfCzzd1TRkXPMFq6cKk9rGmA==
@@ -10632,12 +10638,17 @@ moment-timezone@^0.5.31:
   dependencies:
     moment ">= 2.9.0"
 
+moment@2.22.2:
+  version "2.22.2"
+  resolved "https://registry.npmjs.org/moment/-/moment-2.22.2.tgz#3c257f9839fc0e93ff53149632239eb90783ff66"
+  integrity sha1-PCV/mDn8DpP/UxSWMiOeuQeD/2Y=
+
 "moment@>= 2.9.0":
   version "2.27.0"
   resolved "https://registry.npmjs.org/moment/-/moment-2.27.0.tgz#8bff4e3e26a236220dfe3e36de756b6ebaa0105d"
   integrity sha512-al0MUK7cpIcglMv3YF13qSgdAIqxHTO7brRtaz3DlSULbqfazqkc5kEjNrLDOM7fsjshoFIihnU8snrP7zUvhQ==
 
-moment@^2.22.1, moment@^2.22.2, moment@^2.24.0:
+moment@^2.22.1, moment@^2.24.0:
   version "2.24.0"
   resolved "https://registry.npmjs.org/moment/-/moment-2.24.0.tgz#0d055d53f5052aa653c9f6eb68bb5d12bf5c2b5b"
   integrity sha512-bV7f+6l2QigeBBZSM/6yTNq4P2fNpSWj/0e7jQcy87A8e7o2nAfP/34/2ky5Vw4B9S446EtIhodAzkFCcR4dQg==
@@ -10702,10 +10713,10 @@ nan@^2.12.1:
   resolved "https://registry.npmjs.org/nan/-/nan-2.14.0.tgz#7818f722027b2459a86f0295d434d1fc2336c52c"
   integrity sha512-INOFj37C7k3AfaNTtX8RhsTw7qRy7eLET14cROi9+5HAVbbHuIWUHEauBv5qT4Av2tWasiTY1Jw6puUNqRJXQg==
 
-nano-memoize@1.1.10:
-  version "1.1.10"
-  resolved "https://registry.npmjs.org/nano-memoize/-/nano-memoize-1.1.10.tgz#ff38d9454812f7c5a5248b7115c838ab4da936c5"
-  integrity sha512-eMG3EMNCZ64XP7EMrCr0dBVuQPj1htR7nx81/vGYWy1GP/Waw+CqwScswwooKUQD16KnuJI2zUZCwdwC1Lki3w==
+nano-memoize@1.2.1:
+  version "1.2.1"
+  resolved "https://registry.npmjs.org/nano-memoize/-/nano-memoize-1.2.1.tgz#21091318021c81374a525349a8cd0ad712122077"
+  integrity sha512-ANfJ0QFhLzv9BZV8tHxwaDClqr+U8yY65hZA+slbgJrx+ePnHtlY92F2ZJInkkQWUUR71NzCEHBshKCHJnNyaQ==
 
 nanomatch@^1.2.9:
   version "1.2.13"
@@ -12692,7 +12703,7 @@ react-is@^16.12.0, react-is@^16.13.1, react-is@^16.6.0, react-is@^16.7.0, react-
   resolved "https://registry.npmjs.org/react-is/-/react-is-16.13.1.tgz#789729a4dc36de2999dc156dd6c1d9c18cea56a4"
   integrity sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==
 
-react-linkify@^1.0.0-alpha:
+react-linkify@1.0.0-alpha:
   version "1.0.0-alpha"
   resolved "https://registry.npmjs.org/react-linkify/-/react-linkify-1.0.0-alpha.tgz#b391c7b88e3443752fafe76a95ca4434e82e70d5"
   integrity sha512-7gcIUvJkAXXttt1fmBK9cwn+1jTa4hbKLGCZ9J1U6EOkyb2/+LKL1Z28d9rtDLMnpvImlNlLPdTPooorl5cpmg==
@@ -13426,10 +13437,10 @@ run-queue@^1.0.0, run-queue@^1.0.3:
   dependencies:
     aproba "^1.1.1"
 
-rxjs-compat@6.5.4:
-  version "6.5.4"
-  resolved "https://registry.npmjs.org/rxjs-compat/-/rxjs-compat-6.5.4.tgz#03825692af3fe363e04c43f41ff4113d76bbd305"
-  integrity sha512-rkn+lbOHUQOurdd74J/hjmDsG9nFx0z66fvnbs8M95nrtKvNqCKdk7iZqdY51CGmDemTQk+kUPy4s8HVOHtkfA==
+rxjs-compat@6.6.3:
+  version "6.6.3"
+  resolved "https://registry.npmjs.org/rxjs-compat/-/rxjs-compat-6.6.3.tgz#141405fcee11f48718d428b99c8f01826f594e5c"
+  integrity sha512-y+wUqq7bS2dG+7rH2fNMoxsDiJ32RQzFxZQE/JdtpnmEZmwLQrb1tCiItyHxdXJHXjmHnnzFscn3b6PEmORGKw==
 
 rxjs@^5.5.7:
   version "5.5.12"
@@ -14542,10 +14553,10 @@ throat@^5.0.0:
   resolved "https://registry.npmjs.org/throat/-/throat-5.0.0.tgz#c5199235803aad18754a667d659b5e72ce16764b"
   integrity sha512-fcwX4mndzpLQKBS1DVYhGAcYaYt7vsHNIvQV+WXMvnow5cgjPphq5CaayLaGsjRdSCKZFNGt7/GYAuXaNOiYCA==
 
-throttle-debounce@^2.1.0:
-  version "2.3.0"
-  resolved "https://registry.npmjs.org/throttle-debounce/-/throttle-debounce-2.3.0.tgz#fd31865e66502071e411817e241465b3e9c372e2"
-  integrity sha512-H7oLPV0P7+jgvrk+6mwwwBDmxTaxnu9HMXmloNLXwnNO0ZxZ31Orah2n8lU1eMPvsaowP2CX+USCgyovXfdOFQ==
+throttle-debounce@2.1.0:
+  version "2.1.0"
+  resolved "https://registry.npmjs.org/throttle-debounce/-/throttle-debounce-2.1.0.tgz#257e648f0a56bd9e54fe0f132c4ab8611df4e1d5"
+  integrity sha512-AOvyNahXQuU7NN+VVvOOX+uW6FPaWdAOdRP5HfwYxAfCzXTFKRMoIMk+n+po318+ktcChx+F1Dd91G3YHeMKyg==
 
 throttleit@^1.0.0:
   version "1.0.0"
