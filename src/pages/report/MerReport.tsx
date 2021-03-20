@@ -26,6 +26,7 @@ import { useBoolean } from "../../utils/hooks";
 import { Maybe } from "../../types/utils";
 import { withSnackbarOnError } from "../../components/utils/errors";
 import ExecutiveSummaries from "../../components/report/ExecutiveSummaries";
+import { useGoTo } from "../../router";
 
 type ProceedWarning = { type: "hidden" } | { type: "visible"; action: () => void };
 
@@ -45,6 +46,8 @@ const MerReportComponent: React.FC = () => {
     const [merReport, setMerReportBase] = useState<Maybe<MerReport>>(null);
     const title = i18n.t("Monthly Executive Reports");
     const loading = useLoading();
+
+    useRedirectToProjectsPageIfUserHasNoAccess();
 
     React.useEffect(() => {
         if (date && orgUnit) {
@@ -278,5 +281,18 @@ const useStyles = makeStyles({
         marginLeft: 25,
     },
 });
+
+function useRedirectToProjectsPageIfUserHasNoAccess() {
+    const { currentUser } = useAppContext();
+    const snackbar = useSnackbar();
+    const goTo = useGoTo();
+
+    React.useEffect(() => {
+        if (currentUser.cannot("accessMER")) {
+            snackbar.error("Cannot access MER reports");
+            goTo("projects");
+        }
+    }, [currentUser, snackbar, goTo]);
+}
 
 export default React.memo(MerReportComponent);

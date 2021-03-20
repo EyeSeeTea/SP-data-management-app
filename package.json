@@ -1,7 +1,7 @@
 {
     "name": "data-management-app",
     "description": "DHIS2 Data Management App",
-    "version": "0.9.2",
+    "version": "0.9.3",
     "license": "GPL-3.0",
     "author": "EyeSeeTea team",
     "homepage": ".",
@@ -18,7 +18,7 @@
         "@dhis2/d2-ui-forms": "^6.5.3",
         "@dhis2/ui-core": "^4.8.0",
         "@dhis2/ui-widgets": "^2.0.8",
-        "@eyeseetea/d2-ui-components": "2.5.2",
+        "@eyeseetea/d2-ui-components": "2.6.0-beta.1",
         "@material-ui/core": "4.11.3",
         "@material-ui/icons": "4.11.2",
         "@material-ui/styles": "4.11.3",
@@ -62,9 +62,10 @@
         "update-po": "yarn extract-pot && find i18n -name '*.po' | while read pofile; do msgmerge --backup=off -U $pofile i18n/en.pot; done",
         "manifest": "d2-manifest package.json build/manifest.webapp",
         "cy:verify": "cypress verify",
-        "cy:e2e:open": "CYPRESS_E2E=true cypress open -b chrome",
-        "cy:e2e:run": "CYPRESS_E2E=true cypress run -b chrome --headless",
+        "cy:e2e:open": "yarn cypress-run-migrations && CYPRESS_E2E=true cypress open -b chrome",
+        "cy:e2e:run": "yarn cypress-run-migrations && CYPRESS_E2E=true cypress run -b chrome --headless",
         "ts-node": "ts-node -P tsconfig-cli.json",
+        "cypress-run-migrations": "yarn ts-node src/migrations/cli.ts $CYPRESS_EXTERNAL_API $CYPRESS_DHIS2_AUTH",
         "generate-test-fixtures": "yarn run ts src/models/Config.ts"
     },
     "husky": {

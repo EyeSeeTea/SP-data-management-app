@@ -2,8 +2,7 @@ import _ from "lodash";
 import { D2Api, Id } from "../../types/d2-api";
 import { Debug, Migration } from "../types";
 import { getUid, getRefs } from "../../utils/dhis2";
-
-type Payload = any;
+import { post } from "./common";
 
 class AwardNumberMigration {
     constructor(private api: D2Api, private debug: Debug) {}
@@ -15,13 +14,8 @@ class AwardNumberMigration {
         await this.addExistingProjectsToOrgUnitGroupAwardNumber();
     }
 
-    private async post(payload: Payload) {
-        const res = await this.api.metadata.post(payload).getData();
-        if (res.status !== "OK") {
-            this.debug(JSON.stringify(res));
-            throw Error("Error on post");
-        }
-        return res;
+    private async post<Payload>(payload: Payload) {
+        post(this.api, this.debug, payload);
     }
 
     async createOrgUnitGroupSet() {
