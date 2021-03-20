@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import _ from "lodash";
-import { OrgUnitsSelector, useSnackbar } from "d2-ui-components";
+import { OrgUnitsSelector, useSnackbar } from "@eyeseetea/d2-ui-components";
 import { LinearProgress } from "@material-ui/core";
 import { useAppContext } from "../../contexts/api-context";
 import User from "../../models/user";

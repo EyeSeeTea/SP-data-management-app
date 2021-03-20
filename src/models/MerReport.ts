@@ -689,7 +689,7 @@ async function getReportData<OU extends Ref>(
     return { reportInfo, staffSummaryPrev, staffSummaryCurrent, report, reportPeriod };
 }
 
-function mergeNotNil<T>(staff1: StaffSummary, staff2: StaffSummary): StaffSummary {
+function mergeNotNil(staff1: StaffSummary, staff2: StaffSummary): StaffSummary {
     return mergeStaffSummaries(staff1, staff2, (val1, val2) => (_.isNil(val2) ? val1 : val2));
 }
 

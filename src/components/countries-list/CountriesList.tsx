@@ -1,6 +1,11 @@
 import React from "react";
 import _ from "lodash";
-import { TableColumn, TableSorting, PaginationOptions, TableAction } from "d2-ui-components";
+import {
+    TableColumn,
+    TableSorting,
+    PaginationOptions,
+    TableAction,
+} from "@eyeseetea/d2-ui-components";
 
 import { ObjectsList } from "../objects-list/ObjectsList";
 import { useObjectsTable, Pagination } from "../objects-list/objects-list-hooks";

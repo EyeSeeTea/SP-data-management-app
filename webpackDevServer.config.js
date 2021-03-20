@@ -23,7 +23,7 @@ const sockHost = process.env.WDS_SOCKET_HOST;
 const sockPath = process.env.WDS_SOCKET_PATH; // default: '/sockjs-node'
 const sockPort = process.env.WDS_SOCKET_PORT;
 
-const ignoredFiles = function(appSrc) {
+const ignoredFiles = function (appSrc) {
     const regexp = new RegExp(
         `^(?!${escape(
             path.normalize(appSrc + "/").replace(/[\\]+/g, "/")
@@ -34,7 +34,7 @@ const ignoredFiles = function(appSrc) {
     return regexp;
 };
 
-module.exports = function(proxy, allowedHost) {
+module.exports = function (proxy, allowedHost) {
     return {
         // WebpackDevServer 2.4.3 introduced a security fix that prevents remote
         // websites from potentially accessing local content through DNS rebinding:

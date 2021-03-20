@@ -1,4 +1,4 @@
-import { ConfirmationDialog } from "d2-ui-components";
+import { ConfirmationDialog } from "@eyeseetea/d2-ui-components";
 import React from "react";
 import i18n from "../../locales";
 import { UseMigrationsResult } from "./hooks";

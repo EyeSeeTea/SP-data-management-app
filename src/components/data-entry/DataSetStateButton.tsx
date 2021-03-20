@@ -44,10 +44,7 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
 
     const reset = React.useCallback(() => {
         setActive(true);
-        projectDataSet
-            .reset()
-            .then(notifyOnChange)
-            .catch(showErrorAndSetInactive);
+        projectDataSet.reset().then(notifyOnChange).catch(showErrorAndSetInactive);
     }, [projectDataSet, notifyOnChange, showErrorAndSetInactive]);
 
     const reopenConfirmation = useConfirmation({

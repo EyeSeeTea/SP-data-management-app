@@ -1,4 +1,4 @@
-import { TableSorting } from "d2-ui-components";
+import { TableSorting } from "@eyeseetea/d2-ui-components";
 import React, { useCallback, useState } from "react";
 import styled from "styled-components";
 import ActionButton from "../../components/action-button/ActionButton";

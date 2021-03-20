@@ -113,7 +113,7 @@ function waitforElementToLoad(iframeDocument: HTMLDocument, selector: string) {
     return new Promise(resolve => {
         const check = () => {
             if (iframeDocument.querySelector(selector)) {
-                resolve();
+                resolve(undefined);
             } else {
                 setTimeout(check, 1000);
             }
