@@ -67,7 +67,7 @@ function waitForOption(el: HTMLSelectElement, predicate: (option: HTMLOptionElem
         const check = () => {
             const option = _.find(el.options, predicate);
             if (option) {
-                resolve();
+                resolve(undefined);
             } else {
                 setTimeout(check, 10);
             }

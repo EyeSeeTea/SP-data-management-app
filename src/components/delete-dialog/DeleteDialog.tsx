@@ -1,7 +1,7 @@
 import React from "react";
 import { Id } from "../../types/d2-api";
 import { withSnackbarOnError } from "../utils/errors";
-import { useSnackbar, ConfirmationDialog } from "d2-ui-components";
+import { useSnackbar, ConfirmationDialog } from "@eyeseetea/d2-ui-components";
 import Project from "../../models/Project";
 import { useAppContext } from "../../contexts/api-context";
 import i18n from "../../locales";

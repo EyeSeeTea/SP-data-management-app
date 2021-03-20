@@ -394,10 +394,7 @@ export default class DataElementsSet {
         const relatedDataElements = _.flatMap(sourceDataElements, de => {
             if (de.indicatorType === "sub" && de.mainSeries && !de.mainSeries.endsWith("00")) {
                 const key = getDataElementKey(de.mainSector, "global", de.mainSeries);
-                return _(allDataElementsByKey)
-                    .at([key])
-                    .compact()
-                    .value();
+                return _(allDataElementsByKey).at([key]).compact().value();
             } else {
                 return [];
             }

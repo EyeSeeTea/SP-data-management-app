@@ -6,7 +6,7 @@ import ExitWizardButton from "../../wizard/ExitWizardButton";
 import i18n from "../../../locales";
 import { StepProps } from "../../../pages/project-wizard/ProjectWizard";
 import Project from "../../../models/Project";
-import { useSnackbar } from "d2-ui-components";
+import { useSnackbar } from "@eyeseetea/d2-ui-components";
 import { useHistory } from "react-router";
 import { generateUrl } from "../../../router";
 import { useAppContext } from "../../../contexts/api-context";

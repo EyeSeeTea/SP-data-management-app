@@ -46,10 +46,6 @@ type State = {
     showUnapproveButton: boolean;
 };
 
-interface DataInterface {
-    project: Project;
-}
-
 const DataApproval: React.FC = () => {
     const { api, config } = useAppContext();
     const match = useRouteMatch<RouterParams>();

@@ -33,7 +33,6 @@ Cypress.Commands.add("login", (username, _password = null) => {
         method: "POST",
         url: `${externalUrl}/dhis-web-commons-security/login.action`,
         body: {
-            /* eslint-disable @typescript-eslint/camelcase*/
             j_username: username,
             j_password: password,
         },

@@ -9,7 +9,7 @@ import {
     useObjectsTable,
     TableConfig,
     ObjectsList,
-} from "d2-ui-components";
+} from "@eyeseetea/d2-ui-components";
 
 import { useAppContext } from "../../contexts/api-context";
 import i18n from "../../locales";

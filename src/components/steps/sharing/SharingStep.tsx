@@ -3,7 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 
 import i18n from "../../../locales";
 import { D2Api } from "../../../types/d2-api";
-import { Sharing, ShareUpdate } from "d2-ui-components";
+import { Sharing, ShareUpdate } from "@eyeseetea/d2-ui-components";
 import { StepProps } from "../../../pages/project-wizard/ProjectWizard";
 import ProjectSharing from "../../../models/ProjectSharing";
 import Project from "../../../models/Project";

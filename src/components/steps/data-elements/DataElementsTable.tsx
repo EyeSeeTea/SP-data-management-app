@@ -5,8 +5,10 @@ import {
     RowConfig,
     TableAction,
     ObjectsTableProps,
-} from "d2-ui-components";
-import { TablePagination, TableColumn, TableSorting } from "d2-ui-components";
+    TablePagination,
+    TableColumn,
+    TableSorting,
+} from "@eyeseetea/d2-ui-components";
 import _ from "lodash";
 
 import DataElementsFilters, { Filter, FilterKey } from "./DataElementsFilters";
@@ -86,12 +88,11 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
 
     useEffect(() => setFilter({}), [sectorId]);
 
-    const fullFilter = { onlySelected, ...filter, sectorId };
+    const resetKey = { onlySelected, ...filter, sectorId };
 
-    const dataElements = useMemo(() => dataElementsSet.get(fullFilter), [
-        dataElementsSet,
-        fullFilter,
-    ]);
+    const dataElements = useMemo(() => {
+        return dataElementsSet.get({ onlySelected, ...filter, sectorId });
+    }, [dataElementsSet, onlySelected, filter, sectorId]);
 
     const filterOptions = useMemo(() => {
         const dataElements = dataElementsSet.get({ ...filter, sectorId });
@@ -199,7 +200,7 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
             searchBoxLabel={i18n.t("Search by name / code")}
             onChange={onChange}
             searchBoxColumns={searchBoxColumns}
-            resetKey={JSON.stringify(fullFilter)}
+            resetKey={JSON.stringify(resetKey)}
             filterComponents={filterComponents}
             actions={actions}
             paginationOptions={paginationOptions}
