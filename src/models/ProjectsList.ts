@@ -79,10 +79,9 @@ export default class ProjectsList {
 
         const projects = d2OrgUnits.map(getProjectFromOrgUnit);
         const dataSetCodes = new Set(_.sortBy(projects.map(ou => `${ou.id}_ACTUAL`)));
-        const orgUnitGroupIds = new Set(getIds(this.getOrgUnitGroupsForAwardNumber(d2OrgUnits)));
 
         const res = _(dataSetCodes).isEmpty()
-            ? { dataSets: [], organisationUnitGroups: [] }
+            ? { dataSets: [], organisationUnitGroupSets: [] }
             : await api.metadata
                   .get({
                       dataSets: {
@@ -97,25 +96,25 @@ export default class ProjectsList {
                           // filter: { code: { in: dataSetCodes } },
                           filter: { code: { like$: "_ACTUAL" } },
                       },
-                      organisationUnitGroups: {
+                      organisationUnitGroupSets: {
                           fields: {
                               id: true,
-                              organisationUnits: true,
+                              organisationUnitGroups: { id: true, organisationUnits: { id: true } },
                           },
                           // Same problem, 414, filter on the response
                           //filter: { id: { in: orgUnitGroupFilterIds } },
+                          filter: { id: { eq: config.organisationUnitGroupSets.awardNumber.id } },
                       },
                   })
                   .getData();
 
         const dataSets = res.dataSets.filter(ds => dataSetCodes.has(ds.code));
-        const organisationUnitGroups = res.organisationUnitGroups.filter(oug =>
-            orgUnitGroupIds.has(oug.id)
-        );
+        const orgUnitAwardNumberGroups =
+            res.organisationUnitGroupSets[0]?.organisationUnitGroups || [];
 
         const dataSetByOrgUnitId = _.keyBy(dataSets, dataSet => (dataSet.code || "").split("_")[0]);
         const sectorsByCode = _.keyBy(config.sectors, sector => sector.code);
-        const orgUnitsByAwardNumber = this.getOrgUnitsCountByAwardNumber(organisationUnitGroups);
+        const orgUnitsByAwardNumber = this.getOrgUnitsCountByAwardNumber(orgUnitAwardNumberGroups);
 
         const projectsWithSectors = projects.map(orgUnit => {
             const dataSet = _(dataSetByOrgUnitId).get(orgUnit.id, null);
