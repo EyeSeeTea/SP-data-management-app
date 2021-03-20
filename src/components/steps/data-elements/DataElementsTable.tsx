@@ -1,6 +1,10 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { ObjectsTable, useSnackbar, RowConfig, TableAction, ObjectsTableProps } from "@eyeseetea/d2-ui-components";
 import {
+    ObjectsTable,
+    useSnackbar,
+    RowConfig,
+    TableAction,
+    ObjectsTableProps,
     TablePagination,
     TableColumn,
     TableSorting,
