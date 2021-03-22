@@ -18,7 +18,8 @@ export function useValidation(
     project: Project,
     dataSetType: DataSetType,
     period: Maybe<string>,
-    options: Options = {}
+    options: Options = {},
+    iframeKey: object
 ): UseValidationResponse {
     const { api } = useAppContext();
     const [validator, setValidator] = React.useState<Validator | undefined>();
@@ -51,7 +52,7 @@ export function useValidation(
     const [validationResult, setValidationResult] = React.useState<ValidationResult>({});
     const clearResult = React.useCallback(() => setValidationResult({}), [setValidationResult]);
 
-    useDhis2EntryEvents(iframeRef, onMessage, options);
+    useDhis2EntryEvents(iframeRef, onMessage, options, iframeKey);
 
     return { result: validationResult, clear: clearResult };
 }
