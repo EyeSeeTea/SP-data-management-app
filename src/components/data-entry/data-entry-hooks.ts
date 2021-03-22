@@ -44,7 +44,8 @@ const inputMsgFromIframeTypes: MsgFromIframe["type"][] = [
 export function useDhis2EntryEvents(
     iframeRef: React.RefObject<HTMLIFrameElement>,
     onMessage: (inputMsg: InputMsg) => Promise<boolean> | undefined,
-    options: Options = {}
+    options: Options = {},
+    iframeKey: object
 ): void {
     const onMessageFromIframe = React.useCallback(
         async ev => {
@@ -69,7 +70,7 @@ export function useDhis2EntryEvents(
                     const continueSaving = await onMessage(inputMsg);
 
                     if (continueSaving === false) {
-                        console.debug("[preSaveDataValueFromIframe] skip save");
+                        console.debug("[data-entry:preSaveDataValueFromIframe] skip save");
                         iwindow.eval(`$("#${fieldId}").css({backgroundColor: "#f48686"})`);
                     } else {
                         const saveDataValueMsg: SaveDataValueMsg = {
@@ -99,14 +100,8 @@ export function useDhis2EntryEvents(
     );
 
     React.useEffect(() => {
-        const iframe = iframeRef.current;
-        const iwindow = iframe && (iframe.contentWindow as DataEntryWindow);
-        if (!iframe || !iwindow || !onMessage) return;
-
-        iwindow.addEventListener("load", () => {
-            const init = setupDataEntryInterceptors.toString();
-            iwindow.eval(`(${init})(${JSON.stringify(options)});`);
-        });
+        const iwindow = getIframeWindow(iframeRef);
+        if (!iwindow || !onMessage) return;
 
         window.addEventListener("message", onMessageFromIframe);
 
@@ -114,6 +109,21 @@ export function useDhis2EntryEvents(
             window.removeEventListener("message", onMessageFromIframe);
         };
     }, [iframeRef, onMessage, options, onMessageFromIframe]);
+
+    React.useEffect(() => {
+        const iwindow = getIframeWindow(iframeRef);
+        if (!iwindow) return;
+
+        iwindow.addEventListener("load", () => {
+            const init = setupDataEntryInterceptors.toString();
+            iwindow.eval(`(${init})(${JSON.stringify(options)});`);
+        });
+    }, [iframeRef, options, iframeKey]);
+}
+
+function getIframeWindow(iframeRef: React.RefObject<HTMLIFrameElement>) {
+    const iframe = iframeRef.current;
+    return iframe ? (iframe.contentWindow as DataEntryWindow) : undefined;
 }
 
 function isInputMsgFromIframe(msg: any): msg is MsgFromIframe {
@@ -139,6 +149,7 @@ export interface Options {
 /* Function to eval within the iframe to send/receive events to/from the parent page */
 function setupDataEntryInterceptors(options: Options = {}) {
     const iframeWindow = (window as unknown) as DataEntryWindow;
+    console.debug("|data-entry|:setup-interceptors", iframeWindow.dataEntryHooksInit, options);
     if (iframeWindow.dataEntryHooksInit) return;
 
     if (options.getOnSaveEvent) {

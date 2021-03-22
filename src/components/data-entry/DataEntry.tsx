@@ -197,7 +197,14 @@ const DataEntry = (props: DataEntryProps) => {
 
     const period = state.dropdownValue;
 
-    const validation = useValidation(iframeRef, project, dataSetType, period, validationOptions);
+    const validation = useValidation(
+        iframeRef,
+        project,
+        dataSetType,
+        period,
+        validationOptions,
+        iframeKey
+    );
 
     useEffect(() => {
         const iframe = iframeRef.current;
