@@ -1,9 +1,9 @@
 import React from "react";
-import { useHistory, useLocation } from "react-router";
+import { useLocation } from "react-router";
 import _ from "lodash";
 import { Wizard, useSnackbar } from "@eyeseetea/d2-ui-components";
 import { LinearProgress } from "@material-ui/core";
-import { History, Location } from "history";
+import { Location } from "history";
 
 import Project, { ValidationKey } from "../../models/Project";
 import { D2Api } from "../../types/d2-api";
@@ -24,6 +24,7 @@ import SharingStep from "../../components/steps/sharing/SharingStep";
 import DisaggregationStep from "../../components/steps/disaggregation/DisaggregationStep";
 import DataElementsSelectionStep from "../../components/steps/data-elements-selection/DataElementsSelectionStep";
 import MerSelectionStep from "../../components/steps/mer-selection/MerSelectionStep";
+import { useAppHistory } from "../../utils/use-app-history";
 
 type Action = { type: "create" } | { type: "edit"; id: string };
 
@@ -42,7 +43,7 @@ export interface StepProps {
 interface Props {
     api: D2Api;
     config: Config;
-    history: History;
+    goBack(): void;
     location: Location;
     snackbar: any;
     action: Action;
@@ -84,7 +85,7 @@ class ProjectWizardImpl extends React.Component<Props, State> {
         } catch (err) {
             console.error(err);
             this.props.snackbar.error(i18n.t("Cannot load project") + `: ${err.message || err}`);
-            this.props.history.push(generateUrl("projects"));
+            this.props.goBack();
         }
     }
 
@@ -173,12 +174,12 @@ class ProjectWizardImpl extends React.Component<Props, State> {
         if (isUpdated) {
             this.setState({ dialogOpen: true });
         } else {
-            this.goToConfiguration();
+            this.props.goBack();
         }
     };
 
-    goToConfiguration = () => {
-        this.props.history.push(generateUrl("projects"));
+    goBack = () => {
+        this.props.goBack();
     };
 
     handleDialogCancel = () => {
@@ -209,7 +210,7 @@ class ProjectWizardImpl extends React.Component<Props, State> {
                 project,
                 api,
                 onChange: this.onChange(step),
-                onCancel: this.goToConfiguration,
+                onCancel: this.goBack,
                 action: action.type,
             },
         }));
@@ -225,7 +226,7 @@ class ProjectWizardImpl extends React.Component<Props, State> {
             <React.Fragment>
                 <ExitWizardButton
                     isOpen={dialogOpen}
-                    onConfirm={this.goToConfiguration}
+                    onConfirm={this.goBack}
                     onCancel={this.handleDialogCancel}
                 />
                 <PageHeader
@@ -263,17 +264,17 @@ const ProjectWizardImplMemo = React.memo(ProjectWizardImpl);
 
 const ProjectWizard: React.FC<ProjectWizardProps> = props => {
     const snackbar = useSnackbar();
-    const history = useHistory();
     const location = useLocation();
     const { api, config, isDev } = useAppContext();
     const { action } = props;
+    const appHistory = useAppHistory(generateUrl("projects"));
 
     return (
         <ProjectWizardImplMemo
             snackbar={snackbar}
             api={api}
             config={config}
-            history={history}
+            goBack={appHistory.goBack}
             location={location}
             action={action}
             isDev={isDev}

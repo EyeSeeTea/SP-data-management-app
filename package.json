@@ -41,6 +41,7 @@
         "react-dom": "17.0.1",
         "react-is": "16.8.0",
         "react-router-dom": "^5.1.2",
+        "react-router-last-location": "^2.0.1",
         "react-scripts": "4.0.1",
         "striptags": "^3.1.1",
         "styled-components": "^5.2.1",
@@ -67,11 +68,12 @@
         "cy:e2e:run": "yarn cypress-run-migrations && CYPRESS_E2E=true cypress run -b chrome --headless",
         "ts-node": "ts-node -P tsconfig-cli.json",
         "cypress-run-migrations": "yarn ts-node src/migrations/cli.ts $CYPRESS_EXTERNAL_API $CYPRESS_DHIS2_AUTH",
+        "check-uncommited": "! git status -uno --porcelain | grep '.'",
         "generate-test-fixtures": "yarn run ts src/models/Config.ts"
     },
     "husky": {
         "hooks": {
-            "pre-push": "yarn localize && yarn prettify && yarn lint && yarn jest",
+            "pre-push": "yarn localize && yarn prettify && yarn check-uncommited && yarn lint && yarn jest",
             "post-merge": "./.githooks/dep-check"
         }
     },

@@ -4,13 +4,11 @@ import {
     TableColumn,
     TableSorting,
     PaginationOptions,
-    TablePagination,
     TableAction,
-    useObjectsTable,
-    TableConfig,
-    ObjectsList,
 } from "@eyeseetea/d2-ui-components";
 
+import { ObjectsList } from "../objects-list/ObjectsList";
+import { useObjectsTable, Pagination } from "../objects-list/objects-list-hooks";
 import { useAppContext } from "../../contexts/api-context";
 import i18n from "../../locales";
 import ListSelector from "../list-selector/ListSelector";
@@ -21,6 +19,7 @@ import { Id } from "../../types/d2-api";
 import { useGoTo, GoTo } from "../../router";
 import { useListSelector } from "../list-selector/ListSelectorHooks";
 import User from "../../models/user";
+import { useObjectsListParams, UrlState } from "../objects-list/ObjectsListParams";
 
 interface CountryView {
     id: string;
@@ -31,9 +30,7 @@ interface CountryView {
     lastUpdated: string;
 }
 
-interface CountriesListProps {}
-
-const CountriesList: React.FC<CountriesListProps> = () => {
+const CountriesList: React.FC = () => {
     const { api, config, currentUser } = useAppContext();
     const goTo = useGoTo();
     const baseConfig = React.useMemo(() => {
@@ -41,11 +38,7 @@ const CountriesList: React.FC<CountriesListProps> = () => {
     }, [currentUser, goTo]);
 
     const getRows = React.useMemo(
-        () => async (
-            search: string,
-            paging: TablePagination,
-            sorting: TableSorting<CountryView>
-        ) => {
+        () => async (search: string, paging: Pagination, sorting: TableSorting<CountryView>) => {
             const instance = new CountriesListModel(api, config);
             const { pager, objects } = await instance.get(search, paging, sorting);
             return { pager, objects: getCountryViews(objects) };
@@ -53,7 +46,10 @@ const CountriesList: React.FC<CountriesListProps> = () => {
         [api, config]
     );
 
-    const tableProps = useObjectsTable(baseConfig, getRows);
+    const [params, setParams] = useObjectsListParams(baseConfig);
+
+    const tableProps = useObjectsTable(baseConfig, getRows, params, setParams);
+
     const onViewChange = useListSelector("countries");
 
     return (
@@ -63,15 +59,15 @@ const CountriesList: React.FC<CountriesListProps> = () => {
     );
 };
 
-function getBaseListConfig(currentUser: User, goTo: GoTo): TableConfig<CountryView> {
+const initialSorting: TableSorting<CountryView> = {
+    field: "name" as const,
+    order: "asc" as const,
+};
+
+function getBaseListConfig(currentUser: User, goTo: GoTo) {
     const paginationOptions: PaginationOptions = {
         pageSizeOptions: [10, 20, 50],
         pageSizeInitialValue: 20,
-    };
-
-    const initialSorting: TableSorting<CountryView> = {
-        field: "name" as const,
-        order: "asc" as const,
     };
 
     const columns: TableColumn<CountryView>[] = [
@@ -105,7 +101,21 @@ function getBaseListConfig(currentUser: User, goTo: GoTo): TableConfig<CountryVi
 
     const searchBoxLabel = i18n.t("Search by name or code");
 
-    return { columns, details, actions, initialSorting, paginationOptions, searchBoxLabel };
+    const initialUrlState: UrlState<CountryView> = {
+        search: "",
+        pagination: { page: 1, pageSize: paginationOptions.pageSizeInitialValue },
+        sorting: initialSorting,
+    };
+
+    return {
+        columns,
+        details,
+        actions,
+        initialSorting,
+        paginationOptions,
+        searchBoxLabel,
+        initialUrlState,
+    };
 }
 
 function getCountryViews(countries: Country[]): CountryView[] {
