@@ -8,7 +8,7 @@ import {
     ObjectsTableDetailField,
     TableState,
     TableAction,
-} from "d2-ui-components";
+} from "@eyeseetea/d2-ui-components";
 import { ObjectsListProps } from "./ObjectsList";
 import { Pager } from "../../models/PaginatedObjects";
 

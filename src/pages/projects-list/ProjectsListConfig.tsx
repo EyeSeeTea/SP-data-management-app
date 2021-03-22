@@ -1,6 +1,11 @@
 import React from "react";
 import _ from "lodash";
-import { TableColumn, TableAction, PaginationOptions, TableSorting } from "d2-ui-components";
+import {
+    TableColumn,
+    TableAction,
+    PaginationOptions,
+    TableSorting,
+} from "@eyeseetea/d2-ui-components";
 import { Icon } from "@material-ui/core";
 
 import i18n from "../../locales";

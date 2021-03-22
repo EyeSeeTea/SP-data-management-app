@@ -12,9 +12,9 @@ import {
     MouseActionsMapping,
     ObjectsTable,
     SearchBox,
-} from "d2-ui-components";
+} from "@eyeseetea/d2-ui-components";
 import { makeStyles } from "@material-ui/core";
-import { Spinner } from "../objects-list/Spinner";
+import Spinner from "../spinner/Spinner";
 
 export interface ObjectsListProps<Obj extends ReferenceObject> {
     className?: string;

@@ -1,7 +1,7 @@
 import React from "react";
 import _ from "lodash";
 import { isValueInUnionType, fromPairs } from "../../types/utils";
-import { TableColumn, TableSorting, ReferenceObject } from "d2-ui-components";
+import { TableColumn, TableSorting, ReferenceObject } from "@eyeseetea/d2-ui-components";
 import { Pagination } from "./objects-list-hooks";
 import { UseQueryStringsOptions, useUrlParams } from "../../utils/use-url-params";
 
