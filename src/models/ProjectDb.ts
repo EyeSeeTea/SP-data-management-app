@@ -607,6 +607,7 @@ async function getOrgUnitGroupsMetadata(
     const awardNumberOrgUnitGroupBase: OrgUnitGroup = {
         id: getUid("awardNumber", project.awardNumber),
         name: `Award Number ${project.awardNumber}`,
+        code: config.base.organisationUnitGroups.awardNumberPrefix + project.awardNumber,
         organisationUnits: [],
         attributeValues: [],
     };
