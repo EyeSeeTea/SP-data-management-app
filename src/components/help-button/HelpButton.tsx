@@ -1,6 +1,6 @@
 import React from "react";
 import { Icon, IconButton, Tooltip } from "@material-ui/core";
-import { DialogButton } from "d2-ui-components";
+import { DialogButton } from "@eyeseetea/d2-ui-components";
 import "./HelpButton.css";
 
 import i18n from "../../locales";

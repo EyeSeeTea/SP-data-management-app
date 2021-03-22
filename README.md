@@ -26,6 +26,12 @@ Start the development server pointing to that DHIS2 instance:
 $ PORT=8081 REACT_APP_DHIS2_BASE_URL="http://localhost:8080" REACT_APP_TRACK_RERENDERS=1 yarn start
 ```
 
+To avoid browser cross-domain iframes error, instruct the server proxy requests:
+
+```
+PORT=8081 REACT_APP_PROXY_TARGET=http://localhost:8080 REACT_APP_PROXY_AUTH='admin:PASSWORD' REACT_APP_DHIS2_BASE_URL=http://localhost:8081/dhis2 yarn start
+```
+
 ## Using iframes
 
 Use use iframes to embed the DHIS2 data entry app. The typical approach -a development

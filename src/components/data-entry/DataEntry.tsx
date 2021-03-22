@@ -67,7 +67,7 @@ function waitForOption(el: HTMLSelectElement, predicate: (option: HTMLOptionElem
         const check = () => {
             const option = _.find(el.options, predicate);
             if (option) {
-                resolve();
+                resolve(undefined);
             } else {
                 setTimeout(check, 10);
             }
@@ -197,7 +197,14 @@ const DataEntry = (props: DataEntryProps) => {
 
     const period = state.dropdownValue;
 
-    const validation = useValidation(iframeRef, project, dataSetType, period, validationOptions);
+    const validation = useValidation(
+        iframeRef,
+        project,
+        dataSetType,
+        period,
+        validationOptions,
+        iframeKey
+    );
 
     useEffect(() => {
         const iframe = iframeRef.current;

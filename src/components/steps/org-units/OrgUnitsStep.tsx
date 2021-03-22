@@ -2,7 +2,7 @@ import React from "react";
 import { StepProps } from "../../../pages/project-wizard/ProjectWizard";
 import UserOrgUnits from "../../org-units/UserOrgUnits";
 import { Title, getValuesFromSelection } from "../utils/common";
-import { MultiSelector } from "d2-ui-components";
+import { MultiSelector } from "@eyeseetea/d2-ui-components";
 import { getProjectFieldName } from "../../../utils/form";
 import { useAppContext } from "../../../contexts/api-context";
 

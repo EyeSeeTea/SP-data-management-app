@@ -1,6 +1,6 @@
 import React from "react";
 import _ from "lodash";
-import { ConfirmationDialog, useSnackbar } from "d2-ui-components";
+import { ConfirmationDialog, useSnackbar } from "@eyeseetea/d2-ui-components";
 import i18n from "../../locales";
 import { TextField } from "@material-ui/core";
 import { Maybe } from "../../types/utils";

@@ -1,8 +1,9 @@
+import moment from "moment";
 import { CategoryOptionCombo } from "./../Config";
-import { D2Api, DataValueSetsGetRequest, DataValueSetsDataValue } from "../../types/d2-api";
+import { D2Api, DataValueSetsGetRequest, DataValueSetsDataValue, Id } from "../../types/d2-api";
 import _ from "lodash";
 
-import Project, { DataSetType } from "../Project";
+import Project, { DataSetType, monthFormat } from "../Project";
 import i18n from "../../locales";
 import { getIds } from "../../utils/dhis2";
 import {
@@ -25,7 +26,12 @@ interface Data {
     project: Project;
     config: Config;
     period: string;
-    pastDataValuesIndexed: { [key: string]: Maybe<DataValueSetsDataValue[]> };
+    pastDataValuesIndexed: { [dataValueKey: string]: Maybe<DataValueSetsDataValue[]> };
+}
+
+interface RelatedProjects {
+    orgUnitIds: Id[];
+    dataSetIds: Id[];
 }
 
 export class RecurringValidator {
@@ -39,24 +45,19 @@ export class RecurringValidator {
     ): Promise<RecurringValidator> {
         if (!project.orgUnit || !project.dataSets) throw new Error("Cannot build validator");
         const { config } = project;
-
-        const dataSet = project.dataSets[dataSetType];
         const categoryOptionForDataSetType = project.config.categoryOptions[dataSetType];
-        const projectPeriods = project.getPeriods();
-
-        const pastPeriods = projectPeriods
-            .filter(projectPeriod => projectPeriod.id < period)
-            .map(period => period.id);
+        const relatedProjects = await this.getRelatedProjects(api, project, dataSetType);
 
         const getSetOptions: DataValueSetsGetRequest = {
-            orgUnit: [project.orgUnit.id],
-            dataSet: [dataSet.id],
-            period: pastPeriods,
+            orgUnit: relatedProjects.orgUnitIds,
+            dataSet: relatedProjects.dataSetIds,
+            startDate: "1970",
+            endDate: moment(period, monthFormat).format("YYYY-MM-DD"),
             attributeOptionCombo: getIds(categoryOptionForDataSetType.categoryOptionCombos),
         };
-        const pastDataValues = _.isEmpty(pastPeriods)
-            ? []
-            : (await api.dataValues.getSet(getSetOptions).getData()).dataValues;
+
+        const { dataValues: pastDataValues } = await api.dataValues.getSet(getSetOptions).getData();
+
         const pastDataValuesIndexed = _(pastDataValues)
             .groupBy(dataValue => getKey(dataValue.dataElement, dataValue.categoryOptionCombo))
             .value();
@@ -64,40 +65,60 @@ export class RecurringValidator {
         return new RecurringValidator({ project, config, period, pastDataValuesIndexed });
     }
 
-    isFirstPeriod(dataValue: { period: string }) {
-        const projectPeriods = this.data.project.getPeriods();
-        const firstProjectPeriod = _(projectPeriods).get(0, null);
-        return firstProjectPeriod ? firstProjectPeriod.id === dataValue.period : false;
+    static async getRelatedProjects(
+        api: D2Api,
+        project: Project,
+        dataSetType: DataSetType
+    ): Promise<RelatedProjects> {
+        const { organisationUnits } = await api.metadata
+            .get({
+                organisationUnits: {
+                    fields: { id: true },
+                    filter: { code: { $like: project.awardNumber } },
+                },
+            })
+            .getData();
+
+        const dataSetCodes = organisationUnits.map(ou => `${ou.id}_${dataSetType.toUpperCase()}`);
+
+        const { dataSets } = await api.metadata
+            .get({
+                dataSets: {
+                    fields: { id: true },
+                    filter: { code: { in: dataSetCodes } },
+                },
+            })
+            .getData();
+
+        return {
+            orgUnitIds: organisationUnits.map(ou => ou.id),
+            dataSetIds: dataSets.map(ou => ou.id),
+        };
     }
 
     validate(dataValue: DataValue): ValidationItem[] {
-        if (this.isFirstPeriod({ period: this.data.period })) return [];
-
         const cocForRelatedNewValue = this.getCategoryOptionComboForRelatedNew(dataValue);
         if (!cocForRelatedNewValue) return [];
 
         const newKey = getKey(dataValue.dataElementId, cocForRelatedNewValue.id);
-        const returningKey = getKey(dataValue.dataElementId, dataValue.categoryOptionComboId);
-
         const newDataValues = this.data.pastDataValuesIndexed[newKey] || [];
-        const returningDataValues = _(this.data.pastDataValuesIndexed[returningKey] || [])
-            .filter(dataValue => this.isFirstPeriod(dataValue))
-            .value();
-        const pastDataValues = _.concat(newDataValues, returningDataValues);
-        const maxValue = _.sum(pastDataValues.map(dv => toFloat(dv.value)));
+        const limitValue = _.sum(newDataValues.map(dv => toFloat(dv.value)));
 
-        const summatory = _(pastDataValues)
+        const formula = _(newDataValues)
             .sortBy(dv => dv.period)
+            .filter(dv => dv.value !== "0")
             .map(dv => `${formatPeriod(dv.period)} [${toFloat(dv.value)}]`)
             .join(" + ");
-        const newValuesSumFormula = summatory
-            ? `${summatory} = ${maxValue}`
+
+        const newValuesSumFormula = formula
+            ? `${formula} = ${limitValue}`
             : i18n.t("there is no data for previous periods");
+
         const returningValue = toFloat(dataValue.value);
-        const isValid = returningValue <= maxValue;
+        const isValid = returningValue <= limitValue;
 
         const msg = i18n.t(
-            "Returning value ({{returningValue}}) cannot be greater than the sum of initial returning + new values for past periods: {{newValuesSumFormula}}",
+            "Returning value ({{returningValue}}) cannot be greater than the sum of <new> values for past periods: {{newValuesSumFormula}}",
             { returningValue, newValuesSumFormula, nsSeparator: false }
         );
 

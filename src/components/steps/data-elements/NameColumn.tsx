@@ -5,11 +5,16 @@ import Tooltip from "@material-ui/core/Tooltip";
 import { renderJoin } from "../../../utils/react";
 import { DataElement } from "./DataElementsTable";
 import { getTooltipContents } from "./table-utils";
+import { Filter } from "./DataElementsFilters";
 
-export const NameColumn: React.FC<{ dataElement: DataElement; showGuidance: boolean }> = ({
-    dataElement,
-    showGuidance,
-}) => {
+interface NameColumnProps {
+    dataElement: DataElement;
+    showGuidance: boolean;
+    filter: Filter;
+}
+
+export const NameColumn: React.FC<NameColumnProps> = props => {
+    const { dataElement, showGuidance, filter } = props;
     const dataElements = [dataElement, ...dataElement.pairedDataElements];
     const classes = useStyles();
     const tooltips = renderJoin(
@@ -26,10 +31,10 @@ export const NameColumn: React.FC<{ dataElement: DataElement; showGuidance: bool
                     }
                     classes={{ tooltip: classes.tooltip }}
                 >
-                    <span>{dataElement.name}</span>
+                    <span>{getDataElementName(dataElement, filter)}</span>
                 </Tooltip>
             ) : (
-                <span>{dataElement.name}</span>
+                <span>{getDataElementName(dataElement, filter)}</span>
             )
         ),
         <br />
@@ -37,6 +42,11 @@ export const NameColumn: React.FC<{ dataElement: DataElement; showGuidance: bool
 
     return <React.Fragment>{tooltips}</React.Fragment>;
 };
+
+function getDataElementName(dataElement: DataElement, filter: Filter): string {
+    const nameFromExternal = filter.external ? dataElement.externals[filter.external]?.name : null;
+    return nameFromExternal || dataElement.name;
+}
 
 const useStyles = makeStyles(() => ({
     tooltip: {

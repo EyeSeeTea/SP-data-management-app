@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import moment from "moment";
-import { useHistory, useRouteMatch } from "react-router";
-import { History } from "history";
+import { useRouteMatch } from "react-router";
 import { makeStyles } from "@material-ui/core/styles";
 import { Paper, Button } from "@material-ui/core";
 import Dropdown from "../../components/dropdown/Dropdown";
@@ -17,6 +16,8 @@ import { isValueInUnionType } from "../../types/utils";
 import "./widgets.css";
 import { useDialog } from "./data-approval-hooks";
 import { DataApprovalMessage } from "./DataApprovalMessage";
+import { useAppHistory } from "../../utils/use-app-history";
+import { generateUrl } from "../../router";
 
 declare global {
     interface Window {
@@ -27,10 +28,6 @@ declare global {
 const jQuery = window.jQuery || {};
 
 const monthFormat = "YYYYMM";
-
-function goTo(history: History, url: string) {
-    history.push(url);
-}
 
 type RouterParams = { id: string };
 
@@ -46,15 +43,10 @@ type State = {
     showUnapproveButton: boolean;
 };
 
-interface DataInterface {
-    project: Project;
-}
-
 const DataApproval: React.FC = () => {
     const { api, config } = useAppContext();
     const match = useRouteMatch<RouterParams>();
     const projectId = match ? match.params.id : null;
-    const history = useHistory();
     const classes = useStyles();
     const [state, setState] = useState<State>({
         loading: true,
@@ -62,7 +54,7 @@ const DataApproval: React.FC = () => {
         showUnapproveButton: false,
     });
 
-    const goToLandingPage = () => goTo(history, "/");
+    const appHistory = useAppHistory(generateUrl("projects"));
     const { project, date, dataSetType, projectDataSet, report, error } = state;
 
     const categoryComboItems = React.useMemo(
@@ -120,7 +112,7 @@ const DataApproval: React.FC = () => {
                     period={state.date}
                 />
             )}
-            <PageHeader title={title} help={getHelp()} onBackClick={goToLandingPage} />
+            <PageHeader title={title} help={getHelp()} onBackClick={appHistory.goBack} />
             <Paper style={{ marginBottom: 20, padding: 20 }}>
                 <Dropdown
                     items={periodItems}

@@ -1,16 +1,11 @@
 import React from "react";
 import { LinearProgress } from "@material-ui/core";
-import { useHistory } from "react-router";
 //@ts-ignore
 import { useConfig } from "@dhis2/app-runtime";
 
 import i18n from "../../locales";
 import PageHeader from "../../components/page-header/PageHeader";
-import { History } from "history";
-
-function goTo(history: History, url: string) {
-    history.push(url);
-}
+import { useAppHistory } from "../../utils/use-app-history";
 
 function getTranslations(name: string) {
     return {
@@ -35,8 +30,6 @@ interface State {
 
 const Dashboard: React.FC<DashboardProps> = props => {
     const { id, name, backUrl } = props;
-
-    const history = useHistory();
     const { baseUrl } = useConfig();
     const [state, setState] = React.useState<State>({ type: "loading", height: 10000 });
     const iframeRef: React.RefObject<HTMLIFrameElement> = React.createRef();
@@ -44,7 +37,7 @@ const Dashboard: React.FC<DashboardProps> = props => {
     const dashboardUrlBase = `${baseUrl}/dhis-web-dashboard`;
     const dashboardUrl = dashboardUrlBase + `/#/${id}`;
     const translations = getTranslations(name);
-    const goToBackUrl = React.useCallback(() => goTo(history, backUrl), [history, backUrl]);
+    const appHistory = useAppHistory(backUrl);
 
     React.useEffect(() => {
         const iframe = iframeRef.current;
@@ -69,7 +62,7 @@ const Dashboard: React.FC<DashboardProps> = props => {
             <PageHeader
                 title={translations.title}
                 help={translations.help}
-                onBackClick={goToBackUrl}
+                onBackClick={appHistory.goBack}
             />
 
             {isLoading && (
@@ -120,7 +113,7 @@ function waitforElementToLoad(iframeDocument: HTMLDocument, selector: string) {
     return new Promise(resolve => {
         const check = () => {
             if (iframeDocument.querySelector(selector)) {
-                resolve();
+                resolve(undefined);
             } else {
                 setTimeout(check, 1000);
             }

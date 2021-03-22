@@ -31,10 +31,7 @@ export function logUnknownRequest(mockAdapter: MockAdapter) {
                 .compact()
                 .sortBy(handlerData =>
                     // Score by number of common keys between the handler data and the actual data
-                    _(handlerData)
-                        .keys()
-                        .intersection(_.keys(dataObj))
-                        .size()
+                    _(handlerData).keys().intersection(_.keys(dataObj)).size()
                 )
                 .reverse()
                 .first();

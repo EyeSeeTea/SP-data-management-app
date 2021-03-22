@@ -4,6 +4,7 @@
 /node_modules
 
 # testing
+.eslintcache
 /coverage
 
 # production
@@ -43,3 +44,4 @@ scripts/
 data-management-app.zip
 bak/
 src/dev
+.eslintcache

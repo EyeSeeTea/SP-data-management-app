@@ -2,7 +2,7 @@ import React from "react";
 import _ from "lodash";
 import { Moment } from "moment";
 import { Card, CardContent } from "@material-ui/core";
-import { DatePicker, DatePickerProps } from "d2-ui-components";
+import { DatePicker, DatePickerProps } from "@eyeseetea/d2-ui-components";
 
 import i18n from "../../../locales";
 import { StepProps } from "../../../pages/project-wizard/ProjectWizard";
