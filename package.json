@@ -71,7 +71,8 @@
     },
     "husky": {
         "hooks": {
-            "pre-push": "yarn localize && yarn prettify && yarn lint && yarn jest"
+            "pre-push": "yarn localize && yarn prettify && yarn lint && yarn jest",
+            "post-merge": "./.githooks/dep-check"
         }
     },
     "devDependencies": {
