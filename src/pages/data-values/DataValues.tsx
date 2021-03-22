@@ -2,16 +2,16 @@ import React, { useState, useEffect } from "react";
 import _ from "lodash";
 import i18n from "../../locales";
 import PageHeader from "../../components/page-header/PageHeader";
-import { History } from "history";
-import { useHistory, useRouteMatch } from "react-router";
+import { useRouteMatch } from "react-router";
 import DataEntry from "../../components/data-entry/DataEntry";
-import { generateUrl } from "../../router";
 import { LinearProgress } from "@material-ui/core";
 import Project, { DataSet, DataSetType } from "../../models/Project";
 import { useAppContext } from "../../contexts/api-context";
 import { D2Api } from "../../types/d2-api";
 import { Config } from "../../models/Config";
 import { link } from "../../utils/form";
+import { useAppHistory } from "../../utils/use-app-history";
+import { generateUrl } from "../../router";
 
 interface DataValuesProps {
     type: DataSetType;
@@ -30,7 +30,7 @@ type State = GetState<{
 
 const DataValues: React.FC<DataValuesProps> = ({ type }) => {
     const { api, config } = useAppContext();
-    const history = useHistory();
+    const appHistory = useAppHistory(generateUrl("projects"));
     const match = useRouteMatch<RouterParams>();
     const [state, setState] = useState<State>({ loading: true });
     const { data, loading, error } = state;
@@ -50,7 +50,7 @@ const DataValues: React.FC<DataValuesProps> = ({ type }) => {
             <PageHeader
                 title={translations.title}
                 help={translations.help}
-                onBackClick={() => goBack(history)}
+                onBackClick={appHistory.goBack}
             />
             <div style={stylesSubtitle}>{translations.subtitle}</div>
             {loading && <LinearProgress />}
@@ -69,10 +69,6 @@ const DataValues: React.FC<DataValuesProps> = ({ type }) => {
 };
 
 const stylesSubtitle = { marginBottom: 10, marginLeft: 15 };
-
-function goBack(history: History) {
-    history.push(generateUrl("projects"));
-}
 
 function loadData(
     projectId: string | null | undefined,

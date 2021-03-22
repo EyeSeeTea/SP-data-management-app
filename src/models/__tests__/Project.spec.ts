@@ -371,7 +371,9 @@ describe("Project", () => {
                     "dataSets:fields":
                         "access,code,sections[code],userAccesses[access,displayName,id],userGroupAccesses[access,displayName,id]",
                     "dataSets:filter": ["code:like$:_ACTUAL"],
-                    "organisationUnitGroups:fields": "id,organisationUnits",
+                    "organisationUnitGroupSets:fields":
+                        "id,organisationUnitGroups[id,organisationUnits[id]]",
+                    "organisationUnitGroupSets:filter": ["id:eq:OUGGW1cHaYy"],
                 },
             }).replyOnce(200, {
                 dataSets: [

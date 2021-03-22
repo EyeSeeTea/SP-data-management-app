@@ -63,7 +63,7 @@ describe("Projects - Create", () => {
         cy.contains("Select at least one item for Sectors");
 
         selectInMultiSelector("sectors", "Agriculture");
-        selectInMultiSelector("sectors", "Livelihood");
+        selectInMultiSelector("sectors", "Livelihoods");
 
         cy.contains("Next").click();
 
@@ -76,37 +76,23 @@ describe("Projects - Create", () => {
             .prev("td")
             .click();
 
-        cy.contains("Livelihood").click();
-        cy.contains("# of people trained in livelihood topics")
-            .parent("td")
-            .prev("td")
-            .click();
+        cy.contains("Livelihoods").click();
+        cy.contains("# of people trained in livelihood topics").parent("td").prev("td").click();
 
-        cy.contains("# of people trained on microfinance")
-            .parent("td")
-            .prev("td")
-            .click();
+        cy.contains("# of people trained on microfinance").parent("td").prev("td").click();
 
         cy.contains("Next").click();
 
         // Disaggregation
 
         cy.waitForStep("Disaggregation");
-        cy.get("[data-cy=covid19-selector-B010200]")
-            .contains("No")
-            .click();
-        cy.get(".MuiPopover-paper")
-            .contains("Yes")
-            .click();
+        cy.get("[data-cy=covid19-selector-B010200]").contains("No").click();
+        cy.get(".MuiPopover-paper").contains("Yes").click();
 
-        cy.contains("Livelihood").click();
+        cy.contains("Livelihoods").click();
 
-        cy.get("[data-cy=covid19-selector-P020100]")
-            .contains("No")
-            .click();
-        cy.get(".MuiPopover-paper")
-            .contains("Yes")
-            .click();
+        cy.get("[data-cy=covid19-selector-P020100]").contains("No").click();
+        cy.get(".MuiPopover-paper").contains("Yes").click();
 
         cy.contains("Next").click();
 
@@ -114,11 +100,8 @@ describe("Projects - Create", () => {
 
         cy.waitForStep("Selection of MER Indicators");
 
-        cy.contains("Livelihood").click();
-        cy.contains("# of people trained in livelihood topics")
-            .parent("td")
-            .prev("td")
-            .click();
+        cy.contains("Livelihoods").click();
+        cy.contains("# of people trained in livelihood topics").parent("td").prev("td").click();
 
         cy.contains("Next").click();
 
@@ -157,7 +140,7 @@ describe("Projects - Create", () => {
 
         cy.contains("Sectors");
         cy.contains("Agriculture");
-        cy.contains("Livelihood");
+        cy.contains("Livelihoods");
 
         cy.contains(
             "# of agriculture groups receiving support for improved livelihoods - B010200 [COVID-19]"
@@ -168,9 +151,7 @@ describe("Projects - Create", () => {
         cy.server();
         cy.route("POST", "/api/email/**").as("sendEmail");
 
-        cy.get("[data-wizard-contents] button")
-            .contains("Save")
-            .click();
+        cy.get("[data-wizard-contents] button").contains("Save").click();
 
         cy.contains("Project created");
         cy.wait("@sendEmail");

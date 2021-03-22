@@ -77,12 +77,7 @@ export default class ProjectDb {
             parent: { id: getOrgUnitId(project.parentOrgUnit) },
             ...getOrgUnitDatesFromProject(startDate, endDate),
             openingDate: toISOString(startDate.clone().subtract(1, "month")),
-            closedDate: toISOString(
-                endDate
-                    .clone()
-                    .add(1, "month")
-                    .endOf("month")
-            ),
+            closedDate: toISOString(endDate.clone().add(1, "month").endOf("month")),
             attributeValues: baseAttributeValues,
             // No sharing, permissions through user.organisationUnits
         };
@@ -238,10 +233,7 @@ export default class ProjectDb {
         const { startDate, endDate } = this.project.getDates();
         const now = moment();
         const projectOpeningDate = startDate;
-        const projectClosingDate = startDate
-            .clone()
-            .add(1, "month")
-            .endOf("month");
+        const projectClosingDate = startDate.clone().add(1, "month").endOf("month");
         const targetOpeningDate = moment.min(projectOpeningDate, now).startOf("day");
 
         switch (dataSetType) {
@@ -263,11 +255,7 @@ export default class ProjectDb {
                     period: { id: date.format("YYYYMM") },
                     openingDate: toISOString(projectOpeningDate),
                     closingDate: toISOString(
-                        date
-                            .clone()
-                            .startOf("month")
-                            .add(1, "month")
-                            .date(expiryDaysInMonthActual)
+                        date.clone().startOf("month").add(1, "month").date(expiryDaysInMonthActual)
                     ),
                 }));
 
@@ -619,6 +607,7 @@ async function getOrgUnitGroupsMetadata(
     const awardNumberOrgUnitGroupBase: OrgUnitGroup = {
         id: getUid("awardNumber", project.awardNumber),
         name: `Award Number ${project.awardNumber}`,
+        code: config.base.organisationUnitGroups.awardNumberPrefix + project.awardNumber,
         organisationUnits: [],
         attributeValues: [],
     };

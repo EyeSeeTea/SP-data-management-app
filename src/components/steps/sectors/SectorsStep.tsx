@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { Card, CardContent } from "@material-ui/core";
-import { MultiSelector } from "d2-ui-components";
+import { MultiSelector } from "@eyeseetea/d2-ui-components";
 import { StepProps } from "../../../pages/project-wizard/ProjectWizard";
 import { useAppContext } from "../../../contexts/api-context";
 import { getProjectFieldName } from "../../../utils/form";

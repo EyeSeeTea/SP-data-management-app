@@ -29,7 +29,7 @@ describe("Target Values", () => {
         };
 
         entryPage
-            .selectTab("Livelihood")
+            .selectTab("Livelihoods")
 
             .setInputValue(dataElementMicrofinanceId, cocIds.newMale, 1)
             .setInputValue(dataElementMicrofinanceId, cocIds.returningMale, 5)
@@ -44,7 +44,7 @@ describe("Target Values", () => {
         entryPage.selectMonth(1);
 
         entryPage
-            .selectTab("Livelihood")
+            .selectTab("Livelihoods")
 
             .setInputValue(dataElementMicrofinanceId, cocIds.newMale, 2)
             .setInputValue(dataElementMicrofinanceId, cocIds.returningMale, 1)
@@ -59,17 +59,15 @@ describe("Target Values", () => {
         entryPage.selectMonth(2);
 
         entryPage
-            .selectTab("Livelihood")
+            .selectTab("Livelihoods")
             .setInputValue(dataElementMicrofinanceId, cocIds.newMale, 3)
             .setInputValue(dataElementMicrofinanceId, cocIds.returningMale, 9, {
-                validationError:
-                    "Returning value (9) cannot be greater than the sum of initial returning + new values for past periods",
+                validationError: "Returning value (9) cannot be greater than the sum of",
             })
 
             .setInputValue(dataElementTopicsId, cocCovidIds.newMale, 3)
             .setInputValue(dataElementTopicsId, cocCovidIds.returningMale, 9, {
-                validationError:
-                    "Returning value (9) cannot be greater than the sum of initial returning + new values for past periods",
+                validationError: "Returning value (9) cannot be greater than the sum of",
             });
     });
 });

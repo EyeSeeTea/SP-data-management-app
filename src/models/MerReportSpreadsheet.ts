@@ -335,15 +335,7 @@ function applyHeaderStyles(headerRow: ExcelJS.Row) {
         .map(idx => headerRow.getCell(idx));
 
     const nLines =
-        cells
-            .map(
-                cell =>
-                    (cell.value || "")
-                        .toString()
-                        .trim()
-                        .split(/\n/).length
-            )
-            .max() || 0;
+        cells.map(cell => (cell.value || "").toString().trim().split(/\n/).length).max() || 0;
 
     if (nLines > 1) {
         headerRow.height = rowHeightPerLine * nLines;

@@ -1,6 +1,6 @@
 import moment, { Moment } from "moment";
 import _ from "lodash";
-import { Id, D2Api, D2DataInputPeriod } from "../types/d2-api";
+import { D2Api, D2DataInputPeriod } from "../types/d2-api";
 import { Config } from "./Config";
 import Project, { OrganisationUnit, DataSet, DataSetType } from "./Project";
 import ProjectDb, { DataSetOpenAttributes } from "./ProjectDb";
@@ -14,12 +14,6 @@ export interface DataSetOpenInfo {
     isOpenByDates: boolean;
     isOpenByData: boolean;
 }
-
-type DataApprovalCategoryOptionCombosParams = {
-    ds: Id;
-    pe: string;
-    ou: Id;
-};
 
 type Level = {} | { level: string; id: string };
 

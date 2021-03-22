@@ -2,9 +2,7 @@ import _ from "lodash";
 
 export default class IndicatorsPage {
     selectSector(name) {
-        cy.get("[data-test-sidebar]")
-            .contains(name)
-            .click();
+        cy.get("[data-test-sidebar]").contains(name).click();
         return this;
     }
 
@@ -52,10 +50,7 @@ export default class IndicatorsPage {
     }
 
     clickSelected(code) {
-        cy.contains(code)
-            .parent("tr")
-            .children("td:first")
-            .click();
+        cy.contains(code).parent("tr").children("td:first").click();
 
         return this;
     }

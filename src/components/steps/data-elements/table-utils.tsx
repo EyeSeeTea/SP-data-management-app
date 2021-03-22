@@ -4,18 +4,30 @@ import { NameColumn } from "./NameColumn";
 import { DataElement, SortableField } from "./DataElementsTable";
 import { ReactNode } from "react";
 import { SelectionInfo } from "../../../models/dataElementsSet";
-import { TableState, SnackbarState } from "d2-ui-components";
+import { TableState, SnackbarState } from "@eyeseetea/d2-ui-components";
 import { Id } from "../../../types/d2-api";
 import i18n from "../../../locales";
 import { renderJoin } from "../../../utils/react";
+import { Filter } from "./DataElementsFilters";
 
-export const getName = _.memoize(_getName, (dataElement, arePaired, showGuidance) =>
-    [dataElement.id, arePaired, showGuidance].join("-")
-);
+export const getName = _.memoize(_getName, (...args: Parameters<typeof _getName>) => {
+    const [dataElement, arePaired, showGuidance, filter] = args;
+    return [dataElement.id, arePaired, showGuidance, filter.external].join("-");
+});
 
-function _getName(dataElement: DataElement, _paired: boolean, showGuidance: boolean): ReactNode {
+function _getName(
+    dataElement: DataElement,
+    _paired: boolean,
+    showGuidance: boolean,
+    filter: Filter
+): ReactNode {
     return (
-        <NameColumn key={dataElement.name} dataElement={dataElement} showGuidance={showGuidance} />
+        <NameColumn
+            key={dataElement.name}
+            dataElement={dataElement}
+            showGuidance={showGuidance}
+            filter={filter}
+        />
     );
 }
 
@@ -49,7 +61,7 @@ export function withPaired<Field extends keyof DataElement>(
     mapper?: (val: DataElement[Field]) => string
 ) {
     const mapper_ = mapper || _.identity;
-    const render = function(dataElement: DataElement, _value: ReactNode) {
+    const render = function (dataElement: DataElement, _value: ReactNode) {
         const pairedDes = dataElement.pairedDataElements;
         const values = [dataElement, ...pairedDes].map(de => mapper_(de[field]) || "-");
         // <DataTable /> uses the column node key (if present) as sorting key, so let's set it

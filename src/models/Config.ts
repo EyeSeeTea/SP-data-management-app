@@ -92,6 +92,9 @@ const baseConfig = {
     legendSets: {
         achieved: "ACTUAL_TARGET_ACHIEVED",
     },
+    organisationUnitGroups: {
+        awardNumberPrefix: "AWARD_NUMBER_",
+    },
     organisationUnitGroupSets: {
         funder: "FUNDER",
         location: "LOCATION",
