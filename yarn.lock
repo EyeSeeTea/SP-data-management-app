@@ -1473,10 +1473,10 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
-"@eyeseetea/d2-ui-components@2.6.0-beta.1":
-  version "2.6.0-beta.1"
-  resolved "https://registry.yarnpkg.com/@eyeseetea/d2-ui-components/-/d2-ui-components-2.6.0-beta.1.tgz#85b40056392c8142d47025578e1591e757aba9e0"
-  integrity sha512-6HIXBQJ1Ir86ro77VFxCyfvKDC6Yq1/JDrhDHxd9CEarMOFvBd2jIiJL38gAihjMt3HronpLeKg0GgNwHIR/qA==
+"@eyeseetea/d2-ui-components@2.6.0":
+  version "2.6.0"
+  resolved "https://registry.yarnpkg.com/@eyeseetea/d2-ui-components/-/d2-ui-components-2.6.0.tgz#fc95d10c8c3d9b5dc6d9e1b95210be7dddc1d5de"
+  integrity sha512-SaLj5R/Ikbg61WVEgxlPZX/MMl23bERTbou3lDkZjhJIUuJ5QKdt4u+8tbq2MUCoMcPP2LstOCCXn+oh1sy7PA==
   dependencies:
     "@date-io/core" "1.3.6"
     "@date-io/moment" "1.0.2"
@@ -12190,10 +12190,17 @@ qs@6.7.0:
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.7.0.tgz#41dc1a015e3d581f1621776be31afb2876a9b1bc"
   integrity sha512-VCdBRNFTX1fyE7Nb6FYoURo/SPe62QCaAyzJvUjwRaIsc+NePBEniHlvxFmmX56+HZphIGtV0XeCirBtpDrTyQ==
 
-qs@^6.9.0, qs@^6.9.6:
+qs@^6.9.0:
   version "6.10.0"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.10.0.tgz#8b6519121ab291c316a3e4d49cecf6d13d8c7fe5"
   integrity sha512-yjACOWijC6L/kmPZZAsVBNY2zfHSIbpdpL977quseu56/8BZ2LoF5axK2bGhbzhVKt7V9xgWTtpyLbxwIoER0Q==
+  dependencies:
+    side-channel "^1.0.4"
+
+qs@^6.9.6:
+  version "6.10.1"
+  resolved "https://registry.npmjs.org/qs/-/qs-6.10.1.tgz#4931482fa8d647a5aab799c5271d2133b981fb6a"
+  integrity sha512-M528Hph6wsSVOBiYUnGf+K/7w0hNshs/duGsNXPUCLH5XAqjEtiPGwNONLV0tBH8NoGb0mvD5JubnUTrujKDTg==
   dependencies:
     side-channel "^1.0.4"
 

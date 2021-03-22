@@ -62,14 +62,12 @@ describe("Target Values", () => {
             .selectTab("Livelihoods")
             .setInputValue(dataElementMicrofinanceId, cocIds.newMale, 3)
             .setInputValue(dataElementMicrofinanceId, cocIds.returningMale, 9, {
-                validationError:
-                    "Returning value (9) cannot be greater than the sum of initial returning + new values for past periods",
+                validationError: "Returning value (9) cannot be greater than the sum of",
             })
 
             .setInputValue(dataElementTopicsId, cocCovidIds.newMale, 3)
             .setInputValue(dataElementTopicsId, cocCovidIds.returningMale, 9, {
-                validationError:
-                    "Returning value (9) cannot be greater than the sum of initial returning + new values for past periods",
+                validationError: "Returning value (9) cannot be greater than the sum of",
             });
     });
 });
