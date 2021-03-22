@@ -540,7 +540,7 @@ function getDataElementsBySector(
                 .value();
 
             // Add name/code in search field of the paired elements so we can search on the table
-            const search = pairedDataElements.map(de => [de.name, de.code].join("\n")).join("\n");
+            const search = getSearchString([dataElement, ...pairedDataElements]);
 
             return { ...dataElement, pairedDataElements, search };
         });
@@ -549,6 +549,19 @@ function getDataElementsBySector(
     });
 
     return _.fromPairs(pairs);
+}
+
+function getSearchString(dataElements: DataElementBase[]): string {
+    return dataElements
+        .map(dataElement => {
+            const externals = _(dataElement.externals)
+                .values()
+                .map(external => external.name)
+                .join(" ");
+
+            return [dataElement.name, dataElement.code, externals].join("\n");
+        })
+        .join("\n");
 }
 
 function getDataElementsBySectorInSet(

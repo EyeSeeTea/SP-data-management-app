@@ -232,7 +232,7 @@ function searchDataElements(textSearch: string, dataElements: DataElement[]) {
         return {};
     } else {
         return _(dataElements)
-            .filter(de => matches(de.name) || matches(de.code) || matches(de.search))
+            .filter(de => matches(de.search))
             .countBy(de => de.sector.id)
             .value();
     }
