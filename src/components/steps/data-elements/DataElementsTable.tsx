@@ -192,9 +192,12 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
     const [textSearch, setTextSearch] = React.useState("");
 
     React.useEffect(() => {
-        const matches = searchDataElements(textSearch, dataElementsSet.get(filter));
+        const matches = searchDataElements(
+            textSearch,
+            dataElementsSet.get({ onlySelected, ...filter })
+        );
         onSectorsMatchChange(matches);
-    }, [filter, dataElementsSet, onSectorsMatchChange, textSearch]);
+    }, [onlySelected, filter, dataElementsSet, onSectorsMatchChange, textSearch]);
 
     if (!sectorId) return null;
 
