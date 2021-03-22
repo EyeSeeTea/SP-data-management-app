@@ -33,6 +33,12 @@ const Dropdown: React.FC<DropdownProps> = props => {
         [onChange]
     );
 
+    // Disallow wrong selection states: if the passed value prop is invalid, reset the component
+    React.useEffect(() => {
+        const isValueInvalid = value && !items.map(item => item.value).includes(value);
+        if (isValueInvalid) onChange(undefined);
+    }, [items, value, onChange]);
+
     return (
         <SelectWrapper label={label} visible={isLabelVisible}>
             <Select data-cy={id} value={selectValue} onChange={notifyChange} MenuProps={menuProps}>

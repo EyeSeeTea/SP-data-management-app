@@ -18,11 +18,14 @@ import Project from "./Project";
 
 export const indicatorTypes = ["global", "sub", "custom"] as const;
 export const peopleOrBenefitList = ["people", "benefit"] as const;
+export const internalsKey = "__internals";
 
 export type IndicatorType = typeof indicatorTypes[number];
 export type PeopleOrBenefit = typeof peopleOrBenefitList[number];
 
 type SectorInfo = { id: Id; series?: string };
+
+type External = { name: string | undefined };
 
 export interface DataElementBase {
     id: Id;
@@ -36,7 +39,7 @@ export interface DataElementBase {
     indicatorType: IndicatorType;
     peopleOrBenefit: PeopleOrBenefit;
     countingMethod: string;
-    externals: string[];
+    externals: Record<string, External>;
     externalsDescription: string;
     pairedDataElements: Array<{ id: Id; name: string; code: string }>;
     categoryCombo: { id: Id; displayName: string };
@@ -82,7 +85,7 @@ export type GetOptions = Partial<{
     peopleOrBenefit: PeopleOrBenefit;
     includePaired: boolean;
     onlySelected: boolean;
-    externals: string[];
+    external: string;
 }>;
 
 type DataElementGroupCodes = Config["base"]["dataElementGroups"];
@@ -119,12 +122,10 @@ export default class DataElementsSet {
 
         const sectorsSet = getBy(dataElementGroupSets, "code", degsCodes.sector);
         const seriesSet = getBy(dataElementGroupSets, "code", degsCodes.series);
-        const externalsSet = getBy(dataElementGroupSets, "code", degsCodes.externals);
         const degCodes = baseConfig.dataElementGroups;
         const dataElementsByCode = _.keyBy(metadata.dataElements, de => de.code);
         const sectorsByCode = _.keyBy(sectorsSet.dataElementGroups, deg => deg.code);
         const d2DataElements = getDataElementsFromSet(metadata, sectorsSet);
-        const externalsByDataElementId = getGroupsByDataElementId(externalsSet);
         const sectorsByDataElementId = getGroupsByDataElementId(sectorsSet);
         const seriesByDataElementId = getGroupsByDataElementId(seriesSet);
         const groupCodesByDataElementId = getGroupCodeByDataElementId(dataElementGroupSets);
@@ -138,8 +139,6 @@ export default class DataElementsSet {
             const groupCodes = groupCodesByDataElementId[deId] || new Set();
             const indicatorType = getGroupKey(groupCodes, degCodes, indicatorTypes);
             const peopleOrBenefit = getGroupKey(groupCodes, degCodes, peopleOrBenefitList);
-            const externalGroups = externalsByDataElementId[d2DataElement.id] || [];
-            const externals = _.sortBy(externalGroups.map(group => group.displayName));
             const deCode = d2DataElement.code;
             const isSelectable =
                 indicatorType !== "custom" || user.hasRole("admin") || user.hasRole("dataReviewer");
@@ -177,7 +176,6 @@ export default class DataElementsSet {
                     peopleOrBenefit,
                     pairedDataElements,
                     countingMethod: countingMethod || "",
-                    externals,
                     categoryCombo: {
                         id: categoryCombo.id,
                         displayName: getCategoryComboName(categoryCombosById, categoryCombo),
@@ -229,7 +227,7 @@ export default class DataElementsSet {
 
     get(options: GetOptions = {}): DataElement[] {
         const { sectorId, series, onlySelected, includePaired } = options;
-        const { indicatorType, peopleOrBenefit, externals } = options;
+        const { indicatorType, peopleOrBenefit, external } = options;
         const dataElementsBySector = this.data.dataElementsBySector;
         const sectorsIds = sectorId ? [sectorId] : _.keys(dataElementsBySector);
 
@@ -255,10 +253,9 @@ export default class DataElementsSet {
                     (!series || dataElement.series === series) &&
                     (!indicatorType || dataElement.indicatorType === indicatorType) &&
                     (!peopleOrBenefit || dataElement.peopleOrBenefit === peopleOrBenefit) &&
-                    (!externals ||
-                        _.isEmpty(externals) ||
-                        _.intersection(dataElement.externals, externals).length > 0 ||
-                        (_.includes(externals, "") && _.isEmpty(dataElement.externals)))
+                    (external === undefined ||
+                        (external === internalsKey && _.isEmpty(dataElement.externals)) ||
+                        _.intersection(_.keys(dataElement.externals), [external]).length > 0)
             );
         });
     }
@@ -543,7 +540,7 @@ function getDataElementsBySector(
                 .value();
 
             // Add name/code in search field of the paired elements so we can search on the table
-            const search = pairedDataElements.map(de => [de.name, de.code].join("\n")).join("\n");
+            const search = getSearchString([dataElement, ...pairedDataElements]);
 
             return { ...dataElement, pairedDataElements, search };
         });
@@ -552,6 +549,19 @@ function getDataElementsBySector(
     });
 
     return _.fromPairs(pairs);
+}
+
+function getSearchString(dataElements: DataElementBase[]): string {
+    return dataElements
+        .map(dataElement => {
+            const externals = _(dataElement.externals)
+                .values()
+                .map(external => external.name)
+                .join(" ");
+
+            return [dataElement.name, dataElement.code, externals].join("\n");
+        })
+        .join("\n");
 }
 
 function getDataElementsBySectorInSet(
@@ -582,13 +592,27 @@ function getGroupsByDataElementId<Group extends { dataElements: Array<Ref> }>(de
     return res;
 }
 
-function getDescriptionFields(extraInfo: string) {
-    const [externals = "", guidance = ""] = extraInfo.split("\n", 2);
-    const externalsDescription = externals.split("Externals: ", 2)[1] || "";
+function getDescriptionFields(
+    extraInfo: string
+): Pick<DataElementBase, "externalsDescription" | "description" | "externals"> {
+    const [section1 = "", guidance = ""] = extraInfo.split("\n", 2);
+    const externalsString = section1.split("Externals: ", 2)[1] || "";
+    const externalsDescription = externalsString === "-" ? "" : externalsString;
+    const externals = _(externalsDescription.split(","))
+        .map(part => {
+            const [externalName, dataElementName] = part.trim().split(":", 2);
+            return externalName.trim()
+                ? ([externalName, { name: dataElementName?.trim() }] as [string, External])
+                : null;
+        })
+        .compact()
+        .fromPairs()
+        .value();
 
     return {
-        externalsDescription: externalsDescription === "-" ? "" : externalsDescription,
+        externalsDescription,
         description: guidance.trim(),
+        externals,
     };
 }
 

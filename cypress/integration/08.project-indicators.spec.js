@@ -100,7 +100,7 @@ describe("Projects - Indicators", () => {
         cy.contains("P010400");
         cy.contains("P020105");
 
-        // Livelihood
+        // Livelihoods
         cy.contains("P020100 [COVID-19] [MER]");
     });
 });
