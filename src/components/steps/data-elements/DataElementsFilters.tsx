@@ -1,10 +1,9 @@
 import React from "react";
-import { indicatorTypes, IndicatorType } from "../../../models/dataElementsSet";
+import { indicatorTypes, IndicatorType, internalsKey } from "../../../models/dataElementsSet";
 import Dropdown from "../../dropdown/Dropdown";
 import i18n from "../../../locales";
 import { Checkbox, FormControlLabel } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
-import MultipleDropdown from "../../dropdown/MultipleDropdown";
 import { fromPairs } from "../../../types/utils";
 
 interface DataElementsFiltersProps {
@@ -21,7 +20,7 @@ export type FilterKey = typeof filterKeys[number];
 export interface Filter {
     indicatorType?: IndicatorType;
     onlySelected?: boolean;
-    externals?: string[];
+    external?: string;
 }
 
 export interface FilterOptions {
@@ -32,7 +31,7 @@ const DataElementsFilters: React.FC<DataElementsFiltersProps> = props => {
     const { filter, filterOptions, onChange, visibleFilters } = props;
     const classes = useStyles();
 
-    const externalsOptions = [{ value: "", text: i18n.t("Internals") }].concat(
+    const externalsOptions = [{ value: internalsKey, text: i18n.t("Internals") }].concat(
         filterOptions.externals.map(name => ({ value: name, text: name }))
     );
 
@@ -59,11 +58,11 @@ const DataElementsFilters: React.FC<DataElementsFiltersProps> = props => {
             )}
 
             {isFilterVisible.externals && (
-                <MultipleDropdown
+                <Dropdown
                     items={externalsOptions}
-                    values={filter.externals || []}
-                    onChange={values => onChange({ ...filter, externals: values })}
-                    label={i18n.t("Externals")}
+                    value={filter.external}
+                    onChange={newExternal => onChange({ ...filter, external: newExternal })}
+                    label={i18n.t("External")}
                 />
             )}
 

@@ -8,14 +8,26 @@ import { TableState, SnackbarState } from "@eyeseetea/d2-ui-components";
 import { Id } from "../../../types/d2-api";
 import i18n from "../../../locales";
 import { renderJoin } from "../../../utils/react";
+import { Filter } from "./DataElementsFilters";
 
-export const getName = _.memoize(_getName, (dataElement, arePaired, showGuidance) =>
-    [dataElement.id, arePaired, showGuidance].join("-")
-);
+export const getName = _.memoize(_getName, (...args: Parameters<typeof _getName>) => {
+    const [dataElement, arePaired, showGuidance, filter] = args;
+    return [dataElement.id, arePaired, showGuidance, filter.external].join("-");
+});
 
-function _getName(dataElement: DataElement, _paired: boolean, showGuidance: boolean): ReactNode {
+function _getName(
+    dataElement: DataElement,
+    _paired: boolean,
+    showGuidance: boolean,
+    filter: Filter
+): ReactNode {
     return (
-        <NameColumn key={dataElement.name} dataElement={dataElement} showGuidance={showGuidance} />
+        <NameColumn
+            key={dataElement.name}
+            dataElement={dataElement}
+            showGuidance={showGuidance}
+            filter={filter}
+        />
     );
 }
 

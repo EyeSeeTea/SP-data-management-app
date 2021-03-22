@@ -97,11 +97,15 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
     }, [dataElementsSet, onlySelected, filter, sectorId]);
 
     const filterOptions = useMemo(() => {
-        const dataElements = dataElementsSet.get({ ...filter, sectorId });
-        return {
-            externals: _.sortBy(_.uniq(_.flatten(dataElements.map(de => de.externals)))),
-        };
-    }, [dataElementsSet, sectorId, filter]);
+        const dataElements = dataElementsSet.get({ sectorId });
+        const externals = _(dataElements)
+            .flatMap(de => _.keys(de.externals))
+            .uniq()
+            .sortBy()
+            .value();
+
+        return { externals };
+    }, [dataElementsSet, sectorId]);
 
     const selection = useMemo(() => {
         return onSelectionChange
@@ -148,7 +152,7 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
                 name: "name" as const,
                 text: i18n.t("Name"),
                 sortable: true,
-                getValue: (de: DataElement) => getName(de, paired, showGuidance),
+                getValue: (de: DataElement) => getName(de, paired, showGuidance, filter),
             },
             {
                 name: "code" as const,
@@ -179,7 +183,9 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
                 name: "externals" as const,
                 text: i18n.t("Externals"),
                 sortable: true,
-                getValue: withPaired(paired, "externals", externals => externals.join(", ")),
+                getValue: withPaired(paired, "externals", externals =>
+                    _.keys(externals).join(", ")
+                ),
             },
         ];
         const columnsToShow: TableColumn<DataElement>[] = _(columns)
@@ -187,7 +193,7 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
             .at(initialColumns)
             .value();
         return _.concat(columnsToShow, customColumns || []);
-    }, [initialColumns, customColumns, showGuidance, dataElementsSet.arePairedGrouped]);
+    }, [initialColumns, customColumns, showGuidance, dataElementsSet.arePairedGrouped, filter]);
 
     const [textSearch, setTextSearch] = React.useState("");
 
@@ -229,7 +235,7 @@ function searchDataElements(textSearch: string, dataElements: DataElement[]) {
         return {};
     } else {
         return _(dataElements)
-            .filter(de => matches(de.name) || matches(de.code) || matches(de.search))
+            .filter(de => matches(de.search))
             .countBy(de => de.sector.id)
             .value();
     }

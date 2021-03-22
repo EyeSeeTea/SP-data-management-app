@@ -164,7 +164,7 @@ msgstr ""
 msgid "Indicator Type"
 msgstr ""
 
-msgid "Externals"
+msgid "External"
 msgstr ""
 
 msgid "Only selected"
@@ -177,6 +177,9 @@ msgid "Series"
 msgstr ""
 
 msgid "Counting Method"
+msgstr ""
+
+msgid "Externals"
 msgstr ""
 
 msgid "Search by name / code"
