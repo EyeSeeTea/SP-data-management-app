@@ -47,18 +47,8 @@ export function getDevProject(initialProject: Project, enabled: boolean) {
         .set("awardNumber", awardNumber)
         .set("subsequentLettering", "en")
         .set("additional", "key1")
-        .set(
-            "startDate",
-            moment()
-                .startOf("month")
-                .subtract(1, "month")
-        )
-        .set(
-            "endDate",
-            moment()
-                .add(3, "month")
-                .endOf("month")
-        )
+        .set("startDate", moment().startOf("month").subtract(1, "month"))
+        .set("endDate", moment().add(3, "month").endOf("month"))
         .set("locations", [{ id: "GG0k0oNhgS7", displayName: "Abaco" }])
         .set("funders", [
             { id: "OKEZCrPzqph", displayName: "Atlas Copco" },

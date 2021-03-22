@@ -5,13 +5,14 @@ import {
     TableColumn,
     TablePagination,
     TableSorting,
-} from "d2-ui-components";
+    useObjectsTable,
+    ObjectsListProps,
+    ObjectsList,
+} from "@eyeseetea/d2-ui-components";
 import _ from "lodash";
 import React, { useCallback, useState } from "react";
 import ActionButton from "../../components/action-button/ActionButton";
 import ListSelector from "../../components/list-selector/ListSelector";
-import { useObjectsTable } from "../../components/objects-list/objects-list-hooks";
-import { ObjectsList, ObjectsListProps } from "../../components/objects-list/ObjectsList";
 import { CurrentUser, useAppContext } from "../../contexts/api-context";
 import i18n from "../../locales";
 import { Config } from "../../models/Config";

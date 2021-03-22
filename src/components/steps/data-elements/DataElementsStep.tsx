@@ -13,7 +13,7 @@ export interface DataElementsStepProps extends StepProps {
 
 const DataElementsStep: React.FC<DataElementsStepProps> = props => {
     const { onChange, project, dataElementsSet, onSelect } = props;
-    const { items: sectorItems, sectorId, setSector } = useSectionsSidebar(project);
+    const { items, sectorId, setSector, onSectorsMatchChange } = useSectionsSidebar(project);
 
     const onSelectionChange = React.useCallback(
         (dataElementIds: Id[]) => {
@@ -28,8 +28,10 @@ const DataElementsStep: React.FC<DataElementsStepProps> = props => {
     if (!sectorId) return null;
 
     return (
-        <SectionsSidebar items={sectorItems} sectorId={sectorId} setSector={setSector}>
+        <SectionsSidebar items={items} sectorId={sectorId} setSector={setSector}>
             <DataElementsTable
+                project={project}
+                onSectorsMatchChange={onSectorsMatchChange}
                 dataElementsSet={dataElementsSet}
                 sectorId={sectorId}
                 onSelectionChange={onSelectionChange}

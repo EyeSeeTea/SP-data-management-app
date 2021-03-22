@@ -144,25 +144,24 @@ function setupDataEntryInterceptors(options: Options = {}) {
     if (options.getOnSaveEvent) {
         iframeWindow
             .jQuery(iframeWindow)
-            .on("dhis2.de.event.dataValueSaved", function(
-                _ev: unknown,
-                _dataSetId: string,
-                dataValue: AfterSaveDataValue
-            ) {
-                const msg: DataValueSavedMsg = {
-                    type: "dataValueSavedFromIframe",
-                    dataValue: dataValue,
-                };
-                console.debug("<-|data-entry|", msg);
-                iframeWindow.parent.postMessage(msg, window.location.origin);
-            });
+            .on(
+                "dhis2.de.event.dataValueSaved",
+                function (_ev: unknown, _dataSetId: string, dataValue: AfterSaveDataValue) {
+                    const msg: DataValueSavedMsg = {
+                        type: "dataValueSavedFromIframe",
+                        dataValue: dataValue,
+                    };
+                    console.debug("<-|data-entry|", msg);
+                    iframeWindow.parent.postMessage(msg, window.location.origin);
+                }
+            );
     }
 
     const saveValOld = iframeWindow.saveVal;
 
     if (options.interceptSave) {
         // Wrap saveVal (dhis-web-dataentry/javascript/entry.js)
-        iframeWindow.saveVal = function(dataElementId, optionComboId, fieldId, feedbackId) {
+        iframeWindow.saveVal = function (dataElementId, optionComboId, fieldId, feedbackId) {
             const preSaveDataValue: PreSaveDataValue = {
                 dataElementId,
                 optionComboId,
@@ -178,7 +177,7 @@ function setupDataEntryInterceptors(options: Options = {}) {
         };
     }
 
-    window.addEventListener("message", function(ev) {
+    window.addEventListener("message", function (ev) {
         const data = ev.data as SaveDataValueMsg;
         console.debug("->|data-entry|", data);
         if (typeof data !== "object") return;

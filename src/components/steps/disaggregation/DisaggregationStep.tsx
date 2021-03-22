@@ -12,12 +12,12 @@ import Project from "../../../models/Project";
 import { renderJoin } from "../../../utils/react";
 import { useSectionsSidebar } from "../../sections-sidebar/sections-sidebar-hooks";
 import SectionsSidebar from "../../sections-sidebar/SectionsSidebar";
-import { useSnackbar } from "d2-ui-components";
+import { useSnackbar } from "@eyeseetea/d2-ui-components";
 import { showSelectionMessage } from "../data-elements/table-utils";
 
 const DisaggregationStep: React.FC<StepProps> = ({ project, onChange }) => {
     const snackbar = useSnackbar();
-    const { items: sectorItems, sectorId, setSector } = useSectionsSidebar(project);
+    const { items, sectorId, setSector, onSectorsMatchChange } = useSectionsSidebar(project);
     const dataElementsSet = project.dataElementsSelection;
 
     const disaggregationItems = React.useMemo(() => {
@@ -94,8 +94,10 @@ const DisaggregationStep: React.FC<StepProps> = ({ project, onChange }) => {
     }, [setValues]);
 
     return (
-        <SectionsSidebar items={sectorItems} sectorId={sectorId} setSector={setSector}>
+        <SectionsSidebar items={items} sectorId={sectorId} setSector={setSector}>
             <DataElementsTable
+                project={project}
+                onSectorsMatchChange={onSectorsMatchChange}
                 dataElementsSet={dataElementsSet}
                 sectorId={sectorId}
                 onlySelected={true}

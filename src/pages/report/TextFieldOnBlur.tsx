@@ -1,7 +1,7 @@
 import React from "react";
 import TextField, { TextFieldProps } from "@material-ui/core/TextField";
 import wrap from "word-wrap";
-import { useSnackbar } from "d2-ui-components";
+import { useSnackbar } from "@eyeseetea/d2-ui-components";
 import i18n from "../../locales";
 
 export type TextFieldOnBlurProps = TextFieldProps & {

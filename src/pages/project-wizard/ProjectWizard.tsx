@@ -1,7 +1,7 @@
-import React, { ReactNode } from "react";
+import React from "react";
 import { useHistory, useLocation } from "react-router";
 import _ from "lodash";
-import { Wizard, useSnackbar } from "d2-ui-components";
+import { Wizard, useSnackbar } from "@eyeseetea/d2-ui-components";
 import { LinearProgress } from "@material-ui/core";
 import { History, Location } from "history";
 
@@ -256,11 +256,7 @@ async function getValidationMessages(
 
     const validationObj = await project.validate(validationKeys);
 
-    return _(validationObj)
-        .at(validationKeys)
-        .flatten()
-        .compact()
-        .value();
+    return _(validationObj).at(validationKeys).flatten().compact().value();
 }
 
 const ProjectWizardImplMemo = React.memo(ProjectWizardImpl);

@@ -1,4 +1,4 @@
-import { SnackbarState } from "d2-ui-components/snackbar/types";
+import { SnackbarState } from "@eyeseetea/d2-ui-components";
 import _ from "lodash";
 
 interface Options {
