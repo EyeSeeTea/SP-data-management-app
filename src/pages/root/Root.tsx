@@ -24,8 +24,7 @@ const Root = () => {
                 <Route
                     path={generateUrl("projects.edit", idParam)}
                     render={props => (
-                        //@ts-ignore
-                        <ProjectWizard action={{ type: "edit", id: props.match.params.id }} />
+                        <ProjectWizard action={{ type: "edit", id: props.match.params.id || "" }} />
                     )}
                 />
                 <Route path={generateUrl("report")} render={() => <MerReport />} />
