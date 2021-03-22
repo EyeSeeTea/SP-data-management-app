@@ -9,7 +9,7 @@ async function main() {
     const config = await getConfig(api);
     const project = await Project.get(api, config, "WUDKKsUKqVH");
     const { filename, buffer } = await project.download();
-    fs.writeFileSync(filename, buffer);
+    fs.writeFileSync(filename, buffer as NodeJS.ArrayBufferView);
     console.log(`Written: ${filename}`);
 }
 

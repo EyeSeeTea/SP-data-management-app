@@ -5,7 +5,7 @@ import { useAppContext } from "../../contexts/api-context";
 import Project, { DataSetType } from "../../models/Project";
 import { InputMsg, useDhis2EntryEvents, Options } from "./data-entry-hooks";
 import { ValidationResult } from "../../models/validators/validator-common";
-import { useSnackbar } from "d2-ui-components";
+import { useSnackbar } from "@eyeseetea/d2-ui-components";
 import i18n from "../../locales";
 
 interface UseValidationResponse {

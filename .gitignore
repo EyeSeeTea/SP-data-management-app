@@ -44,3 +44,4 @@ scripts/
 data-management-app.zip
 bak/
 src/dev
+.eslintcache

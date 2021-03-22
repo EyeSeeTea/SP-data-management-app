@@ -1,4 +1,4 @@
-import { useSnackbar } from "d2-ui-components";
+import { useSnackbar } from "@eyeseetea/d2-ui-components";
 import React from "react";
 import { useRouteMatch } from "react-router-dom";
 import { useAppContext } from "../../contexts/api-context";

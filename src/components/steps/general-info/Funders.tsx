@@ -3,7 +3,7 @@ import _ from "lodash";
 
 import { useAppContext } from "../../../contexts/api-context";
 import { CardContent } from "@material-ui/core";
-import { MultiSelector } from "d2-ui-components";
+import { MultiSelector } from "@eyeseetea/d2-ui-components";
 import { CSSProperties } from "@material-ui/core/styles/withStyles";
 import Project from "../../../models/Project";
 import { getProjectFieldName } from "../../../utils/form";

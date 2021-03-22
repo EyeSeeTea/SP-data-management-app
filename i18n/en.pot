@@ -149,9 +149,6 @@ msgid ""
 "update the app."
 msgstr ""
 
-msgid "Search by name"
-msgstr ""
-
 msgid "This user has no Data output and analytic organisation units assigned"
 msgstr ""
 
