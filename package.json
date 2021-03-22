@@ -35,11 +35,13 @@
         "md5": "^2.2.1",
         "postcss-rtl": "^1.3.2",
         "prop-types": "^15",
+        "qs": "^6.9.6",
         "query-string": "^4.3.4",
         "react": "17.0.1",
         "react-dom": "17.0.1",
         "react-is": "16.8.0",
         "react-router-dom": "^5.1.2",
+        "react-router-last-location": "^2.0.1",
         "react-scripts": "4.0.1",
         "striptags": "^3.1.1",
         "styled-components": "^5.2.1",
@@ -66,11 +68,12 @@
         "cy:e2e:run": "yarn cypress-run-migrations && CYPRESS_E2E=true cypress run -b chrome --headless",
         "ts-node": "ts-node -P tsconfig-cli.json",
         "cypress-run-migrations": "yarn ts-node src/migrations/cli.ts $CYPRESS_EXTERNAL_API $CYPRESS_DHIS2_AUTH",
+        "check-uncommited": "! git status -uno --porcelain | grep '.'",
         "generate-test-fixtures": "yarn run ts src/models/Config.ts"
     },
     "husky": {
         "hooks": {
-            "pre-push": "yarn localize && yarn prettify && yarn lint && yarn jest"
+            "pre-push": "yarn localize && yarn prettify && yarn check-uncommited && yarn lint && yarn jest"
         }
     },
     "devDependencies": {
@@ -115,6 +118,8 @@
         "eslint-plugin-prettier": "3.3.1",
         "eslint-plugin-react": "7.22.0",
         "eslint-plugin-react-hooks": "4.2.0",
+        "http-proxy-middleware": "^1.0.6",
+        "https-proxy-agent": "^5.0.0",
         "husky": "4.3.8",
         "jest": "26.6.3",
         "prettier": "2.2.1",

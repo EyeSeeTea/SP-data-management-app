@@ -1,22 +1,26 @@
 import React from "react";
-import { Checkbox, FormControlLabel } from "@material-ui/core";
+import { Checkbox, CheckboxProps, FormControlLabel } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import MultipleDropdown from "../../components/dropdown/MultipleDropdown";
 import i18n from "../../locales";
 
-interface ProjectsListFiltersProps {
+export interface ProjectsListFiltersProps {
     filter: Filter;
     filterOptions: FilterOptions;
     onChange(newFilters: Filter): void;
 }
 
 export interface Filter {
-    countries?: string[];
-    sectors?: string[];
-    onlyActive?: boolean;
+    search: string;
+    countries: string[];
+    sectors: string[];
+    onlyActive: boolean;
 }
 
-type Option = { id: string; displayName: string };
+export interface Option {
+    id: string;
+    displayName: string;
+}
 
 export interface FilterOptions {
     countries: Option[];
@@ -25,11 +29,14 @@ export interface FilterOptions {
 
 const emptyValues: string[] = [];
 
+type OnChange = NonNullable<CheckboxProps["onChange"]>;
+
 const ProjectsListFilters: React.FC<ProjectsListFiltersProps> = props => {
     const { filter, filterOptions, onChange } = props;
     const classes = useStyles();
     const countryItems = useMemoOptions(filterOptions.countries);
     const sectorItems = useMemoOptions(filterOptions.sectors);
+
     const notifyCountriesChange = React.useCallback(
         countries => onChange({ ...filter, countries }),
         [onChange, filter]
@@ -39,6 +46,13 @@ const ProjectsListFilters: React.FC<ProjectsListFiltersProps> = props => {
         onChange,
         filter,
     ]);
+
+    const notifyOnlyActiveChange = React.useCallback<OnChange>(
+        (_ev, checked) => {
+            onChange({ ...filter, onlyActive: checked });
+        },
+        [onChange, filter]
+    );
 
     return (
         <div>
@@ -60,10 +74,7 @@ const ProjectsListFilters: React.FC<ProjectsListFiltersProps> = props => {
                 label={i18n.t("Active")}
                 className={classes.checkbox}
                 control={
-                    <Checkbox
-                        checked={!!filter.onlyActive}
-                        onChange={ev => onChange({ ...filter, onlyActive: ev.target.checked })}
-                    />
+                    <Checkbox checked={!!filter.onlyActive} onChange={notifyOnlyActiveChange} />
                 }
             />
         </div>
