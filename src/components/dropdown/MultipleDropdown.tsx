@@ -1,4 +1,5 @@
 import React from "react";
+import _ from "lodash";
 import { MenuItem, Select, MenuProps } from "@material-ui/core";
 import DropdownForm from "./DropdownForm";
 
@@ -18,6 +19,10 @@ const menuProps: Partial<MenuProps> = {
 
 const MultipleDropdown: React.FC<MultipleDropdownProps> = props => {
     const { items, values, onChange, label } = props;
+    const validValues = React.useMemo(() => {
+        const itemValues = items.map(item => item.value);
+        return _.intersection(itemValues, values);
+    }, [values, items]);
     const notifyChange = React.useCallback(ev => onChange(ev.target.value as string[]), [onChange]);
 
     return (
@@ -25,7 +30,7 @@ const MultipleDropdown: React.FC<MultipleDropdownProps> = props => {
             <Select
                 multiple={true}
                 data-test-multiple-dropdown={label}
-                value={values}
+                value={validValues}
                 onChange={notifyChange}
                 MenuProps={menuProps}
             >

@@ -43,16 +43,17 @@ export class CountriesList {
             },
         });
         const { objects: allOrgUnits } = await metadata$.getData();
-        const { pager, objects: orgUnits } = paginate(allOrgUnits, paging);
         const searchLower = toKey(search);
 
-        const orgUnitsFiltered = orgUnits.filter(
+        const orgUnitsFiltered = allOrgUnits.filter(
             orgUnit =>
                 toKey(orgUnit.displayName).includes(searchLower) ||
                 toKey(orgUnit.code).includes(searchLower)
         );
 
-        const countries: Country[] = orgUnitsFiltered.map(orgUnit => ({
+        const { pager, objects: orgUnitsPaginated } = paginate(orgUnitsFiltered, paging);
+
+        const countries: Country[] = orgUnitsPaginated.map(orgUnit => ({
             id: orgUnit.id,
             name: orgUnit.displayName,
             code: orgUnit.code,
