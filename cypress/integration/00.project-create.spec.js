@@ -77,10 +77,7 @@ describe("Projects - Create", () => {
             .click();
 
         cy.contains("Livelihoods").click();
-        cy.contains("# of people trained in livelihood topics")
-            .parent("td")
-            .prev("td")
-            .click();
+        cy.contains("# of people trained in livelihood topics").parent("td").prev("td").click();
 
         cy.contains("# of people trained on microfinance").parent("td").prev("td").click();
 
@@ -104,10 +101,7 @@ describe("Projects - Create", () => {
         cy.waitForStep("Selection of MER Indicators");
 
         cy.contains("Livelihoods").click();
-        cy.contains("# of people trained in livelihood topics")
-            .parent("td")
-            .prev("td")
-            .click();
+        cy.contains("# of people trained in livelihood topics").parent("td").prev("td").click();
 
         cy.contains("Next").click();
 

@@ -2,7 +2,7 @@
 const HttpsProxyAgent = require("https-proxy-agent");
 const { createProxyMiddleware } = require("http-proxy-middleware");
 
-module.exports = function(app) {
+module.exports = function (app) {
     const proxyServer = process.env.REACT_APP_HTTP_PROXY;
     const targetUrl = process.env.REACT_APP_PROXY_TARGET;
     const authString = process.env.REACT_APP_PROXY_AUTH;
