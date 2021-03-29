@@ -10,7 +10,7 @@ class FixLivelihoodsCode {
     }
 
     async createUserRole() {
-        const { sections: sections, options } = await this.api.metadata
+        const { sections, options } = await this.api.metadata
             .get({
                 sections: {
                     fields: { $owner: true },
