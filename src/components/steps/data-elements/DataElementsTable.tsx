@@ -147,7 +147,7 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
 
     const allColumns = React.useMemo(() => {
         const paired = dataElementsSet.arePairedGrouped;
-        const columns = [
+        const columns: TableColumn<DataElement>[] = [
             {
                 name: "name" as const,
                 text: i18n.t("Name"),
@@ -183,6 +183,7 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
                 name: "externals" as const,
                 text: i18n.t("Externals"),
                 sortable: true,
+                hidden: true,
                 getValue: withPaired(paired, "externals", externals =>
                     _.keys(externals).join(", ")
                 ),
