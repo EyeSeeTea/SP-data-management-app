@@ -68,7 +68,7 @@ const DataElementsFilters: React.FC<DataElementsFiltersProps> = props => {
 
             {isFilterVisible.onlySelected && (
                 <FormControlLabel
-                    label={i18n.t("Only selected")}
+                    label={i18n.t("Selected Indicators")}
                     className={classes.checkbox}
                     control={
                         <Checkbox
