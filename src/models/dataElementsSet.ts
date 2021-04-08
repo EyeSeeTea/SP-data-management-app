@@ -18,7 +18,7 @@ import Project from "./Project";
 
 export const indicatorTypes = ["global", "sub", "custom"] as const;
 export const peopleOrBenefitList = ["people", "benefit"] as const;
-export const internalsKey = "__internals";
+export const internalKey = "__internal";
 
 export type IndicatorType = typeof indicatorTypes[number];
 export type PeopleOrBenefit = typeof peopleOrBenefitList[number];
@@ -254,7 +254,7 @@ export default class DataElementsSet {
                     (!indicatorType || dataElement.indicatorType === indicatorType) &&
                     (!peopleOrBenefit || dataElement.peopleOrBenefit === peopleOrBenefit) &&
                     (external === undefined ||
-                        (external === internalsKey && _.isEmpty(dataElement.externals)) ||
+                        (external === internalKey && _.isEmpty(dataElement.externals)) ||
                         _.intersection(_.keys(dataElement.externals), [external]).length > 0)
             );
         });
