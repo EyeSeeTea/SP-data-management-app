@@ -76,6 +76,7 @@ const searchBoxColumns = ["name" as const, "code" as const, "search" as const];
 
 const DataElementsTable: React.FC<DataElementsTableProps> = props => {
     const {
+        project,
         dataElementsSet,
         sectorId,
         onSelectionChange,
@@ -98,14 +99,9 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
 
     const filterOptions = useMemo(() => {
         const dataElements = dataElementsSet.get({ sectorId });
-        const externals = _(dataElements)
-            .flatMap(de => _.keys(de.externals))
-            .uniq()
-            .sortBy()
-            .value();
-
+        const externals = project.getExternalKeysForDataElements(dataElements);
         return { externals };
-    }, [dataElementsSet, sectorId]);
+    }, [project, dataElementsSet, sectorId]);
 
     const selection = useMemo(() => {
         return onSelectionChange

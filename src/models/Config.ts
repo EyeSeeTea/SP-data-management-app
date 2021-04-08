@@ -250,7 +250,7 @@ type NamedObject = { id: Id; displayName: string };
 type CodedObject = { id: Id; code: string };
 
 export type Sector = NamedObject & CodedObject;
-export type Funder = NamedObject;
+export type Funder = NamedObject & { shortName: string };
 export type Country = NamedObject & CodedObject;
 export type Location = NamedObject & { countries: Ref[] };
 export type DataApprovalWorkflow = CodedObject;
