@@ -20,6 +20,7 @@ import DataElementsSet, {
 import { Id } from "../../../types/d2-api";
 import { onTableChange, withPaired, getName } from "./table-utils";
 import Project from "../../../models/Project";
+import { SelectionMessages } from "@eyeseetea/d2-ui-components/data-table/utils/selection";
 
 // Column names must be known to the model interface, so we need to add keys used in custom columns
 export type DataElement = DataElement_ & { isCovid19?: boolean };
@@ -202,6 +203,8 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
         onSectorsMatchChange(matches);
     }, [onlySelected, filter, dataElementsSet, onSectorsMatchChange, textSearch]);
 
+    const selectionMessages = React.useMemo(getSelectionMessages, []);
+
     if (!sectorId) return null;
 
     return (
@@ -220,9 +223,30 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
             actions={actions}
             paginationOptions={paginationOptions}
             onChangeSearch={setTextSearch}
+            selectionMessages={selectionMessages}
         />
     );
 };
+
+function getSelectionMessages(): SelectionMessages {
+    return {
+        itemsInAllPages(options: { total: number }) {
+            return i18n.t("There are {{total}} indicators selected in this sector.", options);
+        },
+        itemsSelectedInOtherPages(options: { count: number; invisible: number }) {
+            return i18n.t(
+                "There are {{count}} indicators selected in this sector ({{invisible}} in other pages).",
+                options
+            );
+        },
+        allItemsSelectedInCurrentPage(_options: { total: number }) {
+            return "";
+        },
+        selectAllItemsInAllPages(options: { total: number }) {
+            return i18n.t("Select all {{total}} indicators in all pages of the sector.", options);
+        },
+    };
+}
 
 function searchDataElements(textSearch: string, dataElements: DataElement[]) {
     const text = textSearch.toLowerCase().trim();
