@@ -1,4 +1,5 @@
 import React from "react";
+import i18n from "../../locales";
 import Project from "../../models/Project";
 import { Ref } from "../../types/d2-api";
 
@@ -12,7 +13,9 @@ export function useSectionsSidebar(project: Project) {
         return project.sectors.map(sector => {
             const matchesCount = matchesBySectorId ? matchesBySectorId[sector.id] : 0;
             const sectorText = sector.displayName + (matchesCount ? ` (${matchesCount})` : "");
-            return { id: sector.id, text: sectorText };
+            const matchesText = i18n.t("{{n}} matches", { n: matchesCount });
+            const tooltipText = sector.displayName + (matchesCount ? ` (${matchesText})` : "");
+            return { id: sector.id, text: sectorText, tooltipText };
         });
     }, [project.sectors, matchesBySectorId]);
 
