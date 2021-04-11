@@ -1,4 +1,4 @@
-import { Config, Sector as SectorC, Funder as FunderC, Location as LocationC } from "./Config";
+import { Config } from "./Config";
 import moment, { Moment } from "moment";
 import _ from "lodash";
 import { D2Api, Id, Ref } from "../types/d2-api";
@@ -25,6 +25,7 @@ import { getKeys, Maybe } from "../types/utils";
 import ProjectSharing from "./ProjectSharing";
 import { Disaggregation, SetCovid19WithRelationsOptions } from "./Disaggregation";
 import { Sharing } from "./Sharing";
+import { getIds } from "../utils/dhis2";
 
 /*
 Project model.
@@ -74,9 +75,12 @@ Project model.
     )
 */
 
-export type Sector = SectorC;
-export type Funder = FunderC;
-export type Location = Omit<LocationC, "countries">;
+type NamedObject = { id: Id; displayName: string };
+type CodedObject = { id: Id; code: string };
+
+export type Sector = NamedObject & CodedObject;
+export type Funder = NamedObject;
+export type Location = NamedObject;
 
 export interface ProjectData {
     id: Id;
@@ -182,6 +186,7 @@ type Validations = { [K in ValidationKey]?: Validation };
 class Project {
     data: ProjectData;
     dataSetsByType: Record<DataSetType, ProjectDataSet>;
+    fundersById: Record<Id, Config["funders"][number]>;
 
     static lengths = {
         awardNumber: 5,
@@ -284,6 +289,7 @@ class Project {
             actual: new ProjectDataSet(this, "actual"),
             target: new ProjectDataSet(this, "target"),
         };
+        this.fundersById = _.keyBy(this.config.funders, funder => funder.id);
     }
 
     static processInitialData(config: Config, data: ProjectData) {
@@ -321,6 +327,21 @@ class Project {
         ])
             .compact()
             .join("");
+    }
+
+    public getExternalKeysForDataElements(dataElements: DataElement[]): string[] {
+        const projectFunderKeys = _(this.fundersById)
+            .at(getIds(this.funders))
+            .compact()
+            .map(funder => funder.shortName)
+            .value();
+
+        return _(dataElements)
+            .flatMap(de => _.keys(de.externals))
+            .intersection(projectFunderKeys)
+            .uniq()
+            .sortBy()
+            .value();
     }
 
     public getSelectedDataElements(

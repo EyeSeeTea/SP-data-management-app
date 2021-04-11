@@ -20,6 +20,7 @@ import DataElementsSet, {
 import { Id } from "../../../types/d2-api";
 import { onTableChange, withPaired, getName } from "./table-utils";
 import Project from "../../../models/Project";
+import { SelectionMessages } from "@eyeseetea/d2-ui-components/data-table/utils/selection";
 
 // Column names must be known to the model interface, so we need to add keys used in custom columns
 export type DataElement = DataElement_ & { isCovid19?: boolean };
@@ -76,6 +77,7 @@ const searchBoxColumns = ["name" as const, "code" as const, "search" as const];
 
 const DataElementsTable: React.FC<DataElementsTableProps> = props => {
     const {
+        project,
         dataElementsSet,
         sectorId,
         onSelectionChange,
@@ -98,14 +100,9 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
 
     const filterOptions = useMemo(() => {
         const dataElements = dataElementsSet.get({ sectorId });
-        const externals = _(dataElements)
-            .flatMap(de => _.keys(de.externals))
-            .uniq()
-            .sortBy()
-            .value();
-
+        const externals = project.getExternalKeysForDataElements(dataElements);
         return { externals };
-    }, [dataElementsSet, sectorId]);
+    }, [project, dataElementsSet, sectorId]);
 
     const selection = useMemo(() => {
         return onSelectionChange
@@ -147,7 +144,7 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
 
     const allColumns = React.useMemo(() => {
         const paired = dataElementsSet.arePairedGrouped;
-        const columns = [
+        const columns: TableColumn<DataElement>[] = [
             {
                 name: "name" as const,
                 text: i18n.t("Name"),
@@ -183,6 +180,7 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
                 name: "externals" as const,
                 text: i18n.t("Externals"),
                 sortable: true,
+                hidden: true,
                 getValue: withPaired(paired, "externals", externals =>
                     _.keys(externals).join(", ")
                 ),
@@ -205,6 +203,8 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
         onSectorsMatchChange(matches);
     }, [onlySelected, filter, dataElementsSet, onSectorsMatchChange, textSearch]);
 
+    const selectionMessages = React.useMemo(getSelectionMessages, []);
+
     if (!sectorId) return null;
 
     return (
@@ -223,9 +223,30 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
             actions={actions}
             paginationOptions={paginationOptions}
             onChangeSearch={setTextSearch}
+            selectionMessages={selectionMessages}
         />
     );
 };
+
+function getSelectionMessages(): SelectionMessages {
+    return {
+        itemsInAllPages(options: { total: number }) {
+            return i18n.t("There are {{total}} indicators selected in this sector.", options);
+        },
+        itemsSelectedInOtherPages(options: { count: number; invisible: number }) {
+            return i18n.t(
+                "There are {{count}} indicators selected in this sector ({{invisible}} in other pages).",
+                options
+            );
+        },
+        allItemsSelectedInCurrentPage(_options: { total: number }) {
+            return "";
+        },
+        selectAllItemsInAllPages(options: { total: number }) {
+            return i18n.t("Select all {{total}} indicators in all pages of the sector.", options);
+        },
+    };
+}
 
 function searchDataElements(textSearch: string, dataElements: DataElement[]) {
     const text = textSearch.toLowerCase().trim();

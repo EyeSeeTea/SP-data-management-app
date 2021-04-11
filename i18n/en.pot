@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2021-03-19T11:19:45.606Z\n"
-"PO-Revision-Date: 2021-03-19T11:19:45.606Z\n"
+"POT-Creation-Date: 2021-04-09T08:54:17.901Z\n"
+"PO-Revision-Date: 2021-04-09T08:54:17.901Z\n"
 
 msgid "Name"
 msgstr ""
@@ -158,7 +158,10 @@ msgstr ""
 msgid "Executive Summary"
 msgstr ""
 
-msgid "Internals"
+msgid "{{n}} matches"
+msgstr ""
+
+msgid "Internal"
 msgstr ""
 
 msgid "Indicator Type"
@@ -167,7 +170,7 @@ msgstr ""
 msgid "External"
 msgstr ""
 
-msgid "Only selected"
+msgid "Selected Indicators"
 msgstr ""
 
 msgid "People / Benefit"
@@ -183,6 +186,17 @@ msgid "Externals"
 msgstr ""
 
 msgid "Search by name / code"
+msgstr ""
+
+msgid "There are {{total}} indicators selected in this sector."
+msgstr ""
+
+msgid ""
+"There are {{count}} indicators selected in this sector ({{invisible}} in "
+"other pages)."
+msgstr ""
+
+msgid "Select all {{total}} indicators in all pages of the sector."
 msgstr ""
 
 msgid "Guidance"
