@@ -30,7 +30,11 @@ const useStyles = makeStyles((_theme: Theme) => ({
     },
 }));
 
-export type MenuItem = { id: string; text: string };
+export interface MenuItem {
+    id: string;
+    text: string;
+    tooltipText?: string;
+}
 
 export interface SidebarProps {
     menuItems: MenuItem[];
@@ -62,6 +66,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                             button
                             key={item.id}
                             onClick={() => onMenuItemClick(item)}
+                            title={item.tooltipText}
                         >
                             <ListItemText primary={item.text} />
                         </ListItem>
