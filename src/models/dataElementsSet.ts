@@ -18,7 +18,7 @@ import Project from "./Project";
 
 export const indicatorTypes = ["global", "sub", "custom"] as const;
 export const peopleOrBenefitList = ["people", "benefit"] as const;
-export const internalsKey = "__internals";
+export const internalKey = "__internal";
 
 export type IndicatorType = typeof indicatorTypes[number];
 export type PeopleOrBenefit = typeof peopleOrBenefitList[number];
@@ -232,7 +232,7 @@ export default class DataElementsSet {
         const sectorsIds = sectorId ? [sectorId] : _.keys(dataElementsBySector);
 
         return _.flatMap(sectorsIds, sectorId => {
-            const dataElements1 = _(dataElementsBySector).get(sectorId, [] as DataElement[]);
+            const dataElements1: DataElement[] = _(dataElementsBySector).get(sectorId, []);
             if (_.isEqual(options, {})) return dataElements1;
 
             const selectedIds = new Set(this.data.selected[sectorId] || []);
@@ -253,9 +253,7 @@ export default class DataElementsSet {
                     (!series || dataElement.series === series) &&
                     (!indicatorType || dataElement.indicatorType === indicatorType) &&
                     (!peopleOrBenefit || dataElement.peopleOrBenefit === peopleOrBenefit) &&
-                    (external === undefined ||
-                        (external === internalsKey && _.isEmpty(dataElement.externals)) ||
-                        _.intersection(_.keys(dataElement.externals), [external]).length > 0)
+                    externalInDataElement(dataElement, external)
             );
         });
     }
@@ -637,4 +635,16 @@ export function getSelectionMessage(dataElements: DataElement[], msg: string): s
         de => `${de.sector.name}: [${de.code}] ${de.name} (${de.indicatorType})`
     );
     return _.isEmpty(dataElementDescriptionList) ? [] : [msg, ...dataElementDescriptionList];
+}
+
+function externalInDataElement(dataElement: DataElement, external: string | undefined): boolean {
+    const dataElements = [dataElement, ...dataElement.pairedDataElements];
+
+    return (
+        external === undefined ||
+        (external === internalKey && _(dataElements).some(de => _.isEmpty(de.externals))) ||
+        _(dataElements)
+            .flatMap(de => _.keys(de.externals))
+            .includes(external)
+    );
 }
