@@ -14,6 +14,10 @@ const metadataResponse = {
     stats: { created: 0, updated: 0, deleted: 0, ignored: 0, total: 0 },
 };
 
+const dataStoreUpdateResponse = {
+    status: "OK",
+};
+
 describe("ProjectDb", () => {
     describe("save", () => {
         it("posts metadata", async () => {
@@ -132,12 +136,15 @@ describe("ProjectDb", () => {
 
             mock.onPost("/metadata", expectedSectionsMetadataPost).replyOnce(200, metadataResponse);
 
-            mock.onPut("/organisationUnits/WGC0DJ0YSis", expectedOrgUnitPut).replyOnce(200);
+            mock.onPut("/organisationUnits/WGC0DJ0YSis", expectedOrgUnitPut).replyOnce(
+                200,
+                dataStoreUpdateResponse
+            );
 
             mock.onPut(
                 "/dataStore/data-management-app/project-WGC0DJ0YSis",
                 expectedDataStoreMer
-            ).replyOnce(200);
+            ).replyOnce(200, dataStoreUpdateResponse);
 
             logUnknownRequest(mock);
 

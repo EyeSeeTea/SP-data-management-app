@@ -344,7 +344,7 @@ class MerReport {
             },
         };
 
-        await dataStore.save(storeReportKey, newStoreValue);
+        await dataStore.save(storeReportKey, newStoreValue).getData();
     }
 
     static async getProjectsData(

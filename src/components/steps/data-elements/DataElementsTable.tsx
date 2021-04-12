@@ -234,10 +234,7 @@ function getSelectionMessages(): SelectionMessages {
             return i18n.t("There are {{total}} indicators selected in this sector.", options);
         },
         itemsSelectedInOtherPages(options: { count: number; invisible: number }) {
-            return i18n.t(
-                "There are {{count}} indicators selected in this sector ({{invisible}} in other pages).",
-                options
-            );
+            return i18n.t("There are {{count}} indicators selected in this sector.", options);
         },
         allItemsSelectedInCurrentPage(_options: { total: number }) {
             return "";
