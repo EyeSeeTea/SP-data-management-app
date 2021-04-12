@@ -26,6 +26,7 @@ import { withSnackbarOnError } from "../../components/utils/errors";
 import ExecutiveSummaries from "../../components/report/ExecutiveSummaries";
 import { useGoTo, generateUrl } from "../../router";
 import { useAppHistory } from "../../utils/use-app-history";
+import { ErrorMessage } from "./ErrorMessage";
 
 type ProceedWarning = { type: "hidden" } | { type: "visible"; action: () => void };
 
@@ -86,8 +87,7 @@ const MerReportComponent: React.FC = () => {
                 snackbar.success(i18n.t("Report saved"));
                 wasReportModifiedSet(false);
             } catch (err) {
-                const msg = i18n.t("Error saving report") + ": " + err.message || err.toString();
-                snackbar.error(msg);
+                snackbar.error(<ErrorMessage err={err} />);
             } finally {
                 loading.hide();
             }

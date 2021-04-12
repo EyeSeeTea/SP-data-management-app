@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2021-04-12T08:50:47.250Z\n"
-"PO-Revision-Date: 2021-04-12T08:50:47.250Z\n"
+"POT-Creation-Date: 2021-04-12T09:23:33.322Z\n"
+"PO-Revision-Date: 2021-04-12T09:23:33.322Z\n"
 
 msgid "Name"
 msgstr ""
@@ -810,6 +810,18 @@ msgstr ""
 msgid "[COVID-19]"
 msgstr ""
 
+msgid "Unknown error"
+msgstr ""
+
+msgid "Error saving report"
+msgstr ""
+
+msgid "session expired?"
+msgstr ""
+
+msgid "Check"
+msgstr ""
+
 msgid "Monthly Executive Reports"
 msgstr ""
 
@@ -817,9 +829,6 @@ msgid "Saving MER report"
 msgstr ""
 
 msgid "Report saved"
-msgstr ""
-
-msgid "Error saving report"
 msgstr ""
 
 msgid "The report must be saved before it can be downloaded"
