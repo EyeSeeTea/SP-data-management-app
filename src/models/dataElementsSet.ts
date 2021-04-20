@@ -596,7 +596,7 @@ function getDescriptionFields(
     const [section1 = "", guidance = ""] = extraInfo.split("\n", 2);
     const externalsString = section1.split("Externals: ", 2)[1] || "";
     const externalsDescription = externalsString === "-" ? "" : externalsString;
-    const externals = _(externalsDescription.split(","))
+    const externals = _(externalsDescription.split("|"))
         .map(part => {
             const [externalName, dataElementName] = part.trim().split(":", 2);
             return externalName.trim()
