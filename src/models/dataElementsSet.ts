@@ -7,6 +7,7 @@ import i18n from "../locales";
 import User from "./user";
 import { fromPairs, getKeys } from "../types/utils";
 import Project from "./Project";
+import { splitParts } from "../utils/string";
 
 /*
     Abstract list of Project data element of type DataElement. Usage:
@@ -593,7 +594,7 @@ function getGroupsByDataElementId<Group extends { dataElements: Array<Ref> }>(de
 function getDescriptionFields(
     extraInfo: string
 ): Pick<DataElementBase, "externalsDescription" | "description" | "externals"> {
-    const [section1 = "", guidance = ""] = extraInfo.split("\n", 2);
+    const [section1 = "", guidance = ""] = splitParts(extraInfo, "\n", 2);
     const externalsString = section1.split("Externals: ", 2)[1] || "";
     const externalsDescription = externalsString === "-" ? "" : externalsString;
     const externals = _(externalsDescription.split("|"))
