@@ -40,7 +40,7 @@ cypress/videos/
 .vscode
 
 # Custom
-scripts/
+/scripts/
 data-management-app.zip
 bak/
 src/dev
