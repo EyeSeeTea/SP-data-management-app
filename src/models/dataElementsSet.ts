@@ -34,7 +34,7 @@ export interface DataElementBase {
     description: string;
     sectorsInfo: SectorInfo[];
     isCrossSectoral: boolean;
-    mainSector: Ref;
+    mainSector: { id: Id; name: string };
     mainSeries?: string;
     indicatorType: IndicatorType;
     peopleOrBenefit: PeopleOrBenefit;
@@ -169,7 +169,7 @@ export default class DataElementsSet {
                     code: d2DataElement.code,
                     ...getDescriptionFields(attrsMap.extraDataElement || ""),
                     sectorsInfo: sectorsInfo,
-                    mainSector: { id: mainSector.id },
+                    mainSector: { id: mainSector.id, name: mainSector.displayName },
                     mainSeries,
                     isCrossSectoral: sectorsInfo.length > 1,
                     indicatorType,
