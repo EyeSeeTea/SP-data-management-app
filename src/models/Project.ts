@@ -337,6 +337,7 @@ class Project {
             .value();
 
         return _(dataElements)
+            .flatMap(de => [de, ...de.pairedDataElements])
             .flatMap(de => _.keys(de.externals))
             .intersection(projectFunderKeys)
             .uniq()
