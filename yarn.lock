@@ -11051,6 +11051,11 @@ parse-json@^5.0.0:
     json-parse-even-better-errors "^2.3.0"
     lines-and-columns "^1.1.6"
 
+parse-typed-args@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.npmjs.org/parse-typed-args/-/parse-typed-args-0.2.0.tgz#34c5c101659435cf75e9bcfa475135a29afe03d5"
+  integrity sha512-xFLk7SuXQuOfXF9wim9Ti65WAEUqUWAL+QZvts/4MivXcESjvU74pKkp4rLj4hS63ZrvNAvpWLxvupE4wpqCWA==
+
 parse5-htmlparser2-tree-adapter@^6.0.0:
   version "6.0.1"
   resolved "https://registry.yarnpkg.com/parse5-htmlparser2-tree-adapter/-/parse5-htmlparser2-tree-adapter-6.0.1.tgz#2cdf9ad823321140370d4dbf5d3e92c7c8ddc6e6"

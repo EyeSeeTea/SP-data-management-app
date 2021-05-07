@@ -115,8 +115,15 @@ export class Disaggregation {
     setCovid19WithRelations(
         options: SetCovid19WithRelationsOptions
     ): { selectionInfo: SelectionInfo; disaggregation: Disaggregation } {
-        const { dataElementsSet, sectorId, dataElementIds, isSet } = options;
+        const { dataElementsSet, sectorId, isSet } = options;
         const isCovid = this.isCovid19.bind(this);
+
+        const dataElementIds = _(this.data.dataElementsById)
+            .at(options.dataElementIds)
+            .compact()
+            .flatMap(de => [de, ...de.pairedDataElements])
+            .map(de => de.id)
+            .value();
 
         const selectedIds = dataElementsSet
             .get({ sectorId, onlySelected: true })
