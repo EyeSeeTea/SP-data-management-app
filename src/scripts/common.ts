@@ -38,12 +38,14 @@ export function assert<T>(obj: T | null | undefined | false, msg?: string): asse
     if (!hasValue) throw new Error("Assert error" + (msg ? `: ${msg}` : ""));
 }
 
+const cacheEnable = false;
+
 export async function getApp(options: { baseUrl: string }): Promise<App> {
     const { baseUrl } = options;
     const configCachePath = getDataFilePath("config.json");
     const api = new D2Api({ baseUrl });
 
-    if (fs.existsSync(configCachePath) && false) {
+    if (cacheEnable && fs.existsSync(configCachePath)) {
         console.error(`From cache file: ${configCachePath}`);
         const contents = fs.readFileSync(configCachePath, "utf8");
         const config = JSON.parse(contents) as Config;
