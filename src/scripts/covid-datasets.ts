@@ -1,7 +1,7 @@
 import _ from "lodash";
 import parse from "parse-typed-args";
 import { Config } from "../models/Config";
-import { D2ModelSchemas, DataValueSetsGetRequest, Id, MetadataPayloadBase } from "../types/d2-api";
+import { D2ModelSchemas, Id, MetadataPayloadBase } from "../types/d2-api";
 import {
     App,
     assert,
@@ -36,7 +36,7 @@ async function main() {
     });
     const { opts } = parser(process.argv);
 
-    const usage = "covid-datasets --url=DHIS2URL [--generate | --post]";
+    const usage = "covid-datasets --url=DHIS2URL [--generate | --postDataSets | --postDataValues]";
     const app = opts.url ? await getApp({ baseUrl: opts.url }) : null;
 
     if (!app) {
@@ -47,7 +47,7 @@ async function main() {
     } else if (opts.postDataSets) {
         await postDataSets(app);
     } else if (opts.postDataValues) {
-        await postDataValues(app.api, paths.dataValuesNew, "UPDATE");
+        await postDataValues(app.api, paths.dataValuesNew, "CREATE_AND_UPDATE");
     } else {
         console.error(usage);
     }
@@ -72,7 +72,6 @@ async function getDataValues(app: App, update: DataValueUpdate) {
             startDate: "1970",
             endDate: (new Date().getFullYear() + 1).toString(),
             dataElementGroup: ["OUwLDu1i5xa"], // People data elements
-            limit: 1e7,
         })
         .getData();
     console.log(`Data values: ${dataValues.length}`);
@@ -86,7 +85,7 @@ async function getDataValues(app: App, update: DataValueUpdate) {
             const update = updatesByKey[key];
             if (!update) return null;
             const newCocId = _(cocsMapping).getOrFail(dv.categoryOptionCombo);
-            if (dv.categoryOptionCombo === newCocId) return;
+            if (dv.categoryOptionCombo === newCocId) return null;
 
             return { ...dv, categoryOptionCombo: newCocId };
         })
@@ -105,6 +104,7 @@ async function postDataSets(app: App) {
         MetadataPayloadBase<D2ModelSchemas>
     >;
     const res = await api.metadata.post(metadata).getData();
+    console.log(res);
     assert(res.status === "OK", `Post data sets error: ${JSON.stringify(res)}`);
 }
 
@@ -112,7 +112,7 @@ async function getDataSets(app: App): Promise<DataValueUpdate> {
     const { api, config } = app;
     const getParent = getParentFn(config);
 
-    const { categoryCombos, dataSets, attributes } = await api.metadata
+    const { categoryCombos, dataSets, attributes, dataElements } = await api.metadata
         .get({
             categoryCombos: {
                 fields: {
@@ -124,6 +124,9 @@ async function getDataSets(app: App): Promise<DataValueUpdate> {
             dataSets: {
                 fields: { $owner: true },
             },
+            dataElements: {
+                fields: { id: true, name: true },
+            },
             attributes: {
                 fields: { id: true, code: true },
             },
@@ -132,6 +135,7 @@ async function getDataSets(app: App): Promise<DataValueUpdate> {
 
     const categoryCombosByName = _.keyBy(categoryCombos, cc => cc.name);
     const categoryCombosById = _.keyBy(categoryCombos, cc => cc.id);
+    const dataElementsById = _.keyBy(dataElements, de => de.id);
     const projectAttribute = attributes.find(attr => attr.code === "DM_ORGUNIT_PROJECT_ID");
     assert(projectAttribute, "Cannot get project attribute");
 
@@ -144,13 +148,16 @@ async function getDataSets(app: App): Promise<DataValueUpdate> {
 
     const dataValueUpdate: DataValueUpdate = [];
 
-    const dataSetsUpdated = dataSets.map(dataSet => {
+    const changes: Array<{ dataSet: string; dataElement: string }> = [];
+
+    const dataSetsUpdated0 = dataSets.map(dataSet => {
         const orgUnitId = dataSet.attributeValues.find(
             av => av.attribute.id === projectAttribute.id
         )?.value;
         assert(orgUnitId, `Cannot get orgunit for data set: ${dataSet.id}`);
 
         const dataSetElementsUpdated = dataSet.dataSetElements.map(dse => {
+            const dataElement = dataElementsById[dse.dataElement.id];
             const dataElementId = dse.dataElement.id;
             const parent = getParent(dataElementId);
             if (!parent) return dse;
@@ -180,12 +187,26 @@ async function getDataSets(app: App): Promise<DataValueUpdate> {
                 orgUnitId,
             };
             dataValueUpdate.push(update);
+            const sp = dataSet.name.split(" ");
+            changes.push({
+                dataSet: sp.slice(0, sp.length - 1).join(" "),
+                dataElement: dataElement.name,
+            });
 
             return { ...dse, categoryCombo: { id: newCategoryCombo.id } };
         });
+
         return { ...dataSet, dataSetElements: dataSetElementsUpdated };
     });
 
+    const dataSetsUpdated = _.differenceWith(dataSetsUpdated0, dataSets, _.isEqual);
+
+    const changesGrouped = _(changes)
+        .groupBy(o => o.dataSet)
+        .mapValues(objs => _.uniq(objs.map(obj => obj.dataElement)))
+        .value();
+
+    writeDataFilePath("covid-datasets-changes.json", changesGrouped);
     writeDataFilePath(paths.dataSetsOrig, { dataSets: dataSets });
     writeDataFilePath(paths.dataSetsNew, { dataSets: dataSetsUpdated });
 

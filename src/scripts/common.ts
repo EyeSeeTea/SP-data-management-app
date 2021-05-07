@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import _ from "lodash";
 import { Config, getConfig } from "../models/Config";
-import { D2Api, DataValueSetsPostParams, DataValueSetsPostRequest, Id } from "../types/d2-api";
+import { D2Api, DataValueSetsDataValue, DataValueSetsPostParams, Id } from "../types/d2-api";
 
 export interface App {
     config: Config;
@@ -43,7 +43,7 @@ export async function getApp(options: { baseUrl: string }): Promise<App> {
     const configCachePath = getDataFilePath("config.json");
     const api = new D2Api({ baseUrl });
 
-    if (fs.existsSync(configCachePath)) {
+    if (fs.existsSync(configCachePath) && false) {
         console.error(`From cache file: ${configCachePath}`);
         const contents = fs.readFileSync(configCachePath, "utf8");
         const config = JSON.parse(contents) as Config;
@@ -63,8 +63,9 @@ export async function postDataValues(
     filePath: string,
     importStrategy: DataValueSetsPostParams["importStrategy"]
 ) {
-    const metadata = readDataFilePath(filePath) as DataValueSetsPostRequest;
-    const res = await api.dataValues.postSet({ importStrategy }, metadata).getData();
+    const metadata = readDataFilePath(filePath) as { dataValues: DataValueSetsDataValue[] };
+    const res = await api.dataValues.postSet({ importStrategy, force: true }, metadata).getData();
+    console.error(res);
     assert(res.status === "SUCCESS", `Post data values error: ${JSON.stringify(res)}`);
 }
 

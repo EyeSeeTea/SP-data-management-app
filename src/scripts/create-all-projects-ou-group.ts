@@ -1,4 +1,3 @@
-import _ from "lodash";
 import parse from "parse-typed-args";
 import { getApp } from "./common";
 
