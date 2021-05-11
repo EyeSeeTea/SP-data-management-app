@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2021-04-12T09:23:33.322Z\n"
-"PO-Revision-Date: 2021-04-12T09:23:33.322Z\n"
+"POT-Creation-Date: 2021-05-05T10:13:55.444Z\n"
+"PO-Revision-Date: 2021-05-05T10:13:55.444Z\n"
 
 msgid "Name"
 msgstr ""
@@ -161,13 +161,10 @@ msgstr ""
 msgid "{{n}} matches"
 msgstr ""
 
-msgid "Internal"
-msgstr ""
-
 msgid "Indicator Type"
 msgstr ""
 
-msgid "External"
+msgid "Funder"
 msgstr ""
 
 msgid "Selected Indicators"
@@ -195,6 +192,9 @@ msgid "There are {{count}} indicators selected in this sector."
 msgstr ""
 
 msgid "Select all {{total}} indicators in all pages of the sector."
+msgstr ""
+
+msgid "Funder(s)"
 msgstr ""
 
 msgid "Guidance"

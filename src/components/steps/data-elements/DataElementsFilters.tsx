@@ -1,5 +1,5 @@
 import React from "react";
-import { indicatorTypes, IndicatorType, internalKey } from "../../../models/dataElementsSet";
+import { indicatorTypes, IndicatorType } from "../../../models/dataElementsSet";
 import Dropdown from "../../dropdown/Dropdown";
 import i18n from "../../../locales";
 import { Checkbox, FormControlLabel } from "@material-ui/core";
@@ -31,9 +31,7 @@ const DataElementsFilters: React.FC<DataElementsFiltersProps> = props => {
     const { filter, filterOptions, onChange, visibleFilters } = props;
     const classes = useStyles();
 
-    const externalsOptions = [{ value: internalKey, text: i18n.t("Internal") }].concat(
-        filterOptions.externals.map(name => ({ value: name, text: name }))
-    );
+    const externalsOptions = filterOptions.externals.map(name => ({ value: name, text: name }));
 
     const isFilterVisible: Record<FilterKey, boolean> = React.useMemo(() => {
         return fromPairs(
@@ -62,7 +60,7 @@ const DataElementsFilters: React.FC<DataElementsFiltersProps> = props => {
                     items={externalsOptions}
                     value={filter.external}
                     onChange={newExternal => onChange({ ...filter, external: newExternal })}
-                    label={i18n.t("External")}
+                    label={i18n.t("Funder")}
                 />
             )}
 

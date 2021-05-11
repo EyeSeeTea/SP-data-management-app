@@ -1,4 +1,5 @@
 src/react-app.d.ts
+src/scripts/data
 build
 node_modules
 *.min.js
