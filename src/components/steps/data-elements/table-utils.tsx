@@ -41,7 +41,7 @@ export function getTooltipContents(dataElement: DataElement) {
             <br />
             {externalsDescription && (
                 <div>
-                    <b>{i18n.t("Externals")}: </b>
+                    <b>{i18n.t("Funder(s)")}: </b>
                     {externalsDescription}
                 </div>
             )}
