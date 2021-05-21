@@ -19,6 +19,10 @@ export async function getProjectIds(api: D2Api, config: Config, debug: Debug): P
         .value();
 }
 
+export function error(msg: string) {
+    throw Error(msg);
+}
+
 export async function post<Payload>(api: D2Api, debug: Debug, payload: Payload) {
     const res = await api.metadata.post(payload).getData();
     if (res.status !== "OK") {
