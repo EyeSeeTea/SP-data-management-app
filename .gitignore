@@ -42,6 +42,7 @@ cypress/videos/
 # Custom
 /scripts/
 data-management-app.zip
+src/scripts/data
 bak/
 src/dev
 .eslintcache
