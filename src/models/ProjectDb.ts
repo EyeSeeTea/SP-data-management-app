@@ -578,7 +578,8 @@ export default class ProjectDb {
 
         const validPairIds = new Set(
             _.flatMap(dataElements, de => {
-                const cocIds = cocIdsByCategoryComboId[de.categoryCombo.id] || [];
+                const categoryCombo = project.disaggregation.getCategoryCombo(de.id);
+                const cocIds = cocIdsByCategoryComboId[categoryCombo.id] || [];
                 return cocIds.map(cocId => [de.id, cocId].join("-"));
             })
         );
