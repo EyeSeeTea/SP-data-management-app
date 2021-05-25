@@ -607,6 +607,12 @@ msgid ""
 "<new> values for past periods: {{newValuesSumFormula}}"
 msgstr ""
 
+msgid ""
+"Returning value ({{returningValue}}) is greater than the sum of <new> "
+"values for past periods in projects stored in this platform: "
+"{{newValuesSumFormula}}"
+msgstr ""
+
 msgid "Award Number Dashboard"
 msgstr ""
 
