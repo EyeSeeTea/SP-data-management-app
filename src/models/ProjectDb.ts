@@ -428,6 +428,15 @@ export default class ProjectDb {
         return { dataSets: [dataSet], sections };
     }
 
+    static getCodeInfo(code: string) {
+        const [code1 = "", code2 = ""] = splitParts(code, "-", 2);
+        return {
+            awardNumber: code1.slice(0, 5),
+            subsequentLettering: code1.slice(5),
+            additional: code2,
+        };
+    }
+
     static async get(api: D2Api, config: Config, id: string): Promise<Project> {
         const attributeValues = { attribute: { id: true }, value: true } as const;
 
@@ -525,16 +534,14 @@ export default class ProjectDb {
 
         const { dataSetElements } = projectDataSets.actual;
         const disaggregation = Disaggregation.buildFromDataSetElements(config, dataSetElements);
-        const [code1, code2] = splitParts(code, "-", 2);
+        const codeInfo = ProjectDb.getCodeInfo(code);
 
         const projectData = {
             id: orgUnit.id,
             name: orgUnit.name,
             created: orgUnit.created ? moment(orgUnit.created) : undefined,
             description: orgUnit.description,
-            awardNumber: code1.slice(0, 5),
-            subsequentLettering: code1.slice(5),
-            additional: code2 || "",
+            ...codeInfo,
             startDate: startDate,
             endDate: endDate,
             sectors: sectors,
