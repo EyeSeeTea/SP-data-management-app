@@ -14,7 +14,7 @@ class Spinner extends React.Component {
 }
 
 const style = {
-    marginLeft: "48%",
+    marginLeft: 10,
 };
 
 export default React.memo(Spinner);

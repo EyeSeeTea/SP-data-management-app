@@ -1473,10 +1473,10 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
-"@eyeseetea/d2-api@1.8.3":
-  version "1.8.3"
-  resolved "https://registry.yarnpkg.com/@eyeseetea/d2-api/-/d2-api-1.8.3.tgz#7b5e9ccb5e9c6fbee3ec393798b3f91e80d36e2b"
-  integrity sha512-+OWu2KGBR4Zq7PozyuvtWtgdaQQ6jLT16bNz9Gf+kRyXXJ9o7rV54/mx6XWocDu/m0Zuh8St5aPsxq2ZXUHIHQ==
+"@eyeseetea/d2-api@1.8.5-beta.1":
+  version "1.8.5-beta.1"
+  resolved "https://registry.npmjs.org/@eyeseetea/d2-api/-/d2-api-1.8.5-beta.1.tgz#7b891eed596a5d8f48f799fdf799e956f8d45a1e"
+  integrity sha512-6v/uA9sPOPv4NPwRCIgWT+Wb6Y5OQd8u8nnLb36atSyBGgJdKbNdjEFj9FGOmu/i1YMqGCEWQ1FBFgNqLRc4Hw==
   dependencies:
     "@babel/runtime" "^7.5.4"
     "@dhis2/d2-i18n" "^1.0.5"

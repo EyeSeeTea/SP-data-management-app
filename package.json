@@ -18,7 +18,7 @@
         "@dhis2/d2-ui-forms": "^6.5.3",
         "@dhis2/ui-core": "^4.8.0",
         "@dhis2/ui-widgets": "^2.0.8",
-        "@eyeseetea/d2-api": "1.8.3",
+        "@eyeseetea/d2-api": "1.8.5-beta.1",
         "@eyeseetea/d2-ui-components": "2.6.6",
         "@material-ui/core": "4.11.3",
         "@material-ui/icons": "4.11.2",
@@ -67,7 +67,8 @@
         "cy:e2e:open": "yarn cypress-run-migrations && CYPRESS_E2E=true cypress open -b chrome",
         "cy:e2e:run": "yarn cypress-run-migrations && CYPRESS_E2E=true cypress run -b chrome --headless",
         "ts-node": "ts-node -P tsconfig-cli.json",
-        "cypress-run-migrations": "yarn ts-node src/migrations/cli.ts $CYPRESS_EXTERNAL_API $CYPRESS_DHIS2_AUTH",
+        "run-migrations": "yarn ts-node src/migrations/cli.ts",
+        "cypress-run-migrations": "yarn run-migrations $CYPRESS_EXTERNAL_API $CYPRESS_DHIS2_AUTH",
         "check-uncommited": "! git status -uno --porcelain | grep '.'",
         "generate-test-fixtures": "yarn run ts src/models/Config.ts"
     },

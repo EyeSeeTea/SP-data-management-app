@@ -14,7 +14,7 @@ import Project, {
 import { getMonthsRange, toISOString } from "../utils/date";
 import "../utils/lodash-mixins";
 import ProjectDashboard from "./ProjectDashboard";
-import { getUid, getDataStore, getIds, getRefs, flattenPayloads } from "../utils/dhis2";
+import { getUid, getDataStore, getIds, getRefs, flattenPayloads, getId } from "../utils/dhis2";
 import { Config } from "./Config";
 import { runPromises } from "../utils/promises";
 import DataElementsSet from "./dataElementsSet";
@@ -560,6 +560,97 @@ export default class ProjectDb {
         const project = new Project(api, config, { ...projectData, initialData: projectData });
         return project;
     }
+
+    async getDanglingDataValues(): Promise<DataValue[]> {
+        const { api, project } = this;
+        const dataElements = project.getSelectedDataElements();
+        const dataSetIds = _.compact([project.dataSets?.actual.id, project.dataSets?.target.id]);
+
+        if (!project.orgUnit || _.isEmpty(dataSetIds)) return [];
+
+        const { dataValues } = await api.dataValues
+            .getSet({
+                orgUnit: [project.orgUnit.id],
+                dataSet: dataSetIds,
+                startDate: "1970",
+                endDate: (new Date().getFullYear() + 1).toString(),
+            })
+            .getData();
+
+        const cocIdsByCategoryComboId = _(this.config.categoryCombos)
+            .values()
+            .map(catCombo => [catCombo.id, getIds(catCombo.categoryOptionCombos)] as [Id, Id[]])
+            .fromPairs()
+            .value();
+
+        const validPairIds = new Set(
+            _.flatMap(dataElements, de => {
+                const categoryCombo = project.disaggregation.getCategoryCombo(de.id);
+                const cocIds = cocIdsByCategoryComboId[categoryCombo.id] || [];
+                return cocIds.map(cocId => [de.id, cocId].join("-"));
+            })
+        );
+
+        const danglingDataValues = dataValues
+            .filter(dataValue => dataValue.value && dataValue.value !== "0")
+            .filter(dv => !validPairIds.has([dv.dataElement, dv.categoryOptionCombo].join("-")));
+
+        const cocIdsFromDataValues = _(danglingDataValues)
+            .flatMap(dv => [dv.categoryOptionCombo, dv.attributeOptionCombo])
+            .uniq()
+            .value();
+
+        const { categoryOptionCombos } = await api.metadata
+            .get({
+                categoryOptionCombos: {
+                    fields: { id: true, name: true },
+                    filter: { id: { in: cocIdsFromDataValues } },
+                },
+            })
+            .getData();
+
+        const dataElementsById = _.keyBy(dataElements, getId);
+        const cocsById = _.keyBy(categoryOptionCombos, getId);
+
+        const dataValuesInfo = danglingDataValues.map((dv): DataValue | null => {
+            const dataElement = _(dataElementsById).get(dv.dataElement, null);
+            const categoryOptionCombo = _(cocsById).get(dv.categoryOptionCombo, null);
+            const attributeOptionCombo = _(cocsById).get(dv.attributeOptionCombo, null);
+
+            if (!dataElement || !categoryOptionCombo || !attributeOptionCombo) {
+                console.warn("Metadata not found for datavalue", dv);
+                return null;
+            } else {
+                return {
+                    dataElement,
+                    categoryOptionCombo,
+                    attributeOptionCombo,
+                    period: dv.period,
+                    value: dv.value,
+                };
+            }
+        });
+
+        return _.compact(dataValuesInfo);
+    }
+}
+
+export interface DataValue {
+    dataElement: { id: Id; name: string; code: string };
+    categoryOptionCombo: { id: Id; name: string };
+    attributeOptionCombo: { id: Id; name: string };
+    period: string;
+    value: string;
+}
+
+export function getStringDataValue(dataValue: DataValue): string {
+    return [
+        `[${dataValue.dataElement.code}] ${dataValue.dataElement.name}`,
+        dataValue.attributeOptionCombo.name,
+        dataValue.categoryOptionCombo.name,
+        dataValue.period,
+        `value=${dataValue.value}`,
+    ].join(" - ");
 }
 
 async function getDataElementIdsForMer(api: D2Api, id: string) {
