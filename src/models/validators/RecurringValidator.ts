@@ -16,6 +16,7 @@ import {
 } from "./validator-common";
 import { Config } from "../Config";
 import { Maybe } from "../../types/utils";
+import ProjectDb from "../ProjectDb";
 
 /*
     Validate only for returning values:
@@ -27,11 +28,13 @@ interface Data {
     config: Config;
     period: string;
     pastDataValuesIndexed: { [dataValueKey: string]: Maybe<DataValueSetsDataValue[]> };
+    allProjectsInPlatform: boolean;
 }
 
 interface RelatedProjects {
     orgUnitIds: Id[];
     dataSetIds: Id[];
+    allProjectsInPlatform: boolean;
 }
 
 export class RecurringValidator {
@@ -62,7 +65,13 @@ export class RecurringValidator {
             .groupBy(dataValue => getKey(dataValue.dataElement, dataValue.categoryOptionCombo))
             .value();
 
-        return new RecurringValidator({ project, config, period, pastDataValuesIndexed });
+        return new RecurringValidator({
+            project,
+            config,
+            period,
+            pastDataValuesIndexed,
+            allProjectsInPlatform: relatedProjects.allProjectsInPlatform,
+        });
     }
 
     static async getRelatedProjects(
@@ -73,11 +82,13 @@ export class RecurringValidator {
         const { organisationUnits } = await api.metadata
             .get({
                 organisationUnits: {
-                    fields: { id: true },
+                    fields: { id: true, code: true },
                     filter: { code: { $like: project.awardNumber } },
                 },
             })
             .getData();
+
+        const allProjectsInPlatform = areSubsequentLetteringsComplete(organisationUnits, project);
 
         const dataSetCodes = organisationUnits.map(ou => `${ou.id}_${dataSetType.toUpperCase()}`);
 
@@ -93,6 +104,7 @@ export class RecurringValidator {
         return {
             orgUnitIds: organisationUnits.map(ou => ou.id),
             dataSetIds: dataSets.map(ou => ou.id),
+            allProjectsInPlatform,
         };
     }
 
@@ -117,12 +129,21 @@ export class RecurringValidator {
         const returningValue = toFloat(dataValue.value);
         const isValid = returningValue <= limitValue;
 
-        const msg = i18n.t(
-            "Returning value ({{returningValue}}) cannot be greater than the sum of <new> values for past periods: {{newValuesSumFormula}}",
-            { returningValue, newValuesSumFormula, nsSeparator: false }
-        );
-
-        return isValid ? [] : [["error", msg]];
+        if (isValid) {
+            return [];
+        } else if (this.data.allProjectsInPlatform) {
+            const msg = i18n.t(
+                "Returning value ({{returningValue}}) cannot be greater than the sum of <new> values for past periods: {{newValuesSumFormula}}",
+                { returningValue, newValuesSumFormula, nsSeparator: false }
+            );
+            return [["error", msg]];
+        } else {
+            const msg = i18n.t(
+                "Returning value ({{returningValue}}) is greater than the sum of <new> values for past periods in projects stored in this platform: {{newValuesSumFormula}}",
+                { returningValue, newValuesSumFormula, nsSeparator: false }
+            );
+            return [["warning", msg]];
+        }
     }
 
     getCategoryOptionComboForRelatedNew(dataValue: DataValue): CategoryOptionCombo | undefined {
@@ -155,4 +176,35 @@ export class RecurringValidator {
 
         return cocsForRelatedNewValue[0];
     }
+}
+
+const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+/* Check if we have all the previous projects looking at the subsequent lettering of related projects.
+
+    Example. If our project has code "12345AC", we expect to also have projects "12345AA" and "12345AB".
+
+    Implementation: Convert the subsequent lettering to its integer representation
+    (ex: "BD" -> (26^1 * 1) + (26^0 * 3) = 26 + 3 = 29) and check if we have all
+    the codes between "AA" and "AC".
+*/
+function areSubsequentLetteringsComplete(
+    organisationUnits: Array<{ code: string }>,
+    project: Project
+): boolean {
+    const projectSubcode = project.subsequentLettering.toLocaleUpperCase();
+
+    const subcodeAsInteger = _(projectSubcode.split(""))
+        .reverse()
+        .map((c, idx) => letters.indexOf(c) * Math.pow(letters.length, idx))
+        .sum();
+
+    const subcodes = _(organisationUnits)
+        .map(orgUnit => ProjectDb.getCodeInfo(orgUnit.code))
+        .map(info => info.subsequentLettering.toLocaleUpperCase())
+        .filter(subcode => subcode < projectSubcode)
+        .uniq()
+        .value();
+
+    return subcodes.length === subcodeAsInteger;
 }

@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2021-05-05T10:13:55.444Z\n"
-"PO-Revision-Date: 2021-05-05T10:13:55.444Z\n"
+"POT-Creation-Date: 2021-05-24T09:51:57.168Z\n"
+"PO-Revision-Date: 2021-05-24T09:51:57.168Z\n"
 
 msgid "Name"
 msgstr ""
@@ -570,6 +570,9 @@ msgstr ""
 msgid "updated"
 msgstr ""
 
+msgid "Project '{{projectName}}' [dangling data values]"
+msgstr ""
+
 msgid "Award Number {{awardNumber}}"
 msgstr ""
 
@@ -602,6 +605,12 @@ msgstr ""
 msgid ""
 "Returning value ({{returningValue}}) cannot be greater than the sum of "
 "<new> values for past periods: {{newValuesSumFormula}}"
+msgstr ""
+
+msgid ""
+"Returning value ({{returningValue}}) is greater than the sum of <new> "
+"values for past periods in projects stored in this platform: "
+"{{newValuesSumFormula}}"
 msgstr ""
 
 msgid "Award Number Dashboard"
