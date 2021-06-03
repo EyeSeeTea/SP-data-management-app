@@ -388,7 +388,7 @@ export default class DataElementsSet {
             .value();
 
         const relatedDataElements = _.flatMap(sourceDataElements, de => {
-            if (de.indicatorType === "sub" && de.mainSeries && !de.mainSeries.endsWith("00")) {
+            if (de.indicatorType !== "global" && de.mainSeries && !de.mainSeries.endsWith("00")) {
                 const key = getDataElementKey(de.mainSector, "global", de.mainSeries);
                 return _(allDataElementsByKey).at([key]).compact().value();
             } else {
