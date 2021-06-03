@@ -14,7 +14,7 @@ export interface DataElement {
     $sectors: Sectors;
     $externals: Externals;
     $mainSector: string;
-    $pairedDataElements: Code[];
+    $pairedDataElement?: Code;
     $oldCode?: string;
     $countingMethod?: string;
 }
@@ -60,6 +60,8 @@ function getMetadataDataElements(config: Config): DataElement[] {
                 .fromPairs()
                 .value();
 
+            const pairedCode = de.pairedDataElements.map(pde => pde.code)[0];
+
             const dataElement: DataElement = {
                 code: de.code,
                 name: de.name,
@@ -70,7 +72,7 @@ function getMetadataDataElements(config: Config): DataElement[] {
                 $sectors: sectors,
                 $externals: _.mapValues(de.externals, ext => ext.name || ""),
                 $mainSector: de.mainSector.name,
-                $pairedDataElements: de.pairedDataElements.map(pde => pde.code),
+                ...(pairedCode ? { $pairedDataElement: pairedCode } : {}),
                 ...(de.countingMethod ? { $countingMethod: de.countingMethod } : {}),
             };
 

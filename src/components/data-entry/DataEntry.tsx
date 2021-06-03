@@ -48,7 +48,7 @@ function setEntryStyling(iframe: HTMLIFrameElement) {
 
     on(iframeDocument, "#currentSelection", el => el.remove());
     on(iframeDocument, "#header", el => el.remove());
-    on(iframeDocument, "html", html => (html.style.overflow = "hidden"));
+    on(iframeDocument, "html", html => (html.style["overflowY"] = "hidden"));
     on(iframeDocument, "#leftBar", el => (el.style.display = "none"));
     on(iframeDocument, "#selectionBox", el => (el.style.display = "none"));
     on(iframeDocument, "body", el => (el.style.marginTop = "-55px"));

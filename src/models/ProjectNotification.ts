@@ -1,3 +1,4 @@
+import _ from "lodash";
 import striptags from "striptags";
 import ReactDOMServer from "react-dom/server";
 
@@ -7,6 +8,7 @@ import i18n from "../locales";
 import User from "./user";
 import { generateUrl } from "../router";
 import { D2Api } from "../types/d2-api";
+import ProjectDb, { getStringDataValue } from "./ProjectDb";
 
 type Email = string;
 type Action = "create" | "update";
@@ -19,7 +21,12 @@ export class ProjectNotification {
         private isTest: boolean
     ) {}
 
-    notifyOnProjectSave(element: ReactElement, recipients: Email[], action: Action) {
+    async notifyOnProjectSave(element: ReactElement, recipients: Email[], action: Action) {
+        await this.notifySave(element, recipients, action);
+        await this.notifyDanglingDataValues(recipients);
+    }
+
+    private async notifySave(element: ReactElement, recipients: Email[], action: Action) {
         const { api, project, currentUser } = this;
         const baseMsg = action === "create" ? i18n.t("Project created") : i18n.t("Project updated");
         const subject = `${baseMsg}: ${this.project.name}`;
@@ -37,7 +44,35 @@ export class ProjectNotification {
         ];
 
         const text = body.join("\n\n");
-        return api.email.sendMessage({ recipients, subject, text: text }).getData();
+        await sendMessage(api, { recipients, subject, text });
+    }
+
+    private async notifyDanglingDataValues(recipients: Email[]) {
+        const { api, project } = this;
+        const dataValues = await new ProjectDb(project).getDanglingDataValues();
+        const projectName = project.name;
+
+        if (_.isEmpty(dataValues)) return;
+
+        const subject = i18n.t("Project '{{projectName}}' [dangling data values]", { projectName });
+
+        const text =
+            i18n.t("Project '{{projectName}}' has dangling data values:", { projectName }) +
+            "\n\n" +
+            dataValues.map(getStringDataValue).join("\n");
+
+        await sendMessage(api, { recipients, subject, text });
+    }
+}
+
+async function sendMessage(
+    api: D2Api,
+    options: { recipients: string[]; subject: string; text: string }
+): Promise<void> {
+    try {
+        await api.email.sendMessage(options).getData();
+    } catch (err) {
+        console.error(err);
     }
 }
 

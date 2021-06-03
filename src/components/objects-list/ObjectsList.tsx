@@ -76,7 +76,7 @@ export function ObjectsList<T extends ReferenceObject>(
 
                             {children}
 
-                            <Spinner isVisible={isLoading} />
+                            <Spinner isLoading={isLoading} />
                         </React.Fragment>
                     }
                 />
