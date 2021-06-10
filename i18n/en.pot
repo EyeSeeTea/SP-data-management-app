@@ -613,9 +613,9 @@ msgid ""
 msgstr ""
 
 msgid ""
-"Returning value ({{returningValue}}) is greater than the sum of <new> "
-"values for past periods in projects stored in this platform: "
-"{{newValuesSumFormula}}"
+"Returning value ({{returningValue}}) is greater than the sum of New values "
+"for past periods in projects stored in Platform (there is no "
+"{{missingProjects}} version(s) of this project)"
 msgstr ""
 
 msgid "Award Number Dashboard"
