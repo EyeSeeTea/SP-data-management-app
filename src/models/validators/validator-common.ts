@@ -20,6 +20,10 @@ export function areSetsEqual<T>(xs: Set<T>, ys: Set<T>) {
     return xs.size === ys.size && _.every(Array.from(xs), x => ys.has(x));
 }
 
+export function isSuperset<T>(xs: Set<T>, ys: Set<T>) {
+    return xs.size >= ys.size && _.every(Array.from(ys), y => xs.has(y));
+}
+
 export function toFloat(s: string): number {
     return parseFloat(s) || 0.0;
 }

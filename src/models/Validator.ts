@@ -30,7 +30,7 @@ export class Validator {
     async validateDataValue(dataValue: DataValue): Promise<ValidationResult> {
         const items: ValidationItem[] = _.concat(
             this.validators.actual.validate(dataValue),
-            this.validators.recurring.validate(dataValue)
+            await this.validators.recurring.validate(dataValue)
         );
 
         return _(items)

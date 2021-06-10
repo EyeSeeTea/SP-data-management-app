@@ -1,19 +1,12 @@
 import moment from "moment";
-import { CategoryOptionCombo } from "./../Config";
+import { CategoryOption, CategoryOptionCombo } from "./../Config";
 import { D2Api, DataValueSetsGetRequest, DataValueSetsDataValue, Id } from "../../types/d2-api";
 import _ from "lodash";
 
 import Project, { DataSetType, monthFormat } from "../Project";
 import i18n from "../../locales";
-import { getIds } from "../../utils/dhis2";
-import {
-    toFloat,
-    DataValue,
-    ValidationItem,
-    areSetsEqual,
-    getKey,
-    formatPeriod,
-} from "./validator-common";
+import { getId, getIds } from "../../utils/dhis2";
+import { toFloat, DataValue, ValidationItem, getKey, formatPeriod } from "./validator-common";
 import { Config } from "../Config";
 import { Maybe } from "../../types/utils";
 import ProjectDb from "../ProjectDb";
@@ -24,9 +17,12 @@ import ProjectDb from "../ProjectDb";
 */
 
 interface Data {
+    api: D2Api;
     project: Project;
+    categoryOptionForDataSetType: CategoryOption;
     config: Config;
     period: string;
+    categoryOptionCombos: CategoryOptionCombo[];
     pastDataValuesIndexed: { [dataValueKey: string]: Maybe<DataValueSetsDataValue[]> };
     allProjectsInPlatform: boolean;
 }
@@ -47,6 +43,7 @@ export class RecurringValidator {
         period: string
     ): Promise<RecurringValidator> {
         if (!project.orgUnit || !project.dataSets) throw new Error("Cannot build validator");
+
         const { config } = project;
         const categoryOptionForDataSetType = project.config.categoryOptions[dataSetType];
         const relatedProjects = await this.getRelatedProjects(api, project, dataSetType);
@@ -65,11 +62,18 @@ export class RecurringValidator {
             .groupBy(dataValue => getKey(dataValue.dataElement, dataValue.categoryOptionCombo))
             .value();
 
+        const categoryOptionCombos = _(config.allCategoryCombos)
+            .flatMap(cc => cc.categoryOptionCombos)
+            .value();
+
         return new RecurringValidator({
+            api,
             project,
+            categoryOptionForDataSetType,
             config,
             period,
             pastDataValuesIndexed,
+            categoryOptionCombos,
             allProjectsInPlatform: relatedProjects.allProjectsInPlatform,
         });
     }
@@ -108,12 +112,19 @@ export class RecurringValidator {
         };
     }
 
-    validate(dataValue: DataValue): ValidationItem[] {
-        const cocForRelatedNewValue = this.getCategoryOptionComboForRelatedNew(dataValue);
-        if (!cocForRelatedNewValue) return [];
+    async validate(dataValue: DataValue): Promise<ValidationItem[]> {
+        const cocsForRelatedNewValue = this.getCategoryOptionCombosForRelatedNew(dataValue);
+        if (_.isEmpty(cocsForRelatedNewValue)) return [];
 
-        const newKey = getKey(dataValue.dataElementId, cocForRelatedNewValue.id);
-        const newDataValues = this.data.pastDataValuesIndexed[newKey] || [];
+        const returningValueResult = await this.getReturningValue(dataValue);
+        if (!returningValueResult) return [];
+        const { sum: returningValue, values: returningValues } = returningValueResult;
+
+        const newDataValues = _.flatMap(cocsForRelatedNewValue, cocForRelatedNewValue => {
+            const newKey = getKey(dataValue.dataElementId, cocForRelatedNewValue.id);
+            return this.data.pastDataValuesIndexed[newKey] || [];
+        });
+
         const limitValue = _.sum(newDataValues.map(dv => toFloat(dv.value)));
 
         const formula = _(newDataValues)
@@ -126,16 +137,22 @@ export class RecurringValidator {
             ? `${formula} = ${limitValue}`
             : i18n.t("there is no data for previous periods");
 
-        const returningValue = toFloat(dataValue.value);
         const isValid = returningValue <= limitValue;
 
         if (isValid) {
             return [];
         } else if (this.data.allProjectsInPlatform) {
-            const msg = i18n.t(
-                "Returning value ({{returningValue}}) cannot be greater than the sum of <new> values for past periods: {{newValuesSumFormula}}",
-                { returningValue, newValuesSumFormula, nsSeparator: false }
-            );
+            const values = returningValues.join(" + ");
+            const msg =
+                newDataValues.length > 0
+                    ? i18n.t(
+                          "Total returning values ({{values}} = {{returningValue}}) cannot be greater than the sum of <new> values for past periods: {{newValuesSumFormula}}",
+                          { values, returningValue, newValuesSumFormula, nsSeparator: false }
+                      )
+                    : i18n.t(
+                          "Returning value ({{returningValue}}) cannot be greater than the sum of <new> values for past periods: {{newValuesSumFormula}}",
+                          { returningValue, newValuesSumFormula, nsSeparator: false }
+                      );
             return [["error", msg]];
         } else {
             const msg = i18n.t(
@@ -146,35 +163,91 @@ export class RecurringValidator {
         }
     }
 
-    getCategoryOptionComboForRelatedNew(dataValue: DataValue): CategoryOptionCombo | undefined {
+    private async getReturningValue(
+        dataValue: DataValue
+    ): Promise<{ sum: number; values: string[] } | undefined> {
+        const { categoryOptionComboId } = dataValue;
+        const cocsById = _.keyBy(this.data.categoryOptionCombos, coc => coc.id);
+        const categoryOptionCombo = cocsById[categoryOptionComboId];
+        if (!categoryOptionCombo) return undefined;
+
+        const { config, project, period, categoryOptionForDataSetType, api } = this.data;
+        const categoryOptionIds = _(categoryOptionCombo.categoryOptions)
+            .map(co => co.id)
+            .difference(config.categories.covid19.categoryOptions.map(getId))
+            .value();
+        const cocsForValue = this.getCategoryOptionCombosForCategoryOptions(categoryOptionIds);
+        const cocsToRequest = cocsForValue.filter(coc => coc.id !== categoryOptionComboId);
+
+        const getSetOptions: DataValueSetsGetRequest = {
+            orgUnit: _.compact([project.orgUnit?.id]),
+            dataSet: _.compact([project.dataSets?.target?.id]),
+            period: [period],
+            attributeOptionCombo: getIds(categoryOptionForDataSetType.categoryOptionCombos),
+        };
+
+        const dataValues = _(cocsToRequest).isEmpty()
+            ? []
+            : (await api.dataValues.getSet(getSetOptions).getData()).dataValues;
+
+        const dataValuesToSum = [
+            dataValue,
+            ...dataValues.filter(dv =>
+                cocsToRequest.map(coc => coc.id).includes(dv.categoryOptionCombo)
+            ),
+        ];
+
+        const values = dataValuesToSum.map(dv => dv.value);
+        const sum = _.sum(values.map(value => toFloat(value)));
+
+        return { sum, values };
+    }
+
+    getCategoryOptionCombosForRelatedNew(dataValue: DataValue): CategoryOptionCombo[] {
         const { config } = this.data;
         const categoryOptionRecurring = config.categoryOptions.recurring;
         const recurringCocIds = getIds(categoryOptionRecurring.categoryOptionCombos);
         const dataValueIsRecurring = recurringCocIds.includes(dataValue.categoryOptionComboId);
-        if (!dataValueIsRecurring) return;
+        if (!dataValueIsRecurring) return [];
 
-        const allCategoryOptionCombos = _(config.allCategoryCombos)
-            .flatMap(cc => cc.categoryOptionCombos)
-            .value();
-
-        const cocForDataValueRecurring = allCategoryOptionCombos.find(
+        const cocForDataValueRecurring = this.data.categoryOptionCombos.find(
             coc => coc.id === dataValue.categoryOptionComboId
         );
-        if (!cocForDataValueRecurring) return;
+        if (!cocForDataValueRecurring) return [];
 
-        const categoryOptionIdsForRelatedNew = new Set(
-            _(getIds(cocForDataValueRecurring.categoryOptions))
-                .without(categoryOptionRecurring.id)
-                .push(config.categoryOptions.new.id)
-                .value()
-        );
+        // Get cocs replacing recurring -> new
+        const coIdsForRelatedNew = _(getIds(cocForDataValueRecurring.categoryOptions))
+            .without(categoryOptionRecurring.id)
+            .push(config.categoryOptions.new.id)
+            .value();
 
-        const cocsForRelatedNewValue = allCategoryOptionCombos.filter(coc =>
-            areSetsEqual(new Set(getIds(coc.categoryOptions)), categoryOptionIdsForRelatedNew)
-        );
-        if (cocsForRelatedNewValue.length > 1) console.error("Multiple cocs found for related new");
+        return this.getCategoryOptionCombosForCategoryOptions(coIdsForRelatedNew);
+    }
 
-        return cocsForRelatedNewValue[0];
+    getCategoryOptionCombosForCategoryOptions(categoryOptionIds: Id[]): CategoryOptionCombo[] {
+        const excludedCategoryOptionIdsByCategoryOptionId = _(this.data.config.categories)
+            .values()
+            .filter(category => category.dataDimensionType === "DISAGGREGATION")
+            .flatMap(category =>
+                category.categoryOptions.map(co => {
+                    const excludedIds = _.without(category.categoryOptions.map(getId), co.id);
+                    return [co.id, excludedIds] as [Id, Id[]];
+                })
+            )
+            .fromPairs()
+            .value();
+
+        // Exclude cocs that contain a different category option in an existing dataValue.coc->category
+        const excludedCoIds = _(categoryOptionIds)
+            .flatMap(coId => excludedCategoryOptionIdsByCategoryOptionId[coId])
+            .uniq()
+            .value();
+
+        return this.data.categoryOptionCombos.filter(coc => {
+            const coIds = coc.categoryOptions.map(getId);
+            const cocHasForbiddenCategoryOptions = _.intersection(coIds, excludedCoIds).length > 0;
+            return !cocHasForbiddenCategoryOptions;
+        });
     }
 }
 
