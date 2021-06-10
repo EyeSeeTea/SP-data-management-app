@@ -147,19 +147,19 @@ export class RecurringValidator {
         } else if (this.data.allProjectsInPlatform) {
             const values = returningValues.join(" + ");
             const msg =
-                newDataValues.length > 0
+                newDataValues.length > 1
                     ? i18n.t(
-                          "Total returning values ({{values}} = {{returningValue}}) cannot be greater than the sum of <new> values for past periods: {{newValuesSumFormula}}",
+                          "Total of returning values ({{values}} = {{returningValue}}) cannot be greater than the sum of New values for past periods: {{newValuesSumFormula}}",
                           { values, returningValue, newValuesSumFormula, nsSeparator: false }
                       )
                     : i18n.t(
-                          "Returning value ({{returningValue}}) cannot be greater than the sum of <new> values for past periods: {{newValuesSumFormula}}",
+                          "Returning value ({{returningValue}}) cannot be greater than the sum of New values for past periods: {{newValuesSumFormula}}",
                           { returningValue, newValuesSumFormula, nsSeparator: false }
                       );
             return [["error", msg]];
         } else {
             const msg = i18n.t(
-                "Returning value ({{returningValue}}) is greater than the sum of New values for past periods in projects stored in Platform (there is no {{missingProjects}} version(s) of this project)",
+                "Returning value ({{returningValue}}) is greater than the sum of New values for past periods in projects stored in Platform: {{newValuesSumFormula}} (there is no {{missingProjects}} version(s) of this project)",
                 {
                     returningValue,
                     newValuesSumFormula,
