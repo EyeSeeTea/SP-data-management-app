@@ -17,6 +17,7 @@ import {
 import { Config } from "../Config";
 import { Maybe } from "../../types/utils";
 import ProjectDb from "../ProjectDb";
+import { lexRange } from "../../utils/lex-ranges";
 
 /*
     Validate only for returning values:
@@ -28,13 +29,14 @@ interface Data {
     config: Config;
     period: string;
     pastDataValuesIndexed: { [dataValueKey: string]: Maybe<DataValueSetsDataValue[]> };
+    missingProjects: string[];
     allProjectsInPlatform: boolean;
 }
 
 interface RelatedProjects {
     orgUnitIds: Id[];
     dataSetIds: Id[];
-    allProjectsInPlatform: boolean;
+    missingProjects: string[];
 }
 
 export class RecurringValidator {
@@ -70,7 +72,8 @@ export class RecurringValidator {
             config,
             period,
             pastDataValuesIndexed,
-            allProjectsInPlatform: relatedProjects.allProjectsInPlatform,
+            missingProjects: relatedProjects.missingProjects,
+            allProjectsInPlatform: _.isEmpty(relatedProjects.missingProjects),
         });
     }
 
@@ -88,7 +91,7 @@ export class RecurringValidator {
             })
             .getData();
 
-        const allProjectsInPlatform = areSubsequentLetteringsComplete(organisationUnits, project);
+        const missingProjects = getMissingProjectVersions(organisationUnits, project);
 
         const dataSetCodes = organisationUnits.map(ou => `${ou.id}_${dataSetType.toUpperCase()}`);
 
@@ -104,7 +107,7 @@ export class RecurringValidator {
         return {
             orgUnitIds: organisationUnits.map(ou => ou.id),
             dataSetIds: dataSets.map(ou => ou.id),
-            allProjectsInPlatform,
+            missingProjects,
         };
     }
 
@@ -133,14 +136,19 @@ export class RecurringValidator {
             return [];
         } else if (this.data.allProjectsInPlatform) {
             const msg = i18n.t(
-                "Returning value ({{returningValue}}) cannot be greater than the sum of <new> values for past periods: {{newValuesSumFormula}}",
+                "Returning value ({{returningValue}}) cannot be greater than the sum of New values for past periods: {{newValuesSumFormula}}",
                 { returningValue, newValuesSumFormula, nsSeparator: false }
             );
             return [["error", msg]];
         } else {
             const msg = i18n.t(
-                "Returning value ({{returningValue}}) is greater than the sum of <new> values for past periods in projects stored in this platform: {{newValuesSumFormula}}",
-                { returningValue, newValuesSumFormula, nsSeparator: false }
+                "Returning value ({{returningValue}}) is greater than the sum of New values for past periods in projects stored in Platform (there is no {{missingProjects}} version(s) of this project)",
+                {
+                    returningValue,
+                    newValuesSumFormula,
+                    missingProjects: this.data.missingProjects.join(", "),
+                    nsSeparator: false,
+                }
             );
             return [["warning", msg]];
         }
@@ -188,23 +196,16 @@ const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     (ex: "BD" -> (26^1 * 1) + (26^0 * 3) = 26 + 3 = 29) and check if we have all
     the codes between "AA" and "AC".
 */
-function areSubsequentLetteringsComplete(
+function getMissingProjectVersions(
     organisationUnits: Array<{ code: string }>,
     project: Project
-): boolean {
+): string[] {
     const projectSubcode = project.subsequentLettering.toLocaleUpperCase();
+    const requiredVersion = lexRange(letters, "AA", projectSubcode);
 
-    const subcodeAsInteger = _(projectSubcode.split(""))
-        .reverse()
-        .map((c, idx) => letters.indexOf(c) * Math.pow(letters.length, idx))
-        .sum();
-
-    const subcodes = _(organisationUnits)
+    const existingVersions = organisationUnits
         .map(orgUnit => ProjectDb.getCodeInfo(orgUnit.code))
-        .map(info => info.subsequentLettering.toLocaleUpperCase())
-        .filter(subcode => subcode < projectSubcode)
-        .uniq()
-        .value();
+        .map(info => info.subsequentLettering.toLocaleUpperCase());
 
-    return subcodes.length === subcodeAsInteger;
+    return _.difference(requiredVersion, existingVersions);
 }
