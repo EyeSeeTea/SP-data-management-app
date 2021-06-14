@@ -23,6 +23,7 @@ import { lexRange } from "../../utils/lex-ranges";
 /*
     Validate only for returning values:
         IF returning_value > SUM(new_values for past periods) + returning_value for first period.
+        Assume that past data values may or not have the same COVID-19 disaggregation.
 */
 
 interface Data {
@@ -31,7 +32,7 @@ interface Data {
     categoryOptionForDataSetType: CategoryOption;
     config: Config;
     period: string;
-    categoryOptionCombos: CategoryOptionCombo[];
+    categoryOptionCombos: Record<Id, CategoryOptionCombo>;
     pastDataValuesIndexed: { [dataValueKey: string]: DataValue[] };
     missingProjects: string[];
     allProjectsInPlatform: boolean;
@@ -75,6 +76,7 @@ export class RecurringValidator {
 
         const categoryOptionCombos = _(config.allCategoryCombos)
             .flatMap(cc => cc.categoryOptionCombos)
+            .keyBy(getId)
             .value();
 
         return new RecurringValidator({
@@ -134,7 +136,7 @@ export class RecurringValidator {
         const isRecurring = dataValueCatOptionsIds.includes(config.categoryOptions.recurring.id);
         if (!isRecurring) return [];
 
-        const currentPeriodPersistedDataValues = await this.getDataValues();
+        const currentPeriodPersistedDataValues = await this.getDataValuesForCurrentPeriod();
         const currentPeriodDataValues = currentPeriodPersistedDataValues.filter(
             dv => dv.categoryOptionComboId !== dataValue.categoryOptionComboId
         );
@@ -165,7 +167,7 @@ export class RecurringValidator {
 
     validateCategoryOptions(categoryOptionIds: Id[], values: DataValue[]): ValidationItem[] {
         const { config } = this.data;
-        const returningResult = this.getValueFromCategoryOptions(categoryOptionIds, values, {
+        const returningResult = this.getValueInfoFromCategoryOptions(categoryOptionIds, values, {
             periods: "current-month",
         });
         if (!returningResult) return [];
@@ -176,7 +178,7 @@ export class RecurringValidator {
             .union([config.categoryOptions.new.id])
             .value();
 
-        const pastResult = this.getValueFromCategoryOptions(categoryOptionIdsForNew, values, {
+        const pastResult = this.getValueInfoFromCategoryOptions(categoryOptionIdsForNew, values, {
             periods: "past-months",
         });
         if (!pastResult) return [];
@@ -215,7 +217,7 @@ export class RecurringValidator {
         }
     }
 
-    private async getDataValues(): Promise<DataValue[]> {
+    private async getDataValuesForCurrentPeriod(): Promise<DataValue[]> {
         const { project, period, categoryOptionForDataSetType, api } = this.data;
 
         const getSetOptions: DataValueSetsGetRequest = {
@@ -230,7 +232,7 @@ export class RecurringValidator {
         return res.dataValues.map(getDataValueFromD2);
     }
 
-    private getValueFromCategoryOptions(
+    private getValueInfoFromCategoryOptions(
         categoryOptionIds: Id[],
         dataValues: DataValue[],
         options: { periods?: "current-month" | "past-months" }
@@ -243,12 +245,8 @@ export class RecurringValidator {
             } else if (periods === "past-months" && dv.period >= period) {
                 return false;
             } else {
-                const coc = _(this.data.categoryOptionCombos)
-                    .keyBy(getId)
-                    .get(dv.categoryOptionComboId, null);
-                if (!coc) return false;
-
-                return isSuperset(coc.categoryOptions.map(getId), categoryOptionIds);
+                const coc = this.getCocFromId(dv.categoryOptionComboId);
+                return coc ? isSuperset(coc.categoryOptions.map(getId), categoryOptionIds) : false;
             }
         });
 
@@ -287,9 +285,7 @@ export class RecurringValidator {
     }
 
     getCocFromId(cocId: Id): Maybe<CategoryOptionCombo> {
-        return _(this.data.categoryOptionCombos)
-            .keyBy(coc => coc.id)
-            .get(cocId, undefined);
+        return _(this.data.categoryOptionCombos).get(cocId, undefined);
     }
 }
 
