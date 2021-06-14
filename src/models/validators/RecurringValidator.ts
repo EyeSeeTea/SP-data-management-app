@@ -34,13 +34,20 @@ interface Data {
     period: string;
     categoryOptionCombos: Record<Id, CategoryOptionCombo>;
     pastDataValuesIndexed: { [dataValueKey: string]: DataValue[] };
-    missingProjects: string[];
+    relatedProjects: RelatedProjects;
     allProjectsInPlatform: boolean;
 }
 
+interface DataSet {
+    id: Id;
+    dataSetElements: Array<{
+        dataElement: { id: Id };
+        categoryCombo: { id: Id };
+    }>;
+}
 interface RelatedProjects {
     orgUnitIds: Id[];
-    dataSetIds: Id[];
+    dataSets: DataSet[];
     missingProjects: string[];
 }
 
@@ -61,7 +68,7 @@ export class RecurringValidator {
 
         const getSetOptions: DataValueSetsGetRequest = {
             orgUnit: relatedProjects.orgUnitIds,
-            dataSet: relatedProjects.dataSetIds,
+            dataSet: relatedProjects.dataSets.map(getId),
             startDate: "1970",
             endDate: moment(period, monthFormat).format("YYYY-MM-DD"),
             attributeOptionCombo: getIds(categoryOptionForDataSetType.categoryOptionCombos),
@@ -87,7 +94,7 @@ export class RecurringValidator {
             period,
             pastDataValuesIndexed,
             categoryOptionCombos,
-            missingProjects: relatedProjects.missingProjects,
+            relatedProjects,
             allProjectsInPlatform: _.isEmpty(relatedProjects.missingProjects),
         });
     }
@@ -113,7 +120,10 @@ export class RecurringValidator {
         const { dataSets } = await api.metadata
             .get({
                 dataSets: {
-                    fields: { id: true },
+                    fields: {
+                        id: true,
+                        dataSetElements: { dataElement: { id: true }, categoryCombo: { id: true } },
+                    },
                     filter: { code: { in: dataSetCodes } },
                 },
             })
@@ -121,7 +131,7 @@ export class RecurringValidator {
 
         return {
             orgUnitIds: organisationUnits.map(ou => ou.id),
-            dataSetIds: dataSets.map(ou => ou.id),
+            dataSets,
             missingProjects,
         };
     }
@@ -158,11 +168,28 @@ export class RecurringValidator {
 
         const hasCovid = !_.isEqual(dataValueCatOptionsIds, categoryOptionIdsWithoutCovid);
 
-        if (hasCovid) {
+        if (hasCovid && !this.hasSameDisaggregationForAllProjects(dataValue)) {
+            // Special case: the COVID-19 disaggregation for this data element in related projects
+            // do not match. Therefore, we cannot validate the specific value for COVID,
+            // only the totals with and without COVID disaggregation.
             return this.validateCategoryOptions(categoryOptionIdsWithoutCovid, dataValues);
         } else {
             return this.validateCategoryOptions(dataValueCatOptionsIds, dataValues);
         }
+    }
+
+    hasSameDisaggregationForAllProjects(dataValue: DataValue) {
+        const categoryComboIds = _(this.data.relatedProjects.dataSets)
+            .map(dataSet => {
+                const dse = dataSet.dataSetElements.find(dse => {
+                    return dse.dataElement.id === dataValue.dataElementId;
+                });
+                return dse?.categoryCombo.id;
+            })
+            .compact()
+            .uniq();
+
+        return categoryComboIds.size() <= 1;
     }
 
     validateCategoryOptions(categoryOptionIds: Id[], values: DataValue[]): ValidationItem[] {
@@ -171,7 +198,11 @@ export class RecurringValidator {
             periods: "current-month",
         });
         if (!returningResult) return [];
-        const { sum: returningValue, formula: returningFormula } = returningResult;
+        const {
+            sum: returningValue,
+            values: returningValues,
+            formula: returningFormula,
+        } = returningResult;
 
         const categoryOptionIdsForNew = _(categoryOptionIds)
             .difference([config.categoryOptions.recurring.id])
@@ -191,11 +222,14 @@ export class RecurringValidator {
         if (isValid) {
             return [];
         } else if (this.data.allProjectsInPlatform) {
+            const returningInfo =
+                returningValues.length > 1
+                    ? `${returningFormula}} = ${returningValue}`
+                    : returningValue;
             const msg = i18n.t(
-                "Returning values ({{returningFormula}} = {{returningValue}}) cannot be greater than the sum of New values for past periods: {{pastValuesFormula}} = {{pastValue}}",
+                "Returning value ({{returningInfo}}) cannot be greater than the sum of New values for past periods: {{pastValuesFormula}} = {{pastValue}}",
                 {
-                    returningFormula,
-                    returningValue,
+                    returningInfo,
                     pastValuesFormula,
                     pastValue,
                     nsSeparator: false,
@@ -203,12 +237,13 @@ export class RecurringValidator {
             );
             return [["error", msg]];
         } else {
+            const missingProjects = this.data.relatedProjects.missingProjects.join(", ");
             const msg = i18n.t(
                 "Returning value ({{returningValue}}) is greater than the sum of New values for past periods in projects stored in Platform: {{pastValuesFormula}} =  = {{pastValue}} (there is no {{missingProjects}} version(s) of this project)",
                 {
                     returningValue,
                     pastValuesFormula,
-                    missingProjects: this.data.missingProjects.join(", "),
+                    missingProjects,
                     pastValue,
                     nsSeparator: false,
                 }
