@@ -74,6 +74,7 @@ const baseConfig = {
         genderNewRecurringCovid19: "COVID19_NEW_RETURNING_GENDER",
     },
     categoryOptions: {
+        default: "default",
         target: "TARGET",
         actual: "ACTUAL",
         new: "NEW",
@@ -81,6 +82,7 @@ const baseConfig = {
         male: "MALE",
         female: "FEMALE",
         covid19: "COVID19",
+        nonCovid19: "COVID19_NO",
     },
     dataElementGroups: {
         global: "GLOBAL",

@@ -12,7 +12,7 @@ interface Validators {
 }
 
 export class Validator {
-    constructor(private validators: Validators) {}
+    constructor(private period: string, private validators: Validators) {}
 
     static async build(
         api: D2Api,
@@ -24,10 +24,11 @@ export class Validator {
             actual: await ActualValidator.build(api, project, dataSetType, period),
             recurring: await RecurringValidator.build(api, project, dataSetType, period),
         };
-        return new Validator(validators);
+        return new Validator(period, validators);
     }
 
-    async validateDataValue(dataValue: DataValue): Promise<ValidationResult> {
+    async validateDataValue(dataValue0: Omit<DataValue, "period">): Promise<ValidationResult> {
+        const dataValue: DataValue = { ...dataValue0, period: this.period };
         const items: ValidationItem[] = _.concat(
             this.validators.actual.validate(dataValue),
             await this.validators.recurring.validate(dataValue)
