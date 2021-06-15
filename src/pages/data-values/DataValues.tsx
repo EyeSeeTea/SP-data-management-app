@@ -34,7 +34,7 @@ const DataValues: React.FC<DataValuesProps> = ({ type }) => {
     const match = useRouteMatch<RouterParams>();
     const [state, setState] = useState<State>({ loading: true });
     const { data, loading, error } = state;
-    const translations = getTranslations(type, data ? data.name : undefined);
+    const translations = getTranslations(type, data?.project);
     const attributes = getAttributes(config, type);
     const projectId = match ? match.params.id : null;
 
@@ -96,7 +96,7 @@ function loadData(
         .catch(err => setState({ error: err.message || err.toString(), loading: false }));
 }
 
-function getTranslations(type: DataSetType, projectName: string | undefined) {
+function getTranslations(type: DataSetType, project: Project | undefined) {
     const isTarget = type === "target";
     const baseTitle = isTarget
         ? i18n.t("Set Target Values for Project")
@@ -116,7 +116,7 @@ function getTranslations(type: DataSetType, projectName: string | undefined) {
         </p>
     );
     return {
-        title: baseTitle + ": " + (projectName || "..."),
+        title: baseTitle + ": " + (project ? `${project.name} (${project.code})` : "..."),
         subtitle: i18n.t(
             `Once cells turn into green, all information is saved and you can leave the Data Entry Section`
         ),

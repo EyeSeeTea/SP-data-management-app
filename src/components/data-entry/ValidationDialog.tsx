@@ -50,8 +50,8 @@ const Entry: React.FC<EntryProps> = props => {
 
     return (
         <React.Fragment>
-            {texts.map(text => (
-                <div key={text} style={styles.div}>
+            {texts.map((text, idx) => (
+                <div key={idx} style={styles.div}>
                     <Icon style={{ fill: color, marginRight: 5 }} />
                     {text}
                 </div>
