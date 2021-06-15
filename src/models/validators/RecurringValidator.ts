@@ -212,48 +212,39 @@ export class RecurringValidator {
 
     validateCategoryOptions(categoryOptionIds: Id[], values: DataValue[]): ValidationItem[] {
         const { config } = this.data;
-        const returning = this.getAggregation(categoryOptionIds, values, "current-month");
-        if (!returning) return [];
+        const returningAggr = this.getAggregation(categoryOptionIds, values, "current-month");
+        if (!returningAggr) return [];
 
         const categoryOptionIdsForNew = _(categoryOptionIds)
             .difference([config.categoryOptions.recurring.id])
             .union([config.categoryOptions.new.id])
             .value();
-        const pastResult = this.getAggregation(categoryOptionIdsForNew, values, "past-months");
-        if (!pastResult) return [];
 
-        const { sum: pastValue, formula: pastValuesFormula } = pastResult;
+        const newAggr = this.getAggregation(categoryOptionIdsForNew, values, "past-months");
+        if (!newAggr) return [];
 
-        const isValid = returning.sum <= pastValue;
-
-        console.debug("RecurringValidator", { isValid, retuning: returning, pastResult });
+        const isValid = returningAggr.sum <= newAggr.sum;
+        console.debug("RecurringValidator", { isValid, returningAggr, newAggr });
 
         if (isValid) {
             return [];
         } else if (this.data.allProjectsInPlatform) {
-            const returningInfo =
-                returning.values.length > 1
-                    ? `${returning.formula}} = ${returning.sum}`
-                    : returning.sum;
             const msg = i18n.t(
-                "Returning value ({{returningInfo}}) cannot be greater than the sum of New values for past periods: {{pastValuesFormula}} = {{pastValue}}",
+                "Returning value ({{returningFormula}}) cannot be greater than the sum of New values for past periods: {{pastFormula}}",
                 {
-                    returningInfo,
-                    pastValuesFormula,
-                    pastValue,
+                    returningFormula: returningAggr.formula,
+                    pastFormula: newAggr.formula,
                     nsSeparator: false,
                 }
             );
             return [["error", msg]];
         } else {
-            const missingProjects = this.data.relatedProjects.missingProjects.join(", ");
             const msg = i18n.t(
-                "Returning value ({{returningValue}}) is greater than the sum of New values for past periods in projects stored in Platform: {{pastValuesFormula}} = {{pastValue}} (there is no {{missingProjects}} version(s) of this project)",
+                "Returning value ({{returningFormula}}) is greater than the sum of New values for past periods in projects stored in Platform: {{pastFormula}} (there is no {{missingProjects}} version(s) of this project)",
                 {
-                    returningValue: returning.sum,
-                    pastValuesFormula,
-                    missingProjects,
-                    pastValue,
+                    returningFormula: returningAggr.formula,
+                    pastFormula: newAggr.formula,
+                    missingProjects: this.data.relatedProjects.missingProjects.join(", "),
                     nsSeparator: false,
                 }
             );
@@ -280,35 +271,47 @@ export class RecurringValidator {
         categoryOptionIds: Id[],
         dataValues: DataValue[],
         periods: "current-month" | "past-months"
-    ): Maybe<{ sum: number; values: string[]; formula: string }> {
+    ): Maybe<{ sum: number; formula: string }> {
         const { period } = this.data;
 
-        const dataValuesToSum = dataValues.filter(dv => {
-            if (periods === "current-month" && dv.period !== period) {
-                return false;
-            } else if (periods === "past-months" && dv.period >= period) {
-                return false;
-            } else {
-                const coc = this.getCocFromId(dv.categoryOptionComboId);
-                return coc ? isSuperset(coc.categoryOptions.map(getId), categoryOptionIds) : false;
-            }
-        });
+        const dataValuesToSum = _(dataValues)
+            .filter(dv => {
+                if (periods === "current-month" && dv.period !== period) {
+                    return false;
+                } else if (periods === "past-months" && dv.period >= period) {
+                    return false;
+                } else {
+                    const coc = this.getCocFromId(dv.categoryOptionComboId);
+                    return coc
+                        ? isSuperset(coc.categoryOptions.map(getId), categoryOptionIds)
+                        : false;
+                }
+            })
+            .sortBy(dv => dv.period)
+            .filter(dv => dv.value !== "0")
+            .value();
 
         const values = dataValuesToSum.map(dv => dv.value);
         const sum = _.sum(values.map(value => toFloat(value)));
 
-        const baseFormula = _(dataValuesToSum)
-            .sortBy(dv => dv.period)
-            .filter(dv => dv.value !== "0")
+        const baseFormula = dataValuesToSum
             .map(dv => {
                 const info = _.compact([formatPeriod(dv.period), this.getCovidInfo(dv)]).join(":");
                 return `${toFloat(dv.value)} [${info}]`;
             })
             .join(" + ");
 
-        const formula = baseFormula || i18n.t("No data for previous periods");
+        let formula: string;
 
-        return { sum, values, formula };
+        if (values.length === 0) {
+            formula = i18n.t("No data for previous periods");
+        } else if (values.length === 1) {
+            formula = `${baseFormula}`;
+        } else {
+            formula = `${baseFormula}} = ${sum}`;
+        }
+
+        return { sum, formula };
     }
 
     getCovidInfo(dataValue: DataValue): Maybe<string> {
