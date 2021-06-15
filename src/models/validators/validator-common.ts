@@ -1,8 +1,10 @@
 import _ from "lodash";
 import moment from "moment";
+import { DataValueSetsDataValue } from "../../types/d2-api";
 import { monthFormat } from "../Project";
 
 export interface DataValue {
+    period: string;
     dataElementId: string;
     categoryOptionComboId: string;
     value: string;
@@ -16,8 +18,8 @@ export interface ValidationResult {
 
 export type ValidationItem = [keyof ValidationResult, string];
 
-export function areSetsEqual<T>(xs: Set<T>, ys: Set<T>) {
-    return xs.size === ys.size && _.every(Array.from(xs), x => ys.has(x));
+export function isSuperset<T>(xs: T[], ys: T[]) {
+    return _.difference(ys, xs).length === 0;
 }
 
 export function toFloat(s: string): number {
@@ -30,4 +32,13 @@ export function getKey(dataElementId: string, categoryOptionComboId: string) {
 
 export function formatPeriod(period: string): string {
     return moment(period, monthFormat).format("MMMM YYYY");
+}
+
+export function getDataValueFromD2(d2DataValue: DataValueSetsDataValue): DataValue {
+    return {
+        period: d2DataValue.period,
+        dataElementId: d2DataValue.dataElement,
+        categoryOptionComboId: d2DataValue.categoryOptionCombo,
+        value: d2DataValue.value,
+    };
 }
