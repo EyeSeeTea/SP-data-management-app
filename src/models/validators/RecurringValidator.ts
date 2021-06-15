@@ -1,18 +1,19 @@
-import moment from "moment";
-import { CategoryOptionCombo } from "./../Config";
-import { D2Api, DataValueSetsGetRequest, DataValueSetsDataValue, Id } from "../../types/d2-api";
 import _ from "lodash";
+import moment from "moment";
 
+import { CategoryOption, CategoryOptionCombo } from "./../Config";
+import { D2Api, DataValueSetsGetRequest, Id } from "../../types/d2-api";
 import Project, { DataSetType, monthFormat } from "../Project";
 import i18n from "../../locales";
-import { getIds } from "../../utils/dhis2";
+import { getId, getIds } from "../../utils/dhis2";
 import {
     toFloat,
     DataValue,
     ValidationItem,
-    areSetsEqual,
     getKey,
     formatPeriod,
+    isSuperset,
+    getDataValueFromD2,
 } from "./validator-common";
 import { Config } from "../Config";
 import { Maybe } from "../../types/utils";
@@ -20,22 +21,41 @@ import ProjectDb from "../ProjectDb";
 import { lexRange } from "../../utils/lex-ranges";
 
 /*
-    Validate only for returning values:
-        IF returning_value > SUM(new_values for past periods) + returning_value for first period.
+    Validations for returning data values:
+
+        SUM(returningValuesCurrentPeriod) <= SUM(newValuesPastPeriods).
+            Use subsets of category options to sum values.
+
+        Cases:
+
+        - If dataValue is non-COVID-19 disaggregated -> Check the current disaggregation.
+        - If dataValue is COVID-19 disaggregated:
+            - If all related projects have the same disaggregation for DE -> check with COVID disaggregation
+            - Otherwise, remove COVID disaggregation and check.
 */
 
 interface Data {
+    api: D2Api;
     project: Project;
+    categoryOptionForDataSetType: CategoryOption;
     config: Config;
     period: string;
-    pastDataValuesIndexed: { [dataValueKey: string]: Maybe<DataValueSetsDataValue[]> };
-    missingProjects: string[];
+    categoryOptionCombos: Record<Id, CategoryOptionCombo>;
+    pastDataValuesIndexed: { [dataValueKey: string]: DataValue[] };
+    relatedProjects: RelatedProjects;
     allProjectsInPlatform: boolean;
 }
 
+interface DataSet {
+    id: Id;
+    dataSetElements: Array<{
+        dataElement: { id: Id };
+        categoryCombo: { id: Id };
+    }>;
+}
 interface RelatedProjects {
     orgUnitIds: Id[];
-    dataSetIds: Id[];
+    dataSets: DataSet[];
     missingProjects: string[];
 }
 
@@ -49,13 +69,14 @@ export class RecurringValidator {
         period: string
     ): Promise<RecurringValidator> {
         if (!project.orgUnit || !project.dataSets) throw new Error("Cannot build validator");
+
         const { config } = project;
         const categoryOptionForDataSetType = project.config.categoryOptions[dataSetType];
         const relatedProjects = await this.getRelatedProjects(api, project, dataSetType);
 
         const getSetOptions: DataValueSetsGetRequest = {
             orgUnit: relatedProjects.orgUnitIds,
-            dataSet: relatedProjects.dataSetIds,
+            dataSet: relatedProjects.dataSets.map(getId),
             startDate: "1970",
             endDate: moment(period, monthFormat).format("YYYY-MM-DD"),
             attributeOptionCombo: getIds(categoryOptionForDataSetType.categoryOptionCombos),
@@ -64,15 +85,24 @@ export class RecurringValidator {
         const { dataValues: pastDataValues } = await api.dataValues.getSet(getSetOptions).getData();
 
         const pastDataValuesIndexed = _(pastDataValues)
-            .groupBy(dataValue => getKey(dataValue.dataElement, dataValue.categoryOptionCombo))
+            .map(getDataValueFromD2)
+            .groupBy(dataValue => getKey(dataValue.dataElementId, dataValue.categoryOptionComboId))
+            .value();
+
+        const categoryOptionCombos = _(config.allCategoryCombos)
+            .flatMap(cc => cc.categoryOptionCombos)
+            .keyBy(getId)
             .value();
 
         return new RecurringValidator({
+            api,
             project,
+            categoryOptionForDataSetType,
             config,
             period,
             pastDataValuesIndexed,
-            missingProjects: relatedProjects.missingProjects,
+            categoryOptionCombos,
+            relatedProjects,
             allProjectsInPlatform: _.isEmpty(relatedProjects.missingProjects),
         });
     }
@@ -98,7 +128,10 @@ export class RecurringValidator {
         const { dataSets } = await api.metadata
             .get({
                 dataSets: {
-                    fields: { id: true },
+                    fields: {
+                        id: true,
+                        dataSetElements: { dataElement: { id: true }, categoryCombo: { id: true } },
+                    },
                     filter: { code: { in: dataSetCodes } },
                 },
             })
@@ -106,47 +139,112 @@ export class RecurringValidator {
 
         return {
             orgUnitIds: organisationUnits.map(ou => ou.id),
-            dataSetIds: dataSets.map(ou => ou.id),
+            dataSets,
             missingProjects,
         };
     }
 
-    validate(dataValue: DataValue): ValidationItem[] {
-        const cocForRelatedNewValue = this.getCategoryOptionComboForRelatedNew(dataValue);
-        if (!cocForRelatedNewValue) return [];
+    async validate(dataValue: DataValue): Promise<ValidationItem[]> {
+        const { config } = this.data;
 
-        const newKey = getKey(dataValue.dataElementId, cocForRelatedNewValue.id);
-        const newDataValues = this.data.pastDataValuesIndexed[newKey] || [];
-        const limitValue = _.sum(newDataValues.map(dv => toFloat(dv.value)));
+        const categoryOptionCombo = this.getCocFromId(dataValue.categoryOptionComboId);
+        if (!categoryOptionCombo || !this.isDataValueRecurring(dataValue)) return [];
 
-        const formula = _(newDataValues)
-            .sortBy(dv => dv.period)
-            .filter(dv => dv.value !== "0")
-            .map(dv => `${formatPeriod(dv.period)} [${toFloat(dv.value)}]`)
-            .join(" + ");
+        const dataValues: DataValue[] = await this.getDataValues(dataValue);
+        const covidCategoryOptionIds = config.categories.covid19.categoryOptions.map(getId);
+        const dataValueCatOptionsIds = categoryOptionCombo.categoryOptions.map(getId);
+        const categoryOptionIdsWithoutCovid = _(categoryOptionCombo.categoryOptions)
+            .map(getId)
+            .difference(covidCategoryOptionIds)
+            .value();
 
-        const newValuesSumFormula = formula
-            ? `${formula} = ${limitValue}`
-            : i18n.t("there is no data for previous periods");
+        const hasCovid = !_.isEqual(dataValueCatOptionsIds, categoryOptionIdsWithoutCovid);
 
-        const returningValue = toFloat(dataValue.value);
-        const isValid = returningValue <= limitValue;
+        if (hasCovid && !this.hasSameDisaggregationForAllProjects(dataValue)) {
+            // Special case: the COVID-19 disaggregation for this data element in related projects
+            // do not match. Therefore, we cannot validate the specific value for COVID,
+            // only the totals with and without COVID disaggregation.
+            return this.validateCategoryOptions(categoryOptionIdsWithoutCovid, dataValues);
+        } else {
+            return this.validateCategoryOptions(dataValueCatOptionsIds, dataValues);
+        }
+    }
+
+    private isDataValueRecurring(dataValue: DataValue): boolean {
+        const { config } = this.data;
+        const categoryOptionCombo = this.getCocFromId(dataValue.categoryOptionComboId);
+        if (!categoryOptionCombo) return false;
+
+        const dataValueCatOptionsIds = categoryOptionCombo.categoryOptions.map(getId);
+        const isRecurring = dataValueCatOptionsIds.includes(config.categoryOptions.recurring.id);
+        return isRecurring;
+    }
+
+    private async getDataValues(dataValue: DataValue) {
+        const currentPeriodPersistedDataValues = await this.getDataValuesForCurrentPeriod();
+        const currentPeriodDataValues = currentPeriodPersistedDataValues.filter(
+            dv => dv.categoryOptionComboId !== dataValue.categoryOptionComboId
+        );
+
+        const dataValues: DataValue[] = _(this.data.pastDataValuesIndexed)
+            .values()
+            .flatten()
+            .concat(currentPeriodDataValues)
+            .filter(dv => dv.dataElementId === dataValue.dataElementId)
+            .concat([dataValue])
+            .value();
+        return dataValues;
+    }
+
+    hasSameDisaggregationForAllProjects(dataValue: DataValue) {
+        const categoryComboIds = _(this.data.relatedProjects.dataSets)
+            .map(dataSet => {
+                const dse = dataSet.dataSetElements.find(dse => {
+                    return dse.dataElement.id === dataValue.dataElementId;
+                });
+                return dse?.categoryCombo.id;
+            })
+            .compact()
+            .uniq();
+
+        return categoryComboIds.size() <= 1;
+    }
+
+    validateCategoryOptions(categoryOptionIds: Id[], values: DataValue[]): ValidationItem[] {
+        const { config } = this.data;
+        const returningAggr = this.getAggregation(categoryOptionIds, values, "current-month");
+        if (!returningAggr) return [];
+
+        const categoryOptionIdsForNew = _(categoryOptionIds)
+            .difference([config.categoryOptions.recurring.id])
+            .union([config.categoryOptions.new.id])
+            .value();
+
+        const newAggr = this.getAggregation(categoryOptionIdsForNew, values, "past-months");
+        if (!newAggr) return [];
+
+        const isValid = returningAggr.sum <= newAggr.sum;
+        console.debug("RecurringValidator", { isValid, returningAggr, newAggr });
 
         if (isValid) {
             return [];
         } else if (this.data.allProjectsInPlatform) {
             const msg = i18n.t(
-                "Returning value ({{returningValue}}) cannot be greater than the sum of New values for past periods: {{newValuesSumFormula}}",
-                { returningValue, newValuesSumFormula, nsSeparator: false }
+                "Returning value ({{returningFormula}}) cannot be greater than the sum of New values for past periods: {{pastFormula}}",
+                {
+                    returningFormula: returningAggr.formula,
+                    pastFormula: newAggr.formula,
+                    nsSeparator: false,
+                }
             );
             return [["error", msg]];
         } else {
             const msg = i18n.t(
-                "Returning value ({{returningValue}}) is greater than the sum of New values for past periods in projects stored in Platform (there is no {{missingProjects}} version(s) of this project)",
+                "Returning value ({{returningFormula}}) is greater than the sum of New values for past periods in projects stored in Platform: {{pastFormula}} (there is no {{missingProjects}} version(s) of this project)",
                 {
-                    returningValue,
-                    newValuesSumFormula,
-                    missingProjects: this.data.missingProjects.join(", "),
+                    returningFormula: returningAggr.formula,
+                    pastFormula: newAggr.formula,
+                    missingProjects: this.data.relatedProjects.missingProjects.join(", "),
                     nsSeparator: false,
                 }
             );
@@ -154,35 +252,87 @@ export class RecurringValidator {
         }
     }
 
-    getCategoryOptionComboForRelatedNew(dataValue: DataValue): CategoryOptionCombo | undefined {
-        const { config } = this.data;
-        const categoryOptionRecurring = config.categoryOptions.recurring;
-        const recurringCocIds = getIds(categoryOptionRecurring.categoryOptionCombos);
-        const dataValueIsRecurring = recurringCocIds.includes(dataValue.categoryOptionComboId);
-        if (!dataValueIsRecurring) return;
+    private async getDataValuesForCurrentPeriod(): Promise<DataValue[]> {
+        const { project, period, categoryOptionForDataSetType, api } = this.data;
 
-        const allCategoryOptionCombos = _(config.allCategoryCombos)
-            .flatMap(cc => cc.categoryOptionCombos)
+        const getSetOptions: DataValueSetsGetRequest = {
+            orgUnit: _.compact([project.orgUnit?.id]),
+            dataSet: _.compact([project.dataSets?.target?.id]),
+            period: [period],
+            attributeOptionCombo: getIds(categoryOptionForDataSetType.categoryOptionCombos),
+        };
+
+        const res = await api.dataValues.getSet(getSetOptions).getData();
+
+        return res.dataValues.map(getDataValueFromD2);
+    }
+
+    private getAggregation(
+        categoryOptionIds: Id[],
+        dataValues: DataValue[],
+        periods: "current-month" | "past-months"
+    ): Maybe<{ sum: number; formula: string }> {
+        const { period } = this.data;
+
+        const dataValuesToSum = _(dataValues)
+            .filter(dv => {
+                if (periods === "current-month" && dv.period !== period) {
+                    return false;
+                } else if (periods === "past-months" && dv.period >= period) {
+                    return false;
+                } else {
+                    const coc = this.getCocFromId(dv.categoryOptionComboId);
+                    return coc
+                        ? isSuperset(coc.categoryOptions.map(getId), categoryOptionIds)
+                        : false;
+                }
+            })
+            .sortBy(dv => dv.period)
+            .filter(dv => dv.value !== "0")
             .value();
 
-        const cocForDataValueRecurring = allCategoryOptionCombos.find(
-            coc => coc.id === dataValue.categoryOptionComboId
-        );
-        if (!cocForDataValueRecurring) return;
+        const values = dataValuesToSum.map(dv => dv.value);
+        const sum = _.sum(values.map(value => toFloat(value)));
 
-        const categoryOptionIdsForRelatedNew = new Set(
-            _(getIds(cocForDataValueRecurring.categoryOptions))
-                .without(categoryOptionRecurring.id)
-                .push(config.categoryOptions.new.id)
-                .value()
-        );
+        const baseFormula = dataValuesToSum
+            .map(dv => {
+                const info = _.compact([formatPeriod(dv.period), this.getCovidInfo(dv)]).join(":");
+                return `${toFloat(dv.value)} [${info}]`;
+            })
+            .join(" + ");
 
-        const cocsForRelatedNewValue = allCategoryOptionCombos.filter(coc =>
-            areSetsEqual(new Set(getIds(coc.categoryOptions)), categoryOptionIdsForRelatedNew)
-        );
-        if (cocsForRelatedNewValue.length > 1) console.error("Multiple cocs found for related new");
+        let formula: string;
 
-        return cocsForRelatedNewValue[0];
+        if (values.length === 0) {
+            formula = i18n.t("No data for previous periods");
+        } else if (values.length === 1) {
+            formula = `${baseFormula}`;
+        } else {
+            formula = `${baseFormula} = ${sum}`;
+        }
+
+        return { sum, formula };
+    }
+
+    getCovidInfo(dataValue: DataValue): Maybe<string> {
+        const { config } = this.data;
+        const { covid19, nonCovid19 } = config.categoryOptions;
+        const coc = this.getCocFromId(dataValue.categoryOptionComboId);
+        const categoryOptionIds = coc ? coc.categoryOptions.map(getId) : [];
+
+        if (!coc) {
+            return;
+        } else if (categoryOptionIds.includes(covid19.id)) {
+            return i18n.t("COVID-19");
+        } else if (categoryOptionIds.includes(nonCovid19.id)) {
+            return i18n.t("Non-COVID-19");
+        } else {
+            return;
+        }
+    }
+
+    getCocFromId(cocId: Id): Maybe<CategoryOptionCombo> {
+        return _(this.data.categoryOptionCombos).get(cocId, undefined);
     }
 }
 
