@@ -1,8 +1,8 @@
+import _ from "lodash";
 import moment from "moment";
+
 import { CategoryOption, CategoryOptionCombo } from "./../Config";
 import { D2Api, DataValueSetsGetRequest, Id } from "../../types/d2-api";
-import _ from "lodash";
-
 import Project, { DataSetType, monthFormat } from "../Project";
 import i18n from "../../locales";
 import { getId, getIds } from "../../utils/dhis2";
@@ -21,9 +21,17 @@ import ProjectDb from "../ProjectDb";
 import { lexRange } from "../../utils/lex-ranges";
 
 /*
-    Validate only for returning values:
-        IF returning_value > SUM(new_values for past periods) + returning_value for first period.
-        Assume that past data values may or not have the same COVID-19 disaggregation.
+    Validations for returning data values:
+
+        SUM(returningValuesCurrentPeriod) <= SUM(newValuesPastPeriods).
+            Use subsets of category options to sum values.
+
+        Cases:
+
+        - If dataValue is non-COVID-19 disaggregated -> Check the current disaggregation.
+        - If dataValue is COVID-19 disaggregated:
+            - If all related projects have the same disaggregation for DE -> check with COVID disaggregation
+            - Otherwise, remove COVID disaggregation and check.
 */
 
 interface Data {
@@ -140,27 +148,11 @@ export class RecurringValidator {
         const { config } = this.data;
 
         const categoryOptionCombo = this.getCocFromId(dataValue.categoryOptionComboId);
-        if (!categoryOptionCombo) return [];
+        if (!categoryOptionCombo || !this.isDataValueRecurring(dataValue)) return [];
 
-        const dataValueCatOptionsIds = categoryOptionCombo.categoryOptions.map(getId);
-        const isRecurring = dataValueCatOptionsIds.includes(config.categoryOptions.recurring.id);
-        if (!isRecurring) return [];
-
-        const currentPeriodPersistedDataValues = await this.getDataValuesForCurrentPeriod();
-        const currentPeriodDataValues = currentPeriodPersistedDataValues.filter(
-            dv => dv.categoryOptionComboId !== dataValue.categoryOptionComboId
-        );
-
-        const dataValues: DataValue[] = _(this.data.pastDataValuesIndexed)
-            .values()
-            .flatten()
-            .concat(currentPeriodDataValues)
-            .filter(dv => dv.dataElementId === dataValue.dataElementId)
-            .concat([dataValue])
-            .value();
-
+        const dataValues: DataValue[] = await this.getDataValues(dataValue);
         const covidCategoryOptionIds = config.categories.covid19.categoryOptions.map(getId);
-
+        const dataValueCatOptionsIds = categoryOptionCombo.categoryOptions.map(getId);
         const categoryOptionIdsWithoutCovid = _(categoryOptionCombo.categoryOptions)
             .map(getId)
             .difference(covidCategoryOptionIds)
@@ -176,6 +168,32 @@ export class RecurringValidator {
         } else {
             return this.validateCategoryOptions(dataValueCatOptionsIds, dataValues);
         }
+    }
+
+    private isDataValueRecurring(dataValue: DataValue): boolean {
+        const { config } = this.data;
+        const categoryOptionCombo = this.getCocFromId(dataValue.categoryOptionComboId);
+        if (!categoryOptionCombo) return false;
+
+        const dataValueCatOptionsIds = categoryOptionCombo.categoryOptions.map(getId);
+        const isRecurring = dataValueCatOptionsIds.includes(config.categoryOptions.recurring.id);
+        return isRecurring;
+    }
+
+    private async getDataValues(dataValue: DataValue) {
+        const currentPeriodPersistedDataValues = await this.getDataValuesForCurrentPeriod();
+        const currentPeriodDataValues = currentPeriodPersistedDataValues.filter(
+            dv => dv.categoryOptionComboId !== dataValue.categoryOptionComboId
+        );
+
+        const dataValues: DataValue[] = _(this.data.pastDataValuesIndexed)
+            .values()
+            .flatten()
+            .concat(currentPeriodDataValues)
+            .filter(dv => dv.dataElementId === dataValue.dataElementId)
+            .concat([dataValue])
+            .value();
+        return dataValues;
     }
 
     hasSameDisaggregationForAllProjects(dataValue: DataValue) {
@@ -194,38 +212,29 @@ export class RecurringValidator {
 
     validateCategoryOptions(categoryOptionIds: Id[], values: DataValue[]): ValidationItem[] {
         const { config } = this.data;
-        const returningResult = this.getValueInfoFromCategoryOptions(categoryOptionIds, values, {
-            periods: "current-month",
-        });
-        if (!returningResult) return [];
-        const {
-            sum: returningValue,
-            values: returningValues,
-            formula: returningFormula,
-        } = returningResult;
+        const returning = this.getAggregation(categoryOptionIds, values, "current-month");
+        if (!returning) return [];
 
         const categoryOptionIdsForNew = _(categoryOptionIds)
             .difference([config.categoryOptions.recurring.id])
             .union([config.categoryOptions.new.id])
             .value();
-
-        const pastResult = this.getValueInfoFromCategoryOptions(categoryOptionIdsForNew, values, {
-            periods: "past-months",
-        });
+        const pastResult = this.getAggregation(categoryOptionIdsForNew, values, "past-months");
         if (!pastResult) return [];
+
         const { sum: pastValue, formula: pastValuesFormula } = pastResult;
 
-        const isValid = returningValue <= pastValue;
+        const isValid = returning.sum <= pastValue;
 
-        console.debug("RecurringValidator", { isValid, returningResult, pastResult });
+        console.debug("RecurringValidator", { isValid, retuning: returning, pastResult });
 
         if (isValid) {
             return [];
         } else if (this.data.allProjectsInPlatform) {
             const returningInfo =
-                returningValues.length > 1
-                    ? `${returningFormula}} = ${returningValue}`
-                    : returningValue;
+                returning.values.length > 1
+                    ? `${returning.formula}} = ${returning.sum}`
+                    : returning.sum;
             const msg = i18n.t(
                 "Returning value ({{returningInfo}}) cannot be greater than the sum of New values for past periods: {{pastValuesFormula}} = {{pastValue}}",
                 {
@@ -239,9 +248,9 @@ export class RecurringValidator {
         } else {
             const missingProjects = this.data.relatedProjects.missingProjects.join(", ");
             const msg = i18n.t(
-                "Returning value ({{returningValue}}) is greater than the sum of New values for past periods in projects stored in Platform: {{pastValuesFormula}} =  = {{pastValue}} (there is no {{missingProjects}} version(s) of this project)",
+                "Returning value ({{returningValue}}) is greater than the sum of New values for past periods in projects stored in Platform: {{pastValuesFormula}} = {{pastValue}} (there is no {{missingProjects}} version(s) of this project)",
                 {
-                    returningValue,
+                    returningValue: returning.sum,
                     pastValuesFormula,
                     missingProjects,
                     pastValue,
@@ -267,13 +276,13 @@ export class RecurringValidator {
         return res.dataValues.map(getDataValueFromD2);
     }
 
-    private getValueInfoFromCategoryOptions(
+    private getAggregation(
         categoryOptionIds: Id[],
         dataValues: DataValue[],
-        options: { periods?: "current-month" | "past-months" }
+        periods: "current-month" | "past-months"
     ): Maybe<{ sum: number; values: string[]; formula: string }> {
         const { period } = this.data;
-        const { periods } = options;
+
         const dataValuesToSum = dataValues.filter(dv => {
             if (periods === "current-month" && dv.period !== period) {
                 return false;
@@ -288,7 +297,7 @@ export class RecurringValidator {
         const values = dataValuesToSum.map(dv => dv.value);
         const sum = _.sum(values.map(value => toFloat(value)));
 
-        const formula0 = _(dataValuesToSum)
+        const baseFormula = _(dataValuesToSum)
             .sortBy(dv => dv.period)
             .filter(dv => dv.value !== "0")
             .map(dv => {
@@ -297,7 +306,7 @@ export class RecurringValidator {
             })
             .join(" + ");
 
-        const formula = formula0 || i18n.t("No data for previous periods");
+        const formula = baseFormula || i18n.t("No data for previous periods");
 
         return { sum, values, formula };
     }
