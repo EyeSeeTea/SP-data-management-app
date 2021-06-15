@@ -308,7 +308,7 @@ export class RecurringValidator {
         } else if (values.length === 1) {
             formula = `${baseFormula}`;
         } else {
-            formula = `${baseFormula}} = ${sum}`;
+            formula = `${baseFormula} = ${sum}`;
         }
 
         return { sum, formula };
