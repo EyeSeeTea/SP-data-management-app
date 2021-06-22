@@ -1,7 +1,7 @@
 {
     "name": "data-management-app",
     "description": "DHIS2 Data Management App",
-    "version": "0.11.1",
+    "version": "0.11.2",
     "license": "GPL-3.0",
     "author": "EyeSeeTea team",
     "homepage": ".",
