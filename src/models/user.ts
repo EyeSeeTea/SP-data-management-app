@@ -38,6 +38,7 @@ const actionsByRole: Record<Role, Action[]> = {
         "targetValues",
         "actualValues",
         "dashboard",
+        "awardNumberDashboard",
         "countryDashboard",
         "downloadData",
         "edit",
