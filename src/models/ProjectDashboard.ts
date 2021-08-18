@@ -79,6 +79,7 @@ export default class ProjectDashboard {
         const reportTables: Array<PartialPersistedModel<D2ReportTable>> = _.compact([
             // General Data View
             this.targetVsActualBenefits(),
+            this.targetVsActualBenefitsWithDisaggregation(),
             this.targetVsActualPeople(),
             this.targetVsActualUniquePeople(),
             // Percent achieved (to date)
@@ -124,14 +125,37 @@ export default class ProjectDashboard {
 
     targetVsActualBenefits(): MaybeD2Table {
         const { config, dataElements } = this;
+        const dataElementsNoDisaggregated = dataElements.benefit.filter(
+            de => !de.categories.includes("newRecurring")
+        );
 
         return this.getTable({
             key: "reportTable-target-actual-benefits",
             name: i18n.t("Target vs Actual - Benefits"),
-            items: dataElementItems(dataElements.benefit),
+            items: dataElementItems(dataElementsNoDisaggregated),
             reportFilter: [dimensions.orgUnit],
             columnDimensions: [dimensions.period],
             rowDimensions: [dimensions.data, config.categories.targetActual],
+        });
+    }
+
+    targetVsActualBenefitsWithDisaggregation(): MaybeD2Table {
+        const { config, dataElements } = this;
+        const dataElementsDisaggregated = dataElements.benefit.filter(
+            de => !de.categories.includes("newRecurring")
+        );
+
+        return this.getTable({
+            key: "reportTable-target-actual-benefits-disaggregated",
+            name: i18n.t("Target vs Actual - Benefits (Disaggregated)"),
+            items: dataElementItems(dataElementsDisaggregated),
+            reportFilter: [dimensions.orgUnit],
+            columnDimensions: [dimensions.period],
+            rowDimensions: [
+                dimensions.data,
+                config.categories.targetActual,
+                config.categories.newRecurring,
+            ],
         });
     }
 
