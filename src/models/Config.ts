@@ -148,7 +148,7 @@ const metadataParams = {
             id: yes,
             code: yes,
             displayName: yes,
-            categories: { id: yes },
+            categories: { id: yes, code: yes },
             categoryOptionCombos: {
                 id: yes,
                 displayName: yes,
