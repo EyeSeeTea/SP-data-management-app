@@ -29,5 +29,6 @@ export async function post<Payload>(api: D2Api, debug: Debug, payload: Payload) 
         debug(JSON.stringify(res));
         throw Error("Error on post");
     }
+    console.debug(res);
     return res;
 }
