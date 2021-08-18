@@ -83,7 +83,10 @@ class ProjectDownload {
                 config.categories.newRecurring,
                 config.categories.gender,
             ]),
-            ProjectAnalytics.build(this.project, [config.categories.targetActual]),
+            ProjectAnalytics.build(this.project, [
+                config.categories.targetActual,
+                config.categories.newRecurring,
+            ]),
         ]);
 
         this.addBenefitSheet(workbook, benefitAnalytics);
@@ -109,6 +112,11 @@ class ProjectDownload {
         );
 
         const dataRows: Row[] = _.flatMap(dataElements, (dataElement, index) => {
+            const isDataElementDisaggregated =
+                dataElement.categoryCombo.id === config.categoryCombos.newRecurring.id;
+
+            const toDataTypeEmptyCells = repeat(empty, 3);
+
             return [
                 [
                     header((index + 1).toString(), {
@@ -132,7 +140,7 @@ class ProjectDownload {
                     text("", { merge: [1, 3] }), // Responsible
                 ],
                 [
-                    ...repeat(empty, 3),
+                    ...toDataTypeEmptyCells,
                     header(i18n.t("Target Benefit"), { fill: fills.targetBenefit }),
                     ...this.mapPeriods(
                         period =>
@@ -141,14 +149,76 @@ class ProjectDownload {
                     ),
                     cumulativeRow,
                 ],
+                ...(isDataElementDisaggregated
+                    ? [
+                          [
+                              ...toDataTypeEmptyCells,
+                              text(i18n.t("New"), {
+                                  fill: fills.target,
+                                  alignment: { horizontal: "right" },
+                              }),
+                              ...this.mapPeriods(period =>
+                                  analytics.get(dataElement, period.id, [
+                                      config.categoryOptions.target,
+                                      config.categoryOptions.new,
+                                  ])
+                              ),
+                              cumulativeRow,
+                          ],
+                          [
+                              ...toDataTypeEmptyCells,
+                              text(i18n.t("Returning"), {
+                                  fill: fills.target,
+                                  alignment: { horizontal: "right" },
+                              }),
+                              ...this.mapPeriods(period =>
+                                  analytics.get(dataElement, period.id, [
+                                      config.categoryOptions.target,
+                                      config.categoryOptions.recurring,
+                                  ])
+                              ),
+                              cumulativeRow,
+                          ],
+                      ]
+                    : []),
                 [
-                    ...repeat(empty, 3),
+                    ...toDataTypeEmptyCells,
                     header(i18n.t("Actual Benefit")),
                     ...this.mapPeriods(period =>
                         analytics.get(dataElement, period.id, [config.categoryOptions.actual])
                     ),
                     cumulativeRow,
                 ],
+                ...(isDataElementDisaggregated
+                    ? [
+                          [
+                              ...toDataTypeEmptyCells,
+                              text(i18n.t("New"), {
+                                  alignment: { horizontal: "right" },
+                              }),
+                              ...this.mapPeriods(period =>
+                                  analytics.get(dataElement, period.id, [
+                                      config.categoryOptions.actual,
+                                      config.categoryOptions.new,
+                                  ])
+                              ),
+                              cumulativeRow,
+                          ],
+                          [
+                              ...toDataTypeEmptyCells,
+                              text(i18n.t("Returning"), {
+                                  alignment: { horizontal: "right" },
+                              }),
+                              ...this.mapPeriods(period =>
+                                  analytics.get(dataElement, period.id, [
+                                      config.categoryOptions.actual,
+                                      config.categoryOptions.recurring,
+                                  ])
+                              ),
+                              cumulativeRow,
+                          ],
+                      ]
+                    : []),
             ];
         });
 
