@@ -15,8 +15,7 @@ import whyDidYouRender from "@welldone-software/why-did-you-render";
 
 async function getBaseUrl(): Promise<string> {
     if (process.env.NODE_ENV === "development") {
-        const baseUrl = process.env.REACT_APP_DHIS2_BASE_URL || "http://localhost:8080";
-        console.info(`[DEV] DHIS2 instance: ${baseUrl}`);
+        const baseUrl = `/dhis2`;
         return baseUrl.replace(/\/*$/, "");
     } else {
         const { data: manifest } = await axios.get("manifest.webapp");
@@ -52,7 +51,7 @@ async function main() {
             React.createElement(
                 Provider,
                 { config, children: null },
-                React.createElement(App, { d2, api })
+                React.createElement(App, { d2, api, dhis2Url: baseUrl })
             ),
             document.getElementById("root")
         );

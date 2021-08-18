@@ -2,8 +2,6 @@ import React, { useEffect, useState } from "react";
 import moment from "moment";
 import _ from "lodash";
 import Spinner from "../spinner/Spinner";
-//@ts-ignore
-import { useConfig } from "@dhis2/app-runtime";
 import Dropdown from "../../components/dropdown/Dropdown";
 import Project, { DataSet, monthFormat, getPeriodsData, DataSetType } from "../../models/Project";
 import DataSetStateButton from "./DataSetStateButton";
@@ -153,12 +151,11 @@ const getDataEntryForm = async (
 
 const DataEntry = (props: DataEntryProps) => {
     const { orgUnitId, dataSet, attributes, dataSetType } = props;
-    const { api, config } = useAppContext();
+    const { api, config, dhis2Url: baseUrl } = useAppContext();
     const [project, setProject] = useState<Project>(props.project);
     const [iframeKey, setIframeKey] = useState(new Date());
     const [isDataSetOpen, setDataSetOpen] = useState<boolean | undefined>(undefined);
     const { periodIds, currentPeriodId } = React.useMemo(() => getPeriodsData(dataSet), [dataSet]);
-    const { baseUrl } = useConfig();
     const iframeRef = React.useRef<HTMLIFrameElement>(null);
     const iFrameSrc = `${baseUrl}/dhis-web-dataentry/index.action`;
 
