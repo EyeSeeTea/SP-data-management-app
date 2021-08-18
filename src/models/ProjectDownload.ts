@@ -112,8 +112,7 @@ class ProjectDownload {
         );
 
         const dataRows: Row[] = _.flatMap(dataElements, (dataElement, index) => {
-            const isDataElementDisaggregated =
-                dataElement.categoryCombo.id === config.categoryCombos.newRecurring.id;
+            const isDataElementDisaggregated = dataElement.categories.includes("newRecurring");
 
             const toDataTypeEmptyCells = repeat(empty, 3);
 
