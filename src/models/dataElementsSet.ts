@@ -19,10 +19,12 @@ import { splitParts } from "../utils/string";
 
 export const indicatorTypes = ["global", "sub", "custom"] as const;
 export const peopleOrBenefitList = ["people", "benefit"] as const;
+export const benefitDisaggregationList = ["", "new-returning"] as const;
 export const internalKey = "__internal";
 
 export type IndicatorType = typeof indicatorTypes[number];
 export type PeopleOrBenefit = typeof peopleOrBenefitList[number];
+export type BenefitDisaggregation = typeof benefitDisaggregationList[number];
 
 type SectorInfo = { id: Id; series?: string };
 
