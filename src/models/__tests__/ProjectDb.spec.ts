@@ -269,8 +269,8 @@ const expectedSectionsMetadataPost = {
                 id: "SCS4Dusnfdd",
             },
             sortOrder: 1,
-            name: "Livelihood",
-            code: "SECTOR_LIVELIHOOD_SCS4Dusnfdd",
+            name: "Livelihoods",
+            code: "SECTOR_LIVELIHOODS_SCS4Dusnfdd",
             dataElements: [
                 {
                     id: "yMqK9DKbA3X",
@@ -308,8 +308,8 @@ const expectedSectionsMetadataPost = {
                 id: "CwUxT9UIX3z",
             },
             sortOrder: 1,
-            name: "Livelihood",
-            code: "SECTOR_LIVELIHOOD_CwUxT9UIX3z",
+            name: "Livelihoods",
+            code: "SECTOR_LIVELIHOODS_CwUxT9UIX3z",
             dataElements: [
                 {
                     id: "yMqK9DKbA3X",
