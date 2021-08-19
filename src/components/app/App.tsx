@@ -120,7 +120,7 @@ const App: React.FC<AppProps> = props => {
         if (data && migrations.state.type === "checked") {
             run().catch(err => setLoadError(err.message));
         }
-    }, [api, d2, data, isDev, migrations]);
+    }, [api, d2, data, isDev, dhis2Url, migrations]);
 
     if (loadError) {
         return <div>Cannot load app: {loadError}</div>;
