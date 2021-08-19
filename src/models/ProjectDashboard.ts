@@ -141,8 +141,8 @@ export default class ProjectDashboard {
 
     targetVsActualBenefitsWithDisaggregation(): MaybeD2Table {
         const { config, dataElements } = this;
-        const dataElementsDisaggregated = dataElements.benefit.filter(
-            de => !de.categories.includes("newRecurring")
+        const dataElementsDisaggregated = dataElements.benefit.filter(de =>
+            de.categories.includes("newRecurring")
         );
 
         return this.getTable({

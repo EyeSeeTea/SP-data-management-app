@@ -77,19 +77,24 @@ class ProjectDownload {
         workbook.created = now.toDate();
         workbook.modified = now.toDate();
 
-        const [peopleAnalytics, benefitAnalytics] = await Promise.all([
+        const [
+            peopleAnalytics,
+            benefitAnalytics,
+            benefitDisaggregatedAnalytics,
+        ] = await Promise.all([
             ProjectAnalytics.build(this.project, [
                 config.categories.targetActual,
                 config.categories.newRecurring,
                 config.categories.gender,
             ]),
+            ProjectAnalytics.build(this.project, [config.categories.targetActual]),
             ProjectAnalytics.build(this.project, [
                 config.categories.targetActual,
                 config.categories.newRecurring,
             ]),
         ]);
 
-        this.addBenefitSheet(workbook, benefitAnalytics);
+        this.addBenefitSheet(workbook, benefitAnalytics, benefitDisaggregatedAnalytics);
         this.addPeopleSheet(workbook, peopleAnalytics);
 
         const buffer = await workbook.xlsx.writeBuffer();
@@ -97,7 +102,11 @@ class ProjectDownload {
         return { filename, buffer };
     }
 
-    addBenefitSheet(workbook: Workbook, analytics: ProjectAnalytics) {
+    addBenefitSheet(
+        workbook: Workbook,
+        analytics: ProjectAnalytics,
+        disaggregatedAnalytics: ProjectAnalytics
+    ) {
         const { project } = this;
         const { config } = project;
         const title = [project.name, i18n.t("ACTIVITY MONITORING"), i18n.t("BENEFIT")].join(" - ");
@@ -157,7 +166,7 @@ class ProjectDownload {
                                   alignment: { horizontal: "right" },
                               }),
                               ...this.mapPeriods(period =>
-                                  analytics.get(dataElement, period.id, [
+                                  disaggregatedAnalytics.get(dataElement, period.id, [
                                       config.categoryOptions.target,
                                       config.categoryOptions.new,
                                   ])
@@ -171,7 +180,7 @@ class ProjectDownload {
                                   alignment: { horizontal: "right" },
                               }),
                               ...this.mapPeriods(period =>
-                                  analytics.get(dataElement, period.id, [
+                                  disaggregatedAnalytics.get(dataElement, period.id, [
                                       config.categoryOptions.target,
                                       config.categoryOptions.recurring,
                                   ])
@@ -196,7 +205,7 @@ class ProjectDownload {
                                   alignment: { horizontal: "right" },
                               }),
                               ...this.mapPeriods(period =>
-                                  analytics.get(dataElement, period.id, [
+                                  disaggregatedAnalytics.get(dataElement, period.id, [
                                       config.categoryOptions.actual,
                                       config.categoryOptions.new,
                                   ])
@@ -209,7 +218,7 @@ class ProjectDownload {
                                   alignment: { horizontal: "right" },
                               }),
                               ...this.mapPeriods(period =>
-                                  analytics.get(dataElement, period.id, [
+                                  disaggregatedAnalytics.get(dataElement, period.id, [
                                       config.categoryOptions.actual,
                                       config.categoryOptions.recurring,
                                   ])
