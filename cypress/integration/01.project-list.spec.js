@@ -65,7 +65,7 @@ describe("Project Configuration - List page", () => {
 
     it("shows list of projects sorted alphabetically by name desc", () => {
         cy.get("[data-test-loaded]");
-        runAndWaitForRequest("/api/metadata*", () => {
+        runAndWaitForRequest("metadata*", () => {
             cy.contains("Name").click();
         });
 
