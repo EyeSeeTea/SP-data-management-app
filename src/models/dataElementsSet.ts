@@ -30,6 +30,8 @@ type SectorInfo = { id: Id; series?: string };
 
 type External = { name: string | undefined };
 
+export type CategoryKey = keyof Config["categories"];
+
 export interface DataElementBase {
     id: Id;
     name: string;
@@ -49,7 +51,7 @@ export interface DataElementBase {
     selectable: boolean;
     dataElementGroups: Array<{ code: string }>;
     attributeValues: AttributeValue[];
-    categories: Array<keyof Config["categories"]>;
+    categories: CategoryKey[];
 }
 
 export interface DataElement extends DataElementBase {
@@ -659,7 +661,7 @@ function externalInDataElement(dataElement: DataElement, external: string | unde
 function getCategoryKeys(config: BaseConfig, categories: Array<{ code: string }>) {
     return _(config.categories)
         .keys()
-        .map(key => key as keyof Config["categories"])
+        .map(key => key as CategoryKey)
         .filter(key => _(categories).some(category => category.code === config.categories[key]))
         .value();
 }

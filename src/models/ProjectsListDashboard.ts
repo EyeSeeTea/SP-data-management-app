@@ -2,7 +2,7 @@ import _ from "lodash";
 import moment from "moment";
 import { Id, Ref, D2Api, SelectedPick } from "../types/d2-api";
 import { D2DataSetSchema, D2OrganisationUnitSchema } from "../types/d2-api";
-import { PeopleOrBenefit } from "./dataElementsSet";
+import { CategoryKey, PeopleOrBenefit } from "./dataElementsSet";
 import { Config } from "./Config";
 import { Maybe } from "../types/utils";
 import { getPeriodsFromRange, monthPeriod } from "./Period";
@@ -35,7 +35,7 @@ export interface DataElement {
     name: string;
     code: string;
     peopleOrBenefit: PeopleOrBenefit;
-    categories: Array<keyof Config["categories"]>;
+    categories: CategoryKey[];
     hasPairedDataElements: boolean;
 }
 

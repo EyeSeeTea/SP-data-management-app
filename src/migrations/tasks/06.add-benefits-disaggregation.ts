@@ -8,10 +8,10 @@ class AddBenefitsDisaggregationMigration {
     constructor(private api: D2Api, private debug: Debug) {}
 
     async execute() {
-        await this.createCategoryCombos();
+        await this.createDisaggregatedCategoryCombosForBenefits();
     }
 
-    async createCategoryCombos() {
+    async createDisaggregatedCategoryCombosForBenefits() {
         this.debug("Get categories");
 
         const { categories } = await this.api.metadata

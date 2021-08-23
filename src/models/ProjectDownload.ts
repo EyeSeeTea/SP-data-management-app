@@ -122,7 +122,6 @@ class ProjectDownload {
 
         const dataRows: Row[] = _.flatMap(dataElements, (dataElement, index) => {
             const isDataElementDisaggregated = dataElement.categories.includes("newRecurring");
-
             const toDataTypeEmptyCells = repeat(empty, 3);
 
             return [
