@@ -84,6 +84,7 @@ export default class ProjectDashboard {
             this.targetVsActualUniquePeople(),
             // Percent achieved (to date)
             this.achievedBenefitsTable({ toDate: true }),
+            this.achievedBenefitsTotalToDate(),
             this.achievedPeopleTotalTable({ toDate: true }),
             // Percent achieved
             this.achievedBenefitsTable(),
@@ -238,6 +239,27 @@ export default class ProjectDashboard {
             extra: { legendSet: config.legendSets.achieved },
             rowTotals: false,
             ...options,
+        });
+    }
+
+    achievedBenefitsTotalToDate(): MaybeD2Table {
+        const { config, dataElements } = this;
+
+        const dataElementsNoDisaggregated = dataElements.benefit.filter(de =>
+            de.categories.includes("newRecurring")
+        );
+
+        return this.getTable({
+            key: "reportTable-indicators-benefits-total-todate",
+            name: i18n.t("Achieved total to date (%) - Benefits"),
+            items: indicatorItems(
+                getActualTargetIndicators(this.config, dataElementsNoDisaggregated)
+            ),
+            reportFilter: [dimensions.orgUnit, dimensions.period],
+            columnDimensions: [this.categoryOnlyNew],
+            rowDimensions: [dimensions.data],
+            extra: { legendSet: config.legendSets.achieved },
+            rowTotals: false,
         });
     }
 
