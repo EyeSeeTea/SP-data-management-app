@@ -11,7 +11,7 @@ import { getId } from "../../utils/dhis2";
 /*
     Validate:
 
-    - An cell for a global value cannot be empty.
+    - A cell for a global value cannot be empty.
     - A global must be at least the value of its maximum sub indicator (check both directions).
 */
 

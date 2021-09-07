@@ -15,14 +15,24 @@ export interface UseValidationResponse {
     validateOnClose: (options?: { showValidation: boolean }) => boolean;
 }
 
-export function useValidation(
-    iframeRef: React.RefObject<HTMLIFrameElement>,
-    project: Project,
-    dataSetType: DataSetType,
-    period: Maybe<string>,
-    options: Options = {},
-    iframeKey: object
-): UseValidationResponse {
+export function useValidation(hookOptions: {
+    iframeRef: React.RefObject<HTMLIFrameElement>;
+    project: Project;
+    dataSetType: DataSetType;
+    period: Maybe<string>;
+    options: Options;
+    iframeKey: object;
+    isValidationEnabled: boolean;
+}): UseValidationResponse {
+    const {
+        iframeRef,
+        project,
+        dataSetType,
+        period,
+        options = {},
+        iframeKey,
+        isValidationEnabled,
+    } = hookOptions;
     const { api } = useAppContext();
     const [validator, setValidator] = React.useState<Validator | undefined>();
     const snackbar = useSnackbar();
@@ -60,6 +70,7 @@ export function useValidation(
 
     const validateOnClose = React.useCallback<UseValidationResponse["validateOnClose"]>(
         options => {
+            if (!isValidationEnabled) return true;
             const { showValidation = false } = options || {};
             if (!validator) return true;
             const newValidationResult = validator.validateOnClose();
@@ -67,7 +78,7 @@ export function useValidation(
             const isValid = !newValidationResult.error || newValidationResult.error.length === 0;
             return isValid;
         },
-        [validator]
+        [validator, isValidationEnabled]
     );
 
     const showPromptFn = React.useCallback(() => !validateOnClose(), [validateOnClose]);
