@@ -595,7 +595,7 @@ async function getProject(): Promise<Project> {
                 "attributeValues[attribute[id],value],closedDate,code,created,description,displayName,id,name,openingDate,organisationUnitGroups[attributeValues[attribute[id],value],groupSets[id],id,name],parent[attributeValues[attribute[id],value],displayName,id,name,path],path",
             "organisationUnits:filter": ["id:eq:R3rGhxWbAI9"],
             "dataSets:fields":
-                "code,dataInputPeriods[closingDate,openingDate,period],dataSetElements[categoryCombo[id],dataElement[id]],expiryDays,externalAccess,id,openFuturePeriods,publicAccess,sections[code,dataElements[id]],userAccesses[access,displayName,id],userGroupAccesses[access,displayName,id]",
+                "code,dataInputPeriods[closingDate,openingDate,period],dataSetElements[categoryCombo[categoryOptionCombos[id],id],dataElement[id]],expiryDays,externalAccess,id,openFuturePeriods,publicAccess,sections[code,dataElements[id]],userAccesses[access,displayName,id],userGroupAccesses[access,displayName,id]",
             "dataSets:filter": ["code:$like:R3rGhxWbAI9"],
         },
     }).replyOnce(200, metadataForGet);
