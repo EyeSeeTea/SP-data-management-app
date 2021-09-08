@@ -81,7 +81,9 @@ export function useValidation(hookOptions: {
         [validator, isValidationEnabled]
     );
 
-    const showPromptFn = React.useCallback(() => !validateOnClose(), [validateOnClose]);
+    const showPromptFn = React.useCallback(() => !validateOnClose({ showValidation: true }), [
+        validateOnClose,
+    ]);
 
     usePageExitConfirmation(showPromptFn);
 
