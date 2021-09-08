@@ -48,7 +48,7 @@ export class Validator {
         return new Validator(this.period, newValidators);
     }
 
-    validateOnClose(): ValidationResult {
+    validate(): ValidationResult {
         const items: ValidationItem[] = this.validators.global.validate();
         return this.getValidationResult(items);
     }

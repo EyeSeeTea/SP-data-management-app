@@ -12,7 +12,7 @@ import { usePageExitConfirmation } from "../../utils/hooks";
 export interface UseValidationResponse {
     result: ValidationResult;
     clear: () => void;
-    validateOnClose: (options?: { showValidation: boolean }) => boolean;
+    validate: (options?: { showValidation: boolean }) => boolean;
 }
 
 export function useValidation(hookOptions: {
@@ -68,12 +68,12 @@ export function useValidation(hookOptions: {
     const [validationResult, setValidationResult] = React.useState<ValidationResult>({});
     const clearResult = React.useCallback(() => setValidationResult({}), [setValidationResult]);
 
-    const validateOnClose = React.useCallback<UseValidationResponse["validateOnClose"]>(
+    const validate = React.useCallback<UseValidationResponse["validate"]>(
         options => {
             if (!isValidationEnabled) return true;
             const { showValidation = false } = options || {};
             if (!validator) return true;
-            const newValidationResult = validator.validateOnClose();
+            const newValidationResult = validator.validate();
             if (showValidation) setValidationResult(newValidationResult);
             const isValid = !newValidationResult.error || newValidationResult.error.length === 0;
             return isValid;
@@ -81,13 +81,11 @@ export function useValidation(hookOptions: {
         [validator, isValidationEnabled]
     );
 
-    const showPromptFn = React.useCallback(() => !validateOnClose({ showValidation: true }), [
-        validateOnClose,
-    ]);
+    const showPromptFn = React.useCallback(() => !validate({ showValidation: true }), [validate]);
 
     usePageExitConfirmation(showPromptFn);
 
     useDhis2EntryEvents(iframeRef, onMessage, options, iframeKey);
 
-    return { result: validationResult, clear: clearResult, validateOnClose };
+    return { result: validationResult, clear: clearResult, validate: validate };
 }

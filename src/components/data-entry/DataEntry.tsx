@@ -224,7 +224,7 @@ const DataEntry = (props: DataEntryProps) => {
 
     const setPeriod = React.useCallback(
         value => {
-            if (!validation.validateOnClose({ showValidation: true })) return;
+            if (!validation.validate({ showValidation: true })) return;
             return setState(prevState => ({ ...prevState, dropdownValue: value }));
         },
         [setState, validation]
@@ -296,12 +296,12 @@ function useValidationPrompt(options: {
     const { isValidationEnabled, validation } = options;
 
     const shouldPromptOnPageChange = React.useMemo(
-        () => isValidationEnabled && !validation.validateOnClose(),
+        () => isValidationEnabled && !validation.validate(),
         [validation, isValidationEnabled]
     );
 
     const promptOnPageChange = React.useCallback(() => {
-        validation.validateOnClose({ showValidation: true });
+        validation.validate({ showValidation: true });
         return false;
     }, [validation]);
 
