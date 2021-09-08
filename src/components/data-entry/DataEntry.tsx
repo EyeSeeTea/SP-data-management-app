@@ -261,6 +261,7 @@ const DataEntry = (props: DataEntryProps) => {
                             dataSet={dataSet}
                             period={state.dropdownValue}
                             onChange={reloadIframe}
+                            validation={validation}
                         />
                     </div>
                 )}
