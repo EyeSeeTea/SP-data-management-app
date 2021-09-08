@@ -666,6 +666,25 @@ function getCategoryKeys(config: BaseConfig, categories: Array<{ code: string }>
         .value();
 }
 
+function getGlobalCode(code: string): string {
+    return code.replace(/\d\d$/, "00");
+}
+
+export function getGlobal(config: Config, dataElementId: Id): DataElementBase | undefined {
+    const dataElement = config.dataElements.find(de => de.id === dataElementId);
+
+    if (!dataElement) {
+        return;
+    } else if (dataElement.indicatorType !== "sub") {
+        return;
+    } else {
+        const globalCode = getGlobalCode(dataElement.code);
+        return config.dataElements.find(
+            de => de.indicatorType === "global" && de.code === globalCode
+        );
+    }
+}
+
 export function getSubs(config: Config, dataElementId: Id): DataElementBase[] {
     const dataElement = config.dataElements.find(de => de.id === dataElementId);
 
@@ -674,9 +693,8 @@ export function getSubs(config: Config, dataElementId: Id): DataElementBase[] {
     } else if (!["global", "custom"].includes(dataElement.indicatorType)) {
         return [];
     } else {
-        const getMainCode = (code: string) => code.replace(/\d\d$/, "00");
         return config.dataElements.filter(
-            de => de.indicatorType === "sub" && getMainCode(de.code) === dataElement.code
+            de => de.indicatorType === "sub" && getGlobalCode(de.code) === dataElement.code
         );
     }
 }

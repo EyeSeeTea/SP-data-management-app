@@ -7,7 +7,7 @@ import { DataValue, toFloat, ValidationItem } from "./validator-common";
 import { Maybe } from "../../types/utils";
 import { Config } from "../Config";
 import { getId } from "../../utils/dhis2";
-import { getDataElementName, getSubs } from "../dataElementsSet";
+import { getDataElementName, getGlobal, getSubs } from "../dataElementsSet";
 
 /*
     Validate:
@@ -94,7 +94,37 @@ export class GlobalValidator {
     }
 
     validateOnSave(dataValue: DataValue): ValidationItem[] {
-        return this.validateGlobalIsEqualOrGreaterThanMaxSub(dataValue);
+        return _.concat(
+            this.validateGlobalIsEqualOrGreaterThanMaxSub(dataValue),
+            this.validateSubIsLessOrEqualThanGlobal(dataValue)
+        );
+    }
+
+    private validateSubIsLessOrEqualThanGlobal(dataValue: DataValue): ValidationItem[] {
+        const { value: strValue, categoryOptionComboId: cocId } = dataValue;
+        if (!strValue) return [];
+
+        const globalDataElement = getGlobal(this.data.config, dataValue.dataElementId);
+        if (!globalDataElement) return [];
+
+        const subValue = toFloat(strValue);
+        const key = getKey(globalDataElement.id, cocId);
+        const dv = this.data.dataValues[key];
+        const globalValue = dv ? parseFloat(dv.value) : undefined;
+
+        if (globalValue !== undefined && subValue > globalValue) {
+            const msg = i18n.t(
+                "A sub data element should be equal or less than its global indicator: {{-name}} (value={{value}})",
+                {
+                    name: getDataElementName(globalDataElement),
+                    value: globalValue,
+                    nsSeparator: false,
+                }
+            );
+            return [["error", msg]];
+        } else {
+            return [];
+        }
     }
 
     private validateGlobalIsEqualOrGreaterThanMaxSub(dataValue: DataValue): ValidationItem[] {
