@@ -665,3 +665,22 @@ function getCategoryKeys(config: BaseConfig, categories: Array<{ code: string }>
         .filter(key => _(categories).some(category => category.code === config.categories[key]))
         .value();
 }
+
+export function getSubs(config: Config, dataElementId: Id): DataElementBase[] {
+    const dataElement = config.dataElements.find(de => de.id === dataElementId);
+
+    if (!dataElement) {
+        return [];
+    } else if (!["global", "custom"].includes(dataElement.indicatorType)) {
+        return [];
+    } else {
+        const getMainCode = (code: string) => code.replace(/\d\d$/, "00");
+        return config.dataElements.filter(
+            de => de.indicatorType === "sub" && getMainCode(de.code) === dataElement.code
+        );
+    }
+}
+
+export function getDataElementName(dataElement: DataElementBase): string {
+    return `[${dataElement.code}] ${dataElement.name}`;
+}

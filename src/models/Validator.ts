@@ -34,7 +34,8 @@ export class Validator {
         const dataValue: DataValue = { ...dataValue0, period: this.period };
         const items: ValidationItem[] = _.concat(
             this.validators.actual.validate(dataValue),
-            await this.validators.recurring.validate(dataValue)
+            await this.validators.recurring.validate(dataValue),
+            this.validators.global.validateOnSave(dataValue)
         );
         return this.getValidationResult(items);
     }

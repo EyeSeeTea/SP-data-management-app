@@ -1,23 +1,24 @@
 import { D2Api, DataValueSetsGetRequest } from "../../types/d2-api";
 import _ from "lodash";
 
-import Project, { DataSetType } from "../Project";
+import Project, { DataSet, DataSetType } from "../Project";
 import i18n from "../../locales";
-import { DataValue, ValidationItem } from "./validator-common";
+import { DataValue, toFloat, ValidationItem } from "./validator-common";
 import { Maybe } from "../../types/utils";
 import { Config } from "../Config";
 import { getId } from "../../utils/dhis2";
+import { getDataElementName, getSubs } from "../dataElementsSet";
 
 /*
     Validate:
 
     - A cell for a global value cannot be empty.
-    - A global must be at least the value of its maximum sub indicator (check both directions).
+    - A global must be at least the value of its maximum sub-indicator (check both directions).
 */
 
-type IndexedDataValues = Record<Key, Maybe<DataValue>>;
+type IndexedDataValues = Record<DataValueId, Maybe<DataValue>>;
 
-type Key = string; // "dataElementId-categoryOptionComboId"
+type DataValueId = string; // "dataElementId-categoryOptionComboId"
 
 interface Data {
     config: Config;
@@ -26,7 +27,7 @@ interface Data {
 }
 
 interface GVDataElement {
-    keys: Key[];
+    keys: DataValueId[];
     name: string;
 }
 
@@ -58,23 +59,28 @@ export class GlobalValidator {
             dataElementId: dv.dataElement,
             categoryOptionComboId: dv.categoryOptionCombo,
         }));
-        const indexedDataValues: Data["dataValues"] = getIndexedDataValues(dataValues);
 
+        const indexedDataValues: Data["dataValues"] = getIndexedDataValues(dataValues);
+        const dataSet = project.dataSets[dataSetType];
+        const expectedDataElements = this.getExpectedDataElements(config, dataSet);
+
+        return new GlobalValidator({ config, expectedDataElements, dataValues: indexedDataValues });
+    }
+
+    private static getExpectedDataElements(config: Config, dataSet: DataSet): GVDataElement[] {
         const dataElementsById = _.keyBy(config.dataElements, de => de.id);
-        const expectedDataElements: GVDataElement[] = _(
-            project.dataSets[dataSetType].dataSetElements
-        )
+
+        const expectedDataElements: GVDataElement[] = _(dataSet.dataSetElements)
             .map((dse): GVDataElement | null => {
                 const dataElement = dataElementsById[dse.dataElement.id];
                 if (!dataElement || dataElement.indicatorType !== "global") return null;
                 const categoryOptionComboIds = dse.categoryCombo.categoryOptionCombos.map(getId);
                 const keys = categoryOptionComboIds.map(cocId => getKey(dataElement.id, cocId));
-                return { keys, name: `[${dataElement.code}] ${dataElement.name}` };
+                return { keys, name: getDataElementName(dataElement) };
             })
             .compact()
             .value();
-
-        return new GlobalValidator({ config, expectedDataElements, dataValues: indexedDataValues });
+        return expectedDataElements;
     }
 
     onSave(dataValue: DataValue): GlobalValidator {
@@ -85,6 +91,41 @@ export class GlobalValidator {
         );
         const newData = { ...this.data, dataValues: dataValuesUpdated };
         return new GlobalValidator(newData);
+    }
+
+    validateOnSave(dataValue: DataValue): ValidationItem[] {
+        return this.validateGlobalIsEqualOrGreaterThanMaxSub(dataValue);
+    }
+
+    private validateGlobalIsEqualOrGreaterThanMaxSub(dataValue: DataValue): ValidationItem[] {
+        const { value: strValue, categoryOptionComboId: cocId } = dataValue;
+        if (!strValue) return [];
+
+        const subDataElements = getSubs(this.data.config, dataValue.dataElementId);
+        const globalValue = toFloat(strValue);
+
+        const maxSubItem = _(subDataElements)
+            .map(subDataElement => {
+                const key = getKey(subDataElement.id, cocId);
+                const dv = this.data.dataValues[key];
+                return dv ? { dataElement: subDataElement, value: toFloat(dv.value) } : null;
+            })
+            .compact()
+            .maxBy(({ value }) => value);
+
+        if (maxSubItem && globalValue < maxSubItem.value) {
+            const msg = i18n.t(
+                "A global data element should be equal or greater than its maximum sub-indicator: {{-name}} (value={{value}})",
+                {
+                    name: getDataElementName(maxSubItem.dataElement),
+                    value: maxSubItem.value,
+                    nsSeparator: false,
+                }
+            );
+            return [["error", msg]];
+        } else {
+            return [];
+        }
     }
 
     validate(): ValidationItem[] {
@@ -107,7 +148,7 @@ export class GlobalValidator {
     }
 }
 
-function getKey(dataElementId: string, categoryOptionComboId: string): Key {
+function getKey(dataElementId: string, categoryOptionComboId: string): DataValueId {
     return [dataElementId, categoryOptionComboId].join("-");
 }
 
