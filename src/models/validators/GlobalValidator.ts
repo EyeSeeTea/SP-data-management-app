@@ -1,4 +1,4 @@
-import { D2Api, DataValueSetsGetRequest } from "../../types/d2-api";
+import { D2Api, DataValueSetsGetRequest, Id } from "../../types/d2-api";
 import _ from "lodash";
 
 import Project, { DataSet, DataSetType } from "../Project";
@@ -7,7 +7,7 @@ import { DataValue, toFloat, ValidationItem } from "./validator-common";
 import { Maybe } from "../../types/utils";
 import { Config } from "../Config";
 import { getId } from "../../utils/dhis2";
-import { getDataElementName, getGlobal, getSubs } from "../dataElementsSet";
+import { DataElementBase, getDataElementName, getGlobal, getSubs } from "../dataElementsSet";
 
 /*
     Validate:
@@ -18,17 +18,19 @@ import { getDataElementName, getGlobal, getSubs } from "../dataElementsSet";
 
 type IndexedDataValues = Record<DataValueId, Maybe<DataValue>>;
 
-type DataValueId = string; // "dataElementId-categoryOptionComboId"
+type DataValueId = string; // `${dataElementId}-${categoryOptionComboId]`
 
 interface Data {
     config: Config;
     dataValues: IndexedDataValues;
-    expectedDataElements: GVDataElement[];
+    globalDataElements: GlobalDataElement[];
 }
 
-interface GVDataElement {
-    keys: DataValueId[];
+interface GlobalDataElement {
+    id: Id;
     name: string;
+    categoryOptionComboIds: Id[];
+    subs: DataElementBase[];
 }
 
 export class GlobalValidator {
@@ -62,25 +64,32 @@ export class GlobalValidator {
 
         const indexedDataValues: Data["dataValues"] = getIndexedDataValues(dataValues);
         const dataSet = project.dataSets[dataSetType];
-        const expectedDataElements = this.getExpectedDataElements(config, dataSet);
+        const globalDataElements = this.getGlobalDataElements(config, dataSet);
 
-        return new GlobalValidator({ config, expectedDataElements, dataValues: indexedDataValues });
+        return new GlobalValidator({ config, globalDataElements, dataValues: indexedDataValues });
     }
 
-    private static getExpectedDataElements(config: Config, dataSet: DataSet): GVDataElement[] {
+    private static getGlobalDataElements(config: Config, dataSet: DataSet): GlobalDataElement[] {
         const dataElementsById = _.keyBy(config.dataElements, de => de.id);
 
-        const expectedDataElements: GVDataElement[] = _(dataSet.dataSetElements)
-            .map((dse): GVDataElement | null => {
+        const projectDataElements = _(dataSet.dataSetElements)
+            .map(dse => dataElementsById[dse.dataElement.id])
+            .compact()
+            .value();
+
+        const globalDataElements: GlobalDataElement[] = _(dataSet.dataSetElements)
+            .map((dse): GlobalDataElement | null => {
                 const dataElement = dataElementsById[dse.dataElement.id];
                 if (!dataElement || dataElement.indicatorType !== "global") return null;
                 const categoryOptionComboIds = dse.categoryCombo.categoryOptionCombos.map(getId);
-                const keys = categoryOptionComboIds.map(cocId => getKey(dataElement.id, cocId));
-                return { keys, name: getDataElementName(dataElement) };
+                const allSubDataElements = getSubs(config, dataElement.id);
+                const subs = _.intersectionBy(projectDataElements, allSubDataElements, de => de.id);
+                const name = getDataElementName(dataElement);
+                return { id: dataElement.id, name, categoryOptionComboIds, subs };
             })
             .compact()
             .value();
-        return expectedDataElements;
+        return globalDataElements;
     }
 
     onSave(dataValue: DataValue): GlobalValidator {
@@ -159,22 +168,48 @@ export class GlobalValidator {
     }
 
     validate(): ValidationItem[] {
-        const { expectedDataElements, dataValues } = this.data;
-        const emptyDataElements = expectedDataElements.filter(expectedDataElement => {
-            const someDataValueIsEmpty = _.some(
-                expectedDataElement.keys,
-                key => !dataValues[key]?.value
-            );
-            return someDataValueIsEmpty;
-        });
+        return this.validateNonEmptyGlobalsWhenSubsHaveValues();
+    }
 
-        return emptyDataElements.map(({ name }) => {
-            const msg = i18n.t("Global data element cannot have empty values: {{- name}}", {
-                name,
-                nsSeparator: false,
-            });
-            return ["error", msg];
-        });
+    validateNonEmptyGlobalsWhenSubsHaveValues(): ValidationItem[] {
+        const { config, globalDataElements } = this.data;
+
+        return _(globalDataElements)
+            .map(globalDataElement => {
+                const isValid = _(globalDataElement.categoryOptionComboIds).every(cocId => {
+                    const globalValue = this.getValue(globalDataElement.id, cocId);
+                    const globalIsEmpty = !globalValue;
+
+                    if (!globalIsEmpty) {
+                        return true;
+                    } else {
+                        const subDataElements = getSubs(config, globalDataElement.id);
+                        const allSubsAreEmpty = _(subDataElements).every(subDataElement => {
+                            const subValue = this.getValue(subDataElement.id, cocId);
+                            return !subValue;
+                        });
+                        return allSubsAreEmpty;
+                    }
+                });
+
+                const msg = i18n.t(
+                    "Global data element with sub-indicators values cannot be empty: {{- name}}",
+                    {
+                        name: globalDataElement.name,
+                        nsSeparator: false,
+                    }
+                );
+
+                return isValid ? null : (["error", msg] as ValidationItem);
+            })
+            .compact()
+            .value();
+    }
+
+    private getValue(dataElementId: string, categoryOptionComboId: string): string | undefined {
+        const key = getKey(dataElementId, categoryOptionComboId);
+        const dataValue = this.data.dataValues[key];
+        return dataValue?.value;
     }
 }
 
