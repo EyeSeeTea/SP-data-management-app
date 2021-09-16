@@ -24,6 +24,7 @@ interface Data {
     config: Config;
     dataValues: IndexedDataValues;
     globalDataElements: GlobalDataElement[];
+    period: string;
 }
 
 interface GlobalDataElement {
@@ -66,7 +67,12 @@ export class GlobalValidator {
         const dataSet = project.dataSets[dataSetType];
         const globalDataElements = this.getGlobalDataElements(config, dataSet);
 
-        return new GlobalValidator({ config, globalDataElements, dataValues: indexedDataValues });
+        return new GlobalValidator({
+            config,
+            globalDataElements,
+            dataValues: indexedDataValues,
+            period,
+        });
     }
 
     private static getGlobalDataElements(config: Config, dataSet: DataSet): GlobalDataElement[] {
@@ -102,11 +108,36 @@ export class GlobalValidator {
         return new GlobalValidator(newData);
     }
 
+    validate(): ValidationItem[] {
+        return _.concat(
+            this.validateNonEmptyGlobalsWhenSubsHaveValues(),
+            this.validateAllGlobalsAreEqualOrGreaterThanMaxSub()
+        );
+    }
+
     validateOnSave(dataValue: DataValue): ValidationItem[] {
         return _.concat(
             this.validateGlobalIsEqualOrGreaterThanMaxSub(dataValue),
             this.validateSubIsLessOrEqualThanGlobal(dataValue)
         );
+    }
+
+    validateAllGlobalsAreEqualOrGreaterThanMaxSub(): ValidationItem[] {
+        const { period, globalDataElements } = this.data;
+
+        return _(globalDataElements)
+            .flatMap(globalDataElement => {
+                return _.flatMap(globalDataElement.categoryOptionComboIds, cocId => {
+                    const dataValue: DataValue = {
+                        dataElementId: globalDataElement.id,
+                        categoryOptionComboId: cocId,
+                        period,
+                        value: this.getValue(globalDataElement.id, cocId) || "",
+                    };
+                    return this.validateGlobalIsEqualOrGreaterThanMaxSub(dataValue);
+                });
+            })
+            .value();
     }
 
     private validateSubIsLessOrEqualThanGlobal(dataValue: DataValue): ValidationItem[] {
@@ -165,10 +196,6 @@ export class GlobalValidator {
         } else {
             return [];
         }
-    }
-
-    validate(): ValidationItem[] {
-        return this.validateNonEmptyGlobalsWhenSubsHaveValues();
     }
 
     validateNonEmptyGlobalsWhenSubsHaveValues(): ValidationItem[] {
