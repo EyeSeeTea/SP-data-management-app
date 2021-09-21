@@ -226,7 +226,7 @@
                 },
                 {
                     "id": "eIe2SLzuupw",
-                    "code": "SECTOR_LIVELIHOOD_SCS4Dusnfdd"
+                    "code": "SECTOR_LIVELIHOODS_SCS4Dusnfdd"
                 }
             ],
             "dataSetElements": [
@@ -396,7 +396,7 @@
                 },
                 {
                     "id": "uiiKwDjex3L",
-                    "code": "SECTOR_LIVELIHOOD_CwUxT9UIX3z"
+                    "code": "SECTOR_LIVELIHOODS_CwUxT9UIX3z"
                 }
             ],
             "dataSetElements": [
@@ -942,6 +942,7 @@
                 {
                     "code": "ACTUAL_TARGET",
                     "id": "GIIHAr9BzzO",
+                    "dataDimensionType": "ATTRIBUTE",
                     "categoryOptions": [
                         {
                             "code": "TARGET",
@@ -1055,6 +1056,7 @@
                 {
                     "code": "GENDER",
                     "id": "Kyg1O6YEGa9",
+                    "dataDimensionType": "DISAGGREGATION",
                     "categoryOptions": [
                         {
                             "code": "MALE",
@@ -1081,6 +1083,7 @@
                 {
                     "code": "ACTUAL_TARGET",
                     "id": "GIIHAr9BzzO",
+                    "dataDimensionType": "ATTRIBUTE",
                     "categoryOptions": [
                         {
                             "code": "TARGET",
@@ -1095,6 +1098,7 @@
                 {
                     "code": "NEW_RETURNING",
                     "id": "uSMHdwhxFSV",
+                    "dataDimensionType": "DISAGGREGATION",
                     "categoryOptions": [
                         {
                             "code": "NEW",
@@ -1234,6 +1238,7 @@
                 {
                     "code": "GENDER",
                     "id": "Kyg1O6YEGa9",
+                    "dataDimensionType": "DISAGGREGATION",
                     "categoryOptions": [
                         {
                             "code": "MALE",
@@ -1268,6 +1273,7 @@
                 {
                     "code": "ACTUAL_TARGET",
                     "id": "GIIHAr9BzzO",
+                    "dataDimensionType": "ATTRIBUTE",
                     "categoryOptions": [
                         {
                             "code": "TARGET",
@@ -2308,6 +2314,7 @@
                 {
                     "code": "ACTUAL_TARGET",
                     "id": "GIIHAr9BzzO",
+                    "dataDimensionType": "ATTRIBUTE",
                     "categoryOptions": [
                         {
                             "code": "TARGET",
@@ -2532,6 +2539,7 @@
                 {
                     "code": "GENDER",
                     "id": "Kyg1O6YEGa9",
+                    "dataDimensionType": "DISAGGREGATION",
                     "categoryOptions": [
                         {
                             "code": "MALE",
@@ -2558,6 +2566,7 @@
                 {
                     "code": "ACTUAL_TARGET",
                     "id": "GIIHAr9BzzO",
+                    "dataDimensionType": "ATTRIBUTE",
                     "categoryOptions": [
                         {
                             "code": "TARGET",
@@ -2572,6 +2581,7 @@
                 {
                     "code": "NEW_RETURNING",
                     "id": "uSMHdwhxFSV",
+                    "dataDimensionType": "DISAGGREGATION",
                     "categoryOptions": [
                         {
                             "code": "NEW",
@@ -2822,6 +2832,7 @@
                 {
                     "code": "GENDER",
                     "id": "Kyg1O6YEGa9",
+                    "dataDimensionType": "DISAGGREGATION",
                     "categoryOptions": [
                         {
                             "code": "MALE",
@@ -2856,6 +2867,7 @@
                 {
                     "code": "ACTUAL_TARGET",
                     "id": "GIIHAr9BzzO",
+                    "dataDimensionType": "ATTRIBUTE",
                     "categoryOptions": [
                         {
                             "code": "TARGET",
@@ -4326,6 +4338,7 @@
                 {
                     "code": "GENDER",
                     "id": "Kyg1O6YEGa9",
+                    "dataDimensionType": "DISAGGREGATION",
                     "categoryOptions": [
                         {
                             "code": "MALE",
@@ -5505,6 +5518,7 @@
                 {
                     "code": "GENDER",
                     "id": "Kyg1O6YEGa9",
+                    "dataDimensionType": "DISAGGREGATION",
                     "categoryOptions": [
                         {
                             "code": "MALE",

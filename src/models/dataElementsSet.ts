@@ -19,14 +19,18 @@ import { splitParts } from "../utils/string";
 
 export const indicatorTypes = ["global", "sub", "custom"] as const;
 export const peopleOrBenefitList = ["people", "benefit"] as const;
+export const benefitDisaggregationList = ["", "new-returning"] as const;
 export const internalKey = "__internal";
 
 export type IndicatorType = typeof indicatorTypes[number];
 export type PeopleOrBenefit = typeof peopleOrBenefitList[number];
+export type BenefitDisaggregation = typeof benefitDisaggregationList[number];
 
 type SectorInfo = { id: Id; series?: string };
 
 type External = { name: string | undefined };
+
+export type CategoryKey = keyof Config["categories"];
 
 export interface DataElementBase {
     id: Id;
@@ -47,6 +51,7 @@ export interface DataElementBase {
     selectable: boolean;
     dataElementGroups: Array<{ code: string }>;
     attributeValues: AttributeValue[];
+    categories: CategoryKey[];
 }
 
 export interface DataElement extends DataElementBase {
@@ -151,6 +156,7 @@ export default class DataElementsSet {
             const mainSeries = mainSector
                 ? sectorsInfo.find(si => si.id === mainSector.id)?.series
                 : undefined;
+            const categoryCombo = categoryCombosById[d2DataElement.categoryCombo.id];
 
             if (!indicatorType) {
                 console.error(`DataElement ${deCode} has no indicator type`);
@@ -161,9 +167,10 @@ export default class DataElementsSet {
             } else if (!mainSector) {
                 console.error(`DataElement ${deCode} has no main sector`);
                 return null;
+            } else if (!categoryCombo) {
+                console.error(`DataElement ${deCode} has no main sector`);
+                return null;
             } else {
-                const { categoryCombo } = d2DataElement;
-
                 const dataElement: DataElementBase = {
                     id: d2DataElement.id,
                     name: name,
@@ -184,6 +191,7 @@ export default class DataElementsSet {
                     selectable: isSelectable,
                     dataElementGroups: Array.from(groupCodes).map(code => ({ code })),
                     attributeValues: d2DataElement.attributeValues,
+                    categories: getCategoryKeys(baseConfig, categoryCombo.categories),
                 };
                 return dataElement;
             }
@@ -648,4 +656,12 @@ function externalInDataElement(dataElement: DataElement, external: string | unde
             .flatMap(de => _.keys(de.externals))
             .includes(external)
     );
+}
+
+function getCategoryKeys(config: BaseConfig, categories: Array<{ code: string }>) {
+    return _(config.categories)
+        .keys()
+        .map(key => key as CategoryKey)
+        .filter(key => _(categories).some(category => category.code === config.categories[key]))
+        .value();
 }

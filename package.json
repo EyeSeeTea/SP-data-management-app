@@ -70,7 +70,7 @@
         "run-migrations": "yarn ts-node src/migrations/cli.ts",
         "cypress-run-migrations": "yarn run-migrations $CYPRESS_EXTERNAL_API $CYPRESS_DHIS2_AUTH",
         "check-uncommited": "! git status -uno --porcelain | grep '.'",
-        "generate-test-fixtures": "yarn run ts src/models/Config.ts"
+        "generate-test-fixtures": "yarn ts-node src/models/Config.ts"
     },
     "husky": {
         "hooks": {

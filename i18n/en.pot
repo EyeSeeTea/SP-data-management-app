@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2021-06-15T10:28:52.326Z\n"
-"PO-Revision-Date: 2021-06-15T10:28:52.326Z\n"
+"POT-Creation-Date: 2021-08-23T13:00:52.567Z\n"
+"PO-Revision-Date: 2021-08-23T13:00:52.567Z\n"
 
 msgid "Name"
 msgstr ""
@@ -457,6 +457,9 @@ msgstr ""
 msgid "Target vs Actual - Benefits"
 msgstr ""
 
+msgid "Target vs Actual - Benefits (Disaggregated)"
+msgstr ""
+
 msgid "Target vs Actual - People"
 msgstr ""
 
@@ -476,6 +479,9 @@ msgid "Achieved total to date (%) - People"
 msgstr ""
 
 msgid "Achieved total (%) - People"
+msgstr ""
+
+msgid "Achieved total to date (%) - Benefits"
 msgstr ""
 
 msgid "Achieved monthly (%)"
@@ -511,6 +517,12 @@ msgid "% Achievement to Date"
 msgstr ""
 
 msgid "Target Benefit"
+msgstr ""
+
+msgid "New"
+msgstr ""
+
+msgid "Returning"
 msgstr ""
 
 msgid "Actual Benefit"

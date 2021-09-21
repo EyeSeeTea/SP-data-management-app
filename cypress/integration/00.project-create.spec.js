@@ -149,11 +149,9 @@ describe("Projects - Create", () => {
         cy.contains("# of people trained on microfinance - P020103");
 
         cy.server();
-        cy.route("POST", "/api/email/**").as("sendEmail");
 
         cy.get("[data-wizard-contents] button").contains("Save").click();
 
         cy.contains("Project created");
-        cy.wait("@sendEmail");
     });
 });
