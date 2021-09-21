@@ -474,7 +474,10 @@ export default class ProjectDb {
                     fields: {
                         id: true,
                         code: true,
-                        dataSetElements: { dataElement: { id: true }, categoryCombo: { id: true } },
+                        dataSetElements: {
+                            dataElement: { id: true },
+                            categoryCombo: { id: true, categoryOptionCombos: { id: true } },
+                        },
                         dataInputPeriods: { period: true, openingDate: true, closingDate: true },
                         sections: { code: true, dataElements: { id: true } },
                         openFuturePeriods: true,

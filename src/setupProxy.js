@@ -13,9 +13,9 @@ module.exports = function (app) {
 
     const proxy = createProxyMiddleware({
         target: targetUrl,
-        logLevel: "debug",
+        logLevel: "error",
         changeOrigin: true,
-        pathRewrite: { "^/dhis2/": "/" },
+        pathRewrite: { "^/dhis2": "/" },
         onProxyReq: function (proxyReq, req, res) {
             const { path } = proxyReq;
             const shouldRedirect = redirectPaths.some(p => path.startsWith(p));

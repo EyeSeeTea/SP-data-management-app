@@ -665,3 +665,40 @@ function getCategoryKeys(config: BaseConfig, categories: Array<{ code: string }>
         .filter(key => _(categories).some(category => category.code === config.categories[key]))
         .value();
 }
+
+function getGlobalCode(code: string): string {
+    return code.replace(/\d\d$/, "00");
+}
+
+export function getGlobal(config: Config, dataElementId: Id): DataElementBase | undefined {
+    const dataElement = config.dataElements.find(de => de.id === dataElementId);
+
+    if (!dataElement) {
+        return;
+    } else if (dataElement.indicatorType !== "sub") {
+        return;
+    } else {
+        const globalCode = getGlobalCode(dataElement.code);
+        return config.dataElements.find(
+            de => de.indicatorType === "global" && de.code === globalCode
+        );
+    }
+}
+
+export function getSubs(config: Config, dataElementId: Id): DataElementBase[] {
+    const dataElement = config.dataElements.find(de => de.id === dataElementId);
+
+    if (!dataElement) {
+        return [];
+    } else if (!["global", "custom"].includes(dataElement.indicatorType)) {
+        return [];
+    } else {
+        return config.dataElements.filter(
+            de => de.indicatorType === "sub" && getGlobalCode(de.code) === dataElement.code
+        );
+    }
+}
+
+export function getDataElementName(dataElement: DataElementBase): string {
+    return `[${dataElement.code}] ${dataElement.name}`;
+}

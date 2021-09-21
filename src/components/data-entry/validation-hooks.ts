@@ -7,20 +7,32 @@ import { InputMsg, useDhis2EntryEvents, Options } from "./data-entry-hooks";
 import { ValidationResult } from "../../models/validators/validator-common";
 import { useSnackbar } from "@eyeseetea/d2-ui-components";
 import i18n from "../../locales";
+import { usePageExitConfirmation } from "../../utils/hooks";
 
-interface UseValidationResponse {
+export interface UseValidationResponse {
     result: ValidationResult;
     clear: () => void;
+    validate: (options?: { showValidation: boolean }) => boolean;
 }
 
-export function useValidation(
-    iframeRef: React.RefObject<HTMLIFrameElement>,
-    project: Project,
-    dataSetType: DataSetType,
-    period: Maybe<string>,
-    options: Options = {},
-    iframeKey: object
-): UseValidationResponse {
+export function useValidation(hookOptions: {
+    iframeRef: React.RefObject<HTMLIFrameElement>;
+    project: Project;
+    dataSetType: DataSetType;
+    period: Maybe<string>;
+    options: Options;
+    iframeKey: object;
+    isValidationEnabled: boolean;
+}): UseValidationResponse {
+    const {
+        iframeRef,
+        project,
+        dataSetType,
+        period,
+        options = {},
+        iframeKey,
+        isValidationEnabled,
+    } = hookOptions;
     const { api } = useAppContext();
     const [validator, setValidator] = React.useState<Validator | undefined>();
     const snackbar = useSnackbar();
@@ -33,16 +45,23 @@ export function useValidation(
 
     const onMessage = React.useCallback(
         (msg: InputMsg) => {
-            if (msg.type === "preSaveDataValue") {
-                if (!validator) {
-                    snackbar.warning(i18n.t("Validation data is not loaded, skip validation"));
-                    return Promise.resolve(true);
-                } else {
-                    return validator.validateDataValue(msg.dataValue).then(validation => {
-                        console.log("validation", validation);
+            if (!validator) {
+                snackbar.warning(i18n.t("Validation data is not loaded, skip validation"));
+                return Promise.resolve(true);
+            }
+
+            switch (msg.type) {
+                case "preSaveDataValue": {
+                    const validatorUpdated = validator.onSave(msg.dataValue);
+                    setValidator(validatorUpdated);
+
+                    return validatorUpdated.validateDataValue(msg.dataValue).then(validation => {
                         setValidationResult(validation);
                         return !validation.error || validation.error.length === 0;
                     });
+                }
+                case "dataValueSaved": {
+                    // Executed after data value successfully saved
                 }
             }
         },
@@ -52,7 +71,24 @@ export function useValidation(
     const [validationResult, setValidationResult] = React.useState<ValidationResult>({});
     const clearResult = React.useCallback(() => setValidationResult({}), [setValidationResult]);
 
+    const validate = React.useCallback<UseValidationResponse["validate"]>(
+        options => {
+            if (!isValidationEnabled) return true;
+            const { showValidation = false } = options || {};
+            if (!validator) return true;
+            const newValidationResult = validator.validate();
+            if (showValidation) setValidationResult(newValidationResult);
+            const isValid = !newValidationResult.error || newValidationResult.error.length === 0;
+            return isValid;
+        },
+        [validator, isValidationEnabled]
+    );
+
+    const showPromptFn = React.useCallback(() => !validate({ showValidation: true }), [validate]);
+
+    usePageExitConfirmation(showPromptFn);
+
     useDhis2EntryEvents(iframeRef, onMessage, options, iframeKey);
 
-    return { result: validationResult, clear: clearResult };
+    return { result: validationResult, clear: clearResult, validate: validate };
 }

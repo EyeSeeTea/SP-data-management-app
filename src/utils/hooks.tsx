@@ -77,3 +77,20 @@ export function useSnackbarOnError(onError: Callback) {
         onError();
     };
 }
+
+export function usePageExitConfirmation(showPromptFn: () => boolean) {
+    const confirmPageExit = React.useCallback(
+        (ev: BeforeUnloadEvent) => {
+            if (showPromptFn()) {
+                ev.preventDefault();
+                ev.returnValue = "";
+            }
+        },
+        [showPromptFn]
+    );
+
+    React.useEffect(() => {
+        window.addEventListener("beforeunload", confirmPageExit);
+        return () => window.removeEventListener("beforeunload", confirmPageExit);
+    }, [confirmPageExit]);
+}

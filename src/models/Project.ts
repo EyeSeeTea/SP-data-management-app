@@ -125,7 +125,10 @@ export type DataSetType = typeof dataSetTypes[number];
 export interface DataSet {
     id: string;
     code: string;
-    dataSetElements: Array<{ dataElement: Ref; categoryCombo: Ref }>;
+    dataSetElements: Array<{
+        dataElement: Ref;
+        categoryCombo: { id: Id; categoryOptionCombos: Ref[] };
+    }>;
     sections: Array<{ code: string }>;
     dataInputPeriods: DataInputPeriod[];
     openFuturePeriods: number;

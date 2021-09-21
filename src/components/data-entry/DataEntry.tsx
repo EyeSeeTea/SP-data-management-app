@@ -8,7 +8,8 @@ import DataSetStateButton from "./DataSetStateButton";
 import { useAppContext } from "../../contexts/api-context";
 import i18n from "../../locales";
 import { ValidationDialog } from "./ValidationDialog";
-import { useValidation } from "./validation-hooks";
+import { useValidation, UseValidationResponse } from "./validation-hooks";
+import { Prompt } from "react-router-dom";
 
 const showControls = false;
 
@@ -194,14 +195,17 @@ const DataEntry = (props: DataEntryProps) => {
 
     const period = state.dropdownValue;
 
-    const validation = useValidation(
+    const isValidationEnabled = Boolean(isDataSetOpen) && state.dropdownHasValues;
+
+    const validation = useValidation({
         iframeRef,
         project,
         dataSetType,
         period,
-        validationOptions,
-        iframeKey
-    );
+        options: validationOptions,
+        iframeKey,
+        isValidationEnabled,
+    });
 
     useEffect(() => {
         const iframe = iframeRef.current;
@@ -219,13 +223,20 @@ const DataEntry = (props: DataEntryProps) => {
     }, [periodIds]);
 
     const setPeriod = React.useCallback(
-        value => setState(prevState => ({ ...prevState, dropdownValue: value })),
-        [setState]
+        value => {
+            if (!validation.validate({ showValidation: true })) return;
+            return setState(prevState => ({ ...prevState, dropdownValue: value }));
+        },
+        [setState, validation]
     );
+
+    const prompt = useValidationPrompt({ isValidationEnabled, validation });
 
     return (
         <React.Fragment>
             <ValidationDialog result={validation.result} onClose={validation.clear} />
+
+            <Prompt when={prompt.when} message={prompt.message} />
 
             <div style={styles.selector}>
                 {!state.dropdownHasValues && <Spinner isLoading={state.loading} />}
@@ -250,10 +261,12 @@ const DataEntry = (props: DataEntryProps) => {
                             dataSet={dataSet}
                             period={state.dropdownValue}
                             onChange={reloadIframe}
+                            validation={validation}
                         />
                     </div>
                 )}
             </div>
+
             <iframe
                 data-cy="data-entry"
                 key={iframeKey.getTime()}
@@ -275,6 +288,25 @@ const styles = {
     buttons: { display: "inline", marginLeft: 20 },
     dropdown: { display: "inline-block" },
 };
+
+function useValidationPrompt(options: {
+    isValidationEnabled: boolean;
+    validation: UseValidationResponse;
+}) {
+    const { isValidationEnabled, validation } = options;
+
+    const shouldPromptOnPageChange = React.useMemo(
+        () => isValidationEnabled && !validation.validate(),
+        [validation, isValidationEnabled]
+    );
+
+    const promptOnPageChange = React.useCallback(() => {
+        validation.validate({ showValidation: true });
+        return false;
+    }, [validation]);
+
+    return { when: shouldPromptOnPageChange, message: promptOnPageChange };
+}
 
 function isOptionInSelect(select: HTMLSelectElement, value: string): boolean {
     return Array.from(select.options)
@@ -347,6 +379,6 @@ function setSelectPeriod(
     }
 }
 
-const validationOptions = { interceptSave: true, getOnSaveEvent: false };
+const validationOptions = { interceptSave: true, getOnSaveEvent: true };
 
 export default React.memo(DataEntry);
