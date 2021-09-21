@@ -44,6 +44,7 @@ const Dashboard: React.FC<DashboardProps> = props => {
         if (iframe !== null) {
             iframe.addEventListener("load", () => {
                 setDashboardStyling(iframe).then(() => {
+                    openExternalLinksInNewTab(iframe);
                     setState(prevState => ({ ...prevState, type: "loaded" }));
                 });
             });
@@ -93,6 +94,13 @@ const styles = {
 };
 
 type IntervalId = number;
+
+function openExternalLinksInNewTab(iframe: HTMLIFrameElement) {
+    iframe.contentDocument?.querySelectorAll(".dashboard-item-header a").forEach(link => {
+        link.setAttribute("target", "_blank");
+        link.setAttribute("rel", "noopener noreferrer");
+    });
+}
 
 function autoResizeIframeByContent(
     iframe: HTMLIFrameElement,
