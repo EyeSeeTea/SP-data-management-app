@@ -6,15 +6,24 @@ import { getId, getRef } from "../utils/dhis2";
 import { writeDataFilePath } from "./common";
 
 /*
-On 09/2020 we have introduced optional new-benefit disaggregation for Benefig indicators. When
-a change of category combo for a data element is done, the existing projects are then outdated.
+    Since 09/2020 we allow New/Returning as a disaggregation for Benefit indicators. When a data
+    element changes its category combo, the existing projects are then outdated.
 
-This script gets all datasets and checks that is's dataSetElements have a valid disaggregation
-(the one fixed by the data element + optional COVID-19). For the non-match items, generate a
-metadata payload with the data sets that need to be updated.
+    This script checks that all datasets and dataSetElements have a valid disaggregation, the one
+    established by the data element + an optional COVID-19. For those wrong items, generate a
+    metadata payload with data sets to fix and data values to move (see cocMapping).
+
+    Usage:
+
+    $ yarn ts-node src/scripts/fix-datasets-disaggregation.ts --url "http://USER:ADMIN@URL"
+
+    Check that generated JSON files are correct. Now post data values and data sets, in that order:
+
+    $ yarn ts-node src/scripts/fix-datasets-disaggregation.ts --url "http://USER:ADMIN@URL" --postDataValue
+    $ yarn ts-node src/scripts/fix-datasets-disaggregation.ts --url "http://USER:ADMIN@URL" --postDataSets
 */
 
-const cocMapping: Record<CocId, CocId> = {
+const cocMapping: Record<CocName, CocName> = {
     default: "New",
     "COVID-19": "COVID-19, New",
     "Non-COVID-19": "Non-COVID-19, New",
@@ -180,6 +189,7 @@ function getDataSetElement(
     }
 }
 
+type CocName = string;
 type CocId = Id;
 
 async function getFixedDataValues(
@@ -237,18 +247,21 @@ async function getFixedDataValues(
         .fromPairs()
         .value();
 
+    console.debug("Get data values");
     const { dataValues } = await api.dataValues
         .getSet({
             orgUnit: ["AGZEUf9meZ6"], // IHQ
             children: true,
             dataSet: dataSetsUpdated.map(getId),
             startDate: "1970",
-            endDate: (new Date().getFullYear() + 1).toString(),
+            endDate: (new Date().getFullYear() + 10).toString(),
         })
         .getData();
 
     return _(dataValues)
         .flatMap((dataValue): DataValueSetsDataValue[] => {
+            if (dataValue.value === "0") return [];
+
             const matchingInfo = info.find(
                 obj =>
                     dataValue.dataElement === obj.dataElement.id &&
