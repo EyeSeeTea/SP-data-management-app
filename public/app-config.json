@@ -22,7 +22,8 @@
         "clickUp": {
             "listId": "65645708",
             "title": "[User feedback] {title}",
-            "body": "## dhis2\n\nUsername: {username}\n\n{body}"
+            "body": "## dhis2\n\nUsername: {username}\n\n{body}",
+            "status": "Issues"
         },
         "feedbackOptions": {
             "descriptionTemplate": "## Summary\n\n## Steps to reproduce\n\n## Actual results\n\n## Expected results\n\n\n---\nNote: Screenshots on sections dashboard and actual/target data entry will not be included, try to provide a detailed description of the problem."
