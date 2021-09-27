@@ -8,7 +8,7 @@
     },
     "feedback": {
         "token": ["03242fc6b0c5a48582", "2e6b8d3e8337b5a0b95fe2"],
-        "createIssue": true,
+        "createIssue": false,
         "sendToDhis2UserGroups": ["Administrators"],
         "issues": {
             "repository": "EyeSeeTea/SP-project-monitoring-app",
@@ -18,6 +18,11 @@
         "snapshots": {
             "repository": "EyeSeeTeaBotTest/snapshots",
             "branch": "master"
+        },
+        "clickUp": {
+            "listId": "65645708",
+            "title": "[User feedback] {title}",
+            "body": "## dhis2\n\nUsername: {username}\n\n{body}"
         },
         "feedbackOptions": {
             "descriptionTemplate": "## Summary\n\n## Steps to reproduce\n\n## Actual results\n\n## Expected results\n\n\n---\nNote: Screenshots on sections dashboard and actual/target data entry will not be included, try to provide a detailed description of the problem."
