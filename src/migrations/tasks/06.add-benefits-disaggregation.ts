@@ -62,7 +62,7 @@ class AddBenefitsDisaggregationMigration {
 }
 
 const migration: Migration = {
-    name: "Extend COVID-19 disaggregation",
+    name: "Created category combos New/Returning for Benefit indicators",
     migrate: async (api: D2Api, debug: Debug) =>
         new AddBenefitsDisaggregationMigration(api, debug).execute(),
 };
