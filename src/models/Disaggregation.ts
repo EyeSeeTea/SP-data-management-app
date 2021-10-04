@@ -1,7 +1,7 @@
 import _ from "lodash";
 import { Id, Ref } from "../types/d2-api";
-import { Config } from "./Config";
-import { getRef, haveSameRefs, getIds } from "../utils/dhis2";
+import { CategoryCombo, Config } from "./Config";
+import { haveSameRefs, getIds } from "../utils/dhis2";
 import DataElementsSet, { SelectionInfo } from "./dataElementsSet";
 import i18n from "../locales";
 
@@ -65,12 +65,12 @@ export class Disaggregation {
         return new Disaggregation(config, data);
     }
 
-    private getDefault(message: string): Ref {
+    private getDefault(message: string): CategoryCombo {
         console.error(message);
-        return getRef(this.config.categoryCombos.default);
+        return this.config.categoryCombos.default;
     }
 
-    getCategoryCombo(dataElementId: Id): Ref {
+    getCategoryCombo(dataElementId: Id): CategoryCombo {
         const { config, data } = this;
         const isCovid19 = this.isCovid19(dataElementId);
         const dataElement = _(data.dataElementsById).get(dataElementId, null);
@@ -82,7 +82,7 @@ export class Disaggregation {
             return this.getDefault(`Category combo not found: ${dataElement.categoryCombo.id}`);
 
         if (!isCovid19) {
-            return getRef(deCategoryCombo);
+            return deCategoryCombo;
         } else {
             const categoriesWithCovid19 = _(deCategoryCombo.categories)
                 .reject(category => category.id === defaultCategory.id)
@@ -94,7 +94,7 @@ export class Disaggregation {
             if (!categoryComboWithCovid19)
                 console.debug(`Category combo with covid19 not found: ${deCategoryCombo.id}`);
 
-            return getRef(categoryComboWithCovid19 ? categoryComboWithCovid19 : deCategoryCombo);
+            return categoryComboWithCovid19 ? categoryComboWithCovid19 : deCategoryCombo;
         }
     }
 

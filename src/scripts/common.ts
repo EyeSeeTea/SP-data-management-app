@@ -15,7 +15,7 @@ export const categoryCombosMapping: Record<string, string> = {
 };
 
 function getDataFilePath(filename: string): string {
-    return path.join(__dirname, "data", filename);
+    return path.join(__dirname, "data", filename + ".json");
 }
 
 export function readDataFilePath<T>(filename: string): T {

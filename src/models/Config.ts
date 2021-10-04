@@ -72,6 +72,8 @@ const baseConfig = {
         covid19: "COVID19",
         genderNewRecurring: "NEW_RETURNING_GENDER",
         genderNewRecurringCovid19: "COVID19_NEW_RETURNING_GENDER",
+        newRecurring: "NEW_RETURNING",
+        covid19NewRecurring: "COVID19_NEW_RETURNING",
     },
     categoryOptions: {
         default: "default",
@@ -146,7 +148,7 @@ const metadataParams = {
             id: yes,
             code: yes,
             displayName: yes,
-            categories: { id: yes },
+            categories: { id: yes, code: yes },
             categoryOptionCombos: {
                 id: yes,
                 displayName: yes,

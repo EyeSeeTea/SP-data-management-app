@@ -1,7 +1,7 @@
 {
     "name": "data-management-app",
     "description": "DHIS2 Data Management App",
-    "version": "0.11.2",
+    "version": "0.12.0",
     "license": "GPL-3.0",
     "author": "EyeSeeTea team",
     "homepage": ".",
@@ -64,13 +64,13 @@
         "update-po": "yarn extract-pot && find i18n -name '*.po' | while read pofile; do msgmerge --backup=off -U $pofile i18n/en.pot; done",
         "manifest": "d2-manifest package.json build/manifest.webapp",
         "cy:verify": "cypress verify",
-        "cy:e2e:open": "yarn cypress-run-migrations && CYPRESS_E2E=true cypress open -b chrome",
-        "cy:e2e:run": "yarn cypress-run-migrations && CYPRESS_E2E=true cypress run -b chrome --headless",
-        "ts-node": "ts-node -P tsconfig-cli.json",
+        "cy:e2e:open": "CYPRESS_E2E=true cypress open -b chrome",
+        "cy:e2e:run": "CYPRESS_E2E=true cypress run -b chrome --headless",
+        "ts-node": "ts-node -O '{\"module\":\"commonjs\"}'",
         "run-migrations": "yarn ts-node src/migrations/cli.ts",
         "cypress-run-migrations": "yarn run-migrations $CYPRESS_EXTERNAL_API $CYPRESS_DHIS2_AUTH",
         "check-uncommited": "! git status -uno --porcelain | grep '.'",
-        "generate-test-fixtures": "yarn run ts src/models/Config.ts"
+        "generate-test-fixtures": "yarn ts-node src/models/Config.ts"
     },
     "husky": {
         "hooks": {

@@ -43,8 +43,8 @@ async function getDataValues(app: App) {
     const { dataValues: dataValues0 } = await api.dataValues
         .getSet({
             dataSet: [""],
-            orgUnit: [""],
-            orgUnitGroup: ["xm24UfiG9nf"], // All projects
+            orgUnit: ["AGZEUf9meZ6"],
+            children: true,
             startDate: "1970",
             endDate: (new Date().getFullYear() + 1).toString(),
             dataElementGroup: ["OUwLDu1i5xa", "SMkbYuGmadE"], // People+Benefit data elements

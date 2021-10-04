@@ -1,11 +1,10 @@
 import React from "react";
 import { LinearProgress } from "@material-ui/core";
-//@ts-ignore
-import { useConfig } from "@dhis2/app-runtime";
 
 import i18n from "../../locales";
 import PageHeader from "../../components/page-header/PageHeader";
 import { useAppHistory } from "../../utils/use-app-history";
+import { useAppContext } from "../../contexts/api-context";
 
 function getTranslations(name: string) {
     return {
@@ -30,7 +29,7 @@ interface State {
 
 const Dashboard: React.FC<DashboardProps> = props => {
     const { id, name, backUrl } = props;
-    const { baseUrl } = useConfig();
+    const { dhis2Url: baseUrl } = useAppContext();
     const [state, setState] = React.useState<State>({ type: "loading", height: 10000 });
     const iframeRef: React.RefObject<HTMLIFrameElement> = React.createRef();
 
@@ -45,6 +44,7 @@ const Dashboard: React.FC<DashboardProps> = props => {
         if (iframe !== null) {
             iframe.addEventListener("load", () => {
                 setDashboardStyling(iframe).then(() => {
+                    openExternalLinksInNewTab(iframe);
                     setState(prevState => ({ ...prevState, type: "loaded" }));
                 });
             });
@@ -94,6 +94,13 @@ const styles = {
 };
 
 type IntervalId = number;
+
+function openExternalLinksInNewTab(iframe: HTMLIFrameElement) {
+    iframe.contentDocument?.querySelectorAll(".dashboard-item-header a").forEach(link => {
+        link.setAttribute("target", "_blank");
+        link.setAttribute("rel", "noopener noreferrer");
+    });
+}
 
 function autoResizeIframeByContent(
     iframe: HTMLIFrameElement,
