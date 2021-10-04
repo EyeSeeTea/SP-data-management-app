@@ -25,6 +25,7 @@ export const ValidationDialog: React.FC<ValidationDialogProps> = props => {
     return (
         <ConfirmationDialog
             isOpen={isOpen}
+            maxWidth="lg"
             fullWidth={true}
             onCancel={props.onClose}
             title={i18n.t("Validation results")}

@@ -12,6 +12,7 @@ export interface AppContext {
     appConfig: AppConfig;
     isDev: boolean;
     isTest: boolean;
+    dhis2Url: string;
 }
 
 export type CurrentUser = AppContext["currentUser"];

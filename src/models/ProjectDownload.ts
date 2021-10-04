@@ -77,16 +77,24 @@ class ProjectDownload {
         workbook.created = now.toDate();
         workbook.modified = now.toDate();
 
-        const [peopleAnalytics, benefitAnalytics] = await Promise.all([
+        const [
+            peopleAnalytics,
+            benefitAnalytics,
+            benefitDisaggregatedAnalytics,
+        ] = await Promise.all([
             ProjectAnalytics.build(this.project, [
                 config.categories.targetActual,
                 config.categories.newRecurring,
                 config.categories.gender,
             ]),
             ProjectAnalytics.build(this.project, [config.categories.targetActual]),
+            ProjectAnalytics.build(this.project, [
+                config.categories.targetActual,
+                config.categories.newRecurring,
+            ]),
         ]);
 
-        this.addBenefitSheet(workbook, benefitAnalytics);
+        this.addBenefitSheet(workbook, benefitAnalytics, benefitDisaggregatedAnalytics);
         this.addPeopleSheet(workbook, peopleAnalytics);
 
         const buffer = await workbook.xlsx.writeBuffer();
@@ -94,7 +102,11 @@ class ProjectDownload {
         return { filename, buffer };
     }
 
-    addBenefitSheet(workbook: Workbook, analytics: ProjectAnalytics) {
+    addBenefitSheet(
+        workbook: Workbook,
+        analytics: ProjectAnalytics,
+        disaggregatedAnalytics: ProjectAnalytics
+    ) {
         const { project } = this;
         const { config } = project;
         const title = [project.name, i18n.t("ACTIVITY MONITORING"), i18n.t("BENEFIT")].join(" - ");
@@ -109,6 +121,9 @@ class ProjectDownload {
         );
 
         const dataRows: Row[] = _.flatMap(dataElements, (dataElement, index) => {
+            const isDataElementDisaggregated = dataElement.categories.includes("newRecurring");
+            const toDataTypeEmptyCells = repeat(empty, 3);
+
             return [
                 [
                     header((index + 1).toString(), {
@@ -132,7 +147,7 @@ class ProjectDownload {
                     text("", { merge: [1, 3] }), // Responsible
                 ],
                 [
-                    ...repeat(empty, 3),
+                    ...toDataTypeEmptyCells,
                     header(i18n.t("Target Benefit"), { fill: fills.targetBenefit }),
                     ...this.mapPeriods(
                         period =>
@@ -141,14 +156,76 @@ class ProjectDownload {
                     ),
                     cumulativeRow,
                 ],
+                ...(isDataElementDisaggregated
+                    ? [
+                          [
+                              ...toDataTypeEmptyCells,
+                              text(i18n.t("New"), {
+                                  fill: fills.target,
+                                  alignment: { horizontal: "right" },
+                              }),
+                              ...this.mapPeriods(period =>
+                                  disaggregatedAnalytics.get(dataElement, period.id, [
+                                      config.categoryOptions.target,
+                                      config.categoryOptions.new,
+                                  ])
+                              ),
+                              cumulativeRow,
+                          ],
+                          [
+                              ...toDataTypeEmptyCells,
+                              text(i18n.t("Returning"), {
+                                  fill: fills.target,
+                                  alignment: { horizontal: "right" },
+                              }),
+                              ...this.mapPeriods(period =>
+                                  disaggregatedAnalytics.get(dataElement, period.id, [
+                                      config.categoryOptions.target,
+                                      config.categoryOptions.recurring,
+                                  ])
+                              ),
+                              cumulativeRow,
+                          ],
+                      ]
+                    : []),
                 [
-                    ...repeat(empty, 3),
+                    ...toDataTypeEmptyCells,
                     header(i18n.t("Actual Benefit")),
                     ...this.mapPeriods(period =>
                         analytics.get(dataElement, period.id, [config.categoryOptions.actual])
                     ),
                     cumulativeRow,
                 ],
+                ...(isDataElementDisaggregated
+                    ? [
+                          [
+                              ...toDataTypeEmptyCells,
+                              text(i18n.t("New"), {
+                                  alignment: { horizontal: "right" },
+                              }),
+                              ...this.mapPeriods(period =>
+                                  disaggregatedAnalytics.get(dataElement, period.id, [
+                                      config.categoryOptions.actual,
+                                      config.categoryOptions.new,
+                                  ])
+                              ),
+                              cumulativeRow,
+                          ],
+                          [
+                              ...toDataTypeEmptyCells,
+                              text(i18n.t("Returning"), {
+                                  alignment: { horizontal: "right" },
+                              }),
+                              ...this.mapPeriods(period =>
+                                  disaggregatedAnalytics.get(dataElement, period.id, [
+                                      config.categoryOptions.actual,
+                                      config.categoryOptions.recurring,
+                                  ])
+                              ),
+                              cumulativeRow,
+                          ],
+                      ]
+                    : []),
             ];
         });
 

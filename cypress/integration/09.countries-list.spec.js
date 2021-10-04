@@ -42,7 +42,7 @@ describe("Countries List page", () => {
 
     it("shows list of countries sorted alphabetically by name desc", () => {
         cy.get("[data-test-loaded]");
-        runAndWaitForRequest("/api/organisationUnits*", () => {
+        runAndWaitForRequest("organisationUnits*", () => {
             cy.contains("Name").click();
         });
 

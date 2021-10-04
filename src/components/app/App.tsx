@@ -79,10 +79,11 @@ const settingsQuery = { userSettings: { resource: "/userSettings" } };
 interface AppProps {
     api: D2Api;
     d2: object;
+    dhis2Url: string;
 }
 
 const App: React.FC<AppProps> = props => {
-    const { api, d2 } = props;
+    const { api, d2, dhis2Url } = props;
     const { baseUrl } = useConfig();
     const [appContext, setAppContext] = useState<AppContext | null>(null);
     const [showShareButton, setShowShareButton] = useState(false);
@@ -100,7 +101,7 @@ const App: React.FC<AppProps> = props => {
             const config = await getConfig(api);
             const currentUser = new User(config);
             const isTest = process.env.REACT_APP_CYPRESS === "true";
-            const appContext = { d2, api, config, currentUser, isDev, isTest, appConfig };
+            const appContext = { d2, api, config, currentUser, isDev, isTest, appConfig, dhis2Url };
             setAppContext(appContext);
 
             Object.assign(window, { dm: appContext });
@@ -119,7 +120,7 @@ const App: React.FC<AppProps> = props => {
         if (data && migrations.state.type === "checked") {
             run().catch(err => setLoadError(err.message));
         }
-    }, [api, d2, data, isDev, migrations]);
+    }, [api, d2, data, isDev, dhis2Url, migrations]);
 
     if (loadError) {
         return <div>Cannot load app: {loadError}</div>;

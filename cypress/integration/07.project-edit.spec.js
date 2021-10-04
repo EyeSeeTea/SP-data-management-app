@@ -52,11 +52,9 @@ describe("Projects - Edit", () => {
         cy.contains("Sectors");
 
         cy.server();
-        cy.route("POST", "/api/email/**").as("sendEmail");
 
         cy.get("[data-wizard-contents] button").contains("Save").click();
 
         cy.contains("Project updated");
-        cy.wait("@sendEmail");
     });
 });

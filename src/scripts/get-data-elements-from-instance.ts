@@ -1,6 +1,6 @@
 import fs from "fs";
 import _ from "lodash";
-import { IndicatorType, PeopleOrBenefit } from "../models/dataElementsSet";
+import { BenefitDisaggregation, IndicatorType, PeopleOrBenefit } from "../models/dataElementsSet";
 import { Config, getConfig } from "../models/Config";
 import { D2Api } from "../types/d2-api";
 
@@ -11,6 +11,7 @@ export interface DataElement {
     $type: IndicatorType;
     $series: string;
     $peopleBenefit: PeopleOrBenefit;
+    $benefitDisaggregation: BenefitDisaggregation;
     $sectors: Sectors;
     $externals: Externals;
     $mainSector: string;
@@ -62,6 +63,12 @@ function getMetadataDataElements(config: Config): DataElement[] {
 
             const pairedCode = de.pairedDataElements.map(pde => pde.code)[0];
 
+            const benefitDisaggregation =
+                de.peopleOrBenefit === "benefit" &&
+                de.categoryCombo.id === config.categoryCombos.newRecurring.id
+                    ? "new-returning"
+                    : "";
+
             const dataElement: DataElement = {
                 code: de.code,
                 name: de.name,
@@ -70,6 +77,7 @@ function getMetadataDataElements(config: Config): DataElement[] {
                 $series: de.mainSeries || "No series",
                 $peopleBenefit: de.peopleOrBenefit,
                 $sectors: sectors,
+                $benefitDisaggregation: benefitDisaggregation,
                 $externals: _.mapValues(de.externals, ext => ext.name || ""),
                 $mainSector: de.mainSector.name,
                 ...(pairedCode ? { $pairedDataElement: pairedCode } : {}),

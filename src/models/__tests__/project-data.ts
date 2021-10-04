@@ -39,7 +39,7 @@ export const projectData = {
     awardNumber: "12345",
     subsequentLettering: "en",
     sectors: _(config.sectors)
-        .filter(sector => ["Agriculture", "Livelihood"].includes(sector.displayName))
+        .filter(sector => ["Agriculture", "Livelihoods"].includes(sector.displayName))
         .sortBy(sector => sector.displayName)
         .value(),
 };

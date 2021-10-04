@@ -2,7 +2,7 @@ import _ from "lodash";
 import moment from "moment";
 import { Id, Ref, D2Api, SelectedPick } from "../types/d2-api";
 import { D2DataSetSchema, D2OrganisationUnitSchema } from "../types/d2-api";
-import { PeopleOrBenefit } from "./dataElementsSet";
+import { CategoryKey, PeopleOrBenefit } from "./dataElementsSet";
 import { Config } from "./Config";
 import { Maybe } from "../types/utils";
 import { getPeriodsFromRange, monthPeriod } from "./Period";
@@ -35,6 +35,7 @@ export interface DataElement {
     name: string;
     code: string;
     peopleOrBenefit: PeopleOrBenefit;
+    categories: CategoryKey[];
     hasPairedDataElements: boolean;
 }
 
@@ -208,6 +209,7 @@ function getProject(
     const dataElements = _(dataSet.dataSetElements)
         .map((dse): DataElement | null => {
             const { dataElement } = dse;
+            const dataElementE = config.dataElements.find(de => de.id === dataElement.id);
             const degCodes = dataElement.dataElementGroups.map((deg: any) => deg.code);
             const peopleOrBenefit = degCodes.includes(peopleCode)
                 ? "people"
@@ -227,6 +229,7 @@ function getProject(
                 name: dataElement.name,
                 code: dataElement.code,
                 peopleOrBenefit,
+                categories: dataElementE?.categories || [],
                 hasPairedDataElements,
             };
         })

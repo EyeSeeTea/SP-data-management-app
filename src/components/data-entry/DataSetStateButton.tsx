@@ -7,18 +7,20 @@ import { useAppContext } from "../../contexts/api-context";
 import { makeStyles } from "@material-ui/styles";
 import { useConfirmation, useSnackbarOnError } from "../../utils/hooks";
 import { DataSetOpenInfo } from "../../models/ProjectDataSet";
+import { UseValidationResponse } from "./validation-hooks";
 
 interface DataSetStateButtonProps {
     project: Project;
     dataSet: DataSet;
     period: string;
     onChange(): void;
+    validation: UseValidationResponse;
 }
 
 const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = props => {
     const [isActive, setActive] = React.useState(false);
     const { currentUser } = useAppContext();
-    const { period, dataSet, project, onChange } = props;
+    const { period, dataSet, project, onChange, validation } = props;
     const classes = useStyles();
     const projectDataSet = project.getProjectDataSet(dataSet);
     const showErrorAndSetInactive = useSnackbarOnError(() => setActive(false));
@@ -43,9 +45,10 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
     }, [projectDataSet, period, dataSetInfo, notifyOnChange, showErrorAndSetInactive]);
 
     const reset = React.useCallback(() => {
+        if (!validation.validate({ showValidation: true })) return;
         setActive(true);
         projectDataSet.reset().then(notifyOnChange).catch(showErrorAndSetInactive);
-    }, [projectDataSet, notifyOnChange, showErrorAndSetInactive]);
+    }, [projectDataSet, notifyOnChange, showErrorAndSetInactive, validation]);
 
     const reopenConfirmation = useConfirmation({
         title: i18n.t("Reopen data set"),

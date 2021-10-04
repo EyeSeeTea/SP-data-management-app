@@ -6,6 +6,7 @@ import { getProject } from "./project-data";
 import moment from "moment";
 import analyticsPeopleResponse from "./data/project-download-people-analytics.json";
 import analyticsBenefitsResponse from "./data/project-download-benefits-analytics.json";
+import analyticsBenefitsDisaggregatedResponse from "./data/project-download-benefits-disaggregated-analytics.json";
 import { logUnknownRequest } from "../../utils/tests";
 
 const { api, mock } = getMockApi();
@@ -41,6 +42,18 @@ describe("ProjectDownload", () => {
                     ],
                 },
             }).replyOnce(200, analyticsBenefitsResponse);
+
+            mock.onGet("/analytics", {
+                params: {
+                    dimension: [
+                        "ou:WGC0DJ0YSis",
+                        "pe:202001;202002;202003;202004",
+                        "dx:WS8XV4WWPE7;K6mAC5SiO29;ik0ICagvIjm;yMqK9DKbA3X;GQyudNlGzkI",
+                        "GIIHAr9BzzO",
+                        "uSMHdwhxFSV",
+                    ],
+                },
+            }).replyOnce(200, analyticsBenefitsDisaggregatedResponse);
 
             logUnknownRequest(mock);
 

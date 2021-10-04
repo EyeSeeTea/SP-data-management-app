@@ -97,7 +97,7 @@ describe("Project", () => {
             expect(project.endDate && project.endDate.format("L")).toEqual(
                 moment("2020-03-31").format("L")
             );
-            expect(project.sectors.map(sector => sector.code)).toEqual(["SECTOR_LIVELIHOOD"]);
+            expect(project.sectors.map(sector => sector.code)).toEqual(["SECTOR_LIVELIHOODS"]);
             expect(project.funders.map(funder => funder.displayName)).toEqual([]);
             expect(project.locations.map(location => location.displayName)).toEqual([
                 "loc-GG0k0oNhgS7",
@@ -274,12 +274,12 @@ describe("Project", () => {
             const project = (await getNewProject()).setObj({
                 sectors: [
                     { id: "ieyBABjYyHO", displayName: "Agriculture", code: "SECTOR_AGRICULTURE" },
-                    { id: "GkiSljtLcOI", displayName: "Livelihood", code: "SECTOR_LIVELIHOOD" },
+                    { id: "GkiSljtLcOI", displayName: "Livelihoods", code: "SECTOR_LIVELIHOODS" },
                 ],
             });
             const errors = await project.validate(["dataElementsSelection"]);
             expect(errors.dataElementsSelection).toEqual([
-                "The following sectors have no indicators selected: Agriculture, Livelihood",
+                "The following sectors have no indicators selected: Agriculture, Livelihoods",
             ]);
 
             const { project: project2 } = project.updateDataElementsSelection("ieyBABjYyHO", [
@@ -287,7 +287,7 @@ describe("Project", () => {
             ]);
             const errors2 = await project2.validate(["dataElementsSelection"]);
             expect(errors2.dataElementsSelection).toEqual([
-                "The following sectors have no indicators selected: Livelihood",
+                "The following sectors have no indicators selected: Livelihoods",
             ]);
 
             const { project: project3 } = project2
@@ -523,7 +523,7 @@ const metadataForGet = {
             ],
             sections: [
                 {
-                    code: "SECTOR_LIVELIHOOD_imYbEtdoQZx",
+                    code: "SECTOR_LIVELIHOODS_imYbEtdoQZx",
                     dataElements: [{ id: "u24zk6wAgFE" }, { id: "yMqK9DKbA3X" }],
                 },
             ],
@@ -578,7 +578,7 @@ const metadataForGet = {
             ],
             sections: [
                 {
-                    code: "SECTOR_LIVELIHOOD_KC6gi00Jm6H",
+                    code: "SECTOR_LIVELIHOODS_KC6gi00Jm6H",
                     dataElements: [{ id: "5678" }],
                 },
             ],
@@ -595,7 +595,7 @@ async function getProject(): Promise<Project> {
                 "attributeValues[attribute[id],value],closedDate,code,created,description,displayName,id,name,openingDate,organisationUnitGroups[attributeValues[attribute[id],value],groupSets[id],id,name],parent[attributeValues[attribute[id],value],displayName,id,name,path],path",
             "organisationUnits:filter": ["id:eq:R3rGhxWbAI9"],
             "dataSets:fields":
-                "code,dataInputPeriods[closingDate,openingDate,period],dataSetElements[categoryCombo[id],dataElement[id]],expiryDays,externalAccess,id,openFuturePeriods,publicAccess,sections[code,dataElements[id]],userAccesses[access,displayName,id],userGroupAccesses[access,displayName,id]",
+                "code,dataInputPeriods[closingDate,openingDate,period],dataSetElements[categoryCombo[categoryOptionCombos[id],id],dataElement[id]],expiryDays,externalAccess,id,openFuturePeriods,publicAccess,sections[code,dataElements[id]],userAccesses[access,displayName,id],userGroupAccesses[access,displayName,id]",
             "dataSets:filter": ["code:$like:R3rGhxWbAI9"],
         },
     }).replyOnce(200, metadataForGet);

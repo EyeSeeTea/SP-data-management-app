@@ -19,14 +19,18 @@ import { splitParts } from "../utils/string";
 
 export const indicatorTypes = ["global", "sub", "custom"] as const;
 export const peopleOrBenefitList = ["people", "benefit"] as const;
+export const benefitDisaggregationList = ["", "new-returning"] as const;
 export const internalKey = "__internal";
 
 export type IndicatorType = typeof indicatorTypes[number];
 export type PeopleOrBenefit = typeof peopleOrBenefitList[number];
+export type BenefitDisaggregation = typeof benefitDisaggregationList[number];
 
 type SectorInfo = { id: Id; series?: string };
 
 type External = { name: string | undefined };
+
+export type CategoryKey = keyof Config["categories"];
 
 export interface DataElementBase {
     id: Id;
@@ -47,6 +51,7 @@ export interface DataElementBase {
     selectable: boolean;
     dataElementGroups: Array<{ code: string }>;
     attributeValues: AttributeValue[];
+    categories: CategoryKey[];
 }
 
 export interface DataElement extends DataElementBase {
@@ -151,6 +156,7 @@ export default class DataElementsSet {
             const mainSeries = mainSector
                 ? sectorsInfo.find(si => si.id === mainSector.id)?.series
                 : undefined;
+            const categoryCombo = categoryCombosById[d2DataElement.categoryCombo.id];
 
             if (!indicatorType) {
                 console.error(`DataElement ${deCode} has no indicator type`);
@@ -161,9 +167,10 @@ export default class DataElementsSet {
             } else if (!mainSector) {
                 console.error(`DataElement ${deCode} has no main sector`);
                 return null;
+            } else if (!categoryCombo) {
+                console.error(`DataElement ${deCode} has no main sector`);
+                return null;
             } else {
-                const { categoryCombo } = d2DataElement;
-
                 const dataElement: DataElementBase = {
                     id: d2DataElement.id,
                     name: name,
@@ -184,6 +191,7 @@ export default class DataElementsSet {
                     selectable: isSelectable,
                     dataElementGroups: Array.from(groupCodes).map(code => ({ code })),
                     attributeValues: d2DataElement.attributeValues,
+                    categories: getCategoryKeys(baseConfig, categoryCombo.categories),
                 };
                 return dataElement;
             }
@@ -648,4 +656,49 @@ function externalInDataElement(dataElement: DataElement, external: string | unde
             .flatMap(de => _.keys(de.externals))
             .includes(external)
     );
+}
+
+function getCategoryKeys(config: BaseConfig, categories: Array<{ code: string }>) {
+    return _(config.categories)
+        .keys()
+        .map(key => key as CategoryKey)
+        .filter(key => _(categories).some(category => category.code === config.categories[key]))
+        .value();
+}
+
+function getGlobalCode(code: string): string {
+    return code.replace(/\d\d$/, "00");
+}
+
+export function getGlobal(config: Config, dataElementId: Id): DataElementBase | undefined {
+    const dataElement = config.dataElements.find(de => de.id === dataElementId);
+
+    if (!dataElement) {
+        return;
+    } else if (dataElement.indicatorType !== "sub") {
+        return;
+    } else {
+        const globalCode = getGlobalCode(dataElement.code);
+        return config.dataElements.find(
+            de => de.indicatorType === "global" && de.code === globalCode
+        );
+    }
+}
+
+export function getSubs(config: Config, dataElementId: Id): DataElementBase[] {
+    const dataElement = config.dataElements.find(de => de.id === dataElementId);
+
+    if (!dataElement) {
+        return [];
+    } else if (!["global", "custom"].includes(dataElement.indicatorType)) {
+        return [];
+    } else {
+        return config.dataElements.filter(
+            de => de.indicatorType === "sub" && getGlobalCode(de.code) === dataElement.code
+        );
+    }
+}
+
+export function getDataElementName(dataElement: DataElementBase): string {
+    return `[${dataElement.code}] ${dataElement.name}`;
 }
