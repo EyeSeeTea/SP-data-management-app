@@ -42,11 +42,10 @@ const Dashboard: React.FC<DashboardProps> = props => {
         const iframe = iframeRef.current;
 
         if (iframe !== null) {
-            iframe.addEventListener("load", () => {
-                setDashboardStyling(iframe).then(() => {
-                    openExternalLinksInNewTab(iframe);
-                    setState(prevState => ({ ...prevState, type: "loaded" }));
-                });
+            iframe.addEventListener("load", async () => {
+                await setDashboardStyling(iframe);
+                setState(prevState => ({ ...prevState, type: "loaded" }));
+                openExternalLinksInNewTab(iframe);
             });
             const intervalId = autoResizeIframeByContent(iframe, height =>
                 setState(prevState => ({ ...prevState, height }))
@@ -133,7 +132,7 @@ async function setDashboardStyling(iframe: HTMLIFrameElement) {
     if (!iframe.contentWindow) return;
     const iframeDocument = iframe.contentWindow.document;
 
-    await waitforElementToLoad(iframeDocument, ".app-wrapper");
+    await waitforElementToLoad(iframeDocument, ".app-wrapper,.dashboard-scroll-container");
     const iFrameRoot = iframeDocument.querySelector<HTMLElement>("#root");
     const iFrameWrapper = iframeDocument.querySelector<HTMLElement>(".app-wrapper");
     const pageContainer = iframeDocument.querySelector<HTMLElement>(".page-container-top-margin");
@@ -142,6 +141,10 @@ async function setDashboardStyling(iframe: HTMLIFrameElement) {
         (iFrameWrapper.children[0] as HTMLElement).style.display = "none";
     if (iFrameWrapper?.children[1])
         (iFrameWrapper.children[1] as HTMLElement).style.display = "none";
+
+    // 2.36
+    iframeDocument.querySelectorAll("header").forEach(el => el.remove());
+    iframeDocument.querySelectorAll("[data-test='dashboards-bar']").forEach(el => el.remove());
 
     if (pageContainer) pageContainer.style.marginTop = "0px";
     if (iFrameRoot) iFrameRoot.style.marginTop = "0px";
