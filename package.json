@@ -1,7 +1,7 @@
 {
     "name": "data-management-app",
     "description": "DHIS2 Data Management App",
-    "version": "0.12.0",
+    "version": "0.12.1",
     "license": "GPL-3.0",
     "author": "EyeSeeTea team",
     "homepage": ".",
@@ -66,7 +66,7 @@
         "cy:verify": "cypress verify",
         "cy:e2e:open": "CYPRESS_E2E=true cypress open -b chrome",
         "cy:e2e:run": "CYPRESS_E2E=true cypress run -b chrome --headless",
-        "ts-node": "ts-node -P tsconfig-cli.json",
+        "ts-node": "ts-node -O '{\"module\":\"commonjs\"}'",
         "run-migrations": "yarn ts-node src/migrations/cli.ts",
         "cypress-run-migrations": "yarn run-migrations $CYPRESS_EXTERNAL_API $CYPRESS_DHIS2_AUTH",
         "check-uncommited": "! git status -uno --porcelain | grep '.'",

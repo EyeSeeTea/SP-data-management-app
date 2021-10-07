@@ -8,8 +8,7 @@ import DataSetStateButton from "./DataSetStateButton";
 import { useAppContext } from "../../contexts/api-context";
 import i18n from "../../locales";
 import { ValidationDialog } from "./ValidationDialog";
-import { useValidation, UseValidationResponse } from "./validation-hooks";
-import { Prompt } from "react-router-dom";
+import { useValidation } from "./validation-hooks";
 
 const showControls = false;
 
@@ -21,7 +20,10 @@ interface DataEntryProps {
     dataSetType: DataSetType;
     dataSet: DataSet;
     attributes: Attributes;
+    onValidateFnChange(validateFn: ValidateFn): void;
 }
+
+export type ValidateFn = { execute: () => void };
 
 function autoResizeIframeByContent(iframe: HTMLIFrameElement) {
     const resize = () => {
@@ -151,7 +153,7 @@ const getDataEntryForm = async (
 };
 
 const DataEntry = (props: DataEntryProps) => {
-    const { orgUnitId, dataSet, attributes, dataSetType } = props;
+    const { orgUnitId, dataSet, attributes, dataSetType, onValidateFnChange } = props;
     const { api, config, dhis2Url: baseUrl } = useAppContext();
     const [project, setProject] = useState<Project>(props.project);
     const [iframeKey, setIframeKey] = useState(new Date());
@@ -222,21 +224,25 @@ const DataEntry = (props: DataEntryProps) => {
         }));
     }, [periodIds]);
 
+    const { validate } = validation;
+
     const setPeriod = React.useCallback(
         value => {
-            if (!validation.validate({ showValidation: true })) return;
+            if (!validate({ showValidation: true })) return;
             return setState(prevState => ({ ...prevState, dropdownValue: value }));
         },
-        [setState, validation]
+        [setState, validate]
     );
 
-    const prompt = useValidationPrompt({ isValidationEnabled, validation });
+    React.useEffect(() => {
+        onValidateFnChange({
+            execute: () => !isValidationEnabled || validate({ showValidation: true }),
+        });
+    }, [isValidationEnabled, onValidateFnChange, validate]);
 
     return (
         <React.Fragment>
             <ValidationDialog result={validation.result} onClose={validation.clear} />
-
-            <Prompt when={prompt.when} message={prompt.message} />
 
             <div style={styles.selector}>
                 {!state.dropdownHasValues && <Spinner isLoading={state.loading} />}
@@ -288,25 +294,6 @@ const styles = {
     buttons: { display: "inline", marginLeft: 20 },
     dropdown: { display: "inline-block" },
 };
-
-function useValidationPrompt(options: {
-    isValidationEnabled: boolean;
-    validation: UseValidationResponse;
-}) {
-    const { isValidationEnabled, validation } = options;
-
-    const shouldPromptOnPageChange = React.useMemo(
-        () => isValidationEnabled && !validation.validate(),
-        [validation, isValidationEnabled]
-    );
-
-    const promptOnPageChange = React.useCallback(() => {
-        validation.validate({ showValidation: true });
-        return false;
-    }, [validation]);
-
-    return { when: shouldPromptOnPageChange, message: promptOnPageChange };
-}
 
 function isOptionInSelect(select: HTMLSelectElement, value: string): boolean {
     return Array.from(select.options)
