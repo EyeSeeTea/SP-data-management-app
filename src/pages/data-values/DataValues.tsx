@@ -3,7 +3,7 @@ import _ from "lodash";
 import i18n from "../../locales";
 import PageHeader from "../../components/page-header/PageHeader";
 import { useRouteMatch } from "react-router";
-import DataEntry from "../../components/data-entry/DataEntry";
+import DataEntry, { ValidateFn } from "../../components/data-entry/DataEntry";
 import { LinearProgress } from "@material-ui/core";
 import Project, { DataSet, DataSetType } from "../../models/Project";
 import { useAppContext } from "../../contexts/api-context";
@@ -35,25 +35,29 @@ const DataValues: React.FC<DataValuesProps> = ({ type }) => {
     const [state, setState] = useState<State>({ loading: true });
     const { data, loading, error } = state;
     const translations = getTranslations(type, data?.project);
-    const attributes = getAttributes(config, type);
+    const attributes = React.useMemo(() => getAttributes(config, type), [config, type]);
     const projectId = match ? match.params.id : null;
 
-    useEffect(() => loadData(projectId, type, api, config, setState), [
-        api,
-        config,
-        type,
-        projectId,
-    ]);
+    useEffect(() => {
+        return loadData(projectId, type, api, config, setState);
+    }, [api, config, type, projectId]);
+
+    const [validateFn, setValidateFn] = React.useState<ValidateFn>();
+
+    const goBack = React.useCallback(() => {
+        if (!validateFn || validateFn.execute()) {
+            appHistory.goBack();
+        }
+    }, [validateFn, appHistory]);
 
     return (
         <React.Fragment>
-            <PageHeader
-                title={translations.title}
-                help={translations.help}
-                onBackClick={appHistory.goBack}
-            />
+            <PageHeader title={translations.title} help={translations.help} onBackClick={goBack} />
+
             <div style={stylesSubtitle}>{translations.subtitle}</div>
+
             {loading && <LinearProgress />}
+
             {data && (
                 <DataEntry
                     project={data.project}
@@ -61,6 +65,7 @@ const DataValues: React.FC<DataValuesProps> = ({ type }) => {
                     orgUnitId={data.orgUnit.id}
                     dataSet={data.dataSet}
                     attributes={attributes}
+                    onValidateFnChange={setValidateFn}
                 />
             )}
             {error && <p>{error}</p>}
