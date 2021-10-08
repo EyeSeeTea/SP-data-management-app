@@ -7,8 +7,9 @@ import {
     SelectedPick,
     D2OrganisationUnitSchema,
     D2OrganisationUnit,
+    D2Visualization,
 } from "../types/d2-api";
-import { D2ReportTable, Ref, D2Chart, D2DashboardItem, Id } from "../types/d2-api";
+import { Ref, D2DashboardItem, Id } from "../types/d2-api";
 import i18n from "../locales";
 import { getUid, getRefs } from "../utils/dhis2";
 import {
@@ -103,17 +104,17 @@ export default class CountryDashboard {
     generate() {
         const { d2Country, country } = this;
 
-        const charts: Array<PartialPersistedModel<D2Chart>> = _.compact([
+        const charts: Array<PartialPersistedModel<D2Visualization>> = _.compact([
             this.aggregatedActualValuesPeopleChart(),
             this.aggregatedActualValuesBenefitChart(),
         ]);
 
-        const reportTables: Array<PartialPersistedModel<D2ReportTable>> = _.compact([
+        const reportTables: Array<PartialPersistedModel<D2Visualization>> = _.compact([
             this.projectsActualPeopleTable(),
             this.projectsActualBenefitTable(),
         ]);
 
-        const favorites = { reportTables, charts };
+        const favorites = { visualizations: _.concat(reportTables, charts) };
 
         const items: Array<PartialModel<D2DashboardItem>> = _.compact([
             ...charts.map(chart => getChartItem(chart)),

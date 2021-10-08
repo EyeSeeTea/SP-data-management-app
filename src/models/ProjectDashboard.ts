@@ -1,7 +1,7 @@
 import _ from "lodash";
 import { Config } from "./Config";
-import { PartialPersistedModel, PartialModel, D2Api } from "../types/d2-api";
-import { D2ReportTable, Ref, D2Chart, D2DashboardItem, Id } from "../types/d2-api";
+import { PartialPersistedModel, PartialModel, D2Api, D2Visualization } from "../types/d2-api";
+import { Ref, D2DashboardItem, Id } from "../types/d2-api";
 import Project from "./Project";
 import i18n from "../locales";
 import { getUid } from "../utils/dhis2";
@@ -76,7 +76,7 @@ export default class ProjectDashboard {
         if (!_.isNil(minimumOrgUnits) && projectsListDashboard.orgUnits.length < minimumOrgUnits)
             return { dashboards: [], reportTables: [], charts: [] };
 
-        const reportTables: Array<PartialPersistedModel<D2ReportTable>> = _.compact([
+        const reportTables: Array<PartialPersistedModel<D2Visualization>> = _.compact([
             // General Data View
             this.targetVsActualBenefits(),
             this.targetVsActualBenefitsWithDisaggregation(),
@@ -92,7 +92,7 @@ export default class ProjectDashboard {
             this.achievedPeopleTotalTable(),
         ]);
 
-        const charts: Array<PartialPersistedModel<D2Chart>> = _.compact([
+        const charts: Array<PartialPersistedModel<D2Visualization>> = _.compact([
             this.achievedBenefitChart(),
             this.achievedPeopleChart(),
             this.genderChart(),
@@ -100,7 +100,9 @@ export default class ProjectDashboard {
         ]);
 
         const achievedMonthlyChart_ = this.achievedMonthlyChart();
-        const favorites = { reportTables, charts: _.compact([achievedMonthlyChart_, ...charts]) };
+        const favorites = {
+            visualizations: _.concat(reportTables, _.compact([achievedMonthlyChart_, ...charts])),
+        };
 
         const items: Array<PartialModel<D2DashboardItem>> = _.compact([
             ...reportTables.map(reportTable => getReportTableItem(reportTable)),

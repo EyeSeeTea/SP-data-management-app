@@ -2,11 +2,10 @@ import _ from "lodash";
 import {
     Ref,
     PartialModel,
-    D2ReportTable,
-    D2Chart,
     PartialPersistedModel,
     D2DashboardItem,
     Id,
+    D2Visualization,
 } from "../types/d2-api";
 import { Maybe } from "../types/utils";
 import { getUid, getRefs } from "../utils/dhis2";
@@ -33,10 +32,10 @@ interface Visualization {
     name: string;
     items: Item[];
     periods: string[];
-    relativePeriods?: D2ReportTable["relativePeriods"];
+    relativePeriods?: D2Visualization["relativePeriods"];
     organisationUnits: Ref[];
     sharing: Partial<D2Sharing>;
-    extra?: PartialModel<D2ReportTable>;
+    extra?: PartialModel<D2Visualization>;
     toDate?: boolean;
 }
 
@@ -53,9 +52,9 @@ export interface Chart extends Visualization {
     categoryDimension: Dimension;
 }
 
-export type MaybeD2Table = Maybe<PartialPersistedModel<D2ReportTable>>;
+export type MaybeD2Table = Maybe<PartialPersistedModel<D2Visualization>>;
 
-export type MaybeD2Chart = Maybe<PartialPersistedModel<D2Chart>>;
+export type MaybeD2Chart = Maybe<PartialPersistedModel<D2Visualization>>;
 
 type DimensionItem =
     | { dataDimensionItemType: "DATA_ELEMENT"; dataElement: Ref }
@@ -90,8 +89,9 @@ export function getD2ReportTable(table: Table): MaybeD2Table {
         table.reportFilter
     );
 
-    const d2Table: PartialPersistedModel<D2ReportTable> = {
+    const d2Table: PartialPersistedModel<D2Visualization> = {
         id: getUid(table.key, ""),
+        type: "PIVOT_TABLE",
         name: table.name,
         numberType: "VALUE",
         legendDisplayStyle: "FILL",
@@ -129,7 +129,7 @@ export function getD2Chart(chart: Chart): MaybeD2Chart {
         chart.categoryDimension,
     ]);
 
-    const d2Chart: PartialPersistedModel<D2Chart> = {
+    const d2Chart: PartialPersistedModel<D2Visualization> = {
         id: getUid(chart.key, ""),
         name: chart.name,
         periods: getPeriods(chart),
@@ -137,8 +137,7 @@ export function getD2Chart(chart: Chart): MaybeD2Chart {
         type: "COLUMN",
         aggregationType: "DEFAULT",
         showData: true,
-        category: chart.categoryDimension.id,
-        series: seriesDimension.id,
+        columnDimensions: [seriesDimension.id],
         columns: [seriesDimension],
         dataDimensionItems,
         rows: [chart.categoryDimension],
@@ -166,20 +165,20 @@ export function getCategoryDimensions(dimensions: Dimension[]) {
 }
 
 export function getReportTableItem(
-    reportTable: Maybe<PartialPersistedModel<D2ReportTable>>,
+    reportTable: Maybe<PartialPersistedModel<D2Visualization>>,
     dashboardItemAttributes?: PartialModel<D2DashboardItem>
 ) {
     if (!reportTable) return null;
     return {
         id: getUid("dashboardItem", reportTable.id),
         type: "REPORT_TABLE" as const,
-        reportTable: { id: reportTable.id },
+        visualization: { id: reportTable.id },
         ...(dashboardItemAttributes || {}),
     };
 }
 
 export function getChartItem(
-    chart: Maybe<PartialPersistedModel<D2Chart>>,
+    chart: Maybe<PartialPersistedModel<D2Visualization>>,
     dashboardItemAttributes?: PartialModel<D2DashboardItem>
 ) {
     if (!chart) return null;
