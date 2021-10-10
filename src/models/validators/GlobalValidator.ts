@@ -154,7 +154,7 @@ export class GlobalValidator {
 
         if (globalValue !== undefined && subValue > globalValue) {
             const msg = i18n.t(
-                "A sub data element should be equal or less than its global indicator: {{-name}} (value={{value}})",
+                "A sub-indicator should be equal to or less than its global indicator: {{-name}} ({{value}})",
                 {
                     name: getDataElementName(globalDataElement),
                     value: globalValue,
@@ -185,7 +185,7 @@ export class GlobalValidator {
 
         if (maxSubItem && globalValue < maxSubItem.value) {
             const msg = i18n.t(
-                "A global data element should be equal or greater than its maximum sub-indicator: {{-name}} (value={{value}})",
+                "A global indicator should be equal to or greater than its maximum sub-indicator: {{-name}} ({{value}})",
                 {
                     name: getDataElementName(maxSubItem.dataElement),
                     value: maxSubItem.value,

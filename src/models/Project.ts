@@ -388,7 +388,7 @@ class Project {
 
         return sectors.map(sector => {
             const getOptions = { onlySelected: true, includePaired: true, sectorId: sector.id };
-            const dataElements = _.sortBy(dataElementsSelection.get(getOptions), de => de.name);
+            const dataElements = dataElementsSelection.get(getOptions);
             const dataElementsInfo = dataElements.map(dataElement => ({
                 dataElement,
                 isMER: selectedMER.has(dataElement.id),
