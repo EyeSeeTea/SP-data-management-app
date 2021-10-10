@@ -119,7 +119,7 @@ describe("Project", () => {
             const project = await getProject();
             expect(
                 project.dataElementsSelection.get({ onlySelected: true }).map(de => de.id)
-            ).toEqual(["u24zk6wAgFE", "yMqK9DKbA3X"]);
+            ).toEqual(["yMqK9DKbA3X", "u24zk6wAgFE"]);
             expect(project.dataElementsMER.get({ onlySelected: true }).map(de => de.id)).toEqual([
                 "u24zk6wAgFE",
             ]);

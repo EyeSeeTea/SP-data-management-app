@@ -257,13 +257,15 @@ export default class DataElementsSet {
                       .value()
                 : dataElements2;
 
-            return dataElements3.filter(
+            const dataElements4 = dataElements3.filter(
                 dataElement =>
                     (!series || dataElement.series === series) &&
                     (!indicatorType || dataElement.indicatorType === indicatorType) &&
                     (!peopleOrBenefit || dataElement.peopleOrBenefit === peopleOrBenefit) &&
                     externalInDataElement(dataElement, external)
             );
+
+            return _.sortBy(dataElements4, de => de.code);
         });
     }
 
