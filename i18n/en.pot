@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2021-10-08T09:48:20.308Z\n"
-"PO-Revision-Date: 2021-10-08T09:48:20.308Z\n"
+"POT-Creation-Date: 2021-10-14T11:13:47.430Z\n"
+"PO-Revision-Date: 2021-10-14T11:13:47.430Z\n"
 
 msgid "Name"
 msgstr ""
@@ -481,7 +481,7 @@ msgstr ""
 msgid "Achieved total (%) - People"
 msgstr ""
 
-msgid "Achieved total to date (%) - Benefits"
+msgid "Achieved total to date (%) - Benefits (Disaggregated)"
 msgstr ""
 
 msgid "Achieved monthly (%)"
@@ -621,7 +621,7 @@ msgid ""
 "sub-indicator: {{-name}} ({{value}})"
 msgstr ""
 
-msgid "Global data element with sub-indicators values cannot be empty: {{- name}}"
+msgid "Global indicator with sub-indicators values cannot be empty: {{- name}}"
 msgstr ""
 
 msgid ""
