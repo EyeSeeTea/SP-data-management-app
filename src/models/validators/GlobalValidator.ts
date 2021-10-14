@@ -220,7 +220,7 @@ export class GlobalValidator {
                 });
 
                 const msg = i18n.t(
-                    "Global data element with sub-indicators values cannot be empty: {{- name}}",
+                    "Global indicator with sub-indicators values cannot be empty: {{- name}}",
                     {
                         name: globalDataElement.name,
                         nsSeparator: false,
