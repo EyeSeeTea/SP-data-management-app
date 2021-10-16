@@ -96,10 +96,14 @@ const styles = {
 type IntervalId = number;
 
 function openExternalLinksInNewTab(iframe: HTMLIFrameElement) {
-    iframe.contentDocument?.querySelectorAll(".dashboard-item-header a").forEach(link => {
-        link.setAttribute("target", "_blank");
-        link.setAttribute("rel", "noopener noreferrer");
-    });
+    iframe.contentWindow?.setInterval(() => {
+        const links = iframe.contentDocument?.querySelectorAll(".dashboard-item-header a");
+        if (!links) return;
+        links.forEach(link => {
+            link.setAttribute("target", "_blank");
+            link.setAttribute("rel", "noopener noreferrer");
+        });
+    }, 1000);
 }
 
 function autoResizeIframeByContent(
