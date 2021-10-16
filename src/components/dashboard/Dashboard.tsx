@@ -96,13 +96,17 @@ const styles = {
 type IntervalId = number;
 
 function openExternalLinksInNewTab(iframe: HTMLIFrameElement) {
-    iframe.contentWindow?.setInterval(() => {
+    const iwindow = iframe.contentWindow;
+    if (!iwindow) return;
+
+    const intervalId = iwindow.setInterval(() => {
         const links = iframe.contentDocument?.querySelectorAll(".dashboard-item-header a");
-        if (!links) return;
+        if (!links || links.length === 0) return;
         links.forEach(link => {
             link.setAttribute("target", "_blank");
             link.setAttribute("rel", "noopener noreferrer");
         });
+        iwindow.clearInterval(intervalId);
     }, 1000);
 }
 
