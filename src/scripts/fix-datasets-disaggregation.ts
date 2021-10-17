@@ -9,8 +9,8 @@ import { writeDataFilePath } from "./common";
     Since 09/2020 we allow New/Returning as a disaggregation for Benefit indicators. When a data
     element changes its category combo, the existing projects are then outdated.
 
-    This script checks that all datasets and dataSetElements have a valid disaggregation, the one
-    established by the data element + an optional COVID-19. For those wrong items, generate a
+    This script checks that data sets and data set elements have a valid disaggregation, the one
+    established by the data element + optional COVID-19. For those wrong items, generate a
     metadata payload with data sets to fix and data values to move (see cocMapping).
 
     Usage:
@@ -19,7 +19,7 @@ import { writeDataFilePath } from "./common";
 
     Check that generated JSON files are correct. Now post data values and data sets, in that order:
 
-    $ yarn ts-node src/scripts/fix-datasets-disaggregation.ts --url "http://USER:ADMIN@URL" --postDataValue
+    $ yarn ts-node src/scripts/fix-datasets-disaggregation.ts --url "http://USER:ADMIN@URL" --postDataValues
     $ yarn ts-node src/scripts/fix-datasets-disaggregation.ts --url "http://USER:ADMIN@URL" --postDataSets
 */
 
