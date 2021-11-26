@@ -77,7 +77,7 @@ const DataApproval: React.FC = () => {
         }
     }, [project]);
 
-    const title = i18n.t("Data Approval");
+    const title = i18n.t("Data Approval") + (project ? ` - ${project.name}` : "");
 
     useEffect(() => loadData(projectId, api, config, setState), [api, config, projectId]);
     useEffect(() => getReport(projectDataSet, date, setState), [projectDataSet, date]);
@@ -138,7 +138,7 @@ const DataApproval: React.FC = () => {
                     <link
                         rel="stylesheet"
                         type="text/css"
-                        href={api.baseUrl + "/dhis-web-reporting/style/dhis-web-reporting.css"}
+                        href={api.baseUrl + "/dhis-web-approval/style/dhis-web-approval.css"}
                     />
                     <link
                         rel="stylesheet"
