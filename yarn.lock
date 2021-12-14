@@ -1473,10 +1473,10 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
-"@eyeseetea/d2-api@1.8.5":
-  version "1.8.5"
-  resolved "https://registry.yarnpkg.com/@eyeseetea/d2-api/-/d2-api-1.8.5.tgz#e4103d51fda1723cd9d7c00e55b7708fdfd7def1"
-  integrity sha512-QUdZIwOKP8TrREzOCYyyNQiY4zWINEBzq1TK0qqqQ4Vzmbji0zRMYgWpIg4ortRQF6U01jQ8KZnPD97dQG1Urg==
+"@eyeseetea/d2-api@1.9.4-beta.4":
+  version "1.9.4-beta.4"
+  resolved "https://registry.npmjs.org/@eyeseetea/d2-api/-/d2-api-1.9.4-beta.4.tgz#ae3a5d776bb05a5d7b708c66faa9f9aaddd200dc"
+  integrity sha512-p8k28vLt7vpDjdS8kdZng5mr7fg6GQl0qOiZk2TPY8pyYjDHRwt/BKEFyHmUoqtx3chJsHo7lHP4OZXoED0p9g==
   dependencies:
     "@babel/runtime" "^7.5.4"
     "@dhis2/d2-i18n" "^1.0.5"
@@ -4308,9 +4308,9 @@ caniuse-api@^3.0.0:
     lodash.uniq "^4.5.0"
 
 caniuse-lite@^1.0.0, caniuse-lite@^1.0.30000981, caniuse-lite@^1.0.30001109, caniuse-lite@^1.0.30001125, caniuse-lite@^1.0.30001181:
-  version "1.0.30001203"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001203.tgz#a7a34df21a387d9deffcd56c000b8cf5ab540580"
-  integrity sha512-/I9tvnzU/PHMH7wBPrfDMSuecDeUKerjCPX7D0xBbaJZPxoT9m+yYxt0zCTkcijCkjTdim3H56Zm0i5Adxch4w==
+  version "1.0.30001286"
+  resolved "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001286.tgz"
+  integrity sha512-zaEMRH6xg8ESMi2eQ3R4eZ5qw/hJiVsO/HlLwniIwErij0JDr9P+8V4dtx1l+kLq6j3yy8l8W4fst1lBnat5wQ==
 
 capture-exit@^2.0.0:
   version "2.0.0"
