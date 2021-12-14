@@ -4,6 +4,8 @@ import { PaginatedObjects, Paging, Sorting } from "./PaginatedObjects";
 import { Config } from "./Config";
 import User, { OrganisationUnit } from "./user";
 import { paginate } from "../utils/pagination";
+import { config } from "./__tests__/project-data";
+import { getAttributeValue } from "./Attributes";
 
 export interface Country {
     id: string;
@@ -36,7 +38,7 @@ export class CountriesList {
                 code: true,
                 created: true,
                 lastUpdated: true,
-                children: { $fn: { name: "size" } } as const,
+                children: { id: true, attributeValues: { attribute: { id: true }, value: true } },
             },
             filter: {
                 id: { in: this.countries.map(ou => ou.id) },
@@ -52,15 +54,22 @@ export class CountriesList {
         );
 
         const { pager, objects: orgUnitsPaginated } = paginate(orgUnitsFiltered, paging);
+        const { createdByApp } = this.config.attributes;
 
-        const countries: Country[] = orgUnitsPaginated.map(orgUnit => ({
-            id: orgUnit.id,
-            name: orgUnit.displayName,
-            code: orgUnit.code,
-            projectsCount: orgUnit.children,
-            created: new Date(orgUnit.created),
-            lastUpdated: new Date(orgUnit.lastUpdated),
-        }));
+        const countries: Country[] = orgUnitsPaginated.map(orgUnit => {
+            const childrenProjects = orgUnit.children.filter(orgUnit => {
+                return getAttributeValue(orgUnit, createdByApp) === "true";
+            });
+
+            return {
+                id: orgUnit.id,
+                name: orgUnit.displayName,
+                code: orgUnit.code,
+                projectsCount: childrenProjects.length,
+                created: new Date(orgUnit.created),
+                lastUpdated: new Date(orgUnit.lastUpdated),
+            };
+        });
 
         const countriesSorted = _.orderBy(
             countries,
