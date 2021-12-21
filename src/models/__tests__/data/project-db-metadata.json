@@ -987,7 +987,7 @@
                 {
                     "id": "Ka4yijY2Vhl",
                     "type": "REPORT_TABLE",
-                    "reportTable": {
+                    "visualization": {
                         "id": "i07AWJAND8a"
                     },
                     "width": 29,
@@ -998,7 +998,7 @@
                 {
                     "id": "yWGKgz9vaOh",
                     "type": "REPORT_TABLE",
-                    "reportTable": {
+                    "visualization": {
                         "id": "iqqgnCj9DQj"
                     },
                     "width": 29,
@@ -1009,7 +1009,7 @@
                 {
                     "id": "y2G8oh7xQBm",
                     "type": "REPORT_TABLE",
-                    "reportTable": {
+                    "visualization": {
                         "id": "GycLEG8dPPO"
                     },
                     "width": 29,
@@ -1020,7 +1020,7 @@
                 {
                     "id": "m4LaU9HizHi",
                     "type": "REPORT_TABLE",
-                    "reportTable": {
+                    "visualization": {
                         "id": "iOk52Z42bjp"
                     },
                     "width": 29,
@@ -1031,7 +1031,7 @@
                 {
                     "id": "ywvTGMsKdwL",
                     "type": "REPORT_TABLE",
-                    "reportTable": {
+                    "visualization": {
                         "id": "SQSYgZjfA3z"
                     },
                     "width": 29,
@@ -1042,7 +1042,7 @@
                 {
                     "id": "qMSWdZHPjyN",
                     "type": "REPORT_TABLE",
-                    "reportTable": {
+                    "visualization": {
                         "id": "aeGIpbJkZAX"
                     },
                     "width": 29,
@@ -1053,7 +1053,7 @@
                 {
                     "id": "uyoJujQVRjE",
                     "type": "REPORT_TABLE",
-                    "reportTable": {
+                    "visualization": {
                         "id": "GM6SxObVwI3"
                     },
                     "width": 29,
@@ -1064,7 +1064,7 @@
                 {
                     "id": "mgwFIMjbsdw",
                     "type": "REPORT_TABLE",
-                    "reportTable": {
+                    "visualization": {
                         "id": "GEe8ZzUkVwG"
                     },
                     "width": 29,
@@ -1179,7 +1179,7 @@
                 {
                     "id": "eUSMAePgCN9",
                     "type": "REPORT_TABLE",
-                    "reportTable": {
+                    "visualization": {
                         "id": "KOiGcdA4JjD"
                     },
                     "width": 58,
@@ -1190,7 +1190,7 @@
                 {
                     "id": "GWKMgoU2E38",
                     "type": "REPORT_TABLE",
-                    "reportTable": {
+                    "visualization": {
                         "id": "CS7csnUtibF"
                     },
                     "width": 58,
@@ -1208,7 +1208,7 @@
                 {
                     "id": "W4EN8esNyGQ",
                     "type": "REPORT_TABLE",
-                    "reportTable": {
+                    "visualization": {
                         "id": "uqMTlezGj0I"
                     },
                     "width": 29,
@@ -1219,7 +1219,7 @@
                 {
                     "id": "GCm9PNnLAgP",
                     "type": "REPORT_TABLE",
-                    "reportTable": {
+                    "visualization": {
                         "id": "OS2K2s8VIIq"
                     },
                     "width": 29,
@@ -1230,7 +1230,7 @@
                 {
                     "id": "K0YRx2HGCs5",
                     "type": "REPORT_TABLE",
-                    "reportTable": {
+                    "visualization": {
                         "id": "ayOoqqk9Rnb"
                     },
                     "width": 29,
@@ -1241,7 +1241,7 @@
                 {
                     "id": "O0uabsxLqGS",
                     "type": "REPORT_TABLE",
-                    "reportTable": {
+                    "visualization": {
                         "id": "ew6e1j5HwkE"
                     },
                     "width": 29,
@@ -1252,7 +1252,7 @@
                 {
                     "id": "KEy2fuNrALy",
                     "type": "REPORT_TABLE",
-                    "reportTable": {
+                    "visualization": {
                         "id": "mUCwcWSsa9T"
                     },
                     "width": 29,
@@ -1263,7 +1263,7 @@
                 {
                     "id": "iIyADNFfXEV",
                     "type": "REPORT_TABLE",
-                    "reportTable": {
+                    "visualization": {
                         "id": "KeWVSa2rbYm"
                     },
                     "width": 29,
@@ -1274,7 +1274,7 @@
                 {
                     "id": "eU2Bs4XsX6J",
                     "type": "REPORT_TABLE",
-                    "reportTable": {
+                    "visualization": {
                         "id": "i6CWRJp61Hp"
                     },
                     "width": 29,
@@ -1285,7 +1285,7 @@
                 {
                     "id": "yseGHIbXcNQ",
                     "type": "REPORT_TABLE",
-                    "reportTable": {
+                    "visualization": {
                         "id": "eYaYrZfbJT1"
                     },
                     "width": 29,
@@ -1372,9 +1372,10 @@
             ]
         }
     ],
-    "reportTables": [
+    "visualizations": [
         {
             "id": "i07AWJAND8a",
+            "type": "PIVOT_TABLE",
             "name": "MyProject - Target vs Actual - Benefits",
             "numberType": "VALUE",
             "legendDisplayStyle": "FILL",
@@ -1428,13 +1429,17 @@
                     "id": "pe"
                 }
             ],
-            "columnDimensions": ["pe"],
+            "columnDimensions": [
+                "pe"
+            ],
             "filters": [
                 {
                     "id": "ou"
                 }
             ],
-            "filterDimensions": ["ou"],
+            "filterDimensions": [
+                "ou"
+            ],
             "rows": [
                 {
                     "id": "dx"
@@ -1455,7 +1460,10 @@
                     ]
                 }
             ],
-            "rowDimensions": ["dx", "GIIHAr9BzzO"],
+            "rowDimensions": [
+                "dx",
+                "GIIHAr9BzzO"
+            ],
             "categoryDimensions": [
                 {
                     "category": {
@@ -1495,6 +1503,7 @@
         },
         {
             "id": "iqqgnCj9DQj",
+            "type": "PIVOT_TABLE",
             "name": "MyProject - Target vs Actual - People",
             "numberType": "VALUE",
             "legendDisplayStyle": "FILL",
@@ -1569,13 +1578,18 @@
                     ]
                 }
             ],
-            "columnDimensions": ["pe", "Kyg1O6YEGa9"],
+            "columnDimensions": [
+                "pe",
+                "Kyg1O6YEGa9"
+            ],
             "filters": [
                 {
                     "id": "ou"
                 }
             ],
-            "filterDimensions": ["ou"],
+            "filterDimensions": [
+                "ou"
+            ],
             "rows": [
                 {
                     "id": "dx"
@@ -1611,7 +1625,11 @@
                     ]
                 }
             ],
-            "rowDimensions": ["dx", "GIIHAr9BzzO", "uSMHdwhxFSV"],
+            "rowDimensions": [
+                "dx",
+                "GIIHAr9BzzO",
+                "uSMHdwhxFSV"
+            ],
             "categoryDimensions": [
                 {
                     "category": {
@@ -1677,6 +1695,7 @@
         },
         {
             "id": "GycLEG8dPPO",
+            "type": "PIVOT_TABLE",
             "name": "MyProject - Target vs Actual - Unique People",
             "numberType": "VALUE",
             "legendDisplayStyle": "FILL",
@@ -1751,7 +1770,10 @@
                     ]
                 }
             ],
-            "columnDimensions": ["pe", "Kyg1O6YEGa9"],
+            "columnDimensions": [
+                "pe",
+                "Kyg1O6YEGa9"
+            ],
             "filters": [
                 {
                     "id": "ou"
@@ -1765,7 +1787,10 @@
                     ]
                 }
             ],
-            "filterDimensions": ["ou", "uSMHdwhxFSV"],
+            "filterDimensions": [
+                "ou",
+                "uSMHdwhxFSV"
+            ],
             "rows": [
                 {
                     "id": "dx"
@@ -1786,7 +1811,10 @@
                     ]
                 }
             ],
-            "rowDimensions": ["dx", "GIIHAr9BzzO"],
+            "rowDimensions": [
+                "dx",
+                "GIIHAr9BzzO"
+            ],
             "categoryDimensions": [
                 {
                     "category": {
@@ -1849,6 +1877,7 @@
         },
         {
             "id": "iOk52Z42bjp",
+            "type": "PIVOT_TABLE",
             "name": "MyProject - Achieved to date (%) - Benefits",
             "numberType": "VALUE",
             "legendDisplayStyle": "FILL",
@@ -1902,19 +1931,25 @@
                     "id": "pe"
                 }
             ],
-            "columnDimensions": ["pe"],
+            "columnDimensions": [
+                "pe"
+            ],
             "filters": [
                 {
                     "id": "ou"
                 }
             ],
-            "filterDimensions": ["ou"],
+            "filterDimensions": [
+                "ou"
+            ],
             "rows": [
                 {
                     "id": "dx"
                 }
             ],
-            "rowDimensions": ["dx"],
+            "rowDimensions": [
+                "dx"
+            ],
             "categoryDimensions": [],
             "publicAccess": "--------",
             "externalAccess": false,
@@ -1944,6 +1979,7 @@
         },
         {
             "id": "SQSYgZjfA3z",
+            "type": "PIVOT_TABLE",
             "name": "MyProject - Achieved total to date (%) - People",
             "numberType": "VALUE",
             "legendDisplayStyle": "FILL",
@@ -2008,7 +2044,9 @@
                     ]
                 }
             ],
-            "columnDimensions": ["uSMHdwhxFSV"],
+            "columnDimensions": [
+                "uSMHdwhxFSV"
+            ],
             "filters": [
                 {
                     "id": "ou"
@@ -2017,13 +2055,18 @@
                     "id": "pe"
                 }
             ],
-            "filterDimensions": ["ou", "pe"],
+            "filterDimensions": [
+                "ou",
+                "pe"
+            ],
             "rows": [
                 {
                     "id": "dx"
                 }
             ],
-            "rowDimensions": ["dx"],
+            "rowDimensions": [
+                "dx"
+            ],
             "categoryDimensions": [
                 {
                     "category": {
@@ -2064,6 +2107,7 @@
         },
         {
             "id": "aeGIpbJkZAX",
+            "type": "PIVOT_TABLE",
             "name": "MyProject - Achieved (%) - Benefits",
             "numberType": "VALUE",
             "legendDisplayStyle": "FILL",
@@ -2117,19 +2161,25 @@
                     "id": "pe"
                 }
             ],
-            "columnDimensions": ["pe"],
+            "columnDimensions": [
+                "pe"
+            ],
             "filters": [
                 {
                     "id": "ou"
                 }
             ],
-            "filterDimensions": ["ou"],
+            "filterDimensions": [
+                "ou"
+            ],
             "rows": [
                 {
                     "id": "dx"
                 }
             ],
-            "rowDimensions": ["dx"],
+            "rowDimensions": [
+                "dx"
+            ],
             "categoryDimensions": [],
             "publicAccess": "--------",
             "externalAccess": false,
@@ -2159,6 +2209,7 @@
         },
         {
             "id": "GM6SxObVwI3",
+            "type": "PIVOT_TABLE",
             "name": "MyProject - Achieved (%) - People",
             "numberType": "VALUE",
             "legendDisplayStyle": "FILL",
@@ -2218,19 +2269,25 @@
                     "id": "pe"
                 }
             ],
-            "columnDimensions": ["pe"],
+            "columnDimensions": [
+                "pe"
+            ],
             "filters": [
                 {
                     "id": "ou"
                 }
             ],
-            "filterDimensions": ["ou"],
+            "filterDimensions": [
+                "ou"
+            ],
             "rows": [
                 {
                     "id": "dx"
                 }
             ],
-            "rowDimensions": ["dx"],
+            "rowDimensions": [
+                "dx"
+            ],
             "categoryDimensions": [],
             "publicAccess": "--------",
             "externalAccess": false,
@@ -2260,6 +2317,7 @@
         },
         {
             "id": "GEe8ZzUkVwG",
+            "type": "PIVOT_TABLE",
             "name": "MyProject - Achieved total (%) - People",
             "numberType": "VALUE",
             "legendDisplayStyle": "FILL",
@@ -2324,7 +2382,9 @@
                     ]
                 }
             ],
-            "columnDimensions": ["uSMHdwhxFSV"],
+            "columnDimensions": [
+                "uSMHdwhxFSV"
+            ],
             "filters": [
                 {
                     "id": "ou"
@@ -2333,13 +2393,18 @@
                     "id": "pe"
                 }
             ],
-            "filterDimensions": ["ou", "pe"],
+            "filterDimensions": [
+                "ou",
+                "pe"
+            ],
             "rows": [
                 {
                     "id": "dx"
                 }
             ],
-            "rowDimensions": ["dx"],
+            "rowDimensions": [
+                "dx"
+            ],
             "categoryDimensions": [
                 {
                     "category": {
@@ -2379,7 +2444,591 @@
             }
         },
         {
+            "id": "uG9C9z46CNK",
+            "type": "COLUMN",
+            "name": "MyProject - Achieved monthly (%)",
+            "numberType": "VALUE",
+            "legendDisplayStyle": "FILL",
+            "rowSubTotals": true,
+            "showDimensionLabels": true,
+            "aggregationType": "DEFAULT",
+            "legendDisplayStrategy": "FIXED",
+            "rowTotals": true,
+            "digitGroupSeparator": "SPACE",
+            "dataDimensionItems": [
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "eCufXa6RkTm"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "i01veyO4Cuw"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "eYmeRzhBFV4"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "u404ICrBKj3"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "K4sH0aQDdeL"
+                    }
+                }
+            ],
+            "organisationUnits": [
+                {
+                    "id": "WGC0DJ0YSis"
+                }
+            ],
+            "periods": [
+                {
+                    "id": "201810"
+                },
+                {
+                    "id": "201811"
+                },
+                {
+                    "id": "201812"
+                },
+                {
+                    "id": "201901"
+                },
+                {
+                    "id": "201902"
+                },
+                {
+                    "id": "201903"
+                }
+            ],
+            "columns": [
+                {
+                    "id": "pe"
+                }
+            ],
+            "columnDimensions": [
+                "pe"
+            ],
+            "filters": [
+                {
+                    "id": "ou"
+                }
+            ],
+            "filterDimensions": [
+                "ou"
+            ],
+            "rows": [
+                {
+                    "id": "dx"
+                }
+            ],
+            "rowDimensions": [
+                "dx"
+            ],
+            "categoryDimensions": [],
+            "publicAccess": "--------",
+            "externalAccess": false,
+            "userAccesses": [
+                {
+                    "id": "M5zQapPyTZI",
+                    "displayName": "admin admin",
+                    "access": "rw------"
+                }
+            ],
+            "userGroupAccesses": [
+                {
+                    "id": "ywuI2WspUUG",
+                    "displayName": "System Admin",
+                    "access": "rw------"
+                },
+                {
+                    "id": "mKKNXzeIAJs",
+                    "displayName": "Data Management Admin",
+                    "access": "rw------"
+                }
+            ]
+        },
+        {
+            "id": "qmsj4FqnVPX",
+            "type": "COLUMN",
+            "name": "MyProject - Achieved Benefit (%)",
+            "numberType": "VALUE",
+            "legendDisplayStyle": "FILL",
+            "rowSubTotals": true,
+            "showDimensionLabels": true,
+            "aggregationType": "DEFAULT",
+            "legendDisplayStrategy": "FIXED",
+            "rowTotals": true,
+            "digitGroupSeparator": "SPACE",
+            "dataDimensionItems": [
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "eCufXa6RkTm"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "i01veyO4Cuw"
+                    }
+                }
+            ],
+            "organisationUnits": [
+                {
+                    "id": "WGC0DJ0YSis"
+                }
+            ],
+            "periods": [
+                {
+                    "id": "201810"
+                },
+                {
+                    "id": "201811"
+                },
+                {
+                    "id": "201812"
+                },
+                {
+                    "id": "201901"
+                },
+                {
+                    "id": "201902"
+                },
+                {
+                    "id": "201903"
+                }
+            ],
+            "columns": [
+                {
+                    "id": "ou"
+                }
+            ],
+            "columnDimensions": [
+                "ou"
+            ],
+            "filters": [
+                {
+                    "id": "pe"
+                }
+            ],
+            "filterDimensions": [
+                "pe"
+            ],
+            "rows": [
+                {
+                    "id": "dx"
+                }
+            ],
+            "rowDimensions": [
+                "dx"
+            ],
+            "categoryDimensions": [],
+            "publicAccess": "--------",
+            "externalAccess": false,
+            "userAccesses": [
+                {
+                    "id": "M5zQapPyTZI",
+                    "displayName": "admin admin",
+                    "access": "rw------"
+                }
+            ],
+            "userGroupAccesses": [
+                {
+                    "id": "ywuI2WspUUG",
+                    "displayName": "System Admin",
+                    "access": "rw------"
+                },
+                {
+                    "id": "mKKNXzeIAJs",
+                    "displayName": "Data Management Admin",
+                    "access": "rw------"
+                }
+            ]
+        },
+        {
+            "id": "uiyYMLiDaK2",
+            "type": "COLUMN",
+            "name": "MyProject - Achieved People (%)",
+            "numberType": "VALUE",
+            "legendDisplayStyle": "FILL",
+            "rowSubTotals": true,
+            "showDimensionLabels": true,
+            "aggregationType": "DEFAULT",
+            "legendDisplayStrategy": "FIXED",
+            "rowTotals": true,
+            "digitGroupSeparator": "SPACE",
+            "dataDimensionItems": [
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "eYmeRzhBFV4"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "u404ICrBKj3"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "K4sH0aQDdeL"
+                    }
+                }
+            ],
+            "organisationUnits": [
+                {
+                    "id": "WGC0DJ0YSis"
+                }
+            ],
+            "periods": [
+                {
+                    "id": "201810"
+                },
+                {
+                    "id": "201811"
+                },
+                {
+                    "id": "201812"
+                },
+                {
+                    "id": "201901"
+                },
+                {
+                    "id": "201902"
+                },
+                {
+                    "id": "201903"
+                }
+            ],
+            "columns": [
+                {
+                    "id": "ou"
+                }
+            ],
+            "columnDimensions": [
+                "ou"
+            ],
+            "filters": [
+                {
+                    "id": "pe"
+                },
+                {
+                    "id": "uSMHdwhxFSV",
+                    "categoryOptions": [
+                        {
+                            "id": "KiK0FMExoqh"
+                        }
+                    ]
+                }
+            ],
+            "filterDimensions": [
+                "pe",
+                "uSMHdwhxFSV"
+            ],
+            "rows": [
+                {
+                    "id": "dx"
+                }
+            ],
+            "rowDimensions": [
+                "dx"
+            ],
+            "categoryDimensions": [
+                {
+                    "category": {
+                        "id": "uSMHdwhxFSV"
+                    },
+                    "categoryOptions": [
+                        {
+                            "id": "KiK0FMExoqh"
+                        }
+                    ]
+                }
+            ],
+            "publicAccess": "--------",
+            "externalAccess": false,
+            "userAccesses": [
+                {
+                    "id": "M5zQapPyTZI",
+                    "displayName": "admin admin",
+                    "access": "rw------"
+                }
+            ],
+            "userGroupAccesses": [
+                {
+                    "id": "ywuI2WspUUG",
+                    "displayName": "System Admin",
+                    "access": "rw------"
+                },
+                {
+                    "id": "mKKNXzeIAJs",
+                    "displayName": "Data Management Admin",
+                    "access": "rw------"
+                }
+            ]
+        },
+        {
+            "id": "u6Sin4Fy1Wt",
+            "type": "COLUMN",
+            "name": "MyProject - Achieved by gender (%)",
+            "numberType": "VALUE",
+            "legendDisplayStyle": "FILL",
+            "rowSubTotals": true,
+            "showDimensionLabels": true,
+            "aggregationType": "DEFAULT",
+            "legendDisplayStrategy": "FIXED",
+            "rowTotals": true,
+            "digitGroupSeparator": "SPACE",
+            "dataDimensionItems": [
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "eYmeRzhBFV4"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "u404ICrBKj3"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "K4sH0aQDdeL"
+                    }
+                }
+            ],
+            "organisationUnits": [
+                {
+                    "id": "WGC0DJ0YSis"
+                }
+            ],
+            "periods": [
+                {
+                    "id": "201810"
+                },
+                {
+                    "id": "201811"
+                },
+                {
+                    "id": "201812"
+                },
+                {
+                    "id": "201901"
+                },
+                {
+                    "id": "201902"
+                },
+                {
+                    "id": "201903"
+                }
+            ],
+            "columns": [
+                {
+                    "code": "GENDER",
+                    "id": "Kyg1O6YEGa9",
+                    "dataDimensionType": "DISAGGREGATION",
+                    "categoryOptions": [
+                        {
+                            "code": "MALE",
+                            "id": "qk2FihwV6IL"
+                        },
+                        {
+                            "code": "FEMALE",
+                            "id": "yW2hYVS3S4u"
+                        }
+                    ]
+                }
+            ],
+            "columnDimensions": [
+                "Kyg1O6YEGa9"
+            ],
+            "filters": [
+                {
+                    "id": "ou"
+                },
+                {
+                    "id": "pe"
+                },
+                {
+                    "id": "uSMHdwhxFSV",
+                    "categoryOptions": [
+                        {
+                            "id": "KiK0FMExoqh"
+                        }
+                    ]
+                }
+            ],
+            "filterDimensions": [
+                "ou",
+                "pe",
+                "uSMHdwhxFSV"
+            ],
+            "rows": [
+                {
+                    "id": "dx"
+                }
+            ],
+            "rowDimensions": [
+                "dx"
+            ],
+            "categoryDimensions": [
+                {
+                    "category": {
+                        "id": "Kyg1O6YEGa9"
+                    },
+                    "categoryOptions": [
+                        {
+                            "id": "qk2FihwV6IL"
+                        },
+                        {
+                            "id": "yW2hYVS3S4u"
+                        }
+                    ]
+                },
+                {
+                    "category": {
+                        "id": "uSMHdwhxFSV"
+                    },
+                    "categoryOptions": [
+                        {
+                            "id": "KiK0FMExoqh"
+                        }
+                    ]
+                }
+            ],
+            "publicAccess": "--------",
+            "externalAccess": false,
+            "userAccesses": [
+                {
+                    "id": "M5zQapPyTZI",
+                    "displayName": "admin admin",
+                    "access": "rw------"
+                }
+            ],
+            "userGroupAccesses": [
+                {
+                    "id": "ywuI2WspUUG",
+                    "displayName": "System Admin",
+                    "access": "rw------"
+                },
+                {
+                    "id": "mKKNXzeIAJs",
+                    "displayName": "Data Management Admin",
+                    "access": "rw------"
+                }
+            ]
+        },
+        {
+            "id": "ukewRkZsyCI",
+            "type": "COLUMN",
+            "name": "MyProject - Benefits Per Person",
+            "numberType": "VALUE",
+            "legendDisplayStyle": "FILL",
+            "rowSubTotals": true,
+            "showDimensionLabels": true,
+            "aggregationType": "DEFAULT",
+            "legendDisplayStrategy": "FIXED",
+            "rowTotals": true,
+            "digitGroupSeparator": "SPACE",
+            "dataDimensionItems": [
+                {
+                    "dataDimensionItemType": "INDICATOR",
+                    "indicator": {
+                        "id": "Gob5qHAX60C"
+                    }
+                }
+            ],
+            "organisationUnits": [
+                {
+                    "id": "WGC0DJ0YSis"
+                }
+            ],
+            "periods": [
+                {
+                    "id": "201810"
+                },
+                {
+                    "id": "201811"
+                },
+                {
+                    "id": "201812"
+                },
+                {
+                    "id": "201901"
+                },
+                {
+                    "id": "201902"
+                },
+                {
+                    "id": "201903"
+                }
+            ],
+            "columns": [
+                {
+                    "id": "ou"
+                }
+            ],
+            "columnDimensions": [
+                "ou"
+            ],
+            "filters": [
+                {
+                    "id": "pe"
+                }
+            ],
+            "filterDimensions": [
+                "pe"
+            ],
+            "rows": [
+                {
+                    "id": "dx"
+                }
+            ],
+            "rowDimensions": [
+                "dx"
+            ],
+            "categoryDimensions": [],
+            "publicAccess": "--------",
+            "externalAccess": false,
+            "userAccesses": [
+                {
+                    "id": "M5zQapPyTZI",
+                    "displayName": "admin admin",
+                    "access": "rw------"
+                }
+            ],
+            "userGroupAccesses": [
+                {
+                    "id": "ywuI2WspUUG",
+                    "displayName": "System Admin",
+                    "access": "rw------"
+                },
+                {
+                    "id": "mKKNXzeIAJs",
+                    "displayName": "Data Management Admin",
+                    "access": "rw------"
+                }
+            ]
+        },
+        {
             "id": "KOiGcdA4JjD",
+            "type": "PIVOT_TABLE",
             "name": "[Bahamas] Projects - People",
             "numberType": "VALUE",
             "legendDisplayStyle": "FILL",
@@ -2477,7 +3126,9 @@
                     "id": "dx"
                 }
             ],
-            "columnDimensions": ["dx"],
+            "columnDimensions": [
+                "dx"
+            ],
             "filters": [
                 {
                     "id": "pe"
@@ -2499,13 +3150,19 @@
                     ]
                 }
             ],
-            "filterDimensions": ["pe", "uSMHdwhxFSV", "GIIHAr9BzzO"],
+            "filterDimensions": [
+                "pe",
+                "uSMHdwhxFSV",
+                "GIIHAr9BzzO"
+            ],
             "rows": [
                 {
                     "id": "ou"
                 }
             ],
-            "rowDimensions": ["ou"],
+            "rowDimensions": [
+                "ou"
+            ],
             "categoryDimensions": [
                 {
                     "category": {
@@ -2532,6 +3189,7 @@
         },
         {
             "id": "CS7csnUtibF",
+            "type": "PIVOT_TABLE",
             "name": "[Bahamas] Projects - Benefit",
             "numberType": "VALUE",
             "legendDisplayStyle": "FILL",
@@ -2611,7 +3269,9 @@
                     "id": "dx"
                 }
             ],
-            "columnDimensions": ["dx"],
+            "columnDimensions": [
+                "dx"
+            ],
             "filters": [
                 {
                     "id": "pe"
@@ -2625,13 +3285,291 @@
                     ]
                 }
             ],
-            "filterDimensions": ["pe", "GIIHAr9BzzO"],
+            "filterDimensions": [
+                "pe",
+                "GIIHAr9BzzO"
+            ],
             "rows": [
                 {
                     "id": "ou"
                 }
             ],
-            "rowDimensions": ["ou"],
+            "rowDimensions": [
+                "ou"
+            ],
+            "categoryDimensions": [
+                {
+                    "category": {
+                        "id": "GIIHAr9BzzO"
+                    },
+                    "categoryOptions": [
+                        {
+                            "id": "eWeQoOlAcxV"
+                        }
+                    ]
+                }
+            ],
+            "publicAccess": "rw------"
+        },
+        {
+            "id": "GqYJDh6asM8",
+            "type": "COLUMN",
+            "name": "[Bahamas] Aggregated Actual Values - People",
+            "numberType": "VALUE",
+            "legendDisplayStyle": "FILL",
+            "rowSubTotals": true,
+            "showDimensionLabels": true,
+            "aggregationType": "DEFAULT",
+            "legendDisplayStrategy": "FIXED",
+            "rowTotals": true,
+            "digitGroupSeparator": "SPACE",
+            "dataDimensionItems": [
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "SQy5q6kCYI1"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "iYEDR850FFL"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "qkyeCTJHU2d"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "eAkVLI8mKBa"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "Kg29718LQHl"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "KKmUWsn19fq"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "iCKxYSFIlcu"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "qAM1NbCbS9G"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "K6mAC5SiO29"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "ik0ICagvIjm"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "GQyudNlGzkI"
+                    }
+                }
+            ],
+            "organisationUnits": [
+                {
+                    "id": "eu2XF73JOzl"
+                }
+            ],
+            "periods": [],
+            "relativePeriods": {
+                "thisYear": true
+            },
+            "columns": [
+                {
+                    "id": "dx"
+                }
+            ],
+            "columnDimensions": [
+                "dx"
+            ],
+            "filters": [
+                {
+                    "id": "ou"
+                },
+                {
+                    "id": "uSMHdwhxFSV",
+                    "categoryOptions": [
+                        {
+                            "id": "KiK0FMExoqh"
+                        }
+                    ]
+                },
+                {
+                    "id": "GIIHAr9BzzO",
+                    "categoryOptions": [
+                        {
+                            "id": "eWeQoOlAcxV"
+                        }
+                    ]
+                }
+            ],
+            "filterDimensions": [
+                "ou",
+                "uSMHdwhxFSV",
+                "GIIHAr9BzzO"
+            ],
+            "rows": [
+                {
+                    "id": "pe"
+                }
+            ],
+            "rowDimensions": [
+                "pe"
+            ],
+            "categoryDimensions": [
+                {
+                    "category": {
+                        "id": "uSMHdwhxFSV"
+                    },
+                    "categoryOptions": [
+                        {
+                            "id": "KiK0FMExoqh"
+                        }
+                    ]
+                },
+                {
+                    "category": {
+                        "id": "GIIHAr9BzzO"
+                    },
+                    "categoryOptions": [
+                        {
+                            "id": "eWeQoOlAcxV"
+                        }
+                    ]
+                }
+            ],
+            "publicAccess": "rw------"
+        },
+        {
+            "id": "me6p7L8VHXl",
+            "type": "COLUMN",
+            "name": "[Bahamas] Aggregated Actual Values - Benefit",
+            "numberType": "VALUE",
+            "legendDisplayStyle": "FILL",
+            "rowSubTotals": true,
+            "showDimensionLabels": true,
+            "aggregationType": "DEFAULT",
+            "legendDisplayStrategy": "FIXED",
+            "rowTotals": true,
+            "digitGroupSeparator": "SPACE",
+            "dataDimensionItems": [
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "aYk5MgSCLXP"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "CI8NCm34d7D"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "mu2b9Ivde6J"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "WUMjtbgofs2"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "umkL2sEVSNR"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "SCY3TdhSz1K"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "WS8XV4WWPE7"
+                    }
+                },
+                {
+                    "dataDimensionItemType": "DATA_ELEMENT",
+                    "dataElement": {
+                        "id": "yMqK9DKbA3X"
+                    }
+                }
+            ],
+            "organisationUnits": [
+                {
+                    "id": "eu2XF73JOzl"
+                }
+            ],
+            "periods": [],
+            "relativePeriods": {
+                "thisYear": true
+            },
+            "columns": [
+                {
+                    "id": "dx"
+                }
+            ],
+            "columnDimensions": [
+                "dx"
+            ],
+            "filters": [
+                {
+                    "id": "ou"
+                },
+                {
+                    "id": "GIIHAr9BzzO",
+                    "categoryOptions": [
+                        {
+                            "id": "eWeQoOlAcxV"
+                        }
+                    ]
+                }
+            ],
+            "filterDimensions": [
+                "ou",
+                "GIIHAr9BzzO"
+            ],
+            "rows": [
+                {
+                    "id": "pe"
+                }
+            ],
+            "rowDimensions": [
+                "pe"
+            ],
             "categoryDimensions": [
                 {
                     "category": {
@@ -2648,6 +3586,7 @@
         },
         {
             "id": "uqMTlezGj0I",
+            "type": "PIVOT_TABLE",
             "name": "Award Number 12345 - Target vs Actual - Benefits",
             "numberType": "VALUE",
             "legendDisplayStyle": "FILL",
@@ -2800,13 +3739,17 @@
                     "id": "pe"
                 }
             ],
-            "columnDimensions": ["pe"],
+            "columnDimensions": [
+                "pe"
+            ],
             "filters": [
                 {
                     "id": "ou"
                 }
             ],
-            "filterDimensions": ["ou"],
+            "filterDimensions": [
+                "ou"
+            ],
             "rows": [
                 {
                     "id": "dx"
@@ -2827,7 +3770,10 @@
                     ]
                 }
             ],
-            "rowDimensions": ["dx", "GIIHAr9BzzO"],
+            "rowDimensions": [
+                "dx",
+                "GIIHAr9BzzO"
+            ],
             "categoryDimensions": [
                 {
                     "category": {
@@ -2867,6 +3813,7 @@
         },
         {
             "id": "OS2K2s8VIIq",
+            "type": "PIVOT_TABLE",
             "name": "Award Number 12345 - Target vs Actual - People",
             "numberType": "VALUE",
             "legendDisplayStyle": "FILL",
@@ -3052,13 +3999,18 @@
                     ]
                 }
             ],
-            "columnDimensions": ["pe", "Kyg1O6YEGa9"],
+            "columnDimensions": [
+                "pe",
+                "Kyg1O6YEGa9"
+            ],
             "filters": [
                 {
                     "id": "ou"
                 }
             ],
-            "filterDimensions": ["ou"],
+            "filterDimensions": [
+                "ou"
+            ],
             "rows": [
                 {
                     "id": "dx"
@@ -3094,7 +4046,11 @@
                     ]
                 }
             ],
-            "rowDimensions": ["dx", "GIIHAr9BzzO", "uSMHdwhxFSV"],
+            "rowDimensions": [
+                "dx",
+                "GIIHAr9BzzO",
+                "uSMHdwhxFSV"
+            ],
             "categoryDimensions": [
                 {
                     "category": {
@@ -3160,6 +4116,7 @@
         },
         {
             "id": "ayOoqqk9Rnb",
+            "type": "PIVOT_TABLE",
             "name": "Award Number 12345 - Target vs Actual - Unique People",
             "numberType": "VALUE",
             "legendDisplayStyle": "FILL",
@@ -3345,7 +4302,10 @@
                     ]
                 }
             ],
-            "columnDimensions": ["pe", "Kyg1O6YEGa9"],
+            "columnDimensions": [
+                "pe",
+                "Kyg1O6YEGa9"
+            ],
             "filters": [
                 {
                     "id": "ou"
@@ -3359,7 +4319,10 @@
                     ]
                 }
             ],
-            "filterDimensions": ["ou", "uSMHdwhxFSV"],
+            "filterDimensions": [
+                "ou",
+                "uSMHdwhxFSV"
+            ],
             "rows": [
                 {
                     "id": "dx"
@@ -3380,7 +4343,10 @@
                     ]
                 }
             ],
-            "rowDimensions": ["dx", "GIIHAr9BzzO"],
+            "rowDimensions": [
+                "dx",
+                "GIIHAr9BzzO"
+            ],
             "categoryDimensions": [
                 {
                     "category": {
@@ -3443,6 +4409,7 @@
         },
         {
             "id": "ew6e1j5HwkE",
+            "type": "PIVOT_TABLE",
             "name": "Award Number 12345 - Achieved to date (%) - Benefits",
             "numberType": "VALUE",
             "legendDisplayStyle": "FILL",
@@ -3595,19 +4562,25 @@
                     "id": "pe"
                 }
             ],
-            "columnDimensions": ["pe"],
+            "columnDimensions": [
+                "pe"
+            ],
             "filters": [
                 {
                     "id": "ou"
                 }
             ],
-            "filterDimensions": ["ou"],
+            "filterDimensions": [
+                "ou"
+            ],
             "rows": [
                 {
                     "id": "dx"
                 }
             ],
-            "rowDimensions": ["dx"],
+            "rowDimensions": [
+                "dx"
+            ],
             "categoryDimensions": [],
             "publicAccess": "--------",
             "externalAccess": false,
@@ -3637,6 +4610,7 @@
         },
         {
             "id": "mUCwcWSsa9T",
+            "type": "PIVOT_TABLE",
             "name": "Award Number 12345 - Achieved total to date (%) - People",
             "numberType": "VALUE",
             "legendDisplayStyle": "FILL",
@@ -3812,7 +4786,9 @@
                     ]
                 }
             ],
-            "columnDimensions": ["uSMHdwhxFSV"],
+            "columnDimensions": [
+                "uSMHdwhxFSV"
+            ],
             "filters": [
                 {
                     "id": "ou"
@@ -3821,13 +4797,18 @@
                     "id": "pe"
                 }
             ],
-            "filterDimensions": ["ou", "pe"],
+            "filterDimensions": [
+                "ou",
+                "pe"
+            ],
             "rows": [
                 {
                     "id": "dx"
                 }
             ],
-            "rowDimensions": ["dx"],
+            "rowDimensions": [
+                "dx"
+            ],
             "categoryDimensions": [
                 {
                     "category": {
@@ -3868,6 +4849,7 @@
         },
         {
             "id": "KeWVSa2rbYm",
+            "type": "PIVOT_TABLE",
             "name": "Award Number 12345 - Achieved (%) - Benefits",
             "numberType": "VALUE",
             "legendDisplayStyle": "FILL",
@@ -4020,19 +5002,25 @@
                     "id": "pe"
                 }
             ],
-            "columnDimensions": ["pe"],
+            "columnDimensions": [
+                "pe"
+            ],
             "filters": [
                 {
                     "id": "ou"
                 }
             ],
-            "filterDimensions": ["ou"],
+            "filterDimensions": [
+                "ou"
+            ],
             "rows": [
                 {
                     "id": "dx"
                 }
             ],
-            "rowDimensions": ["dx"],
+            "rowDimensions": [
+                "dx"
+            ],
             "categoryDimensions": [],
             "publicAccess": "--------",
             "externalAccess": false,
@@ -4062,6 +5050,7 @@
         },
         {
             "id": "i6CWRJp61Hp",
+            "type": "PIVOT_TABLE",
             "name": "Award Number 12345 - Achieved (%) - People",
             "numberType": "VALUE",
             "legendDisplayStyle": "FILL",
@@ -4232,19 +5221,25 @@
                     "id": "pe"
                 }
             ],
-            "columnDimensions": ["pe"],
+            "columnDimensions": [
+                "pe"
+            ],
             "filters": [
                 {
                     "id": "ou"
                 }
             ],
-            "filterDimensions": ["ou"],
+            "filterDimensions": [
+                "ou"
+            ],
             "rows": [
                 {
                     "id": "dx"
                 }
             ],
-            "rowDimensions": ["dx"],
+            "rowDimensions": [
+                "dx"
+            ],
             "categoryDimensions": [],
             "publicAccess": "--------",
             "externalAccess": false,
@@ -4274,6 +5269,7 @@
         },
         {
             "id": "eYaYrZfbJT1",
+            "type": "PIVOT_TABLE",
             "name": "Award Number 12345 - Achieved total (%) - People",
             "numberType": "VALUE",
             "legendDisplayStyle": "FILL",
@@ -4449,7 +5445,9 @@
                     ]
                 }
             ],
-            "columnDimensions": ["uSMHdwhxFSV"],
+            "columnDimensions": [
+                "uSMHdwhxFSV"
+            ],
             "filters": [
                 {
                     "id": "ou"
@@ -4458,13 +5456,18 @@
                     "id": "pe"
                 }
             ],
-            "filterDimensions": ["ou", "pe"],
+            "filterDimensions": [
+                "ou",
+                "pe"
+            ],
             "rows": [
                 {
                     "id": "dx"
                 }
             ],
-            "rowDimensions": ["dx"],
+            "rowDimensions": [
+                "dx"
+            ],
             "categoryDimensions": [
                 {
                     "category": {
@@ -4502,865 +5505,19 @@
                 "code": "ACTUAL_TARGET_ACHIEVED",
                 "id": "yoAt108kUFm"
             }
-        }
-    ],
-    "charts": [
-        {
-            "id": "uG9C9z46CNK",
-            "name": "MyProject - Achieved monthly (%)",
-            "periods": [
-                {
-                    "id": "201810"
-                },
-                {
-                    "id": "201811"
-                },
-                {
-                    "id": "201812"
-                },
-                {
-                    "id": "201901"
-                },
-                {
-                    "id": "201902"
-                },
-                {
-                    "id": "201903"
-                }
-            ],
-            "type": "COLUMN",
-            "aggregationType": "DEFAULT",
-            "showData": true,
-            "category": "dx",
-            "series": "pe",
-            "columns": [
-                {
-                    "id": "pe"
-                }
-            ],
-            "dataDimensionItems": [
-                {
-                    "dataDimensionItemType": "INDICATOR",
-                    "indicator": {
-                        "id": "eCufXa6RkTm"
-                    }
-                },
-                {
-                    "dataDimensionItemType": "INDICATOR",
-                    "indicator": {
-                        "id": "i01veyO4Cuw"
-                    }
-                },
-                {
-                    "dataDimensionItemType": "INDICATOR",
-                    "indicator": {
-                        "id": "eYmeRzhBFV4"
-                    }
-                },
-                {
-                    "dataDimensionItemType": "INDICATOR",
-                    "indicator": {
-                        "id": "u404ICrBKj3"
-                    }
-                },
-                {
-                    "dataDimensionItemType": "INDICATOR",
-                    "indicator": {
-                        "id": "K4sH0aQDdeL"
-                    }
-                }
-            ],
-            "rows": [
-                {
-                    "id": "dx"
-                }
-            ],
-            "filters": [
-                {
-                    "id": "ou"
-                }
-            ],
-            "filterDimensions": ["ou"],
-            "categoryDimensions": [],
-            "organisationUnits": [
-                {
-                    "id": "WGC0DJ0YSis"
-                }
-            ],
-            "publicAccess": "--------",
-            "externalAccess": false,
-            "userAccesses": [
-                {
-                    "id": "M5zQapPyTZI",
-                    "displayName": "admin admin",
-                    "access": "rw------"
-                }
-            ],
-            "userGroupAccesses": [
-                {
-                    "id": "ywuI2WspUUG",
-                    "displayName": "System Admin",
-                    "access": "rw------"
-                },
-                {
-                    "id": "mKKNXzeIAJs",
-                    "displayName": "Data Management Admin",
-                    "access": "rw------"
-                }
-            ]
-        },
-        {
-            "id": "qmsj4FqnVPX",
-            "name": "MyProject - Achieved Benefit (%)",
-            "periods": [
-                {
-                    "id": "201810"
-                },
-                {
-                    "id": "201811"
-                },
-                {
-                    "id": "201812"
-                },
-                {
-                    "id": "201901"
-                },
-                {
-                    "id": "201902"
-                },
-                {
-                    "id": "201903"
-                }
-            ],
-            "type": "COLUMN",
-            "aggregationType": "DEFAULT",
-            "showData": true,
-            "category": "dx",
-            "series": "ou",
-            "columns": [
-                {
-                    "id": "ou"
-                }
-            ],
-            "dataDimensionItems": [
-                {
-                    "dataDimensionItemType": "INDICATOR",
-                    "indicator": {
-                        "id": "eCufXa6RkTm"
-                    }
-                },
-                {
-                    "dataDimensionItemType": "INDICATOR",
-                    "indicator": {
-                        "id": "i01veyO4Cuw"
-                    }
-                }
-            ],
-            "rows": [
-                {
-                    "id": "dx"
-                }
-            ],
-            "filters": [
-                {
-                    "id": "pe"
-                }
-            ],
-            "filterDimensions": ["pe"],
-            "categoryDimensions": [],
-            "organisationUnits": [
-                {
-                    "id": "WGC0DJ0YSis"
-                }
-            ],
-            "publicAccess": "--------",
-            "externalAccess": false,
-            "userAccesses": [
-                {
-                    "id": "M5zQapPyTZI",
-                    "displayName": "admin admin",
-                    "access": "rw------"
-                }
-            ],
-            "userGroupAccesses": [
-                {
-                    "id": "ywuI2WspUUG",
-                    "displayName": "System Admin",
-                    "access": "rw------"
-                },
-                {
-                    "id": "mKKNXzeIAJs",
-                    "displayName": "Data Management Admin",
-                    "access": "rw------"
-                }
-            ]
-        },
-        {
-            "id": "uiyYMLiDaK2",
-            "name": "MyProject - Achieved People (%)",
-            "periods": [
-                {
-                    "id": "201810"
-                },
-                {
-                    "id": "201811"
-                },
-                {
-                    "id": "201812"
-                },
-                {
-                    "id": "201901"
-                },
-                {
-                    "id": "201902"
-                },
-                {
-                    "id": "201903"
-                }
-            ],
-            "type": "COLUMN",
-            "aggregationType": "DEFAULT",
-            "showData": true,
-            "category": "dx",
-            "series": "ou",
-            "columns": [
-                {
-                    "id": "ou"
-                }
-            ],
-            "dataDimensionItems": [
-                {
-                    "dataDimensionItemType": "INDICATOR",
-                    "indicator": {
-                        "id": "eYmeRzhBFV4"
-                    }
-                },
-                {
-                    "dataDimensionItemType": "INDICATOR",
-                    "indicator": {
-                        "id": "u404ICrBKj3"
-                    }
-                },
-                {
-                    "dataDimensionItemType": "INDICATOR",
-                    "indicator": {
-                        "id": "K4sH0aQDdeL"
-                    }
-                }
-            ],
-            "rows": [
-                {
-                    "id": "dx"
-                }
-            ],
-            "filters": [
-                {
-                    "id": "pe"
-                },
-                {
-                    "id": "uSMHdwhxFSV",
-                    "categoryOptions": [
-                        {
-                            "id": "KiK0FMExoqh"
-                        }
-                    ]
-                }
-            ],
-            "filterDimensions": ["pe", "uSMHdwhxFSV"],
-            "categoryDimensions": [
-                {
-                    "category": {
-                        "id": "uSMHdwhxFSV"
-                    },
-                    "categoryOptions": [
-                        {
-                            "id": "KiK0FMExoqh"
-                        }
-                    ]
-                }
-            ],
-            "organisationUnits": [
-                {
-                    "id": "WGC0DJ0YSis"
-                }
-            ],
-            "publicAccess": "--------",
-            "externalAccess": false,
-            "userAccesses": [
-                {
-                    "id": "M5zQapPyTZI",
-                    "displayName": "admin admin",
-                    "access": "rw------"
-                }
-            ],
-            "userGroupAccesses": [
-                {
-                    "id": "ywuI2WspUUG",
-                    "displayName": "System Admin",
-                    "access": "rw------"
-                },
-                {
-                    "id": "mKKNXzeIAJs",
-                    "displayName": "Data Management Admin",
-                    "access": "rw------"
-                }
-            ]
-        },
-        {
-            "id": "u6Sin4Fy1Wt",
-            "name": "MyProject - Achieved by gender (%)",
-            "periods": [
-                {
-                    "id": "201810"
-                },
-                {
-                    "id": "201811"
-                },
-                {
-                    "id": "201812"
-                },
-                {
-                    "id": "201901"
-                },
-                {
-                    "id": "201902"
-                },
-                {
-                    "id": "201903"
-                }
-            ],
-            "type": "COLUMN",
-            "aggregationType": "DEFAULT",
-            "showData": true,
-            "category": "dx",
-            "series": "Kyg1O6YEGa9",
-            "columns": [
-                {
-                    "code": "GENDER",
-                    "id": "Kyg1O6YEGa9",
-                    "dataDimensionType": "DISAGGREGATION",
-                    "categoryOptions": [
-                        {
-                            "code": "MALE",
-                            "id": "qk2FihwV6IL"
-                        },
-                        {
-                            "code": "FEMALE",
-                            "id": "yW2hYVS3S4u"
-                        }
-                    ]
-                }
-            ],
-            "dataDimensionItems": [
-                {
-                    "dataDimensionItemType": "INDICATOR",
-                    "indicator": {
-                        "id": "eYmeRzhBFV4"
-                    }
-                },
-                {
-                    "dataDimensionItemType": "INDICATOR",
-                    "indicator": {
-                        "id": "u404ICrBKj3"
-                    }
-                },
-                {
-                    "dataDimensionItemType": "INDICATOR",
-                    "indicator": {
-                        "id": "K4sH0aQDdeL"
-                    }
-                }
-            ],
-            "rows": [
-                {
-                    "id": "dx"
-                }
-            ],
-            "filters": [
-                {
-                    "id": "ou"
-                },
-                {
-                    "id": "pe"
-                },
-                {
-                    "id": "uSMHdwhxFSV",
-                    "categoryOptions": [
-                        {
-                            "id": "KiK0FMExoqh"
-                        }
-                    ]
-                }
-            ],
-            "filterDimensions": ["ou", "pe", "uSMHdwhxFSV"],
-            "categoryDimensions": [
-                {
-                    "category": {
-                        "id": "uSMHdwhxFSV"
-                    },
-                    "categoryOptions": [
-                        {
-                            "id": "KiK0FMExoqh"
-                        }
-                    ]
-                },
-                {
-                    "category": {
-                        "id": "Kyg1O6YEGa9"
-                    },
-                    "categoryOptions": [
-                        {
-                            "id": "qk2FihwV6IL"
-                        },
-                        {
-                            "id": "yW2hYVS3S4u"
-                        }
-                    ]
-                }
-            ],
-            "organisationUnits": [
-                {
-                    "id": "WGC0DJ0YSis"
-                }
-            ],
-            "publicAccess": "--------",
-            "externalAccess": false,
-            "userAccesses": [
-                {
-                    "id": "M5zQapPyTZI",
-                    "displayName": "admin admin",
-                    "access": "rw------"
-                }
-            ],
-            "userGroupAccesses": [
-                {
-                    "id": "ywuI2WspUUG",
-                    "displayName": "System Admin",
-                    "access": "rw------"
-                },
-                {
-                    "id": "mKKNXzeIAJs",
-                    "displayName": "Data Management Admin",
-                    "access": "rw------"
-                }
-            ]
-        },
-        {
-            "id": "ukewRkZsyCI",
-            "name": "MyProject - Benefits Per Person",
-            "periods": [
-                {
-                    "id": "201810"
-                },
-                {
-                    "id": "201811"
-                },
-                {
-                    "id": "201812"
-                },
-                {
-                    "id": "201901"
-                },
-                {
-                    "id": "201902"
-                },
-                {
-                    "id": "201903"
-                }
-            ],
-            "type": "COLUMN",
-            "aggregationType": "DEFAULT",
-            "showData": true,
-            "category": "dx",
-            "series": "ou",
-            "columns": [
-                {
-                    "id": "ou"
-                }
-            ],
-            "dataDimensionItems": [
-                {
-                    "dataDimensionItemType": "INDICATOR",
-                    "indicator": {
-                        "id": "Gob5qHAX60C"
-                    }
-                }
-            ],
-            "rows": [
-                {
-                    "id": "dx"
-                }
-            ],
-            "filters": [
-                {
-                    "id": "pe"
-                }
-            ],
-            "filterDimensions": ["pe"],
-            "categoryDimensions": [],
-            "organisationUnits": [
-                {
-                    "id": "WGC0DJ0YSis"
-                }
-            ],
-            "publicAccess": "--------",
-            "externalAccess": false,
-            "userAccesses": [
-                {
-                    "id": "M5zQapPyTZI",
-                    "displayName": "admin admin",
-                    "access": "rw------"
-                }
-            ],
-            "userGroupAccesses": [
-                {
-                    "id": "ywuI2WspUUG",
-                    "displayName": "System Admin",
-                    "access": "rw------"
-                },
-                {
-                    "id": "mKKNXzeIAJs",
-                    "displayName": "Data Management Admin",
-                    "access": "rw------"
-                }
-            ]
-        },
-        {
-            "id": "GqYJDh6asM8",
-            "name": "[Bahamas] Aggregated Actual Values - People",
-            "periods": [],
-            "relativePeriods": {
-                "thisYear": true
-            },
-            "type": "COLUMN",
-            "aggregationType": "DEFAULT",
-            "showData": true,
-            "category": "pe",
-            "series": "dx",
-            "columns": [
-                {
-                    "id": "dx"
-                }
-            ],
-            "dataDimensionItems": [
-                {
-                    "dataDimensionItemType": "DATA_ELEMENT",
-                    "dataElement": {
-                        "id": "SQy5q6kCYI1"
-                    }
-                },
-                {
-                    "dataDimensionItemType": "DATA_ELEMENT",
-                    "dataElement": {
-                        "id": "iYEDR850FFL"
-                    }
-                },
-                {
-                    "dataDimensionItemType": "DATA_ELEMENT",
-                    "dataElement": {
-                        "id": "qkyeCTJHU2d"
-                    }
-                },
-                {
-                    "dataDimensionItemType": "DATA_ELEMENT",
-                    "dataElement": {
-                        "id": "eAkVLI8mKBa"
-                    }
-                },
-                {
-                    "dataDimensionItemType": "DATA_ELEMENT",
-                    "dataElement": {
-                        "id": "Kg29718LQHl"
-                    }
-                },
-                {
-                    "dataDimensionItemType": "DATA_ELEMENT",
-                    "dataElement": {
-                        "id": "KKmUWsn19fq"
-                    }
-                },
-                {
-                    "dataDimensionItemType": "DATA_ELEMENT",
-                    "dataElement": {
-                        "id": "iCKxYSFIlcu"
-                    }
-                },
-                {
-                    "dataDimensionItemType": "DATA_ELEMENT",
-                    "dataElement": {
-                        "id": "qAM1NbCbS9G"
-                    }
-                },
-                {
-                    "dataDimensionItemType": "DATA_ELEMENT",
-                    "dataElement": {
-                        "id": "K6mAC5SiO29"
-                    }
-                },
-                {
-                    "dataDimensionItemType": "DATA_ELEMENT",
-                    "dataElement": {
-                        "id": "ik0ICagvIjm"
-                    }
-                },
-                {
-                    "dataDimensionItemType": "DATA_ELEMENT",
-                    "dataElement": {
-                        "id": "GQyudNlGzkI"
-                    }
-                }
-            ],
-            "rows": [
-                {
-                    "id": "pe"
-                }
-            ],
-            "filters": [
-                {
-                    "id": "ou"
-                },
-                {
-                    "id": "uSMHdwhxFSV",
-                    "categoryOptions": [
-                        {
-                            "id": "KiK0FMExoqh"
-                        }
-                    ]
-                },
-                {
-                    "id": "GIIHAr9BzzO",
-                    "categoryOptions": [
-                        {
-                            "id": "eWeQoOlAcxV"
-                        }
-                    ]
-                }
-            ],
-            "filterDimensions": ["ou", "uSMHdwhxFSV", "GIIHAr9BzzO"],
-            "categoryDimensions": [
-                {
-                    "category": {
-                        "id": "uSMHdwhxFSV"
-                    },
-                    "categoryOptions": [
-                        {
-                            "id": "KiK0FMExoqh"
-                        }
-                    ]
-                },
-                {
-                    "category": {
-                        "id": "GIIHAr9BzzO"
-                    },
-                    "categoryOptions": [
-                        {
-                            "id": "eWeQoOlAcxV"
-                        }
-                    ]
-                }
-            ],
-            "organisationUnits": [
-                {
-                    "id": "eu2XF73JOzl"
-                }
-            ],
-            "publicAccess": "rw------"
-        },
-        {
-            "id": "me6p7L8VHXl",
-            "name": "[Bahamas] Aggregated Actual Values - Benefit",
-            "periods": [],
-            "relativePeriods": {
-                "thisYear": true
-            },
-            "type": "COLUMN",
-            "aggregationType": "DEFAULT",
-            "showData": true,
-            "category": "pe",
-            "series": "dx",
-            "columns": [
-                {
-                    "id": "dx"
-                }
-            ],
-            "dataDimensionItems": [
-                {
-                    "dataDimensionItemType": "DATA_ELEMENT",
-                    "dataElement": {
-                        "id": "aYk5MgSCLXP"
-                    }
-                },
-                {
-                    "dataDimensionItemType": "DATA_ELEMENT",
-                    "dataElement": {
-                        "id": "CI8NCm34d7D"
-                    }
-                },
-                {
-                    "dataDimensionItemType": "DATA_ELEMENT",
-                    "dataElement": {
-                        "id": "mu2b9Ivde6J"
-                    }
-                },
-                {
-                    "dataDimensionItemType": "DATA_ELEMENT",
-                    "dataElement": {
-                        "id": "WUMjtbgofs2"
-                    }
-                },
-                {
-                    "dataDimensionItemType": "DATA_ELEMENT",
-                    "dataElement": {
-                        "id": "umkL2sEVSNR"
-                    }
-                },
-                {
-                    "dataDimensionItemType": "DATA_ELEMENT",
-                    "dataElement": {
-                        "id": "SCY3TdhSz1K"
-                    }
-                },
-                {
-                    "dataDimensionItemType": "DATA_ELEMENT",
-                    "dataElement": {
-                        "id": "WS8XV4WWPE7"
-                    }
-                },
-                {
-                    "dataDimensionItemType": "DATA_ELEMENT",
-                    "dataElement": {
-                        "id": "yMqK9DKbA3X"
-                    }
-                }
-            ],
-            "rows": [
-                {
-                    "id": "pe"
-                }
-            ],
-            "filters": [
-                {
-                    "id": "ou"
-                },
-                {
-                    "id": "GIIHAr9BzzO",
-                    "categoryOptions": [
-                        {
-                            "id": "eWeQoOlAcxV"
-                        }
-                    ]
-                }
-            ],
-            "filterDimensions": ["ou", "GIIHAr9BzzO"],
-            "categoryDimensions": [
-                {
-                    "category": {
-                        "id": "GIIHAr9BzzO"
-                    },
-                    "categoryOptions": [
-                        {
-                            "id": "eWeQoOlAcxV"
-                        }
-                    ]
-                }
-            ],
-            "organisationUnits": [
-                {
-                    "id": "eu2XF73JOzl"
-                }
-            ],
-            "publicAccess": "rw------"
         },
         {
             "id": "CYYNLjxd96q",
-            "name": "Award Number 12345 - Achieved monthly (%)",
-            "periods": [
-                {
-                    "id": "201810"
-                },
-                {
-                    "id": "201811"
-                },
-                {
-                    "id": "201812"
-                },
-                {
-                    "id": "201901"
-                },
-                {
-                    "id": "201902"
-                },
-                {
-                    "id": "201903"
-                },
-                {
-                    "id": "201904"
-                },
-                {
-                    "id": "201905"
-                },
-                {
-                    "id": "201906"
-                },
-                {
-                    "id": "201907"
-                },
-                {
-                    "id": "201908"
-                },
-                {
-                    "id": "201909"
-                },
-                {
-                    "id": "201910"
-                },
-                {
-                    "id": "201911"
-                },
-                {
-                    "id": "201912"
-                },
-                {
-                    "id": "202001"
-                },
-                {
-                    "id": "202002"
-                },
-                {
-                    "id": "202003"
-                },
-                {
-                    "id": "202004"
-                },
-                {
-                    "id": "202005"
-                },
-                {
-                    "id": "202006"
-                },
-                {
-                    "id": "202007"
-                },
-                {
-                    "id": "202008"
-                },
-                {
-                    "id": "202009"
-                },
-                {
-                    "id": "202010"
-                }
-            ],
             "type": "COLUMN",
+            "name": "Award Number 12345 - Achieved monthly (%)",
+            "numberType": "VALUE",
+            "legendDisplayStyle": "FILL",
+            "rowSubTotals": true,
+            "showDimensionLabels": true,
             "aggregationType": "DEFAULT",
-            "showData": true,
-            "category": "dx",
-            "series": "pe",
-            "columns": [
-                {
-                    "id": "pe"
-                }
-            ],
+            "legendDisplayStrategy": "FIXED",
+            "rowTotals": true,
+            "digitGroupSeparator": "SPACE",
             "dataDimensionItems": [
                 {
                     "dataDimensionItemType": "INDICATOR",
@@ -5477,18 +5634,6 @@
                     }
                 }
             ],
-            "rows": [
-                {
-                    "id": "dx"
-                }
-            ],
-            "filters": [
-                {
-                    "id": "ou"
-                }
-            ],
-            "filterDimensions": ["ou"],
-            "categoryDimensions": [],
             "organisationUnits": [
                 {
                     "id": "WGC0DJ0YSis"
@@ -5500,6 +5645,108 @@
                     "id": "cqZ9zQfePzQ"
                 }
             ],
+            "periods": [
+                {
+                    "id": "201810"
+                },
+                {
+                    "id": "201811"
+                },
+                {
+                    "id": "201812"
+                },
+                {
+                    "id": "201901"
+                },
+                {
+                    "id": "201902"
+                },
+                {
+                    "id": "201903"
+                },
+                {
+                    "id": "201904"
+                },
+                {
+                    "id": "201905"
+                },
+                {
+                    "id": "201906"
+                },
+                {
+                    "id": "201907"
+                },
+                {
+                    "id": "201908"
+                },
+                {
+                    "id": "201909"
+                },
+                {
+                    "id": "201910"
+                },
+                {
+                    "id": "201911"
+                },
+                {
+                    "id": "201912"
+                },
+                {
+                    "id": "202001"
+                },
+                {
+                    "id": "202002"
+                },
+                {
+                    "id": "202003"
+                },
+                {
+                    "id": "202004"
+                },
+                {
+                    "id": "202005"
+                },
+                {
+                    "id": "202006"
+                },
+                {
+                    "id": "202007"
+                },
+                {
+                    "id": "202008"
+                },
+                {
+                    "id": "202009"
+                },
+                {
+                    "id": "202010"
+                }
+            ],
+            "columns": [
+                {
+                    "id": "pe"
+                }
+            ],
+            "columnDimensions": [
+                "pe"
+            ],
+            "filters": [
+                {
+                    "id": "ou"
+                }
+            ],
+            "filterDimensions": [
+                "ou"
+            ],
+            "rows": [
+                {
+                    "id": "dx"
+                }
+            ],
+            "rowDimensions": [
+                "dx"
+            ],
+            "categoryDimensions": [],
             "publicAccess": "--------",
             "externalAccess": false,
             "userAccesses": [
@@ -5524,94 +5771,16 @@
         },
         {
             "id": "Gi2PegQJhbu",
-            "name": "Award Number 12345 - Achieved Benefit (%)",
-            "periods": [
-                {
-                    "id": "201810"
-                },
-                {
-                    "id": "201811"
-                },
-                {
-                    "id": "201812"
-                },
-                {
-                    "id": "201901"
-                },
-                {
-                    "id": "201902"
-                },
-                {
-                    "id": "201903"
-                },
-                {
-                    "id": "201904"
-                },
-                {
-                    "id": "201905"
-                },
-                {
-                    "id": "201906"
-                },
-                {
-                    "id": "201907"
-                },
-                {
-                    "id": "201908"
-                },
-                {
-                    "id": "201909"
-                },
-                {
-                    "id": "201910"
-                },
-                {
-                    "id": "201911"
-                },
-                {
-                    "id": "201912"
-                },
-                {
-                    "id": "202001"
-                },
-                {
-                    "id": "202002"
-                },
-                {
-                    "id": "202003"
-                },
-                {
-                    "id": "202004"
-                },
-                {
-                    "id": "202005"
-                },
-                {
-                    "id": "202006"
-                },
-                {
-                    "id": "202007"
-                },
-                {
-                    "id": "202008"
-                },
-                {
-                    "id": "202009"
-                },
-                {
-                    "id": "202010"
-                }
-            ],
             "type": "COLUMN",
+            "name": "Award Number 12345 - Achieved Benefit (%)",
+            "numberType": "VALUE",
+            "legendDisplayStyle": "FILL",
+            "rowSubTotals": true,
+            "showDimensionLabels": true,
             "aggregationType": "DEFAULT",
-            "showData": true,
-            "category": "dx",
-            "series": "ou",
-            "columns": [
-                {
-                    "id": "ou"
-                }
-            ],
+            "legendDisplayStrategy": "FIXED",
+            "rowTotals": true,
+            "digitGroupSeparator": "SPACE",
             "dataDimensionItems": [
                 {
                     "dataDimensionItemType": "INDICATOR",
@@ -5662,18 +5831,6 @@
                     }
                 }
             ],
-            "rows": [
-                {
-                    "id": "dx"
-                }
-            ],
-            "filters": [
-                {
-                    "id": "pe"
-                }
-            ],
-            "filterDimensions": ["pe"],
-            "categoryDimensions": [],
             "organisationUnits": [
                 {
                     "id": "WGC0DJ0YSis"
@@ -5685,31 +5842,6 @@
                     "id": "cqZ9zQfePzQ"
                 }
             ],
-            "publicAccess": "--------",
-            "externalAccess": false,
-            "userAccesses": [
-                {
-                    "id": "M5zQapPyTZI",
-                    "displayName": "admin admin",
-                    "access": "rw------"
-                }
-            ],
-            "userGroupAccesses": [
-                {
-                    "id": "ywuI2WspUUG",
-                    "displayName": "System Admin",
-                    "access": "rw------"
-                },
-                {
-                    "id": "mKKNXzeIAJs",
-                    "displayName": "Data Management Admin",
-                    "access": "rw------"
-                }
-            ]
-        },
-        {
-            "id": "Ww2X5s48uQx",
-            "name": "Award Number 12345 - Achieved People (%)",
             "periods": [
                 {
                     "id": "201810"
@@ -5787,16 +5919,65 @@
                     "id": "202010"
                 }
             ],
-            "type": "COLUMN",
-            "aggregationType": "DEFAULT",
-            "showData": true,
-            "category": "dx",
-            "series": "ou",
             "columns": [
                 {
                     "id": "ou"
                 }
             ],
+            "columnDimensions": [
+                "ou"
+            ],
+            "filters": [
+                {
+                    "id": "pe"
+                }
+            ],
+            "filterDimensions": [
+                "pe"
+            ],
+            "rows": [
+                {
+                    "id": "dx"
+                }
+            ],
+            "rowDimensions": [
+                "dx"
+            ],
+            "categoryDimensions": [],
+            "publicAccess": "--------",
+            "externalAccess": false,
+            "userAccesses": [
+                {
+                    "id": "M5zQapPyTZI",
+                    "displayName": "admin admin",
+                    "access": "rw------"
+                }
+            ],
+            "userGroupAccesses": [
+                {
+                    "id": "ywuI2WspUUG",
+                    "displayName": "System Admin",
+                    "access": "rw------"
+                },
+                {
+                    "id": "mKKNXzeIAJs",
+                    "displayName": "Data Management Admin",
+                    "access": "rw------"
+                }
+            ]
+        },
+        {
+            "id": "Ww2X5s48uQx",
+            "type": "COLUMN",
+            "name": "Award Number 12345 - Achieved People (%)",
+            "numberType": "VALUE",
+            "legendDisplayStyle": "FILL",
+            "rowSubTotals": true,
+            "showDimensionLabels": true,
+            "aggregationType": "DEFAULT",
+            "legendDisplayStrategy": "FIXED",
+            "rowTotals": true,
+            "digitGroupSeparator": "SPACE",
             "dataDimensionItems": [
                 {
                     "dataDimensionItemType": "INDICATOR",
@@ -5865,10 +6046,101 @@
                     }
                 }
             ],
-            "rows": [
+            "organisationUnits": [
                 {
-                    "id": "dx"
+                    "id": "WGC0DJ0YSis"
+                },
+                {
+                    "id": "TvSmIyYcRnd"
+                },
+                {
+                    "id": "cqZ9zQfePzQ"
                 }
+            ],
+            "periods": [
+                {
+                    "id": "201810"
+                },
+                {
+                    "id": "201811"
+                },
+                {
+                    "id": "201812"
+                },
+                {
+                    "id": "201901"
+                },
+                {
+                    "id": "201902"
+                },
+                {
+                    "id": "201903"
+                },
+                {
+                    "id": "201904"
+                },
+                {
+                    "id": "201905"
+                },
+                {
+                    "id": "201906"
+                },
+                {
+                    "id": "201907"
+                },
+                {
+                    "id": "201908"
+                },
+                {
+                    "id": "201909"
+                },
+                {
+                    "id": "201910"
+                },
+                {
+                    "id": "201911"
+                },
+                {
+                    "id": "201912"
+                },
+                {
+                    "id": "202001"
+                },
+                {
+                    "id": "202002"
+                },
+                {
+                    "id": "202003"
+                },
+                {
+                    "id": "202004"
+                },
+                {
+                    "id": "202005"
+                },
+                {
+                    "id": "202006"
+                },
+                {
+                    "id": "202007"
+                },
+                {
+                    "id": "202008"
+                },
+                {
+                    "id": "202009"
+                },
+                {
+                    "id": "202010"
+                }
+            ],
+            "columns": [
+                {
+                    "id": "ou"
+                }
+            ],
+            "columnDimensions": [
+                "ou"
             ],
             "filters": [
                 {
@@ -5883,7 +6155,18 @@
                     ]
                 }
             ],
-            "filterDimensions": ["pe", "uSMHdwhxFSV"],
+            "filterDimensions": [
+                "pe",
+                "uSMHdwhxFSV"
+            ],
+            "rows": [
+                {
+                    "id": "dx"
+                }
+            ],
+            "rowDimensions": [
+                "dx"
+            ],
             "categoryDimensions": [
                 {
                     "category": {
@@ -5894,17 +6177,6 @@
                             "id": "KiK0FMExoqh"
                         }
                     ]
-                }
-            ],
-            "organisationUnits": [
-                {
-                    "id": "WGC0DJ0YSis"
-                },
-                {
-                    "id": "TvSmIyYcRnd"
-                },
-                {
-                    "id": "cqZ9zQfePzQ"
                 }
             ],
             "publicAccess": "--------",
@@ -5931,106 +6203,16 @@
         },
         {
             "id": "CMqisHj7sP9",
-            "name": "Award Number 12345 - Achieved by gender (%)",
-            "periods": [
-                {
-                    "id": "201810"
-                },
-                {
-                    "id": "201811"
-                },
-                {
-                    "id": "201812"
-                },
-                {
-                    "id": "201901"
-                },
-                {
-                    "id": "201902"
-                },
-                {
-                    "id": "201903"
-                },
-                {
-                    "id": "201904"
-                },
-                {
-                    "id": "201905"
-                },
-                {
-                    "id": "201906"
-                },
-                {
-                    "id": "201907"
-                },
-                {
-                    "id": "201908"
-                },
-                {
-                    "id": "201909"
-                },
-                {
-                    "id": "201910"
-                },
-                {
-                    "id": "201911"
-                },
-                {
-                    "id": "201912"
-                },
-                {
-                    "id": "202001"
-                },
-                {
-                    "id": "202002"
-                },
-                {
-                    "id": "202003"
-                },
-                {
-                    "id": "202004"
-                },
-                {
-                    "id": "202005"
-                },
-                {
-                    "id": "202006"
-                },
-                {
-                    "id": "202007"
-                },
-                {
-                    "id": "202008"
-                },
-                {
-                    "id": "202009"
-                },
-                {
-                    "id": "202010"
-                }
-            ],
             "type": "COLUMN",
+            "name": "Award Number 12345 - Achieved by gender (%)",
+            "numberType": "VALUE",
+            "legendDisplayStyle": "FILL",
+            "rowSubTotals": true,
+            "showDimensionLabels": true,
             "aggregationType": "DEFAULT",
-            "showData": true,
-            "category": "dx",
-            "series": "Kyg1O6YEGa9",
-            "columns": [
-                {
-                    "code": "GENDER",
-                    "id": "Kyg1O6YEGa9",
-                    "dataDimensionType": "DISAGGREGATION",
-                    "categoryOptions": [
-                        {
-                            "code": "MALE",
-                            "id": "qk2FihwV6IL"
-                        },
-                        {
-                            "code": "FEMALE",
-                            "id": "yW2hYVS3S4u"
-                        }
-                    ]
-                }
-            ],
+            "legendDisplayStrategy": "FIXED",
+            "rowTotals": true,
+            "digitGroupSeparator": "SPACE",
             "dataDimensionItems": [
                 {
                     "dataDimensionItemType": "INDICATOR",
@@ -6099,53 +6281,6 @@
                     }
                 }
             ],
-            "rows": [
-                {
-                    "id": "dx"
-                }
-            ],
-            "filters": [
-                {
-                    "id": "ou"
-                },
-                {
-                    "id": "pe"
-                },
-                {
-                    "id": "uSMHdwhxFSV",
-                    "categoryOptions": [
-                        {
-                            "id": "KiK0FMExoqh"
-                        }
-                    ]
-                }
-            ],
-            "filterDimensions": ["ou", "pe", "uSMHdwhxFSV"],
-            "categoryDimensions": [
-                {
-                    "category": {
-                        "id": "uSMHdwhxFSV"
-                    },
-                    "categoryOptions": [
-                        {
-                            "id": "KiK0FMExoqh"
-                        }
-                    ]
-                },
-                {
-                    "category": {
-                        "id": "Kyg1O6YEGa9"
-                    },
-                    "categoryOptions": [
-                        {
-                            "id": "qk2FihwV6IL"
-                        },
-                        {
-                            "id": "yW2hYVS3S4u"
-                        }
-                    ]
-                }
-            ],
             "organisationUnits": [
                 {
                     "id": "WGC0DJ0YSis"
@@ -6157,31 +6292,6 @@
                     "id": "cqZ9zQfePzQ"
                 }
             ],
-            "publicAccess": "--------",
-            "externalAccess": false,
-            "userAccesses": [
-                {
-                    "id": "M5zQapPyTZI",
-                    "displayName": "admin admin",
-                    "access": "rw------"
-                }
-            ],
-            "userGroupAccesses": [
-                {
-                    "id": "ywuI2WspUUG",
-                    "displayName": "System Admin",
-                    "access": "rw------"
-                },
-                {
-                    "id": "mKKNXzeIAJs",
-                    "displayName": "Data Management Admin",
-                    "access": "rw------"
-                }
-            ]
-        },
-        {
-            "id": "WGWGaYtwJzp",
-            "name": "Award Number 12345 - Benefits Per Person",
             "periods": [
                 {
                     "id": "201810"
@@ -6259,16 +6369,114 @@
                     "id": "202010"
                 }
             ],
-            "type": "COLUMN",
-            "aggregationType": "DEFAULT",
-            "showData": true,
-            "category": "dx",
-            "series": "ou",
             "columns": [
                 {
-                    "id": "ou"
+                    "code": "GENDER",
+                    "id": "Kyg1O6YEGa9",
+                    "dataDimensionType": "DISAGGREGATION",
+                    "categoryOptions": [
+                        {
+                            "code": "MALE",
+                            "id": "qk2FihwV6IL"
+                        },
+                        {
+                            "code": "FEMALE",
+                            "id": "yW2hYVS3S4u"
+                        }
+                    ]
                 }
             ],
+            "columnDimensions": [
+                "Kyg1O6YEGa9"
+            ],
+            "filters": [
+                {
+                    "id": "ou"
+                },
+                {
+                    "id": "pe"
+                },
+                {
+                    "id": "uSMHdwhxFSV",
+                    "categoryOptions": [
+                        {
+                            "id": "KiK0FMExoqh"
+                        }
+                    ]
+                }
+            ],
+            "filterDimensions": [
+                "ou",
+                "pe",
+                "uSMHdwhxFSV"
+            ],
+            "rows": [
+                {
+                    "id": "dx"
+                }
+            ],
+            "rowDimensions": [
+                "dx"
+            ],
+            "categoryDimensions": [
+                {
+                    "category": {
+                        "id": "Kyg1O6YEGa9"
+                    },
+                    "categoryOptions": [
+                        {
+                            "id": "qk2FihwV6IL"
+                        },
+                        {
+                            "id": "yW2hYVS3S4u"
+                        }
+                    ]
+                },
+                {
+                    "category": {
+                        "id": "uSMHdwhxFSV"
+                    },
+                    "categoryOptions": [
+                        {
+                            "id": "KiK0FMExoqh"
+                        }
+                    ]
+                }
+            ],
+            "publicAccess": "--------",
+            "externalAccess": false,
+            "userAccesses": [
+                {
+                    "id": "M5zQapPyTZI",
+                    "displayName": "admin admin",
+                    "access": "rw------"
+                }
+            ],
+            "userGroupAccesses": [
+                {
+                    "id": "ywuI2WspUUG",
+                    "displayName": "System Admin",
+                    "access": "rw------"
+                },
+                {
+                    "id": "mKKNXzeIAJs",
+                    "displayName": "Data Management Admin",
+                    "access": "rw------"
+                }
+            ]
+        },
+        {
+            "id": "WGWGaYtwJzp",
+            "type": "COLUMN",
+            "name": "Award Number 12345 - Benefits Per Person",
+            "numberType": "VALUE",
+            "legendDisplayStyle": "FILL",
+            "rowSubTotals": true,
+            "showDimensionLabels": true,
+            "aggregationType": "DEFAULT",
+            "legendDisplayStrategy": "FIXED",
+            "rowTotals": true,
+            "digitGroupSeparator": "SPACE",
             "dataDimensionItems": [
                 {
                     "dataDimensionItemType": "INDICATOR",
@@ -6277,18 +6485,6 @@
                     }
                 }
             ],
-            "rows": [
-                {
-                    "id": "dx"
-                }
-            ],
-            "filters": [
-                {
-                    "id": "pe"
-                }
-            ],
-            "filterDimensions": ["pe"],
-            "categoryDimensions": [],
             "organisationUnits": [
                 {
                     "id": "WGC0DJ0YSis"
@@ -6300,6 +6496,108 @@
                     "id": "cqZ9zQfePzQ"
                 }
             ],
+            "periods": [
+                {
+                    "id": "201810"
+                },
+                {
+                    "id": "201811"
+                },
+                {
+                    "id": "201812"
+                },
+                {
+                    "id": "201901"
+                },
+                {
+                    "id": "201902"
+                },
+                {
+                    "id": "201903"
+                },
+                {
+                    "id": "201904"
+                },
+                {
+                    "id": "201905"
+                },
+                {
+                    "id": "201906"
+                },
+                {
+                    "id": "201907"
+                },
+                {
+                    "id": "201908"
+                },
+                {
+                    "id": "201909"
+                },
+                {
+                    "id": "201910"
+                },
+                {
+                    "id": "201911"
+                },
+                {
+                    "id": "201912"
+                },
+                {
+                    "id": "202001"
+                },
+                {
+                    "id": "202002"
+                },
+                {
+                    "id": "202003"
+                },
+                {
+                    "id": "202004"
+                },
+                {
+                    "id": "202005"
+                },
+                {
+                    "id": "202006"
+                },
+                {
+                    "id": "202007"
+                },
+                {
+                    "id": "202008"
+                },
+                {
+                    "id": "202009"
+                },
+                {
+                    "id": "202010"
+                }
+            ],
+            "columns": [
+                {
+                    "id": "ou"
+                }
+            ],
+            "columnDimensions": [
+                "ou"
+            ],
+            "filters": [
+                {
+                    "id": "pe"
+                }
+            ],
+            "filterDimensions": [
+                "pe"
+            ],
+            "rows": [
+                {
+                    "id": "dx"
+                }
+            ],
+            "rowDimensions": [
+                "dx"
+            ],
+            "categoryDimensions": [],
             "publicAccess": "--------",
             "externalAccess": false,
             "userAccesses": [
