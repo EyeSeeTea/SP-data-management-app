@@ -13,19 +13,17 @@ import { Ref, D2DashboardItem, Id } from "../types/d2-api";
 import i18n from "../locales";
 import { getUid, getRefs } from "../utils/dhis2";
 import {
-    getReportTableItem,
-    getChartItem,
+    getReportTableItem as getReportTableDashboardItem,
+    getChartDashboardItem,
     positionItems,
     dimensions,
-    MaybeD2Chart,
-    Chart,
     toItemWidth,
     PositionItemsOptions,
     dataElementItems,
-    getD2Chart,
-    Table,
-    MaybeD2Table,
-    getD2ReportTable,
+    Visualization,
+    MaybeD2Visualization,
+    getD2Visualization,
+    VisualizationDefinition,
 } from "./Dashboard";
 import { PeopleOrBenefit } from "./dataElementsSet";
 import { addAttributeValueToObj, AttributeValue } from "./Attributes";
@@ -117,8 +115,8 @@ export default class CountryDashboard {
         const favorites = { visualizations: _.concat(reportTables, charts) };
 
         const items: Array<PartialModel<D2DashboardItem>> = _.compact([
-            ...charts.map(chart => getChartItem(chart)),
-            ...reportTables.map(reportTable => getReportTableItem(reportTable)),
+            ...charts.map(chart => getChartDashboardItem(chart)),
+            ...reportTables.map(reportTable => getReportTableDashboardItem(reportTable)),
         ]);
 
         const dashboard = {
@@ -140,58 +138,58 @@ export default class CountryDashboard {
         };
     }
 
-    aggregatedActualValuesPeopleChart(): MaybeD2Chart {
+    aggregatedActualValuesPeopleChart(): MaybeD2Visualization {
         return this.getChart({
             key: "aggregated-actual-people",
             name: i18n.t("Aggregated Actual Values - People"),
             items: dataElementItems(this.dataElements.people),
-            reportFilter: [dimensions.orgUnit, this.categories.new, this.categories.actual],
-            seriesDimension: dimensions.data,
-            categoryDimension: dimensions.period,
+            filters: [dimensions.orgUnit, this.categories.new, this.categories.actual],
+            columns: [dimensions.data],
+            rows: [dimensions.period],
         });
     }
 
-    aggregatedActualValuesBenefitChart(): MaybeD2Chart {
+    aggregatedActualValuesBenefitChart(): MaybeD2Visualization {
         return this.getChart({
             key: "aggregated-actual-benefit",
             name: i18n.t("Aggregated Actual Values - Benefit"),
             items: dataElementItems(this.dataElements.benefit),
-            reportFilter: [dimensions.orgUnit, this.categories.actual],
-            seriesDimension: dimensions.data,
-            categoryDimension: dimensions.period,
+            filters: [dimensions.orgUnit, this.categories.actual],
+            columns: [dimensions.data],
+            rows: [dimensions.period],
         });
     }
 
-    projectsActualPeopleTable(): MaybeD2Table {
+    projectsActualPeopleTable(): MaybeD2Visualization {
         const { dataElements } = this;
 
         return this.getTable({
             key: "reportTable-actual-people",
             name: i18n.t("Projects - People"),
             items: dataElementItems(dataElements.people),
-            reportFilter: [dimensions.period, this.categories.new, this.categories.actual],
-            columnDimensions: [dimensions.data],
-            rowDimensions: [dimensions.orgUnit],
+            filters: [dimensions.period, this.categories.new, this.categories.actual],
+            columns: [dimensions.data],
+            rows: [dimensions.orgUnit],
         });
     }
 
-    projectsActualBenefitTable(): MaybeD2Table {
+    projectsActualBenefitTable(): MaybeD2Visualization {
         const { dataElements } = this;
 
         return this.getTable({
             key: "reportTable-actual-benefit",
             name: i18n.t("Projects - Benefit"),
             items: dataElementItems(dataElements.benefit),
-            reportFilter: [dimensions.period, this.categories.actual],
-            columnDimensions: [dimensions.data],
-            rowDimensions: [dimensions.orgUnit],
+            filters: [dimensions.period, this.categories.actual],
+            columns: [dimensions.data],
+            rows: [dimensions.orgUnit],
         });
     }
 
-    getChart(baseChart: BaseChart): MaybeD2Chart {
+    getChart(baseChart: VisualizationDefinition): MaybeD2Visualization {
         const { country } = this;
 
-        const chart: Chart = {
+        const chart: Visualization = {
             ...baseChart,
             key: baseChart.key + country.id,
             name: `[${country.name}] ${baseChart.name}`,
@@ -201,15 +199,15 @@ export default class CountryDashboard {
             sharing: this.getSharing(),
         };
 
-        const d2Chart = getD2Chart(chart);
+        const d2Chart = getD2Visualization(chart);
 
         return d2Chart ? { ...d2Chart, ...chart.extra } : null;
     }
 
-    getTable(baseTable: BaseTable): MaybeD2Table {
+    getTable(baseTable: VisualizationDefinition): MaybeD2Visualization {
         const { country } = this;
 
-        const chart: Table = {
+        const chart: Visualization = {
             ...baseTable,
             key: baseTable.key + country.id,
             name: `[${country.name}] ${baseTable.name}`,
@@ -219,7 +217,7 @@ export default class CountryDashboard {
             sharing: this.getSharing(),
         };
 
-        const d2Table = getD2ReportTable(chart);
+        const d2Table = getD2Visualization(chart);
 
         return d2Table ? { ...d2Table, ...chart.extra } : null;
     }
@@ -258,20 +256,3 @@ const positionItemsOptions: PositionItemsOptions = {
     defaultWidth: toItemWidth(100),
     defaultHeight: 30,
 };
-
-type BaseTable = Pick<
-    Table,
-    | "key"
-    | "name"
-    | "items"
-    | "reportFilter"
-    | "extra"
-    | "rowDimensions"
-    | "columnDimensions"
-    | "rowTotals"
->;
-
-type BaseChart = Pick<
-    Chart,
-    "key" | "name" | "items" | "reportFilter" | "categoryDimension" | "extra" | "seriesDimension"
->;

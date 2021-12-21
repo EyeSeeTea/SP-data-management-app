@@ -27,34 +27,26 @@ interface Item {
     type: "DATA_ELEMENT" | "INDICATOR";
 }
 
-interface Visualization {
+export interface VisualizationDefinition {
     key: string;
     name: string;
     items: Item[];
+    rows: Dimension[];
+    columns: Dimension[];
+    filters: Dimension[];
+    toDate?: boolean;
+    rowTotals?: boolean;
+    extra?: PartialModel<D2Visualization>;
+}
+
+export interface Visualization extends VisualizationDefinition {
     periods: string[];
     relativePeriods?: D2Visualization["relativePeriods"];
     organisationUnits: Ref[];
     sharing: Partial<D2Sharing>;
-    extra?: PartialModel<D2Visualization>;
-    toDate?: boolean;
 }
 
-export interface Table extends Visualization {
-    reportFilter: Dimension[];
-    rowDimensions: Dimension[];
-    columnDimensions: Dimension[];
-    rowTotals?: boolean;
-}
-
-export interface Chart extends Visualization {
-    reportFilter: Dimension[];
-    seriesDimension?: Dimension;
-    categoryDimension: Dimension;
-}
-
-export type MaybeD2Table = Maybe<PartialPersistedModel<D2Visualization>>;
-
-export type MaybeD2Chart = Maybe<PartialPersistedModel<D2Visualization>>;
+export type MaybeD2Visualization = Maybe<PartialPersistedModel<D2Visualization>>;
 
 type DimensionItem =
     | { dataDimensionItemType: "DATA_ELEMENT"; dataElement: Ref }
@@ -79,15 +71,11 @@ export function getDataDimensionItems(items: Item[]): DimensionItem[] {
         .value();
 }
 
-export function getD2ReportTable(table: Table): MaybeD2Table {
+export function getD2Visualization(table: Visualization): MaybeD2Visualization {
     if (_.isEmpty(table.items)) return null;
 
     const dataDimensionItems = getDataDimensionItems(table.items);
-    const categoryDimensions = _.concat(
-        table.columnDimensions,
-        table.rowDimensions,
-        table.reportFilter
-    );
+    const categoryDimensions = _.concat(table.columns, table.rows, table.filters);
 
     const d2Table: PartialPersistedModel<D2Visualization> = {
         id: getUid(table.key, ""),
@@ -105,51 +93,17 @@ export function getD2ReportTable(table: Table): MaybeD2Table {
         organisationUnits: getRefs(table.organisationUnits),
         periods: getPeriods(table),
         relativePeriods: table.relativePeriods,
-        columns: table.columnDimensions,
-        columnDimensions: table.columnDimensions.map(dimension => dimension.id),
-        filters: table.reportFilter,
-        filterDimensions: table.reportFilter.map(dimension => dimension.id),
-        rows: table.rowDimensions,
-        rowDimensions: table.rowDimensions.map(dimension => dimension.id),
+        columns: table.columns,
+        columnDimensions: table.columns.map(dimension => dimension.id),
+        filters: table.filters,
+        filterDimensions: table.filters.map(dimension => dimension.id),
+        rows: table.rows,
+        rowDimensions: table.rows.map(dimension => dimension.id),
         categoryDimensions: getCategoryDimensions(categoryDimensions),
         ...table.sharing,
     };
 
     return _.merge({}, d2Table, table.extra || {});
-}
-
-export function getD2Chart(chart: Chart): MaybeD2Chart {
-    if (_.isEmpty(chart.items)) return null;
-    const dataDimensionItems = getDataDimensionItems(chart.items);
-    const seriesDimension = chart.seriesDimension || dimensions.data;
-
-    const chartDimensions = _.compact([
-        ...chart.reportFilter,
-        chart.seriesDimension,
-        chart.categoryDimension,
-    ]);
-
-    const d2Chart: PartialPersistedModel<D2Visualization> = {
-        id: getUid(chart.key, ""),
-        name: chart.name,
-        periods: getPeriods(chart),
-        relativePeriods: chart.relativePeriods,
-        type: "COLUMN",
-        aggregationType: "DEFAULT",
-        showData: true,
-        columnDimensions: [seriesDimension.id],
-        columns: [seriesDimension],
-        dataDimensionItems,
-        rows: [{ id: chart.categoryDimension }],
-        rowDimensions: ["dx"],
-        filters: chart.reportFilter,
-        filterDimensions: chart.reportFilter.map(dimension => dimension.id),
-        categoryDimensions: getCategoryDimensions(chartDimensions),
-        organisationUnits: getRefs(chart.organisationUnits),
-        ...chart.sharing,
-    };
-
-    return { ...d2Chart, ...chart.extra };
 }
 
 export function getCategoryDimensions(dimensions: Dimension[]) {
@@ -166,7 +120,7 @@ export function getCategoryDimensions(dimensions: Dimension[]) {
 }
 
 export function getReportTableItem(
-    reportTable: Maybe<PartialPersistedModel<D2Visualization>>,
+    reportTable: MaybeD2Visualization,
     dashboardItemAttributes?: PartialModel<D2DashboardItem>
 ) {
     if (!reportTable) return null;
@@ -178,8 +132,8 @@ export function getReportTableItem(
     };
 }
 
-export function getChartItem(
-    chart: Maybe<PartialPersistedModel<D2Visualization>>,
+export function getChartDashboardItem(
+    chart: MaybeD2Visualization,
     dashboardItemAttributes?: PartialModel<D2DashboardItem>
 ) {
     if (!chart) return null;

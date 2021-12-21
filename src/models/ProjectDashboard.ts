@@ -8,19 +8,17 @@ import { getUid } from "../utils/dhis2";
 import ProjectSharing from "./ProjectSharing";
 import {
     getReportTableItem,
-    getChartItem,
+    getChartDashboardItem,
     toItemWidth,
     positionItems,
-    MaybeD2Table,
     dimensions,
-    getD2ReportTable,
-    MaybeD2Chart,
-    getD2Chart,
+    MaybeD2Visualization,
+    getD2Visualization,
     PositionItemsOptions,
-    Chart,
-    Table,
+    Visualization,
     dataElementItems,
     indicatorItems,
+    VisualizationDefinition,
 } from "./Dashboard";
 import { getActualTargetIndicators, getCostBenefitIndicators } from "./indicators";
 import { Response } from "./Response";
@@ -74,7 +72,7 @@ export default class ProjectDashboard {
         const { minimumOrgUnits } = options;
 
         if (!_.isNil(minimumOrgUnits) && projectsListDashboard.orgUnits.length < minimumOrgUnits)
-            return { dashboards: [], reportTables: [], charts: [] };
+            return { dashboards: [], visualizations: [] };
 
         const reportTables: Array<PartialPersistedModel<D2Visualization>> = _.compact([
             // General Data View
@@ -106,8 +104,8 @@ export default class ProjectDashboard {
 
         const items: Array<PartialModel<D2DashboardItem>> = _.compact([
             ...reportTables.map(reportTable => getReportTableItem(reportTable)),
-            getChartItem(achievedMonthlyChart_, { width: toItemWidth(100) }),
-            ...charts.map(chart => getChartItem(chart)),
+            getChartDashboardItem(achievedMonthlyChart_, { width: toItemWidth(100) }),
+            ...charts.map(chart => getChartDashboardItem(chart)),
         ]);
 
         const positionItemsOptions: PositionItemsOptions = {
@@ -126,248 +124,222 @@ export default class ProjectDashboard {
         return { dashboards: [dashboard], ...favorites };
     }
 
-    targetVsActualBenefits(): MaybeD2Table {
+    targetVsActualBenefits(): MaybeD2Visualization {
         const { config, dataElements } = this;
         const dataElementsNoDisaggregated = dataElements.benefit.filter(
             de => !de.categories.includes("newRecurring")
         );
 
-        return this.getTable({
+        return this.getD2VisualizationFromDefinition({
             key: "reportTable-target-actual-benefits",
             name: i18n.t("Target vs Actual - Benefits"),
             items: dataElementItems(dataElementsNoDisaggregated),
-            reportFilter: [dimensions.orgUnit],
-            columnDimensions: [dimensions.period],
-            rowDimensions: [dimensions.data, config.categories.targetActual],
+            filters: [dimensions.orgUnit],
+            columns: [dimensions.period],
+            rows: [dimensions.data, config.categories.targetActual],
         });
     }
 
-    targetVsActualBenefitsWithDisaggregation(): MaybeD2Table {
+    targetVsActualBenefitsWithDisaggregation(): MaybeD2Visualization {
         const { config, dataElements } = this;
         const dataElementsDisaggregated = dataElements.benefit.filter(de =>
             de.categories.includes("newRecurring")
         );
 
-        return this.getTable({
+        return this.getD2VisualizationFromDefinition({
             key: "reportTable-target-actual-benefits-disaggregated",
             name: i18n.t("Target vs Actual - Benefits (Disaggregated)"),
             items: dataElementItems(dataElementsDisaggregated),
-            reportFilter: [dimensions.orgUnit],
-            columnDimensions: [dimensions.period],
-            rowDimensions: [
-                dimensions.data,
-                config.categories.targetActual,
-                config.categories.newRecurring,
-            ],
+            filters: [dimensions.orgUnit],
+            columns: [dimensions.period],
+            rows: [dimensions.data, config.categories.targetActual, config.categories.newRecurring],
         });
     }
 
-    targetVsActualPeople(): MaybeD2Table {
+    targetVsActualPeople(): MaybeD2Visualization {
         const { config, dataElements } = this;
 
-        return this.getTable({
+        return this.getD2VisualizationFromDefinition({
             key: "reportTable-target-actual-people",
             name: i18n.t("Target vs Actual - People"),
             items: dataElementItems(dataElements.people),
-            reportFilter: [dimensions.orgUnit],
-            columnDimensions: [dimensions.period, config.categories.gender],
-            rowDimensions: [
-                dimensions.data,
-                config.categories.targetActual,
-                config.categories.newRecurring,
-            ],
+            filters: [dimensions.orgUnit],
+            columns: [dimensions.period, config.categories.gender],
+            rows: [dimensions.data, config.categories.targetActual, config.categories.newRecurring],
         });
     }
 
-    targetVsActualUniquePeople(): MaybeD2Table {
+    targetVsActualUniquePeople(): MaybeD2Visualization {
         const { config, dataElements } = this;
 
-        return this.getTable({
+        return this.getD2VisualizationFromDefinition({
             key: "reportTable-target-actual-unique-people",
             name: i18n.t("Target vs Actual - Unique People"),
             items: dataElementItems(dataElements.people),
-            reportFilter: [dimensions.orgUnit, this.categoryOnlyNew],
-            columnDimensions: [dimensions.period, config.categories.gender],
-            rowDimensions: [dimensions.data, config.categories.targetActual],
+            filters: [dimensions.orgUnit, this.categoryOnlyNew],
+            columns: [dimensions.period, config.categories.gender],
+            rows: [dimensions.data, config.categories.targetActual],
         });
     }
 
-    achievedBenefitsTable(options: VisualizationOptions = {}): MaybeD2Table {
+    achievedBenefitsTable(options: VisualizationOptions = {}): MaybeD2Visualization {
         const { config, dataElements } = this;
         const indicators = getActualTargetIndicators(config, dataElements.benefit);
 
-        return this.getTable({
+        return this.getD2VisualizationFromDefinition({
             key: "reportTable-indicators-benefits" + (options.toDate ? "-todate" : ""),
             name: options.toDate
                 ? i18n.t("Achieved to date (%) - Benefits")
                 : i18n.t("Achieved (%) - Benefits"),
             items: indicatorItems(indicators),
-            reportFilter: [dimensions.orgUnit],
-            columnDimensions: [dimensions.period],
-            rowDimensions: [dimensions.data],
+            filters: [dimensions.orgUnit],
+            columns: [dimensions.period],
+            rows: [dimensions.data],
             extra: { legendSet: config.legendSets.achieved },
             ...options,
         });
     }
 
-    achievedPeopleTable(): MaybeD2Table {
+    achievedPeopleTable(): MaybeD2Visualization {
         const { config, dataElements } = this;
         const indicators = getActualTargetIndicators(this.config, dataElements.people);
 
-        return this.getTable({
+        return this.getD2VisualizationFromDefinition({
             key: "reportTable-indicators-people",
             name: i18n.t("Achieved (%) - People"),
             items: indicatorItems(indicators),
-            reportFilter: [dimensions.orgUnit],
-            columnDimensions: [dimensions.period],
-            rowDimensions: [dimensions.data],
+            filters: [dimensions.orgUnit],
+            columns: [dimensions.period],
+            rows: [dimensions.data],
             extra: { legendSet: config.legendSets.achieved },
             rowTotals: false,
         });
     }
 
-    achievedPeopleTotalTable(options: VisualizationOptions = {}): MaybeD2Table {
+    achievedPeopleTotalTable(options: VisualizationOptions = {}): MaybeD2Visualization {
         const { config, dataElements } = this;
 
-        return this.getTable({
+        return this.getD2VisualizationFromDefinition({
             key: "reportTable-indicators-people-total" + (options.toDate ? "-todate" : ""),
             name: options.toDate
                 ? i18n.t("Achieved total to date (%) - People")
                 : i18n.t("Achieved total (%) - People"),
             items: indicatorItems(getActualTargetIndicators(this.config, dataElements.people)),
-            reportFilter: [dimensions.orgUnit, dimensions.period],
-            columnDimensions: [this.categoryOnlyNew],
-            rowDimensions: [dimensions.data],
+            filters: [dimensions.orgUnit, dimensions.period],
+            columns: [this.categoryOnlyNew],
+            rows: [dimensions.data],
             extra: { legendSet: config.legendSets.achieved },
             rowTotals: false,
             ...options,
         });
     }
 
-    achievedBenefitsTotalToDate(): MaybeD2Table {
+    achievedBenefitsTotalToDate(): MaybeD2Visualization {
         const { config, dataElements } = this;
 
         const dataElementsNoDisaggregated = dataElements.benefit.filter(de =>
             de.categories.includes("newRecurring")
         );
 
-        return this.getTable({
+        return this.getD2VisualizationFromDefinition({
             key: "reportTable-indicators-benefits-total-todate",
             name: i18n.t("Achieved total to date (%) - Benefits"),
             items: indicatorItems(
                 getActualTargetIndicators(this.config, dataElementsNoDisaggregated)
             ),
-            reportFilter: [dimensions.orgUnit, dimensions.period],
-            columnDimensions: [this.categoryOnlyNew],
-            rowDimensions: [dimensions.data],
+            filters: [dimensions.orgUnit, dimensions.period],
+            columns: [this.categoryOnlyNew],
+            rows: [dimensions.data],
             extra: { legendSet: config.legendSets.achieved },
             rowTotals: false,
         });
     }
 
-    achievedMonthlyChart(): MaybeD2Chart {
+    achievedMonthlyChart(): MaybeD2Visualization {
         const { config, dataElements } = this;
 
-        return this.getChart({
+        return this.getD2VisualizationFromDefinition({
             key: "chart-achieved-monthly",
             name: i18n.t("Achieved monthly (%)"),
             items: indicatorItems(getActualTargetIndicators(config, dataElements.all)),
-            reportFilter: [dimensions.orgUnit],
-            seriesDimension: dimensions.period,
-            categoryDimension: dimensions.data,
+            filters: [dimensions.orgUnit],
+            columns: [dimensions.period],
+            rows: [dimensions.data],
         });
     }
 
-    achievedBenefitChart(): MaybeD2Chart {
+    achievedBenefitChart(): MaybeD2Visualization {
         const { config, dataElements } = this;
 
-        return this.getChart({
+        return this.getD2VisualizationFromDefinition({
             key: "chart-achieved",
             name: i18n.t("Achieved Benefit (%)"),
             items: indicatorItems(getActualTargetIndicators(config, dataElements.benefit)),
-            reportFilter: [dimensions.period],
-            seriesDimension: dimensions.orgUnit,
-            categoryDimension: dimensions.data,
+            filters: [dimensions.period],
+            columns: [dimensions.orgUnit],
+            rows: [dimensions.data],
         });
     }
 
-    achievedPeopleChart(): MaybeD2Chart {
+    achievedPeopleChart(): MaybeD2Visualization {
         const { config, dataElements } = this;
 
-        return this.getChart({
+        return this.getD2VisualizationFromDefinition({
             key: "chart-people-achieved",
             name: i18n.t("Achieved People (%)"),
             items: indicatorItems(getActualTargetIndicators(config, dataElements.people)),
-            reportFilter: [dimensions.period, this.categoryOnlyNew],
-            seriesDimension: dimensions.orgUnit,
-            categoryDimension: dimensions.data,
+            filters: [dimensions.period, this.categoryOnlyNew],
+            columns: [dimensions.orgUnit],
+            rows: [dimensions.data],
         });
     }
 
-    genderChart(): MaybeD2Chart {
+    genderChart(): MaybeD2Visualization {
         const { config, dataElements } = this;
 
-        return this.getChart({
+        return this.getD2VisualizationFromDefinition({
             key: "chart-achieved-gender",
             name: i18n.t("Achieved by gender (%)"),
             items: indicatorItems(getActualTargetIndicators(config, dataElements.people)),
-            reportFilter: [dimensions.orgUnit, dimensions.period, this.categoryOnlyNew],
-            seriesDimension: config.categories.gender,
-            categoryDimension: dimensions.data,
+            filters: [dimensions.orgUnit, dimensions.period, this.categoryOnlyNew],
+            columns: [config.categories.gender],
+            rows: [dimensions.data],
         });
     }
 
-    costBenefit(): MaybeD2Chart {
+    costBenefit(): MaybeD2Visualization {
         const { config, dataElements } = this;
 
         const pairedDataElements = dataElements.benefit.filter(de => de.hasPairedDataElements);
 
-        return this.getChart({
+        return this.getD2VisualizationFromDefinition({
             key: "cost-benefit",
             name: i18n.t("Benefits Per Person"),
             items: indicatorItems(getCostBenefitIndicators(config, pairedDataElements)),
-            reportFilter: [dimensions.period],
-            seriesDimension: dimensions.orgUnit,
-            categoryDimension: dimensions.data,
+            filters: [dimensions.period],
+            columns: [dimensions.orgUnit],
+            rows: [dimensions.data],
         });
     }
 
-    getChart(baseChart: BaseChart): MaybeD2Chart {
-        const { config, projectsListDashboard } = this;
-        const chart: Chart = {
-            ...baseChart,
-            key: baseChart.key + projectsListDashboard.id,
-            name: `${projectsListDashboard.name} - ${baseChart.name}`,
-            organisationUnits: projectsListDashboard.orgUnits,
-            periods: filterPeriods(projectsListDashboard.periods, baseChart),
-            sharing: new ProjectSharing(
-                config,
-                projectsListDashboard
-            ).getSharingAttributesForDashboard(),
-        };
-        const d2Chart = getD2Chart(chart);
-
-        return d2Chart ? { ...d2Chart, ...chart.extra } : null;
-    }
-
-    getTable(baseTable: BaseTable): MaybeD2Table {
+    getD2VisualizationFromDefinition(definition: VisualizationDefinition): MaybeD2Visualization {
         const { config, projectsListDashboard } = this;
 
-        const table: Table = {
-            ..._.omit(baseTable, ["toDate"]),
-            key: baseTable.key + projectsListDashboard.id,
-            name: `${projectsListDashboard.name} - ${baseTable.name}`,
+        const visualization: Visualization = {
+            ...definition,
+            key: definition.key + projectsListDashboard.id,
+            name: `${projectsListDashboard.name} - ${definition.name}`,
             organisationUnits: projectsListDashboard.orgUnits,
-            periods: filterPeriods(projectsListDashboard.periods, baseTable),
+            periods: filterPeriods(projectsListDashboard.periods, definition),
             sharing: new ProjectSharing(
                 config,
                 projectsListDashboard
             ).getSharingAttributesForDashboard(),
         };
 
-        const d2Table = getD2ReportTable(table);
+        const d2Visualization = getD2Visualization(visualization);
 
-        return d2Table ? { ...d2Table, ...table.extra } : null;
+        return d2Visualization ? { ...d2Visualization, ...visualization.extra } : null;
     }
 }
 
@@ -445,9 +417,3 @@ export async function getAwardNumberDashboard(
 interface VisualizationOptions {
     toDate?: boolean;
 }
-
-type CommonKey = "key" | "name" | "extra" | "toDate" | "items" | "reportFilter";
-
-type BaseTable = Pick<Table, CommonKey | "rowDimensions" | "columnDimensions" | "rowTotals">;
-
-type BaseChart = Pick<Chart, CommonKey | "categoryDimension" | "seriesDimension">;
