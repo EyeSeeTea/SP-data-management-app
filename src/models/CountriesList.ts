@@ -4,7 +4,6 @@ import { PaginatedObjects, Paging, Sorting } from "./PaginatedObjects";
 import { Config } from "./Config";
 import User, { OrganisationUnit } from "./user";
 import { paginate } from "../utils/pagination";
-import { config } from "./__tests__/project-data";
 import { getAttributeValue } from "./Attributes";
 
 export interface Country {
