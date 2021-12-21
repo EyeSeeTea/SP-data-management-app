@@ -13,7 +13,7 @@ export default class ProjectDelete {
     public async delete(ids: Id[]): Promise<void> {
         const { api } = this;
         const { organisationUnits, dataSets, dashboards } = await this.getReferences(ids);
-        const favoritesMetadata = this.getFavoritesMetadata(dashboards);
+        const visualizations = this.getVisualizations(dashboards);
         const dataValues = await this.getDataValues(organisationUnits, dataSets);
 
         if (!_.isEmpty(dataValues)) {
@@ -28,10 +28,12 @@ export default class ProjectDelete {
             // So first we remove the dashboards and then all the other metadata.
             const requests: Array<Partial<MetadataPayload>> = [
                 {
+                    visualizations: getRefs(visualizations),
+                },
+                {
                     dashboards: getRefs(dashboards),
                     organisationUnits: getRefs(organisationUnits),
                     dataSets: getRefs(dataSets),
-                    ...favoritesMetadata,
                 },
             ];
 
@@ -71,13 +73,12 @@ export default class ProjectDelete {
         return dataValues;
     }
 
-    private getFavoritesMetadata(
+    private getVisualizations(
         dashboards: Array<{ id: Id; dashboardItems: Array<{ visualization: Ref }> }>
     ) {
         return _(dashboards)
             .flatMap(dashboard => dashboard.dashboardItems)
             .map(dashboardItem => ({ id: dashboardItem.visualization.id }))
-            .thru(refs => ({ visualizations: refs }))
             .value();
     }
 
