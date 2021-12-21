@@ -58,10 +58,21 @@ export async function getCountryDashboard(
     countryId: Id
 ): Promise<Response<Dashboard>> {
     const country = await getCountry(api, config, countryId);
+    const dashboardId = country?.dashboard?.id;
+
+    const existingDashboard = dashboardId
+        ? (
+              await api.metadata
+                  .get({
+                      dashboards: { fields: { id: true }, filter: { id: { eq: dashboardId } } },
+                  })
+                  .getData()
+          ).dashboards[0]
+        : undefined;
 
     if (!country) {
         return { type: "error", message: i18n.t(`Country not found: ${countryId}`) };
-    } else if (country.dashboard) {
+    } else if (country.dashboard && existingDashboard) {
         return { type: "success", data: country.dashboard };
     } else {
         const countryDashboard = await CountryDashboard.build(api, config, country.id);
