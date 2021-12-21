@@ -186,13 +186,14 @@ export default class CountryDashboard {
         });
     }
 
-    getChart(baseChart: VisualizationDefinition): MaybeD2Visualization {
+    getChart(definition: Omit<VisualizationDefinition, "type">): MaybeD2Visualization {
         const { country } = this;
 
         const chart: Visualization = {
-            ...baseChart,
-            key: baseChart.key + country.id,
-            name: `[${country.name}] ${baseChart.name}`,
+            ...definition,
+            type: "chart",
+            key: definition.key + country.id,
+            name: `[${country.name}] ${definition.name}`,
             periods: [],
             relativePeriods: { thisYear: true },
             organisationUnits: [{ id: country.id }],
@@ -204,13 +205,14 @@ export default class CountryDashboard {
         return d2Chart ? { ...d2Chart, ...chart.extra } : null;
     }
 
-    getTable(baseTable: VisualizationDefinition): MaybeD2Visualization {
+    getTable(definition: Omit<VisualizationDefinition, "type">): MaybeD2Visualization {
         const { country } = this;
 
         const chart: Visualization = {
-            ...baseTable,
-            key: baseTable.key + country.id,
-            name: `[${country.name}] ${baseTable.name}`,
+            ...definition,
+            type: "table",
+            key: definition.key + country.id,
+            name: `[${country.name}] ${definition.name}`,
             periods: [],
             relativePeriods: { thisYear: true },
             organisationUnits: getRefs(country.projectsListDashboard.orgUnits),

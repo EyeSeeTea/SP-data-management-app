@@ -76,13 +76,13 @@ export default class ProjectDashboard {
 
         const reportTables: Array<PartialPersistedModel<D2Visualization>> = _.compact([
             // General Data View
-            this.targetVsActualBenefits(),
-            this.targetVsActualBenefitsWithDisaggregation(),
-            this.targetVsActualPeople(),
-            this.targetVsActualUniquePeople(),
+            this.targetVsActualBenefitsTable(),
+            this.targetVsActualBenefitsWithDisaggregationTable(),
+            this.targetVsActualPeopleTable(),
+            this.targetVsActualUniquePeopleTable(),
             // Percent achieved (to date)
             this.achievedBenefitsTable({ toDate: true }),
-            this.achievedBenefitsTotalToDate(),
+            this.achievedBenefitsTotalToDateTable(),
             this.achievedPeopleTotalTable({ toDate: true }),
             // Percent achieved
             this.achievedBenefitsTable(),
@@ -94,7 +94,7 @@ export default class ProjectDashboard {
             this.achievedBenefitChart(),
             this.achievedPeopleChart(),
             this.genderChart(),
-            this.costBenefit(),
+            this.costBenefitTable(),
         ]);
 
         const achievedMonthlyChart_ = this.achievedMonthlyChart();
@@ -124,13 +124,14 @@ export default class ProjectDashboard {
         return { dashboards: [dashboard], ...favorites };
     }
 
-    targetVsActualBenefits(): MaybeD2Visualization {
+    targetVsActualBenefitsTable(): MaybeD2Visualization {
         const { config, dataElements } = this;
         const dataElementsNoDisaggregated = dataElements.benefit.filter(
             de => !de.categories.includes("newRecurring")
         );
 
         return this.getD2VisualizationFromDefinition({
+            type: "table",
             key: "reportTable-target-actual-benefits",
             name: i18n.t("Target vs Actual - Benefits"),
             items: dataElementItems(dataElementsNoDisaggregated),
@@ -140,13 +141,14 @@ export default class ProjectDashboard {
         });
     }
 
-    targetVsActualBenefitsWithDisaggregation(): MaybeD2Visualization {
+    targetVsActualBenefitsWithDisaggregationTable(): MaybeD2Visualization {
         const { config, dataElements } = this;
         const dataElementsDisaggregated = dataElements.benefit.filter(de =>
             de.categories.includes("newRecurring")
         );
 
         return this.getD2VisualizationFromDefinition({
+            type: "table",
             key: "reportTable-target-actual-benefits-disaggregated",
             name: i18n.t("Target vs Actual - Benefits (Disaggregated)"),
             items: dataElementItems(dataElementsDisaggregated),
@@ -156,10 +158,11 @@ export default class ProjectDashboard {
         });
     }
 
-    targetVsActualPeople(): MaybeD2Visualization {
+    targetVsActualPeopleTable(): MaybeD2Visualization {
         const { config, dataElements } = this;
 
         return this.getD2VisualizationFromDefinition({
+            type: "table",
             key: "reportTable-target-actual-people",
             name: i18n.t("Target vs Actual - People"),
             items: dataElementItems(dataElements.people),
@@ -169,10 +172,11 @@ export default class ProjectDashboard {
         });
     }
 
-    targetVsActualUniquePeople(): MaybeD2Visualization {
+    targetVsActualUniquePeopleTable(): MaybeD2Visualization {
         const { config, dataElements } = this;
 
         return this.getD2VisualizationFromDefinition({
+            type: "table",
             key: "reportTable-target-actual-unique-people",
             name: i18n.t("Target vs Actual - Unique People"),
             items: dataElementItems(dataElements.people),
@@ -187,6 +191,7 @@ export default class ProjectDashboard {
         const indicators = getActualTargetIndicators(config, dataElements.benefit);
 
         return this.getD2VisualizationFromDefinition({
+            type: "table",
             key: "reportTable-indicators-benefits" + (options.toDate ? "-todate" : ""),
             name: options.toDate
                 ? i18n.t("Achieved to date (%) - Benefits")
@@ -205,6 +210,7 @@ export default class ProjectDashboard {
         const indicators = getActualTargetIndicators(this.config, dataElements.people);
 
         return this.getD2VisualizationFromDefinition({
+            type: "table",
             key: "reportTable-indicators-people",
             name: i18n.t("Achieved (%) - People"),
             items: indicatorItems(indicators),
@@ -220,6 +226,7 @@ export default class ProjectDashboard {
         const { config, dataElements } = this;
 
         return this.getD2VisualizationFromDefinition({
+            type: "table",
             key: "reportTable-indicators-people-total" + (options.toDate ? "-todate" : ""),
             name: options.toDate
                 ? i18n.t("Achieved total to date (%) - People")
@@ -234,7 +241,7 @@ export default class ProjectDashboard {
         });
     }
 
-    achievedBenefitsTotalToDate(): MaybeD2Visualization {
+    achievedBenefitsTotalToDateTable(): MaybeD2Visualization {
         const { config, dataElements } = this;
 
         const dataElementsNoDisaggregated = dataElements.benefit.filter(de =>
@@ -242,6 +249,7 @@ export default class ProjectDashboard {
         );
 
         return this.getD2VisualizationFromDefinition({
+            type: "table",
             key: "reportTable-indicators-benefits-total-todate",
             name: i18n.t("Achieved total to date (%) - Benefits"),
             items: indicatorItems(
@@ -259,6 +267,7 @@ export default class ProjectDashboard {
         const { config, dataElements } = this;
 
         return this.getD2VisualizationFromDefinition({
+            type: "chart",
             key: "chart-achieved-monthly",
             name: i18n.t("Achieved monthly (%)"),
             items: indicatorItems(getActualTargetIndicators(config, dataElements.all)),
@@ -272,6 +281,7 @@ export default class ProjectDashboard {
         const { config, dataElements } = this;
 
         return this.getD2VisualizationFromDefinition({
+            type: "chart",
             key: "chart-achieved",
             name: i18n.t("Achieved Benefit (%)"),
             items: indicatorItems(getActualTargetIndicators(config, dataElements.benefit)),
@@ -285,6 +295,7 @@ export default class ProjectDashboard {
         const { config, dataElements } = this;
 
         return this.getD2VisualizationFromDefinition({
+            type: "chart",
             key: "chart-people-achieved",
             name: i18n.t("Achieved People (%)"),
             items: indicatorItems(getActualTargetIndicators(config, dataElements.people)),
@@ -298,6 +309,7 @@ export default class ProjectDashboard {
         const { config, dataElements } = this;
 
         return this.getD2VisualizationFromDefinition({
+            type: "chart",
             key: "chart-achieved-gender",
             name: i18n.t("Achieved by gender (%)"),
             items: indicatorItems(getActualTargetIndicators(config, dataElements.people)),
@@ -307,12 +319,13 @@ export default class ProjectDashboard {
         });
     }
 
-    costBenefit(): MaybeD2Visualization {
+    costBenefitTable(): MaybeD2Visualization {
         const { config, dataElements } = this;
 
         const pairedDataElements = dataElements.benefit.filter(de => de.hasPairedDataElements);
 
         return this.getD2VisualizationFromDefinition({
+            type: "chart",
             key: "cost-benefit",
             name: i18n.t("Benefits Per Person"),
             items: indicatorItems(getCostBenefitIndicators(config, pairedDataElements)),

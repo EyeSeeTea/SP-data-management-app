@@ -28,6 +28,7 @@ interface Item {
 }
 
 export interface VisualizationDefinition {
+    type: "chart" | "table";
     key: string;
     name: string;
     items: Item[];
@@ -71,39 +72,43 @@ export function getDataDimensionItems(items: Item[]): DimensionItem[] {
         .value();
 }
 
-export function getD2Visualization(table: Visualization): MaybeD2Visualization {
-    if (_.isEmpty(table.items)) return null;
+export function getD2Visualization(visualization: Visualization): MaybeD2Visualization {
+    if (_.isEmpty(visualization.items)) return null;
 
-    const dataDimensionItems = getDataDimensionItems(table.items);
-    const categoryDimensions = _.concat(table.columns, table.rows, table.filters);
+    const dataDimensionItems = getDataDimensionItems(visualization.items);
+    const categoryDimensions = _.concat(
+        visualization.columns,
+        visualization.rows,
+        visualization.filters
+    );
 
     const d2Table: PartialPersistedModel<D2Visualization> = {
-        id: getUid(table.key, ""),
-        type: "PIVOT_TABLE",
-        name: table.name,
+        id: getUid(visualization.key, ""),
+        type: visualization.type === "table" ? "PIVOT_TABLE" : "COLUMN",
+        name: visualization.name,
         numberType: "VALUE",
         legendDisplayStyle: "FILL",
         rowSubTotals: true,
         showDimensionLabels: true,
         aggregationType: "DEFAULT",
         legendDisplayStrategy: "FIXED",
-        rowTotals: table.rowTotals ?? true,
+        rowTotals: visualization.rowTotals ?? true,
         digitGroupSeparator: "SPACE",
         dataDimensionItems,
-        organisationUnits: getRefs(table.organisationUnits),
-        periods: getPeriods(table),
-        relativePeriods: table.relativePeriods,
-        columns: table.columns,
-        columnDimensions: table.columns.map(dimension => dimension.id),
-        filters: table.filters,
-        filterDimensions: table.filters.map(dimension => dimension.id),
-        rows: table.rows,
-        rowDimensions: table.rows.map(dimension => dimension.id),
+        organisationUnits: getRefs(visualization.organisationUnits),
+        periods: getPeriods(visualization),
+        relativePeriods: visualization.relativePeriods,
+        columns: visualization.columns,
+        columnDimensions: visualization.columns.map(dimension => dimension.id),
+        filters: visualization.filters,
+        filterDimensions: visualization.filters.map(dimension => dimension.id),
+        rows: visualization.rows,
+        rowDimensions: visualization.rows.map(dimension => dimension.id),
         categoryDimensions: getCategoryDimensions(categoryDimensions),
-        ...table.sharing,
+        ...visualization.sharing,
     };
 
-    return _.merge({}, d2Table, table.extra || {});
+    return _.merge({}, d2Table, visualization.extra || {});
 }
 
 export function getCategoryDimensions(dimensions: Dimension[]) {
