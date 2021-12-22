@@ -29,7 +29,7 @@ export type Config = {
 
 const yes = true as const;
 
-const baseConfig = {
+export const baseConfig = {
     orgUnits: {
         levelForCountries: 2,
         levelForProjects: 3,
