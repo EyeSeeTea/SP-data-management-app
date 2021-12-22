@@ -35,6 +35,8 @@ import {
 } from "./ProjectsListDashboard";
 import { D2Sharing, getD2Access } from "./Sharing";
 
+type D2VisualizationPayload = PartialPersistedModel<D2Visualization>;
+
 interface DataElement {
     id: Id;
     name: string;
@@ -102,15 +104,15 @@ export default class CountryDashboard {
     generate() {
         const { d2Country, country } = this;
 
-        const charts: Array<PartialPersistedModel<D2Visualization>> = _.compact([
-            this.aggregatedActualValuesPeopleChart(),
-            this.aggregatedActualValuesBenefitChart(),
-        ]);
-
-        const reportTables: Array<PartialPersistedModel<D2Visualization>> = _.compact([
+        const reportTables: D2VisualizationPayload[] = _.compact([
             this.projectsActualPeopleTable(),
             this.projectsActualBenefitTable(),
         ]);
+
+        const charts: D2VisualizationPayload[] = _.concat(
+            this.aggregatedActualValuesPeopleChart(),
+            this.aggregatedActualValuesBenefitChart()
+        );
 
         const favorites = { visualizations: _.concat(reportTables, charts) };
 
@@ -138,8 +140,8 @@ export default class CountryDashboard {
         };
     }
 
-    aggregatedActualValuesPeopleChart(): MaybeD2Visualization {
-        return this.getChart({
+    aggregatedActualValuesPeopleChart(): D2VisualizationPayload[] {
+        return this.getCharts({
             key: "aggregated-actual-people",
             name: i18n.t("Aggregated Actual Values - People"),
             items: dataElementItems(this.dataElements.people),
@@ -149,8 +151,8 @@ export default class CountryDashboard {
         });
     }
 
-    aggregatedActualValuesBenefitChart(): MaybeD2Visualization {
-        return this.getChart({
+    aggregatedActualValuesBenefitChart(): D2VisualizationPayload[] {
+        return this.getCharts({
             key: "aggregated-actual-benefit",
             name: i18n.t("Aggregated Actual Values - Benefit"),
             items: dataElementItems(this.dataElements.benefit),
@@ -186,23 +188,38 @@ export default class CountryDashboard {
         });
     }
 
-    getChart(definition: Omit<VisualizationDefinition, "type">): MaybeD2Visualization {
+    getCharts(definition: Omit<VisualizationDefinition, "type">): D2VisualizationPayload[] {
         const { country } = this;
 
-        const chart: Visualization = {
-            ...definition,
-            type: "chart",
-            key: definition.key + country.id,
-            name: `[${country.name}] ${definition.name}`,
-            periods: [],
-            relativePeriods: { thisYear: true },
-            organisationUnits: [{ id: country.id }],
-            sharing: this.getSharing(),
-        };
+        // DHIS 2.36 dhis-web-data-visualizer charts show a single stacked bar when the
+        // x-axis contains 50 items or more. So let's chunk them in groups of 49 and add
+        // a suffix to the name whenever necessary.
+        const itemsGroupList = _.chunk(definition.items, 49);
+        const total = itemsGroupList.length;
+        const showCounting = total > 1;
 
-        const d2Chart = getD2Visualization(chart);
+        return _.compact(
+            itemsGroupList.map((itemsGroup, idx) => {
+                const nameSuf = showCounting
+                    ? i18n.t("{{n}} of {{total}}", { n: idx + 1, total })
+                    : "";
 
-        return d2Chart ? { ...d2Chart, ...chart.extra } : null;
+                const chart: Visualization = {
+                    ...definition,
+                    items: itemsGroup,
+                    type: "chart",
+                    key: definition.key + country.id + (idx === 0 ? "" : `-${idx + 1}`),
+                    name: `[${country.name}] ${definition.name}` + (nameSuf ? ` (${nameSuf})` : ""),
+                    periods: [],
+                    relativePeriods: { thisYear: true },
+                    organisationUnits: [{ id: country.id }],
+                    sharing: this.getSharing(),
+                };
+                const d2Chart = getD2Visualization(chart);
+
+                return d2Chart ? { ...d2Chart, ...chart.extra } : null;
+            })
+        );
     }
 
     getTable(definition: Omit<VisualizationDefinition, "type">): MaybeD2Visualization {
