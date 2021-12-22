@@ -146,6 +146,13 @@ async function setDashboardStyling(iframe: HTMLIFrameElement) {
     iframeDocument.querySelectorAll("header").forEach(el => el.remove());
     iframeDocument.querySelectorAll("[data-test='dashboards-bar']").forEach(el => el.remove());
 
+    // Hide top bar actions
+    iframeDocument
+        .querySelectorAll<HTMLElement>(
+            ".dashboard-scroll-container > div > div[class*='ViewTitleBar_container']"
+        )
+        .forEach(el => (el.style.display = "none"));
+
     if (pageContainer) pageContainer.style.marginTop = "0px";
     if (iFrameRoot) iFrameRoot.style.marginTop = "0px";
 }
