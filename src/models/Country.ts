@@ -88,6 +88,7 @@ export async function getCountryDashboard(
         const updateSuccessful = response && response.status === "OK";
 
         if (!updateSuccessful) {
+            console.error(response);
             return { type: "error", message: i18n.t("Error saving dashboard") };
         } else {
             return { type: "success", data: newDashboard };

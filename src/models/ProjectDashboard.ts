@@ -382,9 +382,10 @@ export async function getProjectDashboard(
     const updateSuccessful = response && response.status === "OK";
 
     if (!updateSuccessful) {
+        console.error("Error saving dashboard", response);
+
         if (project.dashboard.project) {
             // There was an error saving the updated dashboard, but an old one existed, return it.
-            console.error("Error saving dashboard", response);
             return { type: "success", data: project.dashboard.project };
         } else {
             return { type: "error", message: i18n.t("Error saving dashboard") };

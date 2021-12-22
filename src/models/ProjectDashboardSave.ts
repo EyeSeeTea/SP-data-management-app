@@ -31,7 +31,9 @@ export default class ProjectDashboardSave {
             .getData()
             .catch(_err => null);
 
-        if (!response || response.status !== "OK")
+        if (!response || response.status !== "OK") {
+            console.error(response);
             throw new Error(i18n.t("Error saving dashboard"));
+        }
     }
 }
