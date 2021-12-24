@@ -90,6 +90,7 @@ export function getD2Visualization(visualization: Visualization): MaybeD2Visuali
         legendDisplayStyle: "FILL",
         rowSubTotals: true,
         showDimensionLabels: true,
+        showData: true,
         aggregationType: "DEFAULT",
         legendDisplayStrategy: "FIXED",
         rowTotals: visualization.rowTotals ?? true,
