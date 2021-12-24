@@ -244,16 +244,16 @@ export default class ProjectDashboard {
     achievedBenefitsTotalToDateTable(): MaybeD2Visualization {
         const { config, dataElements } = this;
 
-        const dataElementsNoDisaggregated = dataElements.benefit.filter(de =>
+        const dataElementsDisaggregated = dataElements.benefit.filter(de =>
             de.categories.includes("newRecurring")
         );
 
         return this.getD2VisualizationFromDefinition({
             type: "table",
             key: "reportTable-indicators-benefits-total-todate",
-            name: i18n.t("Achieved total to date (%) - Benefits"),
+            name: i18n.t("Achieved total to date (%) - Benefits (Disaggregated)"),
             items: indicatorItems(
-                getActualTargetIndicators(this.config, dataElementsNoDisaggregated)
+                getActualTargetIndicators(this.config, dataElementsDisaggregated)
             ),
             filters: [dimensions.orgUnit, dimensions.period],
             columns: [this.categoryOnlyNew],

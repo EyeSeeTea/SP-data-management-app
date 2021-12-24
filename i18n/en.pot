@@ -484,7 +484,7 @@ msgstr ""
 msgid "Achieved total (%) - People"
 msgstr ""
 
-msgid "Achieved total to date (%) - Benefits"
+msgid "Achieved total to date (%) - Benefits (Disaggregated)"
 msgstr ""
 
 msgid "Achieved monthly (%)"
@@ -615,16 +615,16 @@ msgid ""
 msgstr ""
 
 msgid ""
-"A sub data element should be equal or less than its global indicator: "
-"{{-name}} (value={{value}})"
+"A sub-indicator should be equal to or less than its global indicator: "
+"{{-name}} ({{value}})"
 msgstr ""
 
 msgid ""
-"A global data element should be equal or greater than its maximum "
-"sub-indicator: {{-name}} (value={{value}})"
+"A global indicator should be equal to or greater than its maximum "
+"sub-indicator: {{-name}} ({{value}})"
 msgstr ""
 
-msgid "Global data element with sub-indicators values cannot be empty: {{- name}}"
+msgid "Global indicator with sub-indicators values cannot be empty: {{- name}}"
 msgstr ""
 
 msgid ""

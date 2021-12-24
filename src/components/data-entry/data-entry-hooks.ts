@@ -5,6 +5,7 @@ export interface PreSaveDataValue {
     optionComboId: string;
     fieldId: string;
     feedbackId: string | undefined;
+    oldValue: string;
 }
 
 export interface DataValue {
@@ -71,7 +72,23 @@ export function useDhis2EntryEvents(
 
                     if (continueSaving === false) {
                         console.debug("[data-entry:preSaveDataValueFromIframe] skip save");
-                        iwindow.eval(`$("#${fieldId}").css({backgroundColor: "#f48686"})`);
+                        const { oldValue } = data.dataValue;
+                        // Restore old value + show temporal yellow background
+                        const fadeColorTimeout = 10000;
+                        iwindow.eval(`
+                            $("#${fieldId}").val(${JSON.stringify(oldValue)});
+
+                            $("#${fieldId}").css({
+                                backgroundColor: "#fffe8c",
+                            });
+
+                            window.setTimeout(() => {
+                                $("#${fieldId}").css({
+                                    backgroundColor: "#ffffff",
+                                    transition: "background-color 1000ms linear",
+                                });
+                            }, ${fadeColorTimeout});
+                        `);
                     } else {
                         const saveDataValueMsg: SaveDataValueMsg = {
                             type: "saveDataValueToIframe",
@@ -133,6 +150,7 @@ function isInputMsgFromIframe(msg: any): msg is MsgFromIframe {
 interface DataEntryWindow extends Window {
     eval<T>(code: string): T;
     dataEntryHooksInit: boolean;
+    dhis2: { de: { currentExistingValue: string } };
     saveVal(
         dataElementId: string,
         optionComboId: string,
@@ -178,6 +196,7 @@ function setupDataEntryInterceptors(options: Options = {}) {
                 optionComboId,
                 fieldId,
                 feedbackId,
+                oldValue: iframeWindow.dhis2.de.currentExistingValue,
             };
             const msg: PreSaveDataValueMsg = {
                 type: "preSaveDataValueFromIframe",

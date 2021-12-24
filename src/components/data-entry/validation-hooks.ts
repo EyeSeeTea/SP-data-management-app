@@ -53,11 +53,17 @@ export function useValidation(hookOptions: {
             switch (msg.type) {
                 case "preSaveDataValue": {
                     const validatorUpdated = validator.onSave(msg.dataValue);
-                    setValidator(validatorUpdated);
 
                     return validatorUpdated.validateDataValue(msg.dataValue).then(validation => {
+                        const hasErrors = validation.error && validation.error.length > 0;
                         setValidationResult(validation);
-                        return !validation.error || validation.error.length === 0;
+
+                        if (!hasErrors) {
+                            setValidator(validatorUpdated);
+                            return true;
+                        } else {
+                            return false;
+                        }
                     });
                 }
                 case "dataValueSaved": {
