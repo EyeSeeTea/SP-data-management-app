@@ -3,6 +3,7 @@ import moment from "moment";
 import Project from "./Project";
 import i18n from "../locales";
 import { D2Api, DataValueSetsGetRequest } from "../types/d2-api";
+import { promiseMap } from "../migrations/utils";
 
 export class DataEntry {
     constructor(
@@ -16,6 +17,7 @@ export class DataEntry {
         const { api, project, dataSetType, period } = this;
         const { config } = project;
         if (!project.orgUnit || !project.dataSets) return [];
+
         const dataSet = project.dataSets[dataSetType];
         const aocIds = config.categoryOptions[dataSetType].categoryOptionCombos.map(coc => coc.id);
         const getSetOptions: DataValueSetsGetRequest = {
@@ -27,19 +29,15 @@ export class DataEntry {
         const dataValuesRes = await api.dataValues.getSet(getSetOptions).getData();
         const usernames = _.uniq(dataValuesRes.dataValues.map(dv => dv.storedBy));
 
-        const usersRes = await api.models.users
-            .get({
-                fields: { id: true, displayName: true, userCredentials: { username: true } },
-                filter: { "userCredentials.username": { in: usernames } },
-                paging: false,
-            })
-            .getData();
+        const queryResponses = await promiseMap(usernames, username =>
+            api.userLookup.query(username).getData()
+        );
 
-        return usersRes.objects.map(user => ({
-            id: user.id,
-            name: user.displayName,
-            username: user.userCredentials.username,
-        }));
+        return _(queryResponses)
+            .flatMap(res => res.users)
+            .filter(user => usernames.includes(user.username))
+            .map(user => ({ id: user.id, name: user.displayName, username: user.username }))
+            .value();
     }
 
     async sendMessage(users: User[], body: string) {

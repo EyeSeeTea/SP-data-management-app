@@ -238,13 +238,12 @@ class MerReport {
 
         const selectedSectors = _(executiveSummariesSelected)
             .map(sectorId => (sectorId ? sectorsById[sectorId] : undefined))
+            .compact()
             .take(limit)
             .value();
-        const selectableSectors = _.differenceBy(
-            sectors,
-            _.compact(selectedSectors),
-            sector => sector.id
-        );
+
+        const selectableSectors = _.differenceBy(sectors, selectedSectors, sector => sector.id);
+
         const infoForSelected: ExecutiveSummariesInfo = selectedSectors.map(sector => ({
             sector,
             value: sector ? this.data.executiveSummaries[sector.id] : undefined,

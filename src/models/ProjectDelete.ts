@@ -7,15 +7,13 @@ import { getProjectStorageKey } from "./MerReport";
 import { runPromises } from "../utils/promises";
 import { getDashboardId } from "./ProjectDb";
 
-type FavoriteModel = "reportTables" | "chart";
-
 export default class ProjectDelete {
     constructor(private config: Config, private api: D2Api) {}
 
     public async delete(ids: Id[]): Promise<void> {
         const { api } = this;
         const { organisationUnits, dataSets, dashboards } = await this.getReferences(ids);
-        const favoritesMetadata = this.getFavoritesMetadata(dashboards);
+        const visualizations = this.getVisualizations(dashboards);
         const dataValues = await this.getDataValues(organisationUnits, dataSets);
 
         if (!_.isEmpty(dataValues)) {
@@ -29,11 +27,13 @@ export default class ProjectDelete {
             // 'Could not delete due to association with another object: DashboardItem'.
             // So first we remove the dashboards and then all the other metadata.
             const requests: Array<Partial<MetadataPayload>> = [
-                { dashboards: getRefs(dashboards) },
                 {
+                    visualizations: getRefs(visualizations),
+                },
+                {
+                    dashboards: getRefs(dashboards),
                     organisationUnits: getRefs(organisationUnits),
                     dataSets: getRefs(dataSets),
-                    ...favoritesMetadata,
                 },
             ];
 
@@ -73,25 +73,13 @@ export default class ProjectDelete {
         return dataValues;
     }
 
-    private getFavoritesMetadata(
-        dashboards: ({ id: string } & {
-            dashboardItems: ({ chart: { id: string } } & { reportTable: { id: string } })[];
-        })[]
-    ): Record<FavoriteModel, Ref[]> {
+    private getVisualizations(
+        dashboards: Array<{ id: Id; dashboardItems: Array<{ visualization: Ref }> }>
+    ) {
         return _(dashboards)
             .flatMap(dashboard => dashboard.dashboardItems)
-            .map(dashboardItem =>
-                dashboardItem.reportTable
-                    ? { model: "reportTables" as const, id: dashboardItem.reportTable.id }
-                    : dashboardItem.chart
-                    ? { model: "charts" as const, id: dashboardItem.chart.id }
-                    : null
-            )
-            .compact()
-            .groupBy(obj => obj.model)
-            .map((objs, model) => [model, objs.map(obj => ({ id: obj.id }))])
-            .fromPairs()
-            .value() as Record<FavoriteModel, Ref[]>;
+            .map(dashboardItem => ({ id: dashboardItem.visualization.id }))
+            .value();
     }
 
     private async getReferences(ids: Id[]) {
@@ -125,8 +113,7 @@ export default class ProjectDelete {
                         id: true,
                         dashboardItems: {
                             id: true,
-                            chart: { id: true },
-                            reportTable: { id: true },
+                            visualization: { id: true },
                         },
                     },
                     filter: { id: { in: dashboardIds } },
