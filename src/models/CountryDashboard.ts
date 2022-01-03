@@ -7,24 +7,23 @@ import {
     SelectedPick,
     D2OrganisationUnitSchema,
     D2OrganisationUnit,
+    D2Visualization,
 } from "../types/d2-api";
-import { D2ReportTable, Ref, D2Chart, D2DashboardItem, Id } from "../types/d2-api";
+import { Ref, D2DashboardItem, Id } from "../types/d2-api";
 import i18n from "../locales";
 import { getUid, getRefs } from "../utils/dhis2";
 import {
-    getReportTableItem,
-    getChartItem,
+    getReportTableItem as getReportTableDashboardItem,
+    getChartDashboardItem,
     positionItems,
     dimensions,
-    MaybeD2Chart,
-    Chart,
     toItemWidth,
     PositionItemsOptions,
     dataElementItems,
-    getD2Chart,
-    Table,
-    MaybeD2Table,
-    getD2ReportTable,
+    Visualization,
+    MaybeD2Visualization,
+    getD2Visualization,
+    VisualizationDefinition,
 } from "./Dashboard";
 import { PeopleOrBenefit } from "./dataElementsSet";
 import { addAttributeValueToObj, AttributeValue } from "./Attributes";
@@ -35,6 +34,8 @@ import {
     DashboardSourceMetadata,
 } from "./ProjectsListDashboard";
 import { D2Sharing, getD2Access } from "./Sharing";
+
+type D2VisualizationPayload = PartialPersistedModel<D2Visualization>;
 
 interface DataElement {
     id: Id;
@@ -103,21 +104,21 @@ export default class CountryDashboard {
     generate() {
         const { d2Country, country } = this;
 
-        const charts: Array<PartialPersistedModel<D2Chart>> = _.compact([
-            this.aggregatedActualValuesPeopleChart(),
-            this.aggregatedActualValuesBenefitChart(),
-        ]);
-
-        const reportTables: Array<PartialPersistedModel<D2ReportTable>> = _.compact([
+        const reportTables: D2VisualizationPayload[] = _.compact([
             this.projectsActualPeopleTable(),
             this.projectsActualBenefitTable(),
         ]);
 
-        const favorites = { reportTables, charts };
+        const charts: D2VisualizationPayload[] = _.concat(
+            this.aggregatedActualValuesPeopleChart(),
+            this.aggregatedActualValuesBenefitChart()
+        );
+
+        const favorites = { visualizations: _.concat(reportTables, charts) };
 
         const items: Array<PartialModel<D2DashboardItem>> = _.compact([
-            ...charts.map(chart => getChartItem(chart)),
-            ...reportTables.map(reportTable => getReportTableItem(reportTable)),
+            ...charts.map(chart => getChartDashboardItem(chart)),
+            ...reportTables.map(reportTable => getReportTableDashboardItem(reportTable)),
         ]);
 
         const dashboard = {
@@ -139,86 +140,103 @@ export default class CountryDashboard {
         };
     }
 
-    aggregatedActualValuesPeopleChart(): MaybeD2Chart {
-        return this.getChart({
+    aggregatedActualValuesPeopleChart(): D2VisualizationPayload[] {
+        return this.getCharts({
             key: "aggregated-actual-people",
             name: i18n.t("Aggregated Actual Values - People"),
             items: dataElementItems(this.dataElements.people),
-            reportFilter: [dimensions.orgUnit, this.categories.new, this.categories.actual],
-            seriesDimension: dimensions.data,
-            categoryDimension: dimensions.period,
+            filters: [dimensions.orgUnit, this.categories.new, this.categories.actual],
+            columns: [dimensions.data],
+            rows: [dimensions.period],
         });
     }
 
-    aggregatedActualValuesBenefitChart(): MaybeD2Chart {
-        return this.getChart({
+    aggregatedActualValuesBenefitChart(): D2VisualizationPayload[] {
+        return this.getCharts({
             key: "aggregated-actual-benefit",
             name: i18n.t("Aggregated Actual Values - Benefit"),
             items: dataElementItems(this.dataElements.benefit),
-            reportFilter: [dimensions.orgUnit, this.categories.actual],
-            seriesDimension: dimensions.data,
-            categoryDimension: dimensions.period,
+            filters: [dimensions.orgUnit, this.categories.actual],
+            columns: [dimensions.data],
+            rows: [dimensions.period],
         });
     }
 
-    projectsActualPeopleTable(): MaybeD2Table {
+    projectsActualPeopleTable(): MaybeD2Visualization {
         const { dataElements } = this;
 
         return this.getTable({
             key: "reportTable-actual-people",
             name: i18n.t("Projects - People"),
             items: dataElementItems(dataElements.people),
-            reportFilter: [dimensions.period, this.categories.new, this.categories.actual],
-            columnDimensions: [dimensions.data],
-            rowDimensions: [dimensions.orgUnit],
+            filters: [dimensions.period, this.categories.new, this.categories.actual],
+            columns: [dimensions.data],
+            rows: [dimensions.orgUnit],
         });
     }
 
-    projectsActualBenefitTable(): MaybeD2Table {
+    projectsActualBenefitTable(): MaybeD2Visualization {
         const { dataElements } = this;
 
         return this.getTable({
             key: "reportTable-actual-benefit",
             name: i18n.t("Projects - Benefit"),
             items: dataElementItems(dataElements.benefit),
-            reportFilter: [dimensions.period, this.categories.actual],
-            columnDimensions: [dimensions.data],
-            rowDimensions: [dimensions.orgUnit],
+            filters: [dimensions.period, this.categories.actual],
+            columns: [dimensions.data],
+            rows: [dimensions.orgUnit],
         });
     }
 
-    getChart(baseChart: BaseChart): MaybeD2Chart {
+    getCharts(definition: Omit<VisualizationDefinition, "type">): D2VisualizationPayload[] {
         const { country } = this;
 
-        const chart: Chart = {
-            ...baseChart,
-            key: baseChart.key + country.id,
-            name: `[${country.name}] ${baseChart.name}`,
-            periods: [],
-            relativePeriods: { thisYear: true },
-            organisationUnits: [{ id: country.id }],
-            sharing: this.getSharing(),
-        };
+        // DHIS 2.36 dhis-web-data-visualizer charts show a single stacked bar when the
+        // x-axis contains 50 items or more. So let's chunk them in groups of 49 and add
+        // a suffix to the name whenever necessary.
+        const itemsGroupList = _.chunk(definition.items, 49);
+        const total = itemsGroupList.length;
+        const showCounting = total > 1;
 
-        const d2Chart = getD2Chart(chart);
+        return _.compact(
+            itemsGroupList.map((itemsGroup, idx) => {
+                const nameSuf = showCounting
+                    ? i18n.t("{{n}} of {{total}}", { n: idx + 1, total })
+                    : "";
 
-        return d2Chart ? { ...d2Chart, ...chart.extra } : null;
+                const chart: Visualization = {
+                    ...definition,
+                    items: itemsGroup,
+                    type: "chart",
+                    key: definition.key + country.id + (idx === 0 ? "" : `-${idx + 1}`),
+                    name: `[${country.name}] ${definition.name}` + (nameSuf ? ` (${nameSuf})` : ""),
+                    periods: [],
+                    relativePeriods: { thisYear: true },
+                    organisationUnits: [{ id: country.id }],
+                    sharing: this.getSharing(),
+                };
+                const d2Chart = getD2Visualization(chart);
+
+                return d2Chart ? { ...d2Chart, ...chart.extra } : null;
+            })
+        );
     }
 
-    getTable(baseTable: BaseTable): MaybeD2Table {
+    getTable(definition: Omit<VisualizationDefinition, "type">): MaybeD2Visualization {
         const { country } = this;
 
-        const chart: Table = {
-            ...baseTable,
-            key: baseTable.key + country.id,
-            name: `[${country.name}] ${baseTable.name}`,
+        const chart: Visualization = {
+            ...definition,
+            type: "table",
+            key: definition.key + country.id,
+            name: `[${country.name}] ${definition.name}`,
             periods: [],
             relativePeriods: { thisYear: true },
             organisationUnits: getRefs(country.projectsListDashboard.orgUnits),
             sharing: this.getSharing(),
         };
 
-        const d2Table = getD2ReportTable(chart);
+        const d2Table = getD2Visualization(chart);
 
         return d2Table ? { ...d2Table, ...chart.extra } : null;
     }
@@ -257,20 +275,3 @@ const positionItemsOptions: PositionItemsOptions = {
     defaultWidth: toItemWidth(100),
     defaultHeight: 30,
 };
-
-type BaseTable = Pick<
-    Table,
-    | "key"
-    | "name"
-    | "items"
-    | "reportFilter"
-    | "extra"
-    | "rowDimensions"
-    | "columnDimensions"
-    | "rowTotals"
->;
-
-type BaseChart = Pick<
-    Chart,
-    "key" | "name" | "items" | "reportFilter" | "categoryDimension" | "extra" | "seriesDimension"
->;
