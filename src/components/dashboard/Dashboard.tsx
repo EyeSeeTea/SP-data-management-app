@@ -30,6 +30,8 @@ interface State {
 const Dashboard: React.FC<DashboardProps> = props => {
     const { id, name, backUrl } = props;
     const { dhis2Url: baseUrl } = useAppContext();
+
+    // We must set a large initial height, otherwise only the top items of the dashboards are rendered.
     const [state, setState] = React.useState<State>({ type: "loading", height: 10000 });
     const iframeRef: React.RefObject<HTMLIFrameElement> = React.createRef();
 
@@ -42,12 +44,12 @@ const Dashboard: React.FC<DashboardProps> = props => {
         const iframe = iframeRef.current;
 
         if (iframe !== null) {
-            iframe.addEventListener("load", () => {
-                setDashboardStyling(iframe).then(() => {
-                    openExternalLinksInNewTab(iframe);
-                    setState(prevState => ({ ...prevState, type: "loaded" }));
-                });
+            iframe.addEventListener("load", async () => {
+                await setDashboardStyling(iframe);
+                setState(prevState => ({ ...prevState, type: "loaded" }));
+                openExternalLinksInNewTab(iframe);
             });
+
             const intervalId = autoResizeIframeByContent(iframe, height =>
                 setState(prevState => ({ ...prevState, height }))
             );
@@ -115,11 +117,11 @@ function autoResizeIframeByContent(
     setHeight: (height: number) => void
 ): IntervalId {
     const resize = () => {
-        const body = iframe?.contentWindow?.document?.body;
-        if (iframe && body) {
-            const height = body.scrollHeight;
-            if (height > 0) setHeight(height);
-        }
+        // Get the first element that has the real height of the full dashboard (and not the forced large value).
+        const document = iframe?.contentWindow?.document;
+        const height = document?.querySelector(".dashboard-scroll-container > div")?.scrollHeight;
+
+        if (height && height > 0) setHeight(height);
     };
     return window.setInterval(resize, 1000);
 }
@@ -141,7 +143,7 @@ async function setDashboardStyling(iframe: HTMLIFrameElement) {
     if (!iframe.contentWindow) return;
     const iframeDocument = iframe.contentWindow.document;
 
-    await waitforElementToLoad(iframeDocument, ".app-wrapper");
+    await waitforElementToLoad(iframeDocument, ".app-wrapper,.dashboard-scroll-container");
     const iFrameRoot = iframeDocument.querySelector<HTMLElement>("#root");
     const iFrameWrapper = iframeDocument.querySelector<HTMLElement>(".app-wrapper");
     const pageContainer = iframeDocument.querySelector<HTMLElement>(".page-container-top-margin");
@@ -150,6 +152,17 @@ async function setDashboardStyling(iframe: HTMLIFrameElement) {
         (iFrameWrapper.children[0] as HTMLElement).style.display = "none";
     if (iFrameWrapper?.children[1])
         (iFrameWrapper.children[1] as HTMLElement).style.display = "none";
+
+    // 2.36
+    iframeDocument.querySelectorAll("header").forEach(el => el.remove());
+    iframeDocument.querySelectorAll("[data-test='dashboards-bar']").forEach(el => el.remove());
+
+    // Hide top bar actions
+    iframeDocument
+        .querySelectorAll<HTMLElement>(
+            ".dashboard-scroll-container > div > div[class*='ViewTitleBar_container']"
+        )
+        .forEach(el => (el.style.display = "none"));
 
     if (pageContainer) pageContainer.style.marginTop = "0px";
     if (iFrameRoot) iFrameRoot.style.marginTop = "0px";

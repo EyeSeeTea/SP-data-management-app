@@ -8,5 +8,6 @@ export async function getMigrationTasks(): Promise<MigrationTasks> {
         migration(4, (await import("./04.set-livelihoods-code")).default),
         migration(5, (await import("./05.extend-covid-disaggregation")).default),
         migration(6, (await import("./06.add-benefits-disaggregation")).default),
+        migration(7, (await import("./07.update-to-v2.36")).default),
     ];
 }

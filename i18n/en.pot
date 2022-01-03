@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2021-10-14T11:13:47.430Z\n"
-"PO-Revision-Date: 2021-10-14T11:13:47.430Z\n"
+"POT-Creation-Date: 2021-12-22T11:38:47.808Z\n"
+"PO-Revision-Date: 2021-12-22T11:38:47.808Z\n"
 
 msgid "Name"
 msgstr ""
@@ -301,6 +301,9 @@ msgid "Projects - People"
 msgstr ""
 
 msgid "Projects - Benefit"
+msgstr ""
+
+msgid "{{n}} of {{total}}"
 msgstr ""
 
 msgid "Data Approval"
