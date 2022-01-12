@@ -61,7 +61,12 @@ export interface DataElement extends DataElementBase {
     series?: string;
     pairedDataElements: DataElement[];
     search: string; // For text search (include searchable fields of paired data elements)
+    crossInfo: [IsCross, isCustom, Series]; // Lexicographically sortable array so it can be used as a sorting field
 }
+
+type IsCross = string;
+type isCustom = string;
+type Series = string;
 
 type SectorId = Id;
 type BySector<T> = Record<SectorId, T>;
@@ -533,6 +538,11 @@ function getDataElementsBySector(
                         isMainSector: sectorInfo.id === dataElement.mainSector.id,
                         series: sectorInfo.series,
                         search: "",
+                        crossInfo: [
+                            dataElement.isCrossSectoral ? "1" : "0",
+                            dataElement.indicatorType === "custom" ? "1" : "0",
+                            _.padStart(sectorInfo.series, 6, "0"),
+                        ] as DataElement["crossInfo"],
                     };
             })
         );

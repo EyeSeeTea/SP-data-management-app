@@ -49,7 +49,7 @@ const initialPagination: Partial<TablePagination> = {
 };
 
 const initialSorting: TableSorting<DataElement> = {
-    field: "series",
+    field: "crossInfo",
     order: "asc" as const,
 };
 
