@@ -23,7 +23,7 @@ interface ValueBase {
 
 interface NumberValue extends ValueBase {
     type: "number";
-    value: number;
+    value: number | null;
 }
 
 interface TextValue extends ValueBase {
@@ -474,7 +474,7 @@ class ProjectDownload {
         return sheet;
     }
 
-    mapPeriods(mapper: (period: Period) => number, options?: Options): Value[] {
+    mapPeriods(mapper: (period: Period) => number | undefined, options?: Options): Value[] {
         return this.periods.map(period => float(mapper(period), options));
     }
 }
@@ -543,7 +543,7 @@ function formula(value: GetFormulaValue, options?: Options): FormulaValue {
 }
 
 function float(n: number | undefined, options?: Options): Value {
-    return { ...options, type: "number", value: n || 0.0 };
+    return { ...options, type: "number", value: n === undefined ? null : n };
 }
 
 function text(s: string, options?: Options): Value {
