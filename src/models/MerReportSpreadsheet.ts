@@ -71,12 +71,8 @@ class MerReportSpreadsheet {
     addNarrativeSheet(workbook: Workbook) {
         const { config } = this.merReport;
         const { merReport } = this;
-        const {
-            date,
-            organisationUnit,
-            countryDirector,
-            projectedActivitiesNextMonth,
-        } = merReport.data;
+        const { date, organisationUnit, countryDirector, projectedActivitiesNextMonth } =
+            merReport.data;
         const countryName = organisationUnit.displayName;
         const title = i18n.t("Monthly Executive Report") + " - " + countryName;
         const now = moment();

@@ -31,8 +31,7 @@ export function mockApiForMerReportEmpty(mock: MockAdapter) {
 function mockProjectListGet(mock: MockAdapter) {
     mock.onGet("/organisationUnits", {
         paging: false,
-        fields:
-            "attributeValues[attribute[id],value],code~rename(c),displayName~rename(n),id~rename(i)",
+        fields: "attributeValues[attribute[id],value],code~rename(c),displayName~rename(n),id~rename(i)",
         order: "displayName:iasc",
         filter: [
             "attributeValues.attribute.id:eq:mgCKcJuP5n0",

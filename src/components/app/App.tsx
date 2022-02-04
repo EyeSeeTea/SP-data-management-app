@@ -70,7 +70,7 @@ function initFeedbackTool(d2: D2, appConfig: AppConfig): void {
             ...appConfig.feedback,
             i18nPath: "feedback-tool/i18n",
         };
-        ((window as unknown) as AppWindow).$.feedbackDhis2(d2, appKey, feedbackOptions);
+        (window as unknown as AppWindow).$.feedbackDhis2(d2, appKey, feedbackOptions);
     }
 }
 

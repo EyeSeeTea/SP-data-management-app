@@ -77,22 +77,19 @@ class ProjectDownload {
         workbook.created = now.toDate();
         workbook.modified = now.toDate();
 
-        const [
-            peopleAnalytics,
-            benefitAnalytics,
-            benefitDisaggregatedAnalytics,
-        ] = await Promise.all([
-            ProjectAnalytics.build(this.project, [
-                config.categories.targetActual,
-                config.categories.newRecurring,
-                config.categories.gender,
-            ]),
-            ProjectAnalytics.build(this.project, [config.categories.targetActual]),
-            ProjectAnalytics.build(this.project, [
-                config.categories.targetActual,
-                config.categories.newRecurring,
-            ]),
-        ]);
+        const [peopleAnalytics, benefitAnalytics, benefitDisaggregatedAnalytics] =
+            await Promise.all([
+                ProjectAnalytics.build(this.project, [
+                    config.categories.targetActual,
+                    config.categories.newRecurring,
+                    config.categories.gender,
+                ]),
+                ProjectAnalytics.build(this.project, [config.categories.targetActual]),
+                ProjectAnalytics.build(this.project, [
+                    config.categories.targetActual,
+                    config.categories.newRecurring,
+                ]),
+            ]);
 
         this.addBenefitSheet(workbook, benefitAnalytics, benefitDisaggregatedAnalytics);
         this.addPeopleSheet(workbook, peopleAnalytics);

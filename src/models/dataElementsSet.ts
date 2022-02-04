@@ -290,10 +290,10 @@ export default class DataElementsSet {
         return new DataElementsSet(this.config, { ...this.data, selected: newSelected });
     }
 
-    updateSelectedWithRelations(query?: {
-        sectorId: Id;
-        dataElementIds: string[];
-    }): { selectionInfo: SelectionInfo; dataElements: DataElementsSet } {
+    updateSelectedWithRelations(query?: { sectorId: Id; dataElementIds: string[] }): {
+        selectionInfo: SelectionInfo;
+        dataElements: DataElementsSet;
+    } {
         const firstSectorId = _.keys(this.data.selected)[0];
         if (!query && !firstSectorId) return { selectionInfo: {}, dataElements: this };
 
@@ -470,9 +470,9 @@ function getPairedDataElements(
         .value();
 }
 
-function getGroupCodeByDataElementId(
-    dataElementGroupSets: DataElementGroupSet[]
-): { [dataElementId: string]: Set<string> } {
+function getGroupCodeByDataElementId(dataElementGroupSets: DataElementGroupSet[]): {
+    [dataElementId: string]: Set<string>;
+} {
     return _(dataElementGroupSets)
         .flatMap(degSet => degSet.dataElementGroups)
         .flatMap(deg => deg.dataElements.map(de => ({ deId: de.id, degCode: deg.code })))

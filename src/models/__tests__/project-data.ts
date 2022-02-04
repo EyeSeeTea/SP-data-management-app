@@ -7,7 +7,7 @@ import { Config } from "../Config";
 
 import configJson from "./config.json";
 
-export const config = (configJson as unknown) as Config;
+export const config = configJson as unknown as Config;
 
 export const projectData = {
     id: "WGC0DJ0YSis",
