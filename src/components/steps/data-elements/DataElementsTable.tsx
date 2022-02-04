@@ -40,7 +40,7 @@ export interface DataElementsTableProps {
 }
 
 const paginationOptions = {
-    pageSizeOptions: [10, 20, 50],
+    pageSizeOptions: [10, 20, 50, 100],
 };
 
 const initialPagination: Partial<TablePagination> = {
