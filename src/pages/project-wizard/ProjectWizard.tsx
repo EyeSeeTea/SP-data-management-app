@@ -82,7 +82,7 @@ class ProjectWizardImpl extends React.Component<Props, State> {
                     ? getDevProject(Project.create(api, config), isDev)
                     : await Project.get(api, config, action.id);
             this.setState({ project });
-        } catch (err) {
+        } catch (err: any) {
             console.error(err);
             this.props.snackbar.error(i18n.t("Cannot load project") + `: ${err.message || err}`);
             this.props.goBack();

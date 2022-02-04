@@ -14,7 +14,7 @@ export async function withSnackbarOnError<T>(
     const { onCatch, onFinally } = options || {};
     try {
         return await fn();
-    } catch (err) {
+    } catch (err: any) {
         const bodyMessage = err.response?.data?.message;
         console.error(err);
         if (onCatch) onCatch();

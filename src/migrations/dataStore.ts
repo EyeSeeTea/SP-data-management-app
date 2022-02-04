@@ -29,7 +29,7 @@ export async function deleteDataStore(
 ): Promise<void> {
     try {
         await api.delete(`/dataStore/${dataStoreNamespace}/${dataStoreKey}`).getData();
-    } catch (error) {
+    } catch (error: any) {
         if (!error.response || error.response.status !== 404) {
             throw error;
         }

@@ -211,7 +211,7 @@ async function approve(
                     showUnapproveButton: false,
                 })
             );
-    } catch (err) {
+    } catch (err: any) {
         setState({
             error: err.message || err.toString(),
             loading: false,

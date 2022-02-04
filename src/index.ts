@@ -55,7 +55,7 @@ async function main() {
             ),
             document.getElementById("root")
         );
-    } catch (err) {
+    } catch (err: any) {
         console.error(err);
         ReactDOM.render(
             React.createElement("div", {}, err.toString()),
