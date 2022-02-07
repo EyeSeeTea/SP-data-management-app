@@ -33,6 +33,9 @@ module.exports = {
     },
     plugins: ["cypress"],
     env: { "cypress/globals": true },
+    parserOptions: {
+        warnOnUnsupportedTypeScriptVersion: false,
+    },
     settings: {
         react: {
             pragma: "React",

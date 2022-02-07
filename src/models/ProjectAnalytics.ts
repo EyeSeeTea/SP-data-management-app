@@ -60,14 +60,15 @@ export default class ProjectAnalytics {
         return new ProjectAnalytics(project, orgUnit, valuesByKey);
     }
 
-    get(dataElement: DataElement, periodId: string, categoryOptions: Ref[]): number {
+    get(dataElement: DataElement, periodId: string, categoryOptions: Ref[]): number | undefined {
         const key = ProjectAnalytics.getKey([periodId, this.orgUnit.id, dataElement.id]);
         const data = this.valuesByKey[key] || [];
         const getCategoryOptionIds = new Set(getIds(categoryOptions));
-        return _(data)
+        const values = data
             .filter(({ categoryOptionIds }) => isSuperset(categoryOptionIds, getCategoryOptionIds))
-            .map(({ value }) => value)
-            .sum();
+            .map(({ value }) => value);
+
+        return values.length > 0 ? _.sum(values) : undefined;
     }
 
     static getKey(ss: string[]): string {

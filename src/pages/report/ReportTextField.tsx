@@ -28,10 +28,10 @@ const ReportTextField: React.FC<ReportTextFieldProps> = props => {
         ...otherProps
     } = props;
 
-    const notifyChange = React.useCallback((value: string) => onBlurChange(field, value), [
-        onBlurChange,
-        field,
-    ]);
+    const notifyChange = React.useCallback(
+        (value: string) => onBlurChange(field, value),
+        [onBlurChange, field]
+    );
 
     return (
         <div style={styles.main}>

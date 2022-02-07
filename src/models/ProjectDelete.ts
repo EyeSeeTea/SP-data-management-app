@@ -50,8 +50,8 @@ export default class ProjectDelete {
         const dataStore = getDataStore(api);
 
         return runPromises(
-            organisationUnits.map(orgUnit => () =>
-                dataStore.delete(getProjectStorageKey(orgUnit)).getData()
+            organisationUnits.map(
+                orgUnit => () => dataStore.delete(getProjectStorageKey(orgUnit)).getData()
             ),
             { concurrency: 3 }
         );

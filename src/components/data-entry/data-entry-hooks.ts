@@ -166,7 +166,7 @@ export interface Options {
 
 /* Function to eval within the iframe to send/receive events to/from the parent page */
 function setupDataEntryInterceptors(options: Options = {}) {
-    const iframeWindow = (window as unknown) as DataEntryWindow;
+    const iframeWindow = window as unknown as DataEntryWindow;
     console.debug("|data-entry|:setup-interceptors", iframeWindow.dataEntryHooksInit, options);
     if (iframeWindow.dataEntryHooksInit) return;
 

@@ -69,7 +69,7 @@ export class MigrationsRunner {
             debug(`Apply migration ${zeroPad(migration.version, 2)} - ${migration.name}`);
             try {
                 await migration.migrate(api, debug);
-            } catch (error) {
+            } catch (error: any) {
                 const errorMsg = `${migration.name}: ${error.message}`;
                 await this.saveConfig({ errorMsg });
                 throw error;
