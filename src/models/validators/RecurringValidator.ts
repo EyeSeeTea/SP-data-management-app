@@ -14,6 +14,7 @@ import {
     formatPeriod,
     isSuperset,
     getDataValueFromD2,
+    ValidationLevel,
 } from "./validator-common";
 import { Config } from "../Config";
 import { Maybe } from "../../types/utils";
@@ -37,6 +38,7 @@ import { lexRange } from "../../utils/lex-ranges";
 interface Data {
     api: D2Api;
     project: Project;
+    dataSetType: DataSetType;
     categoryOptionForDataSetType: CategoryOption;
     config: Config;
     period: string;
@@ -97,6 +99,7 @@ export class RecurringValidator {
         return new RecurringValidator({
             api,
             project,
+            dataSetType,
             categoryOptionForDataSetType,
             config,
             period,
@@ -211,7 +214,7 @@ export class RecurringValidator {
     }
 
     validateCategoryOptions(categoryOptionIds: Id[], values: DataValue[]): ValidationItem[] {
-        const { config } = this.data;
+        const { config, dataSetType } = this.data;
         const returningAggr = this.getAggregation(categoryOptionIds, values, "current-month");
         if (!returningAggr) return [];
 
@@ -237,7 +240,8 @@ export class RecurringValidator {
                     nsSeparator: false,
                 }
             );
-            return [["error", msg]];
+            const validationLevel: ValidationLevel = dataSetType === "target" ? "warning" : "error";
+            return [[validationLevel, msg]];
         } else {
             const msg = i18n.t(
                 "Returning value ({{returningFormula}}) is greater than the sum of New values for past periods in projects stored in Platform: {{pastFormula}} (there is no {{missingProjects}} version(s) of this project)",
