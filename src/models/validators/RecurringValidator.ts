@@ -14,7 +14,6 @@ import {
     formatPeriod,
     isSuperset,
     getDataValueFromD2,
-    ValidationLevel,
 } from "./validator-common";
 import { Config } from "../Config";
 import { Maybe } from "../../types/utils";
