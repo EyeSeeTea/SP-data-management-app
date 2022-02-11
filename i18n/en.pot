@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2021-12-22T11:38:47.808Z\n"
-"PO-Revision-Date: 2021-12-22T11:38:47.808Z\n"
+"POT-Creation-Date: 2022-02-09T08:29:12.478Z\n"
+"PO-Revision-Date: 2022-02-09T08:29:12.478Z\n"
 
 msgid "Name"
 msgstr ""
@@ -625,6 +625,11 @@ msgid ""
 msgstr ""
 
 msgid "Global indicator with sub-indicators values cannot be empty: {{- name}}"
+msgstr ""
+
+msgid ""
+"Returning value ({{returningFormula}}) is greater than the sum of New "
+"values for past periods: {{pastFormula}}"
 msgstr ""
 
 msgid ""
