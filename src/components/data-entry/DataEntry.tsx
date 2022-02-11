@@ -329,9 +329,8 @@ function setSelectPeriod(
     if (!iframe || !iframe.contentWindow) return false;
 
     const iframeWindow = iframe.contentWindow as Window & DataEntryWindow;
-    const periodSelector = iframeWindow.document.querySelector<HTMLSelectElement>(
-        "#selectedPeriodId"
-    );
+    const periodSelector =
+        iframeWindow.document.querySelector<HTMLSelectElement>("#selectedPeriodId");
 
     if (periodSelector && periodKey) {
         const now = moment();

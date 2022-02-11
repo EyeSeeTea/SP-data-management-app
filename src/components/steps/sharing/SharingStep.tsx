@@ -49,10 +49,10 @@ const SharingStep: React.FC<StepProps> = props => {
         },
         [project, projectSharing, onChange]
     );
-    const search = React.useCallback((query: string) => searchUsers(api, query, project), [
-        api,
-        project,
-    ]);
+    const search = React.useCallback(
+        (query: string) => searchUsers(api, query, project),
+        [api, project]
+    );
 
     const classes = useStyles();
 

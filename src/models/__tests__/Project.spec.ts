@@ -8,7 +8,7 @@ import moment from "moment";
 import { logUnknownRequest } from "../../utils/tests";
 
 const { api, mock } = getMockApi();
-const config = (configJson as unknown) as Config;
+const config = configJson as unknown as Config;
 
 function getNewProject() {
     return Project.create(api, config).set("id", "BvNo8zQaol8");
@@ -344,8 +344,7 @@ describe("Project", () => {
             mock.onGet("/organisationUnits", {
                 params: {
                     paging: false,
-                    fields:
-                        "attributeValues[attribute[id],value],code~rename(c),displayName~rename(n),id~rename(i)",
+                    fields: "attributeValues[attribute[id],value],code~rename(c),displayName~rename(n),id~rename(i)",
                     order: "displayName:idesc",
                     filter: [
                         "attributeValues.attribute.id:eq:mgCKcJuP5n0",
@@ -359,8 +358,7 @@ describe("Project", () => {
             mock.onGet("/organisationUnits", {
                 params: {
                     paging: false,
-                    fields:
-                        "closedDate,code,created,displayDescription,displayName,href,id,lastUpdated,lastUpdatedBy[name],openingDate,organisationUnitGroups[groupSets[id],id],parent[displayName,id],user[displayName,id]",
+                    fields: "closedDate,code,created,displayDescription,displayName,href,id,lastUpdated,lastUpdatedBy[name],openingDate,organisationUnitGroups[groupSets[id],id],parent[displayName,id],user[displayName,id]",
                     filter: ["id:in:[5,3,1]"],
                     order: "displayName:idesc",
                 },

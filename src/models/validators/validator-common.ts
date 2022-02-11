@@ -16,7 +16,9 @@ export interface ValidationResult {
     error?: string[];
 }
 
-export type ValidationItem = [keyof ValidationResult, string];
+export type ValidationLevel = keyof ValidationResult;
+
+export type ValidationItem = [ValidationLevel, string];
 
 export function isSuperset<T>(xs: T[], ys: T[]) {
     return _.difference(ys, xs).length === 0;

@@ -176,7 +176,7 @@ function useSave(project: Project, action: StepProps["action"], projectInfo: Rea
             } else {
                 setErrorMessage(JSON.stringify({ response, payload }, null, 2));
             }
-        } catch (err) {
+        } catch (err: any) {
             setSaving(false);
             console.error(err);
             snackbar.error(err.message || err.toString());

@@ -29,10 +29,10 @@ describe("Projects - Create", () => {
         const startDate = moment();
         const endDate = moment().add(3, "months");
 
-        cy.contains("Start Date").click({ force: true });
+        cy.contains("Start Date (*)").click({ force: true });
         selectDatePicker(startDate.year(), startDate.format("MMM"));
 
-        cy.contains("End Date").click({ force: true });
+        cy.contains("End Date (*)").click({ force: true });
         selectDatePicker(endDate.year(), endDate.format("MMM"));
 
         // Funders
