@@ -57,7 +57,7 @@ class AddBenefitsDisaggregationMigration {
         await post(this.api, this.debug, payload);
 
         this.debug("Update category option combos");
-        await this.api.maintenance.categoryOptionComboUpdate().getData();
+        await this.api.maintenance.runTasks(["categoryOptionComboUpdate"]).getData();
     }
 }
 

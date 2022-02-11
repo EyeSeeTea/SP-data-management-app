@@ -42,10 +42,10 @@ const ProjectsListFilters: React.FC<ProjectsListFiltersProps> = props => {
         [onChange, filter]
     );
 
-    const notifySectorsChange = React.useCallback(sectors => onChange({ ...filter, sectors }), [
-        onChange,
-        filter,
-    ]);
+    const notifySectorsChange = React.useCallback(
+        sectors => onChange({ ...filter, sectors }),
+        [onChange, filter]
+    );
 
     const notifyOnlyActiveChange = React.useCallback<OnChange>(
         (_ev, checked) => {

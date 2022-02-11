@@ -38,9 +38,10 @@ const OrgUnitsStep: React.FC<StepProps> = ({ project, onChange }) => {
             .map(location => ({ value: location.id, text: location.displayName }));
     }, [project]);
 
-    const selectedLocations = React.useMemo(() => project.locations.map(location => location.id), [
-        project,
-    ]);
+    const selectedLocations = React.useMemo(
+        () => project.locations.map(location => location.id),
+        [project]
+    );
 
     return (
         <React.Fragment>

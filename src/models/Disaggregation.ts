@@ -112,9 +112,10 @@ export class Disaggregation {
         return !!this.data.mapping[dataElementId];
     }
 
-    setCovid19WithRelations(
-        options: SetCovid19WithRelationsOptions
-    ): { selectionInfo: SelectionInfo; disaggregation: Disaggregation } {
+    setCovid19WithRelations(options: SetCovid19WithRelationsOptions): {
+        selectionInfo: SelectionInfo;
+        disaggregation: Disaggregation;
+    } {
         const { dataElementsSet, sectorId, isSet } = options;
         const isCovid = this.isCovid19.bind(this);
 

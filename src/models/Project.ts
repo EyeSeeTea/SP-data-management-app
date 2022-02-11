@@ -570,9 +570,10 @@ class Project {
         return new ProjectDelete(config, api).delete(ids);
     }
 
-    setCovid19(
-        options: SetCovid19WithRelationsOptions
-    ): { selectionInfo: SelectionInfo; project: Project } {
+    setCovid19(options: SetCovid19WithRelationsOptions): {
+        selectionInfo: SelectionInfo;
+        project: Project;
+    } {
         const res = this.disaggregation.setCovid19WithRelations(options);
         const { selectionInfo, disaggregation: newDisaggregation } = res;
         const newProject = this.setObj({ disaggregation: newDisaggregation });

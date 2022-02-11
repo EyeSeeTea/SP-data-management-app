@@ -40,7 +40,7 @@ export interface DataElementsTableProps {
 }
 
 const paginationOptions = {
-    pageSizeOptions: [10, 20, 50],
+    pageSizeOptions: [10, 20, 50, 100],
 };
 
 const initialPagination: Partial<TablePagination> = {
@@ -49,7 +49,7 @@ const initialPagination: Partial<TablePagination> = {
 };
 
 const initialSorting: TableSorting<DataElement> = {
-    field: "series",
+    field: "crossInfo",
     order: "asc" as const,
 };
 

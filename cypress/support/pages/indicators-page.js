@@ -12,6 +12,7 @@ export default class IndicatorsPage {
     }
 
     select(code) {
+        cy.log(`Select indicator ${code}`);
         this.clickSelected(code);
         return this;
     }

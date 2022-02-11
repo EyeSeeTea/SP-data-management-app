@@ -521,11 +521,12 @@ async function getProjectInfoByOrgUnitId(api: D2Api, orgUnits: Ref[]) {
     return _.fromPairs(
         _.compact(
             await runPromises(
-                orgUnits.map(orgUnit => () =>
-                    dataStore
-                        .get<ProjectInfo | undefined>(getProjectStorageKey(orgUnit))
-                        .getData()
-                        .then(value => [orgUnit.id, value] as [string, ProjectInfo])
+                orgUnits.map(
+                    orgUnit => () =>
+                        dataStore
+                            .get<ProjectInfo | undefined>(getProjectStorageKey(orgUnit))
+                            .getData()
+                            .then(value => [orgUnit.id, value] as [string, ProjectInfo])
                 ),
                 { concurrency: 3 }
             )
