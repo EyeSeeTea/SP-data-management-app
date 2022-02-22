@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2022-02-09T08:29:12.478Z\n"
-"PO-Revision-Date: 2022-02-09T08:29:12.478Z\n"
+"POT-Creation-Date: 2022-02-22T09:17:54.865Z\n"
+"PO-Revision-Date: 2022-02-22T09:17:54.865Z\n"
 
 msgid "Name"
 msgstr ""
@@ -43,6 +43,12 @@ msgid ""
 msgstr ""
 
 msgid "Loading dashboard to analyse your data..."
+msgstr ""
+
+msgid ""
+"PLEASE NOTE: monthly % achieved dashboards are not functional in this "
+"version of Platform, but plan to be restored by March 31. In the interim, "
+"reach out to pmt@samaritan.org if you need visibility on this data."
 msgstr ""
 
 msgid "Cannot load dashboard"
