@@ -40,6 +40,11 @@ const Dashboard: React.FC<DashboardProps> = props => {
     const translations = getTranslations(name);
     const appHistory = useAppHistory(backUrl);
 
+    const temporalMessageForVersion_2_36_8 = i18n.t(
+        "PLEASE NOTE: monthly % achieved dashboards are not functional in this version of Platform, but plan to be restored by March 31. In the interim, reach out to pmt@samaritan.org if you need visibility on this data.",
+        { nsSeparator: false }
+    );
+
     React.useEffect(() => {
         const iframe = iframeRef.current;
 
@@ -67,11 +72,13 @@ const Dashboard: React.FC<DashboardProps> = props => {
                 onBackClick={appHistory.goBack}
             />
 
+            <div style={styles.warning}>{temporalMessageForVersion_2_36_8}</div>
+
             {isLoading && (
-                <React.Fragment>
+                <div style={styles.progress}>
                     <div style={styles.subtitle}>{translations.subtitle}</div>
                     <LinearProgress />
-                </React.Fragment>
+                </div>
             )}
 
             <div style={isLoading ? styles.wrapperHidden : styles.wrapperVisible}>
@@ -93,6 +100,14 @@ const styles = {
     wrapperVisible: {},
     wrapperHidden: { visibility: "hidden" },
     subtitle: { marginBottom: 10, marginLeft: 15 },
+    progress: { marginTop: 20 },
+    warning: {
+        color: "#555",
+        fontStyle: "italic",
+        fontSize: "0.85em",
+        display: "block",
+        padding: "0px 15px",
+    },
 };
 
 type IntervalId = number;
