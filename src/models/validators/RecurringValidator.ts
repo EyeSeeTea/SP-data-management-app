@@ -14,7 +14,6 @@ import {
     formatPeriod,
     isSuperset,
     getDataValueFromD2,
-    ValidationLevel,
 } from "./validator-common";
 import { Config } from "../Config";
 import { Maybe } from "../../types/utils";
@@ -232,16 +231,22 @@ export class RecurringValidator {
         if (isValid) {
             return [];
         } else if (this.data.allProjectsInPlatform) {
-            const msg = i18n.t(
-                "Returning value ({{returningFormula}}) cannot be greater than the sum of New values for past periods: {{pastFormula}}",
-                {
-                    returningFormula: returningAggr.formula,
-                    pastFormula: newAggr.formula,
-                    nsSeparator: false,
-                }
-            );
-            const validationLevel: ValidationLevel = dataSetType === "target" ? "warning" : "error";
-            return [[validationLevel, msg]];
+            const returningFormula = returningAggr.formula;
+            const pastFormula = newAggr.formula;
+
+            if (dataSetType === "target") {
+                const msg = i18n.t(
+                    "Returning value ({{returningFormula}}) is greater than the sum of New values for past periods: {{pastFormula}}",
+                    { nsSeparator: false, returningFormula, pastFormula }
+                );
+                return [["warning", msg]];
+            } else {
+                const msg = i18n.t(
+                    "Returning value ({{returningFormula}}) cannot be greater than the sum of New values for past periods: {{pastFormula}}",
+                    { nsSeparator: false, returningFormula, pastFormula }
+                );
+                return [["error", msg]];
+            }
         } else {
             const msg = i18n.t(
                 "Returning value ({{returningFormula}}) is greater than the sum of New values for past periods in projects stored in Platform: {{pastFormula}} (there is no {{missingProjects}} version(s) of this project)",
