@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2022-03-11T14:05:55.189Z\n"
-"PO-Revision-Date: 2022-03-11T14:05:55.189Z\n"
+"POT-Creation-Date: 2022-03-11T14:37:20.365Z\n"
+"PO-Revision-Date: 2022-03-11T14:37:20.365Z\n"
 
 msgid "Name"
 msgstr ""
@@ -942,6 +942,9 @@ msgid ""
 msgstr ""
 
 msgid "Sector"
+msgstr ""
+
+msgid "Hour values must be zero or positive"
 msgstr ""
 
 msgid "You have reached the limit for this field"
