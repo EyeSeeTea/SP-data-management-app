@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2022-02-22T09:17:54.865Z\n"
-"PO-Revision-Date: 2022-02-22T09:17:54.865Z\n"
+"POT-Creation-Date: 2022-03-11T14:05:55.189Z\n"
+"PO-Revision-Date: 2022-03-11T14:05:55.189Z\n"
 
 msgid "Name"
 msgstr ""
@@ -618,6 +618,12 @@ msgstr ""
 msgid ""
 "Actual value ({{actualValue}}) should not be greater than 20% of the target "
 "value ({{targetValue}})"
+msgstr ""
+
+msgid "Benefit value should be positive ({{value}})"
+msgstr ""
+
+msgid "Benefit value should have 5 or less decimal places ({{value}})"
 msgstr ""
 
 msgid ""
