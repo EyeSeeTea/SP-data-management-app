@@ -41,7 +41,7 @@ const Dashboard: React.FC<DashboardProps> = props => {
     const appHistory = useAppHistory(backUrl);
 
     const temporalMessageForVersion_2_36_8 = i18n.t(
-        "PLEASE NOTE: monthly % achieved dashboards are not functional in this version of Platform, but plan to be restored by March 31. In the interim, reach out to pmt@samaritan.org if you need visibility on this data.",
+        "PLEASE NOTE: monthly % achieved dashboards are not functional in this version of Platform, but plan to be restored by May 31. In the interim, reach out to pmt@samaritan.org if you need visibility on this data.",
         { nsSeparator: false }
     );
 
