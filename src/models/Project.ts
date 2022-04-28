@@ -268,8 +268,16 @@ class Project {
             this.parentOrgUnit ? [] : [i18n.t("One Organisation Unit should be selected")],
         dataElementsSelection: () =>
             this.dataElementsSelection.validateAtLeastOneItemPerSector(this.sectors),
-        dataElementsMER: () => this.dataElementsMER.validatetOneItemTotal(this.sectors),
+        dataElementsMER: () => this.validateMER(),
     };
+
+    validateMER(): ValidationError {
+        return _.concat(
+            this.dataElementsMER.validateAtLeastOneSelected(this.sectors),
+            this.dataElementsMER.validateMaxSelectedBySector(this.sectors, 3),
+            this.dataElementsMER.validateMaxSectorsWithSelections(this.sectors, 3)
+        );
+    }
 
     static requiredFields: Set<ProjectField> = new Set([
         "name",

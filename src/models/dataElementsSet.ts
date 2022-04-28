@@ -8,6 +8,7 @@ import User from "./user";
 import { fromPairs, getKeys } from "../types/utils";
 import Project from "./Project";
 import { splitParts } from "../utils/string";
+import { ValidationError } from "../utils/validations";
 
 /*
     Abstract list of Project data element of type DataElement. Usage:
@@ -116,10 +117,51 @@ export default class DataElementsSet {
         return _.isEmpty(missingSectors) ? [] : [msg];
     }
 
-    validatetOneItemTotal(sectors: Sector[]) {
-        const sectorIds = new Set(sectors.map(sector => sector.id));
-        const selected = this.get({ onlySelected: true }).filter(de => sectorIds.has(de.sector.id));
+    private getSelectedForSectors(projectSectors: Sector[]) {
+        const sectorIds = new Set(projectSectors.map(sector => sector.id));
+        return this.get({ onlySelected: true }).filter(de => sectorIds.has(de.sector.id));
+    }
+
+    validateAtLeastOneSelected(projectSectors: Sector[]): ValidationError {
+        const selected = this.getSelectedForSectors(projectSectors);
         return _.isEmpty(selected) ? [i18n.t("Select at least one indicator")] : [];
+    }
+
+    validateMaxSelectedBySector(projectSectors: Sector[], maxCount: number): ValidationError {
+        const selected = this.getSelectedForSectors(projectSectors);
+        const sectorNamesWithTooManySelections = _(selected)
+            .countBy(de => de.sector.name)
+            .pickBy(count => count > maxCount)
+            .keys()
+            .value();
+
+        if (_.isEmpty(sectorNamesWithTooManySelections)) {
+            return [];
+        } else {
+            const msg = i18n.t(
+                "A maximum of {{n}} indicators can be selected per sector, too many selected for {{sectors}}",
+                { n: maxCount, sectors: sectorNamesWithTooManySelections.join(", ") }
+            );
+            return [msg];
+        }
+    }
+
+    validateMaxSectorsWithSelections(projectSectors: Sector[], maxCount: number): ValidationError {
+        const selected = this.getSelectedForSectors(projectSectors);
+        const sectorsCount = _(selected)
+            .map(de => de.sector.id)
+            .uniq()
+            .size();
+
+        if (sectorsCount <= maxCount) {
+            return [];
+        } else {
+            const msg = i18n.t(
+                "A maximum of {{max}} sectors can have selected indicators, but there are {{n}} sectors with MER indicators",
+                { max: maxCount, n: sectorsCount }
+            );
+            return [msg];
+        }
     }
 
     static async getDataElements(

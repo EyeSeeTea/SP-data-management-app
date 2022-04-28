@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2022-04-19T06:23:28.846Z\n"
-"PO-Revision-Date: 2022-04-19T06:23:28.846Z\n"
+"POT-Creation-Date: 2022-04-28T07:19:49.507Z\n"
+"PO-Revision-Date: 2022-04-28T07:19:49.507Z\n"
 
 msgid "Name"
 msgstr ""
@@ -603,6 +603,16 @@ msgstr ""
 msgid "Select at least one indicator"
 msgstr ""
 
+msgid ""
+"A maximum of {{n}} indicators can be selected per sector, too many selected "
+"for {{sectors}}"
+msgstr ""
+
+msgid ""
+"A maximum of {{max}} sectors can have selected indicators, but there are "
+"{{n}} sectors with MER indicators"
+msgstr ""
+
 msgid "[only for admin users]"
 msgstr ""
 
@@ -800,7 +810,9 @@ msgstr ""
 
 msgid ""
 "- MER indicators must be selected in coordination with your Country "
-"Director and Regional Team."
+"Director and Regional Team.\n"
+"\n"
+"         - Up to three sectors and three indicators per sectors."
 msgstr ""
 
 msgid ""
