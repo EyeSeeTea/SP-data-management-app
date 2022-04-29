@@ -1,7 +1,13 @@
 import { Disaggregation } from "./Disaggregation";
 import _ from "lodash";
 import moment from "moment";
-import { MetadataPayload, Id, D2Api, D2OrganisationUnitGroup } from "../types/d2-api";
+import {
+    MetadataPayload,
+    Id,
+    D2Api,
+    D2OrganisationUnitGroup,
+    DataValueSetsGetRequest,
+} from "../types/d2-api";
 import { D2DataSet, D2OrganisationUnit, D2ApiResponse } from "../types/d2-api";
 import { PartialModel, Ref, PartialPersistedModel, MetadataResponse } from "../types/d2-api";
 import Project, {
@@ -17,7 +23,7 @@ import ProjectDashboard from "./ProjectDashboard";
 import { getUid, getDataStore, getIds, getRefs, flattenPayloads, getId } from "../utils/dhis2";
 import { Config } from "./Config";
 import { runPromises } from "../utils/promises";
-import DataElementsSet from "./dataElementsSet";
+import DataElementsSet, { DataElementBase } from "./dataElementsSet";
 import { ProjectInfo, getProjectStorageKey } from "./MerReport";
 import ProjectSharing from "./ProjectSharing";
 import { splitParts } from "../utils/string";
@@ -30,6 +36,12 @@ const expiryDaysInMonthActual = 10;
 
 type OpenProperties = "dataInputPeriods" | "openFuturePeriods" | "expiryDays";
 export type DataSetOpenAttributes = Pick<D2DataSet, OpenProperties>;
+
+type ExistingDataCheck =
+    | { type: "no-values" }
+    | { type: "with-values"; dataElementsWithData: DataElementBase[] };
+
+export type ExistingData = Omit<Extract<ExistingDataCheck, { type: "with-values" }>, "type">;
 
 export default class ProjectDb {
     api: D2Api;
@@ -44,6 +56,59 @@ export default class ProjectDb {
         const saveReponse = await this.saveMetadata();
         this.updateOrgUnit(saveReponse.response, saveReponse.orgUnit);
         return saveReponse;
+    }
+
+    async checkExistingDataForRemovedDataElements(): Promise<ExistingDataCheck> {
+        const { api, project, config } = this;
+        const noValues: ExistingDataCheck = { type: "no-values" };
+
+        if (!project.dataSets || !project.orgUnit) return noValues;
+
+        const dataSetId = project.dataSets.actual.id;
+
+        const {
+            objects: [dataSet],
+        } = await api.models.dataSets
+            .get({
+                fields: { dataSetElements: { dataElement: { id: true } } },
+                filter: { id: { eq: dataSetId } },
+            })
+            .getData();
+
+        if (!dataSet) return noValues;
+
+        const prevDataElementIds = _(dataSet.dataSetElements)
+            .flatMap(dse => dse.dataElement.id)
+            .value();
+
+        const { dataValues: existingDataValues } = await api.dataValues
+            .getSet({
+                dataSet: [dataSetId],
+                orgUnit: [project.orgUnit.id],
+                ...dataValuesDatesGetAll,
+            })
+            .getData();
+
+        const newDataElements = project.dataElementsSelection.getAllSelected();
+        const removedDataElementIds = _.difference(prevDataElementIds, newDataElements.map(getId));
+        const dataElementIdsWithData = _.uniq(existingDataValues.map(dv => dv.dataElement));
+
+        const removedDataElementIdsWithData = _.intersection(
+            dataElementIdsWithData,
+            removedDataElementIds
+        );
+
+        const dataElementsWithData = _(config.dataElements)
+            .keyBy(getId)
+            .at(removedDataElementIdsWithData)
+            .compact()
+            .value();
+
+        if (_(dataElementsWithData).isEmpty()) {
+            return { type: "no-values" };
+        } else {
+            return { type: "with-values", dataElementsWithData };
+        }
     }
 
     async saveMetadata() {
@@ -575,8 +640,7 @@ export default class ProjectDb {
             .getSet({
                 orgUnit: [project.orgUnit.id],
                 dataSet: dataSetIds,
-                startDate: "1970",
-                endDate: (new Date().getFullYear() + 1).toString(),
+                ...dataValuesDatesGetAll,
             })
             .getData();
 
@@ -875,3 +939,8 @@ interface DashboardsMetadata {
     metadata: Partial<MetadataPayload>;
     dashboards: Dashboards;
 }
+
+const dataValuesDatesGetAll: Required<Pick<DataValueSetsGetRequest, "startDate" | "endDate">> = {
+    startDate: "1970",
+    endDate: (new Date().getFullYear() + 10).toString(),
+};

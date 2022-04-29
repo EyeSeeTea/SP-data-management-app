@@ -12,6 +12,8 @@ import { generateUrl } from "../../../router";
 import { useAppContext } from "../../../contexts/api-context";
 import { saveDataValues } from "../../../models/dev-project";
 import { ProjectNotification } from "../../../models/ProjectNotification";
+import ExistingDataValuesDialog from "./ExistingDataValuesDialog";
+import { ExistingData } from "../../../models/ProjectDb";
 
 const useStyles = makeStyles({
     wrapper: {
@@ -25,10 +27,44 @@ const useStyles = makeStyles({
 });
 
 const SaveStep: React.FC<StepProps> = ({ project, onCancel, action }) => {
-    const [dialogOpen, setDialogOpen] = useState(false);
+    const { appConfig, api, currentUser, isTest } = useAppContext();
     const classes = useStyles();
     const projectInfo = React.useMemo(() => <ProjectInfo project={project} />, [project]);
+
+    const [dialogOpen, setDialogOpen] = useState(false);
     const { isSaving, errorMessage, save } = useSave(project, action, projectInfo);
+
+    const [existingData, setExistingData] = React.useState<ExistingData>();
+    const closeExistingDataDialog = React.useCallback(() => setExistingData(undefined), []);
+
+    const saveAndSendExistingDataMessage = React.useCallback(
+        async (message: string) => {
+            closeExistingDataDialog();
+            await save();
+            if (!existingData) return;
+
+            const recipients = appConfig.app.notifyEmailOnProjectSave;
+            const notificator = new ProjectNotification(api, project, currentUser, isTest);
+            await notificator.sendMessageForIndicatorsRemoval({
+                recipients,
+                currentUser,
+                message,
+                existingData,
+            });
+        },
+        [appConfig, api, currentUser, closeExistingDataDialog, existingData, isTest, project, save]
+    );
+
+    const checkExistingDataAndSave = React.useCallback(async () => {
+        const existingDataCheck = await project.checkExistingDataForRemovedDataElements();
+
+        switch (existingDataCheck.type) {
+            case "no-values":
+                return save();
+            case "with-values":
+                return setExistingData(existingDataCheck);
+        }
+    }, [save, project]);
 
     return (
         <React.Fragment>
@@ -37,6 +73,14 @@ const SaveStep: React.FC<StepProps> = ({ project, onCancel, action }) => {
                 onConfirm={onCancel}
                 onCancel={() => setDialogOpen(false)}
             />
+            {existingData && (
+                <ExistingDataValuesDialog
+                    onClose={closeExistingDataDialog}
+                    project={project}
+                    existingData={existingData}
+                    onSend={saveAndSendExistingDataMessage}
+                />
+            )}
 
             <div className={classes.wrapper}>
                 {projectInfo}
@@ -45,7 +89,11 @@ const SaveStep: React.FC<StepProps> = ({ project, onCancel, action }) => {
                     {i18n.t("Cancel")}
                 </Button>
 
-                <Button className={classes.saveButton} onClick={() => save()} variant="contained">
+                <Button
+                    className={classes.saveButton}
+                    onClick={checkExistingDataAndSave}
+                    variant="contained"
+                >
                     {i18n.t("Save")}
                 </Button>
 

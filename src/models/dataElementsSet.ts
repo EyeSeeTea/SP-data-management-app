@@ -281,6 +281,10 @@ export default class DataElementsSet {
         });
     }
 
+    getAllSelected(): DataElement[] {
+        return this.get({ onlySelected: true, includePaired: true });
+    }
+
     get(options: GetOptions = {}): DataElement[] {
         const { sectorId, series, onlySelected, includePaired } = options;
         const { indicatorType, peopleOrBenefit, external } = options;

@@ -471,6 +471,10 @@ class Project {
         return new ProjectDb(this).save();
     }
 
+    checkExistingDataForRemovedDataElements() {
+        return new ProjectDb(this).checkExistingDataForRemovedDataElements();
+    }
+
     static async getList(
         api: D2Api,
         config: Config,
