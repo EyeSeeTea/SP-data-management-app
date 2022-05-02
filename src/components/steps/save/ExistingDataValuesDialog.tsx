@@ -46,17 +46,14 @@ const ExistingDataValuesDialog: React.FunctionComponent<ExistingDataValuesDialog
                 {i18n.t(
                     "There are data for indicators that are about to be removed from the project:"
                 )}
-
                 <ul>
                     {existingData.dataElementsWithData.map(dataElement => (
                         <li key={dataElement.id}>
-                            [{dataElement.code}] {dataElement.name}
+                            [{dataElement.sector.name}] [{dataElement.code}] {dataElement.name}
                         </li>
                     ))}
                 </ul>
-
-                {i18n.t("Before saving, please explain why these indicators have been removed:")}
-
+                {i18n.t("Before saving, please explain why these indicators have been removed")}:
                 <div className={classes.textField}>
                     <TextFieldOnBlur
                         value={message}

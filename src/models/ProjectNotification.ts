@@ -37,7 +37,7 @@ export class ProjectNotification {
         const subject = i18n.t("{{username}} has removed indicators with data", { username });
 
         const dataElementsList = existingData.dataElementsWithData
-            .map(de => `- [${de.code}] ${de.name}`)
+            .map(de => `- [${de.sector.name}] [${de.code}] ${de.name}`)
             .join("\n");
 
         const text = i18n.t(

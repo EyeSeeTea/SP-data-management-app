@@ -23,7 +23,7 @@ import ProjectDashboard from "./ProjectDashboard";
 import { getUid, getDataStore, getIds, getRefs, flattenPayloads, getId } from "../utils/dhis2";
 import { Config } from "./Config";
 import { runPromises } from "../utils/promises";
-import DataElementsSet, { DataElementBase } from "./dataElementsSet";
+import DataElementsSet, { DataElement } from "./dataElementsSet";
 import { ProjectInfo, getProjectStorageKey } from "./MerReport";
 import ProjectSharing from "./ProjectSharing";
 import { splitParts } from "../utils/string";
@@ -39,7 +39,7 @@ export type DataSetOpenAttributes = Pick<D2DataSet, OpenProperties>;
 
 type ExistingDataCheck =
     | { type: "no-values" }
-    | { type: "with-values"; dataElementsWithData: DataElementBase[] };
+    | { type: "with-values"; dataElementsWithData: DataElement[] };
 
 export type ExistingData = Omit<Extract<ExistingDataCheck, { type: "with-values" }>, "type">;
 
@@ -58,47 +58,44 @@ export default class ProjectDb {
         return saveReponse;
     }
 
-    async checkExistingDataForRemovedDataElements(): Promise<ExistingDataCheck> {
-        const { api, project, config } = this;
-        const noValues: ExistingDataCheck = { type: "no-values" };
+    private async getDataValues() {
+        const { api, project } = this;
+        const dataSetIds = _.compact([project.dataSets?.actual.id, project.dataSets?.target.id]);
 
-        if (!project.dataSets || !project.orgUnit) return noValues;
+        if (!project.orgUnit || _.isEmpty(dataSetIds)) return [];
 
-        const dataSetId = project.dataSets.actual.id;
-
-        const {
-            objects: [dataSet],
-        } = await api.models.dataSets
-            .get({
-                fields: { dataSetElements: { dataElement: { id: true } } },
-                filter: { id: { eq: dataSetId } },
-            })
-            .getData();
-
-        if (!dataSet) return noValues;
-
-        const prevDataElementIds = _(dataSet.dataSetElements)
-            .flatMap(dse => dse.dataElement.id)
-            .value();
-
-        const { dataValues: existingDataValues } = await api.dataValues
+        const { dataValues } = await api.dataValues
             .getSet({
-                dataSet: [dataSetId],
+                dataSet: dataSetIds,
                 orgUnit: [project.orgUnit.id],
                 ...dataValuesDatesGetAll,
             })
             .getData();
 
-        const inter = _.intersection;
-        const newDataElements = project.dataElementsSelection.getAllSelected().map(getId);
-        const removedDataElements = _.difference(prevDataElementIds, newDataElements);
-        const dataElementIdsWithData = _.uniq(existingDataValues.map(dv => dv.dataElement));
-        const removedDataElementIdsWithData = inter(dataElementIdsWithData, removedDataElements);
+        return dataValues;
+    }
 
-        const removedDataElementsWithData = _(config.dataElements)
+    async checkExistingDataForRemovedDataElements(): Promise<ExistingDataCheck> {
+        const { api, project, config } = this;
+        const noValues: ExistingDataCheck = { type: "no-values" };
+
+        if (!project.dataSets || !project.orgUnit || !project.id) return noValues;
+
+        const prevProject = await ProjectDb.get(api, config, project.id);
+        const prevDataElement = prevProject.getSelectedDataElements();
+        const existingDataValues = await this.getDataValues();
+
+        const intersct = _.intersection;
+        const newDataElements = project.dataElementsSelection.getAllSelected().map(getId);
+        const removedDataElements = _.difference(prevDataElement.map(getId), newDataElements);
+        const dataElementIdsWithData = _.uniq(existingDataValues.map(dv => dv.dataElement));
+        const removedDataElementIdsWithData = intersct(dataElementIdsWithData, removedDataElements);
+
+        const removedDataElementsWithData = _(prevDataElement)
             .keyBy(getId)
             .at(removedDataElementIdsWithData)
             .compact()
+            .orderBy([de => de.sector.name, de => de.code, de => de.name])
             .value();
 
         if (_(removedDataElementsWithData).isEmpty()) {
@@ -629,17 +626,7 @@ export default class ProjectDb {
     async getDanglingDataValues(): Promise<DataValue[]> {
         const { api, project } = this;
         const dataElements = project.getSelectedDataElements();
-        const dataSetIds = _.compact([project.dataSets?.actual.id, project.dataSets?.target.id]);
-
-        if (!project.orgUnit || _.isEmpty(dataSetIds)) return [];
-
-        const { dataValues } = await api.dataValues
-            .getSet({
-                orgUnit: [project.orgUnit.id],
-                dataSet: dataSetIds,
-                ...dataValuesDatesGetAll,
-            })
-            .getData();
+        const dataValues = await this.getDataValues();
 
         const cocIdsByCategoryComboId = _(this.config.categoryCombos)
             .values()

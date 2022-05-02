@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2022-05-02T07:45:17.695Z\n"
-"PO-Revision-Date: 2022-05-02T07:45:17.695Z\n"
+"POT-Creation-Date: 2022-05-02T08:14:08.825Z\n"
+"PO-Revision-Date: 2022-05-02T08:14:08.825Z\n"
 
 msgid "Name"
 msgstr ""
@@ -237,6 +237,9 @@ msgid "Data found for indicators to be removed from the project"
 msgstr ""
 
 msgid "Save Project"
+msgstr ""
+
+msgid "Before saving, please explain why these indicators have been removed"
 msgstr ""
 
 msgid "Save"
