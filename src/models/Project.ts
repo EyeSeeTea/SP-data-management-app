@@ -471,7 +471,7 @@ class Project {
         return new ProjectDb(this).save();
     }
 
-    checkExistingDataForRemovedDataElements() {
+    checkExistingDataForDataElementsToBeRemoved() {
         return new ProjectDb(this).checkExistingDataForRemovedDataElements();
     }
 

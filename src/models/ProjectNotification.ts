@@ -42,7 +42,7 @@ export class ProjectNotification {
 
         const text = i18n.t(
             `
-User {{user}} ({{username}}) has made an edition to a project which removes indicators with existing data.
+User {{user}} ({{username}}) has edited a project and removed some indicators with existing data.
 
 Project: {{projectName}}
 
@@ -63,7 +63,7 @@ The reason provided by the user was:
             }
         );
 
-        await this.sendMessage({ recipients, subject, text });
+        await this.sendMessage({ recipients, subject, text: text.trim() });
     }
 
     private async notifySave(element: ReactElement, recipients: Email[], action: Action) {

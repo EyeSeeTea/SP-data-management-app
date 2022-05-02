@@ -14,6 +14,7 @@ import { saveDataValues } from "../../../models/dev-project";
 import { ProjectNotification } from "../../../models/ProjectNotification";
 import ExistingDataValuesDialog from "./ExistingDataValuesDialog";
 import { ExistingData } from "../../../models/ProjectDb";
+import _ from "lodash";
 
 const useStyles = makeStyles({
     wrapper: {
@@ -28,6 +29,7 @@ const useStyles = makeStyles({
 
 const SaveStep: React.FC<StepProps> = ({ project, onCancel, action }) => {
     const { appConfig, api, currentUser, isTest } = useAppContext();
+    const snackbar = useSnackbar();
     const classes = useStyles();
     const projectInfo = React.useMemo(() => <ProjectInfo project={project} />, [project]);
 
@@ -43,12 +45,11 @@ const SaveStep: React.FC<StepProps> = ({ project, onCancel, action }) => {
             await save();
             if (!existingData) return;
 
-            const recipients = appConfig.app.notifyEmailOnProjectSave;
             const notificator = new ProjectNotification(api, project, currentUser, isTest);
             await notificator.sendMessageForIndicatorsRemoval({
-                recipients,
-                currentUser,
                 message,
+                recipients: appConfig.app.notifyEmailOnProjectSave,
+                currentUser,
                 existingData,
             });
         },
@@ -56,7 +57,14 @@ const SaveStep: React.FC<StepProps> = ({ project, onCancel, action }) => {
     );
 
     const checkExistingDataAndSave = React.useCallback(async () => {
-        const existingDataCheck = await project.checkExistingDataForRemovedDataElements();
+        const validation = await project.validate();
+        const error = _(validation).values().flatten().join("\n");
+        if (error) {
+            snackbar.error(error);
+            return;
+        }
+
+        const existingDataCheck = await project.checkExistingDataForDataElementsToBeRemoved();
 
         switch (existingDataCheck.type) {
             case "no-values":
@@ -64,7 +72,7 @@ const SaveStep: React.FC<StepProps> = ({ project, onCancel, action }) => {
             case "with-values":
                 return setExistingData(existingDataCheck);
         }
-    }, [save, project]);
+    }, [save, project, snackbar]);
 
     return (
         <React.Fragment>
@@ -93,6 +101,7 @@ const SaveStep: React.FC<StepProps> = ({ project, onCancel, action }) => {
                     className={classes.saveButton}
                     onClick={checkExistingDataAndSave}
                     variant="contained"
+                    disabled={isSaving}
                 >
                     {i18n.t("Save")}
                 </Button>

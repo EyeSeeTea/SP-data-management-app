@@ -89,25 +89,22 @@ export default class ProjectDb {
             })
             .getData();
 
-        const newDataElements = project.dataElementsSelection.getAllSelected();
-        const removedDataElementIds = _.difference(prevDataElementIds, newDataElements.map(getId));
+        const inter = _.intersection;
+        const newDataElements = project.dataElementsSelection.getAllSelected().map(getId);
+        const removedDataElements = _.difference(prevDataElementIds, newDataElements);
         const dataElementIdsWithData = _.uniq(existingDataValues.map(dv => dv.dataElement));
+        const removedDataElementIdsWithData = inter(dataElementIdsWithData, removedDataElements);
 
-        const removedDataElementIdsWithData = _.intersection(
-            dataElementIdsWithData,
-            removedDataElementIds
-        );
-
-        const dataElementsWithData = _(config.dataElements)
+        const removedDataElementsWithData = _(config.dataElements)
             .keyBy(getId)
             .at(removedDataElementIdsWithData)
             .compact()
             .value();
 
-        if (_(dataElementsWithData).isEmpty()) {
+        if (_(removedDataElementsWithData).isEmpty()) {
             return { type: "no-values" };
         } else {
-            return { type: "with-values", dataElementsWithData };
+            return { type: "with-values", dataElementsWithData: removedDataElementsWithData };
         }
     }
 
