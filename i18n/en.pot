@@ -233,6 +233,15 @@ msgstr ""
 msgid "Field length is invalid"
 msgstr ""
 
+msgid "Data found for indicators to be removed from the project"
+msgstr ""
+
+msgid "Save Project"
+msgstr ""
+
+msgid "Before saving, please explain why these indicators have been removed"
+msgstr ""
+
 msgid "Save"
 msgstr ""
 
@@ -580,6 +589,25 @@ msgid "Total Actual People"
 msgstr ""
 
 msgid "People"
+msgstr ""
+
+msgid "{{username}} has removed indicators with data"
+msgstr ""
+
+msgid ""
+"\n"
+"User {{user}} ({{username}}) has edited a project and removed some "
+"indicators with existing data.\n"
+"\n"
+"Project: {{projectName}}\n"
+"\n"
+"Removed indicators:\n"
+"\n"
+"{{dataElementsList}}\n"
+"\n"
+"The reason provided by the user was:\n"
+"\n"
+"{{message}}"
 msgstr ""
 
 msgid "Project '{{projectName}}' was {{action}} by {{user}} ({{username}})"

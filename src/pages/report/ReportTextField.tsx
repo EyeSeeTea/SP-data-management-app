@@ -3,7 +3,7 @@ import TextFieldOnBlur from "./TextFieldOnBlur";
 import { getMultilineRows } from "./utils";
 import { TextFieldProps } from "@material-ui/core/TextField";
 
-export type ReportTextFieldProps = TextFieldProps & {
+export type ReportTextFieldProps = Omit<TextFieldProps, "onChange"> & {
     title: string;
     value: string | undefined;
     field: string;

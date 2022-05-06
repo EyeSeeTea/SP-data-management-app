@@ -6,6 +6,7 @@ import {
     Id,
     D2Api,
     D2OrganisationUnitGroup,
+    DataValueSetsGetRequest,
     DataValueSetsPostRequest,
     DataValueSetsPostResponse,
 } from "../types/d2-api";
@@ -24,7 +25,7 @@ import ProjectDashboard from "./ProjectDashboard";
 import { getUid, getDataStore, getIds, getRefs, flattenPayloads, getId } from "../utils/dhis2";
 import { Config } from "./Config";
 import { runPromises } from "../utils/promises";
-import DataElementsSet from "./dataElementsSet";
+import DataElementsSet, { DataElement } from "./dataElementsSet";
 import { ProjectInfo, getProjectStorageKey, getReportStorageKey } from "./MerReport";
 import ProjectSharing from "./ProjectSharing";
 import { splitParts } from "../utils/string";
@@ -39,6 +40,11 @@ const expiryDaysInMonthActual = 10;
 type OpenProperties = "dataInputPeriods" | "openFuturePeriods" | "expiryDays";
 export type DataSetOpenAttributes = Pick<D2DataSet, OpenProperties>;
 
+type ExistingDataCheck =
+    | { type: "no-values" }
+    | { type: "with-values"; dataElementsWithData: DataElement[] };
+
+export type ExistingData = Omit<Extract<ExistingDataCheck, { type: "with-values" }>, "type">;
 type D2DataValue = DataValueSetsPostRequest["dataValues"][number];
 
 export interface ProjectJson {
@@ -60,6 +66,53 @@ export default class ProjectDb {
 
     async save() {
         return await this.saveMetadata();
+    }
+
+    private async getDataValues() {
+        const { api, project } = this;
+        const dataSetIds = _.compact([project.dataSets?.actual.id, project.dataSets?.target.id]);
+
+        if (!project.orgUnit || _.isEmpty(dataSetIds)) return [];
+
+        const { dataValues } = await api.dataValues
+            .getSet({
+                dataSet: dataSetIds,
+                orgUnit: [project.orgUnit.id],
+                ...dataValuesDatesGetAll,
+            })
+            .getData();
+
+        return dataValues;
+    }
+
+    async checkExistingDataForRemovedDataElements(): Promise<ExistingDataCheck> {
+        const { api, project, config } = this;
+        const noValues: ExistingDataCheck = { type: "no-values" };
+
+        if (!project.dataSets || !project.orgUnit || !project.id) return noValues;
+
+        const prevProject = await ProjectDb.get(api, config, project.id);
+        const prevDataElement = prevProject.getSelectedDataElements();
+        const existingDataValues = await this.getDataValues();
+
+        const intersct = _.intersection;
+        const newDataElements = project.dataElementsSelection.getAllSelected().map(getId);
+        const removedDataElements = _.difference(prevDataElement.map(getId), newDataElements);
+        const dataElementIdsWithData = _.uniq(existingDataValues.map(dv => dv.dataElement));
+        const removedDataElementIdsWithData = intersct(dataElementIdsWithData, removedDataElements);
+
+        const removedDataElementsWithData = _(prevDataElement)
+            .keyBy(getId)
+            .at(removedDataElementIdsWithData)
+            .compact()
+            .orderBy([de => de.sector.name, de => de.code, de => de.name])
+            .value();
+
+        if (_(removedDataElementsWithData).isEmpty()) {
+            return { type: "no-values" };
+        } else {
+            return { type: "with-values", dataElementsWithData: removedDataElementsWithData };
+        }
     }
 
     static async fromJSON(
@@ -621,18 +674,7 @@ export default class ProjectDb {
     async getDanglingDataValues(): Promise<DataValue[]> {
         const { api, project } = this;
         const dataElements = project.getSelectedDataElements();
-        const dataSetIds = _.compact([project.dataSets?.actual.id, project.dataSets?.target.id]);
-
-        if (!project.orgUnit || _.isEmpty(dataSetIds)) return [];
-
-        const { dataValues } = await api.dataValues
-            .getSet({
-                orgUnit: [project.orgUnit.id],
-                dataSet: dataSetIds,
-                startDate: "1970",
-                endDate: (new Date().getFullYear() + 1).toString(),
-            })
-            .getData();
+        const dataValues = await this.getDataValues();
 
         const cocIdsByCategoryComboId = _(this.config.categoryCombos)
             .values()
@@ -983,3 +1025,8 @@ interface DashboardsMetadata {
     metadata: Partial<MetadataPayload>;
     dashboards: Dashboards;
 }
+
+const dataValuesDatesGetAll: Required<Pick<DataValueSetsGetRequest, "startDate" | "endDate">> = {
+    startDate: "1970",
+    endDate: (new Date().getFullYear() + 10).toString(),
+};

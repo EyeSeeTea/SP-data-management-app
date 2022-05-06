@@ -1,5 +1,11 @@
 {
     "projectId": "yoy7vz",
     "defaultCommandTimeout": 30000,
-    "chromeWebSecurity": false
+    "chromeWebSecurity": false,
+    "env": {
+        "RUN_SQL": "d2-docker run-sql -i docker.eyeseetea.com/samaritans/dhis2-data:2.36.8-sp-ip-test",
+        "DHIS2_AUTH": "admin:PASSWORD",
+        "EXTERNAL_API": "http://localhost:8080",
+        "ROOT_URL": "http://localhost:8082"
+    }
 }

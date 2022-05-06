@@ -33,6 +33,7 @@ src/react-app-env.d.ts
 cypress/screenshots/
 cypress/videos/
 cypress/downloads/
+/cypress.env.json
 
 # IntelliJ
 .idea/*
@@ -47,3 +48,4 @@ src/scripts/data
 bak/
 src/dev
 .eslintcache
+/server

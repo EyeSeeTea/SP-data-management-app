@@ -8,7 +8,7 @@ import i18n from "../locales";
 import User from "./user";
 import { generateUrl } from "../router";
 import { D2Api } from "../types/d2-api";
-import ProjectDb, { getStringDataValue } from "./ProjectDb";
+import ProjectDb, { ExistingData, getStringDataValue } from "./ProjectDb";
 
 type Email = string;
 type Action = "create" | "update";
@@ -26,8 +26,48 @@ export class ProjectNotification {
         await this.notifyDanglingDataValues(recipients);
     }
 
+    async sendMessageForIndicatorsRemoval(options: {
+        recipients: Email[];
+        currentUser: User;
+        message: string;
+        existingData: ExistingData;
+    }) {
+        const { recipients, currentUser, message, existingData } = options;
+        const { displayName: user, username } = currentUser.data;
+        const subject = i18n.t("{{username}} has removed indicators with data", { username });
+
+        const dataElementsList = existingData.dataElementsWithData
+            .map(de => `- [${de.sector.name}] [${de.code}] ${de.name}`)
+            .join("\n");
+
+        const text = i18n.t(
+            `
+User {{user}} ({{username}}) has edited a project and removed some indicators with existing data.
+
+Project: {{projectName}}
+
+Removed indicators:
+
+{{dataElementsList}}
+
+The reason provided by the user was:
+
+{{message}}`,
+            {
+                user,
+                username,
+                projectName: this.project.name,
+                dataElementsList,
+                message,
+                nsSeparator: false,
+            }
+        );
+
+        await this.sendMessage({ recipients, subject, text: text.trim() });
+    }
+
     private async notifySave(element: ReactElement, recipients: Email[], action: Action) {
-        const { api, project, currentUser } = this;
+        const { project, currentUser } = this;
         const baseMsg = action === "create" ? i18n.t("Project created") : i18n.t("Project updated");
         const subject = `${baseMsg}: ${this.project.name}`;
 
@@ -38,17 +78,18 @@ export class ProjectNotification {
                 user: currentUser.data.displayName,
                 username: currentUser.data.username,
             }),
+
             // Cypress fails when body includes an URL,
             !this.isTest ? getUrl(project) : "test-url",
             html2Text(element),
         ];
 
         const text = body.join("\n\n");
-        await sendMessage(api, { recipients, subject, text });
+        await this.sendMessage({ recipients, subject, text });
     }
 
     private async notifyDanglingDataValues(recipients: Email[]) {
-        const { api, project } = this;
+        const { project } = this;
         const dataValues = await new ProjectDb(project).getDanglingDataValues();
         const projectName = project.name;
 
@@ -61,18 +102,23 @@ export class ProjectNotification {
             "\n\n" +
             dataValues.map(getStringDataValue).join("\n");
 
-        await sendMessage(api, { recipients, subject, text });
+        await this.sendMessage({ recipients, subject, text });
     }
-}
 
-async function sendMessage(
-    api: D2Api,
-    options: { recipients: string[]; subject: string; text: string }
-): Promise<void> {
-    try {
-        await api.email.sendMessage(options).getData();
-    } catch (err) {
-        console.error(err);
+    private async sendMessage(options: {
+        recipients: string[];
+        subject: string;
+        text: string;
+    }): Promise<void> {
+        const { api } = this;
+        const recipients = localStorage.getItem("recipients")?.split(",") || options.recipients;
+
+        try {
+            await api.email.sendMessage({ ...options, recipients }).getData();
+        } catch (err) {
+            // If the message could not be sent, just log to the console and continue the process.
+            console.error(err);
+        }
     }
 }
 
