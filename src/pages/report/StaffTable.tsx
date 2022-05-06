@@ -111,7 +111,7 @@ const StaffField: React.FC<{
             const value = parseFloat(strValue);
 
             if (value < 0) {
-                snackbar.error(i18n.t("Hour values must be zero or positive"), {
+                snackbar.error(i18n.t("Value must be zero or positive"), {
                     autoHideDuration: 1000,
                 });
                 return false; // Reset to previous valid value
