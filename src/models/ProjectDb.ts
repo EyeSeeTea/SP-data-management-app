@@ -1,7 +1,14 @@
 import { Disaggregation } from "./Disaggregation";
 import _ from "lodash";
 import moment from "moment";
-import { MetadataPayload, Id, D2Api, D2OrganisationUnitGroup } from "../types/d2-api";
+import {
+    MetadataPayload,
+    Id,
+    D2Api,
+    D2OrganisationUnitGroup,
+    DataValueSetsPostRequest,
+    DataValueSetsPostResponse,
+} from "../types/d2-api";
 import { D2DataSet, D2OrganisationUnit, D2ApiResponse } from "../types/d2-api";
 import { PartialModel, Ref, PartialPersistedModel, MetadataResponse } from "../types/d2-api";
 import Project, {
@@ -18,18 +25,29 @@ import { getUid, getDataStore, getIds, getRefs, flattenPayloads, getId } from ".
 import { Config } from "./Config";
 import { runPromises } from "../utils/promises";
 import DataElementsSet from "./dataElementsSet";
-import { ProjectInfo, getProjectStorageKey } from "./MerReport";
+import { ProjectInfo, getProjectStorageKey, getReportStorageKey } from "./MerReport";
 import ProjectSharing from "./ProjectSharing";
 import { splitParts } from "../utils/string";
 import CountryDashboard from "./CountryDashboard";
 import { addAttributeValueToObj, addAttributeValue } from "./Attributes";
 import { getSharing } from "./Sharing";
 import { DashboardSourceMetadata } from "./ProjectsListDashboard";
+import { promiseMap } from "../migrations/utils";
 
 const expiryDaysInMonthActual = 10;
 
 type OpenProperties = "dataInputPeriods" | "openFuturePeriods" | "expiryDays";
 export type DataSetOpenAttributes = Pick<D2DataSet, OpenProperties>;
+
+type D2DataValue = DataValueSetsPostRequest["dataValues"][number];
+
+export interface ProjectJson {
+    id: Id;
+    name: string;
+    metadata: MetadataPayload;
+    data: Record<string, object>;
+    dataValues: D2DataValue[];
+}
 
 export default class ProjectDb {
     api: D2Api;
@@ -41,12 +59,87 @@ export default class ProjectDb {
     }
 
     async save() {
-        const saveReponse = await this.saveMetadata();
-        this.updateOrgUnit(saveReponse.response, saveReponse.orgUnit);
-        return saveReponse;
+        return await this.saveMetadata();
     }
 
-    async saveMetadata() {
+    static async fromJSON(
+        api: D2Api,
+        _config: Config,
+        json: ProjectJson,
+        orgUnitIds: Set<Id>
+    ): Promise<void> {
+        const { metadata } = json;
+
+        const cleanOrgUnits = (orgUnits: Array<{ id?: Id }> | undefined) =>
+            (orgUnits || []).filter(ou => ou.id && orgUnitIds.has(ou.id));
+
+        /* Remove non-existing org units from references */
+        const metadata2 = {
+            ...metadata,
+            organisationUnitGroups: metadata.organisationUnitGroups.map(oug => {
+                return { ...oug, organisationUnits: cleanOrgUnits(oug.organisationUnits) };
+            }),
+            visualizations: metadata.visualizations.map(visualization => {
+                return {
+                    ...visualization,
+                    organisationUnits: cleanOrgUnits(visualization.organisationUnits),
+                };
+            }),
+        };
+
+        const res = await postPayload(api, metadata2);
+        if (!res || res.status !== "OK") throwResponseError(res, "Error importing metadata");
+
+        const dataStore = getDataStore(api);
+        await promiseMap(_.toPairs(json.data), ([key, value]) => {
+            return dataStore.save(key, value).getData();
+        });
+
+        const dataValueRes = await api.dataValues
+            .postSet({ force: true }, { dataValues: json.dataValues })
+            .getData();
+        if (dataValueRes.status !== "SUCCESS")
+            throwResponseError(dataValueRes, "Error importing data values");
+    }
+
+    async toJSON(): Promise<ProjectJson> {
+        const { payload: metadata, orgUnit, project } = await this.getMetadata();
+
+        const dataStore = getDataStore(this.api);
+        const countryId = project.parentOrgUnit?.id;
+        if (!countryId) throw new Error();
+
+        const reportKey = getReportStorageKey({ id: countryId });
+        const reportData = dataStore.get<object>(reportKey).getData();
+
+        const projectKey = getProjectStorageKey({ id: orgUnit.id });
+        const projectData = await dataStore.get<object>(projectKey).getData();
+
+        const data = {
+            ...(reportData ? { [reportKey]: reportData } : {}),
+            ...(projectData ? { [projectKey]: projectData } : {}),
+        };
+
+        const dataSetIds = _([project.dataSets?.actual, project.dataSets?.target])
+            .compact()
+            .sortBy()
+            .reverse()
+            .map(getId)
+            .value();
+
+        const { dataValues } = await this.api.dataValues
+            .getSet({
+                dataSet: dataSetIds,
+                orgUnit: [orgUnit.id],
+                startDate: "1970",
+                endDate: (new Date().getFullYear() + 10).toString(),
+            })
+            .getData();
+
+        return { id: orgUnit.id, name: orgUnit.name, metadata, data, dataValues };
+    }
+
+    async getMetadata() {
         const { project, api, config } = this;
         const { startDate, endDate } = project;
 
@@ -135,21 +228,27 @@ export default class ProjectDb {
             dashboardMetadata,
         ]);
 
+        const projectUpdated = this.project.setObj({
+            id: orgUnit.id,
+            orgUnit: orgUnit,
+            dashboard: dashboards,
+            dataSets: { actual: dataSetActual, target: dataSetTarget },
+        });
+
+        return { payload, orgUnit: projectOrgUnit, project: projectUpdated };
+    }
+
+    async saveMetadata() {
+        const { payload, orgUnit, project: projectUpdated } = await this.getMetadata();
+
         await this.saveMERData(orgUnit.id).getData();
 
-        const response = await this.postPayload(payload);
+        const response = await postPayload(this.api, payload, this.project);
+        const savedProject = response && response.status === "OK" ? projectUpdated : this.project;
 
-        const savedProject =
-            response && response.status === "OK"
-                ? this.project.setObj({
-                      id: orgUnit.id,
-                      orgUnit: orgUnit,
-                      dashboard: dashboards,
-                      dataSets: { actual: dataSetActual, target: dataSetTarget },
-                  })
-                : this.project;
+        await this.updateOrgUnit(response, orgUnit);
 
-        return { orgUnit: projectOrgUnit, payload, response, project: savedProject };
+        return { payload, response, project: savedProject };
     }
 
     getProjectMetadataForDashboard(
@@ -266,51 +365,6 @@ export default class ProjectDb {
                 };
             }
         }
-    }
-
-    async postPayload(payload: Partial<MetadataPayload> & Pick<MetadataPayload, "sections">) {
-        // 2.31 still has problems when updating dataSet/sections in the same payload, split in two
-        const { api, project } = this;
-        const sectionsPayload = _.pick(payload, ["sections"]);
-        const nonSectionsPayload = _.omit(payload, ["sections"]);
-        const dataSets = project.dataSets
-            ? [project.dataSets.actual, project.dataSets.target]
-            : null;
-
-        const oldSections = dataSets
-            ? (
-                  await api.metadata
-                      .get({
-                          sections: {
-                              fields: { id: true },
-                              filter: { "dataSet.id": { in: dataSets.map(ds => ds.id) } },
-                          },
-                      })
-                      .getData()
-              ).sections
-            : [];
-
-        // Delete old sections which are not in current sectors
-        const sectionsToDelete = _(oldSections)
-            .differenceBy(payload.sections, section => section.id)
-            .value();
-        runPromises(
-            sectionsToDelete.map(section => () => api.models.sections.delete(section).getData())
-        );
-
-        const mainPayload = await mergePreviousDates(api, nonSectionsPayload as GenericMetadata);
-
-        const response = await api.metadata
-            .post(mainPayload)
-            .getData()
-            .catch(_err => null);
-
-        if (!response || response.status !== "OK" || _.isEmpty(sectionsPayload)) return response;
-
-        return api.metadata
-            .post(sectionsPayload)
-            .getData()
-            .catch(_err => null);
     }
 
     saveMERData(orgUnitId: Id): D2ApiResponse<void> {
@@ -869,6 +923,60 @@ async function mergePreviousDates(api: D2Api, metadata: GenericMetadata) {
         .value();
 
     return metadataWithPrevDates;
+}
+
+async function postPayload(
+    api: D2Api,
+    payload: Partial<MetadataPayload> & Pick<MetadataPayload, "sections">,
+    project?: Project
+) {
+    // DHIS2 has problems updating dataSet/sections in the same payload, split.
+    const sectionsPayload = _.pick(payload, ["sections"]);
+    const nonSectionsPayload = _.omit(payload, ["sections"]);
+    const dataSets = project?.dataSets ? [project.dataSets.actual, project.dataSets.target] : [];
+
+    const oldSections = !_.isEmpty(dataSets)
+        ? (
+              await api.metadata
+                  .get({
+                      sections: {
+                          fields: { id: true },
+                          filter: { "dataSet.id": { in: dataSets.map(getId) } },
+                      },
+                  })
+                  .getData()
+          ).sections
+        : [];
+
+    // Delete old sections which are not in current sectors.
+    const sectionsToDelete = _(oldSections)
+        .differenceBy(payload.sections, section => section.id)
+        .value();
+    runPromises(
+        sectionsToDelete.map(section => () => api.models.sections.delete(section).getData())
+    );
+
+    const mainPayload = await mergePreviousDates(api, nonSectionsPayload as GenericMetadata);
+
+    const response = await api.metadata
+        .post(mainPayload)
+        .getData()
+        .catch(_err => null);
+
+    if (!response || response.status !== "OK" || _.isEmpty(sectionsPayload)) return response;
+
+    return api.metadata
+        .post(sectionsPayload)
+        .getData()
+        .catch(_err => null);
+}
+
+function throwResponseError(
+    response: MetadataResponse | DataValueSetsPostResponse | null,
+    msg: string
+): never {
+    console.error("ERROR", JSON.stringify(response, null, 4));
+    throw new Error(_.compact([response?.status, msg]).join(" - "));
 }
 
 interface DashboardsMetadata {
