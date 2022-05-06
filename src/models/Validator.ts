@@ -6,11 +6,14 @@ import { ActualValidator } from "./validators/ActualValidator";
 import Project, { DataSetType } from "./Project";
 import { DataValue, ValidationItem, ValidationResult } from "./validators/validator-common";
 import { GlobalValidator } from "./validators/GlobalValidator";
+import { BenefitValidator } from "./validators/BenefitValidator";
+import { Config } from "./Config";
 
 interface Validators {
     actual: ActualValidator;
     recurring: RecurringValidator;
     global: GlobalValidator;
+    benefit: BenefitValidator;
 }
 
 export class Validator {
@@ -18,6 +21,7 @@ export class Validator {
 
     static async build(
         api: D2Api,
+        config: Config,
         project: Project,
         dataSetType: DataSetType,
         period: string
@@ -26,6 +30,7 @@ export class Validator {
             actual: await ActualValidator.build(api, project, dataSetType, period),
             recurring: await RecurringValidator.build(api, project, dataSetType, period),
             global: await GlobalValidator.build(api, project, dataSetType, period),
+            benefit: await BenefitValidator.build(config),
         };
         return new Validator(period, validators);
     }
@@ -35,7 +40,8 @@ export class Validator {
         const items: ValidationItem[] = _.concat(
             this.validators.actual.validate(dataValue),
             await this.validators.recurring.validate(dataValue),
-            this.validators.global.validateOnSave(dataValue)
+            this.validators.global.validateOnSave(dataValue),
+            this.validators.benefit.validate(dataValue)
         );
         return this.getValidationResult(items);
     }
