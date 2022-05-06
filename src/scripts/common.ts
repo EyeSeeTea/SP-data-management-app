@@ -28,9 +28,19 @@ export function readDataFilePath<T>(filename: string): T {
 export function writeDataFilePath(filename: string, obj: object): void {
     const filePath = getDataFilePath(filename);
     fs.mkdirSync(path.dirname(filePath), { recursive: true });
+    writeJson(filePath, obj);
+}
+
+export function writeJson(jsonPath: string, obj: object): void {
     const json = JSON.stringify(obj, null, 4);
-    fs.writeFileSync(filePath, json);
-    console.error(`Written: ${filePath}`);
+    fs.writeFileSync(jsonPath, json);
+    console.error(`Written: ${jsonPath}`);
+}
+
+export function readJson<T>(jsonPath: string): T {
+    console.error(`Read: ${jsonPath}`);
+    const json = fs.readFileSync(jsonPath, "utf8");
+    return JSON.parse(json);
 }
 
 export function assert<T>(obj: T | null | undefined | false, msg?: string): asserts obj {
