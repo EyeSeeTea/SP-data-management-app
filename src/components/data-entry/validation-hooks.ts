@@ -33,15 +33,15 @@ export function useValidation(hookOptions: {
         iframeKey,
         isValidationEnabled,
     } = hookOptions;
-    const { api } = useAppContext();
+    const { api, config } = useAppContext();
     const [validator, setValidator] = React.useState<Validator | undefined>();
     const snackbar = useSnackbar();
 
     React.useEffect(() => {
         if (period) {
-            Validator.build(api, project, dataSetType, period).then(setValidator);
+            Validator.build(api, config, project, dataSetType, period).then(setValidator);
         }
-    }, [api, project, dataSetType, period]);
+    }, [api, config, project, dataSetType, period]);
 
     const onMessage = React.useCallback(
         (msg: InputMsg) => {

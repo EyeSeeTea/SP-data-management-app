@@ -8,7 +8,7 @@ import { makeStyles } from "@material-ui/core";
 export type TextFieldOnBlurProps = Omit<TextFieldProps, "onChange"> & {
     value: string;
     onChange?: (s: string) => void;
-    onBlurChange: (s: string) => void;
+    onBlurChange: (s: string) => false | void; // On false, reset to the previous value
     maxLineChars?: number;
     maxContentRows?: number;
 };
@@ -19,14 +19,21 @@ const TextFieldOnBlur: React.FC<TextFieldOnBlurProps> = props => {
     const snackbar = useSnackbar();
     const { onBlurChange, value, maxContentRows, maxLineChars, onChange, ...otherProps } = props;
     const [stateValue, setStateValue] = React.useState(value);
+    const [lastValue, setLastValue] = React.useState(value);
 
     React.useEffect(() => {
         setStateValue(value);
     }, [value]);
 
     const notifyChange = React.useCallback<OnBlur>(() => {
-        onBlurChange(stateValue.trim());
-    }, [onBlurChange, stateValue]);
+        const changeAccepted = onBlurChange(stateValue);
+
+        if (changeAccepted === false) {
+            setStateValue(lastValue);
+        } else {
+            setLastValue(stateValue);
+        }
+    }, [onBlurChange, stateValue, lastValue]);
 
     const classes = useStyles();
 
