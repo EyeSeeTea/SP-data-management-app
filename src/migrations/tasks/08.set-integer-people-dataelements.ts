@@ -28,7 +28,7 @@ class MigrationSetIntegerPeopleDataElements {
 }
 
 const migration: Migration = {
-    name: "Set people data elements value type to postitive or zero integer",
+    name: "Set people data elements value type to positive or zero integer",
     migrate: async (api: D2Api, debug: Debug) =>
         new MigrationSetIntegerPeopleDataElements(api, debug).execute(),
 };
