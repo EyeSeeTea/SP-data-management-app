@@ -557,8 +557,8 @@ export function getProjectStorageKey(organisationUnit: Ref): string {
     return ["project", organisationUnit.id].join("-");
 }
 
-function getReportStorageKey(organisationUnit: Ref): string {
-    return ["mer", organisationUnit.id].join("-");
+export function getReportStorageKey(country: Ref): string {
+    return ["mer", country.id].join("-");
 }
 
 async function getAnalytics(
