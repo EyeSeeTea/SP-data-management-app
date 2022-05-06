@@ -620,6 +620,12 @@ msgid ""
 "value ({{targetValue}})"
 msgstr ""
 
+msgid "Benefit value should be positive ({{value}})"
+msgstr ""
+
+msgid "Benefit value should have 5 or less decimal places ({{value}})"
+msgstr ""
+
 msgid ""
 "A sub-indicator should be equal to or less than its global indicator: "
 "{{-name}} ({{value}})"
