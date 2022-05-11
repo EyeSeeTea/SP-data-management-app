@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2022-04-19T06:23:28.846Z\n"
-"PO-Revision-Date: 2022-04-19T06:23:28.846Z\n"
+"POT-Creation-Date: 2022-05-06T07:36:53.238Z\n"
+"PO-Revision-Date: 2022-05-06T07:36:53.238Z\n"
 
 msgid "Name"
 msgstr ""
@@ -231,6 +231,15 @@ msgid "Field cannot be blank"
 msgstr ""
 
 msgid "Field length is invalid"
+msgstr ""
+
+msgid "Data found for indicators to be removed from the project"
+msgstr ""
+
+msgid "Save Project"
+msgstr ""
+
+msgid "Before saving, please explain why these indicators have been removed"
 msgstr ""
 
 msgid "Save"
@@ -582,6 +591,25 @@ msgstr ""
 msgid "People"
 msgstr ""
 
+msgid "{{username}} has removed indicators with data"
+msgstr ""
+
+msgid ""
+"\n"
+"User {{user}} ({{username}}) has edited a project and removed some "
+"indicators with existing data.\n"
+"\n"
+"Project: {{projectName}}\n"
+"\n"
+"Removed indicators:\n"
+"\n"
+"{{dataElementsList}}\n"
+"\n"
+"The reason provided by the user was:\n"
+"\n"
+"{{message}}"
+msgstr ""
+
 msgid "Project '{{projectName}}' was {{action}} by {{user}} ({{username}})"
 msgstr ""
 
@@ -603,6 +631,16 @@ msgstr ""
 msgid "Select at least one indicator"
 msgstr ""
 
+msgid ""
+"A maximum of {{n}} indicators can be selected per sector, too many selected "
+"for {{sectors}}"
+msgstr ""
+
+msgid ""
+"A maximum of {{max}} sectors can have selected indicators, but there are "
+"{{n}} sectors with MER indicators"
+msgstr ""
+
 msgid "[only for admin users]"
 msgstr ""
 
@@ -618,6 +656,12 @@ msgstr ""
 msgid ""
 "Actual value ({{actualValue}}) should not be greater than 20% of the target "
 "value ({{targetValue}})"
+msgstr ""
+
+msgid "Benefit value should be positive ({{value}})"
+msgstr ""
+
+msgid "Benefit value should have 5 or less decimal places ({{value}})"
 msgstr ""
 
 msgid ""
@@ -800,7 +844,9 @@ msgstr ""
 
 msgid ""
 "- MER indicators must be selected in coordination with your Country "
-"Director and Regional Team."
+"Director and Regional Team.\n"
+"\n"
+"         - Up to three sectors and three indicators per sectors."
 msgstr ""
 
 msgid ""
@@ -936,6 +982,9 @@ msgid ""
 msgstr ""
 
 msgid "Sector"
+msgstr ""
+
+msgid "Value must be zero or positive"
 msgstr ""
 
 msgid "You have reached the limit for this field"

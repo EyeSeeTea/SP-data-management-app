@@ -30,7 +30,9 @@ export const helpTexts = {
         </p>
     ),
     merIndicators: i18n.t(
-        `- MER indicators must be selected in coordination with your Country Director and Regional Team.`,
+        `- MER indicators must be selected in coordination with your Country Director and Regional Team.
+
+         - Up to three sectors and three indicators per sectors.`,
         { nsSeparator: false }
     ),
     disaggregation: i18n.t(
