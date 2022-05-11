@@ -55,7 +55,7 @@ const ReportDataTable: React.FC<ReportDataTableProps> = props => {
 
     return (
         <Paper>
-            <Table>
+            <Table stickyHeader>
                 <TableHead>
                     <TableRow>
                         <Cell width={15} name={i18n.t("Locations")} />

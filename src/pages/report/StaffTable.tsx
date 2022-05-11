@@ -1,4 +1,5 @@
 import React from "react";
+import { useSnackbar } from "@eyeseetea/d2-ui-components";
 import _ from "lodash";
 import {
     Table,
@@ -7,6 +8,7 @@ import {
     TableCell,
     TableBody,
     LinearProgress,
+    TextFieldProps,
 } from "@material-ui/core";
 
 import MerReport, {
@@ -17,7 +19,7 @@ import MerReport, {
     StaffSummary,
 } from "../../models/MerReport";
 import i18n from "../../locales";
-import TextFieldOnBlur from "./TextFieldOnBlur";
+import TextFieldOnBlur, { TextFieldOnBlurProps } from "./TextFieldOnBlur";
 
 interface StaffTableProps {
     merReport: MerReport;
@@ -98,15 +100,27 @@ const StaffField: React.FC<{
     staffKey: StaffKey;
     timeKey: keyof StaffInfo;
     onChange: (key: StaffKey, staff: StaffInfo) => void;
-}> = ({ staff, staffKey: key, timeKey, onChange }) => {
+}> = props => {
+    const { staff, staffKey: key, timeKey, onChange } = props;
     const values = _(staff).get(key, null);
     const value = values ? values[timeKey] : null;
-    const setValue = React.useCallback(
-        value => {
-            const newValues = { ...staff[key], [timeKey]: value ? parseFloat(value) : null };
-            onChange(key, newValues);
+    const snackbar = useSnackbar();
+
+    const setValue = React.useCallback<TextFieldOnBlurProps["onBlurChange"]>(
+        strValue => {
+            const value = parseFloat(strValue);
+
+            if (value < 0) {
+                snackbar.error(i18n.t("Value must be zero or positive"), {
+                    autoHideDuration: 1000,
+                });
+                return false; // Reset to previous valid value
+            } else {
+                const newValues = { ...staff[key], [timeKey]: strValue ? value : null };
+                onChange(key, newValues);
+            }
         },
-        [onChange, staff, key, timeKey]
+        [onChange, staff, key, timeKey, snackbar]
     );
 
     return (
@@ -114,8 +128,11 @@ const StaffField: React.FC<{
             value={_.isNil(value) ? "" : value.toString()}
             type="number"
             onBlurChange={setValue}
+            InputProps={inputProps}
         />
     );
 };
+
+const inputProps: TextFieldProps["InputProps"] = { inputProps: { min: 0 } };
 
 export default React.memo(StaffTable);
