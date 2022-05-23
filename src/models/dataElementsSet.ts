@@ -139,7 +139,7 @@ export default class DataElementsSet {
             return [];
         } else {
             const msg = i18n.t(
-                "A maximum of {{n}} indicators can be selected per sector, too many selected for {{sectors}}",
+                "A maximum of {{n}} MER indicators can be selected per sector; too many selected for {{sectors}}",
                 { n: maxCount, sectors: sectorNamesWithTooManySelections.join(", ") }
             );
             return [msg];
@@ -157,7 +157,7 @@ export default class DataElementsSet {
             return [];
         } else {
             const msg = i18n.t(
-                "A maximum of {{max}} sectors can have selected indicators, but there are {{n}} sectors with MER indicators",
+                "A maximum of {{max}} sectors can have MER indicators selected, but there are {{n}} sectors with MER indicators",
                 { max: maxCount, n: sectorsCount }
             );
             return [msg];
