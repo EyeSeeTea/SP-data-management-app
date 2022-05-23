@@ -186,6 +186,10 @@ class ProjectWizardImpl extends React.Component<Props, State> {
         this.setState({ dialogOpen: false });
     };
 
+    closeSnackbar = () => {
+        this.props.snackbar.closeSnackbar();
+    };
+
     onChange = (step: Step) => async (project: Project) => {
         const errors = await getValidationMessages(project, step.validationKeysLive || []);
         this.setState({ project, isUpdated: true });
@@ -238,6 +242,7 @@ class ProjectWizardImpl extends React.Component<Props, State> {
                         steps={steps}
                         initialStepKey={initialStepKey}
                         useSnackFeedback={true}
+                        onStepChange={this.closeSnackbar}
                         onStepChangeRequest={this.onStepChangeRequest}
                         lastClickableStepIndex={lastClickableStepIndex}
                     />
