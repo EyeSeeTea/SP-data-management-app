@@ -44,7 +44,7 @@ export class ProjectNotification {
             `
 User {{user}} ({{username}}) has edited a project and removed some indicators with existing data.
 
-Project: {{projectName}}
+Project: [{{projectCode}}] {{projectName}}
 
 Removed indicators:
 
@@ -57,6 +57,7 @@ The reason provided by the user was:
                 user,
                 username,
                 projectName: this.project.name,
+                projectCode: this.project.code,
                 dataElementsList,
                 message,
                 nsSeparator: false,
