@@ -10,6 +10,7 @@ import { getIds } from "../utils/dhis2";
 import { hasCurrentUserFullAccessToDataSet } from "./ProjectSharing";
 import { Pagination, paginate } from "../utils/pagination";
 import { Sharing, getSharing } from "./Sharing";
+import { promiseMap } from "../migrations/utils";
 
 export type FiltersForList = Partial<{
     search: string;
@@ -65,20 +66,27 @@ export default class ProjectsList {
         const order = `${sorting.field}:i${sorting.order}`;
         const orgUnitIds = await this.getBaseOrgUnitIds(api, config, filters, order);
 
-        const { objects: d2OrgUnits } =
-            orgUnitIds.length === 0
-                ? { objects: [] }
-                : await api.models.organisationUnits
-                      .get({
-                          paging: false,
-                          fields: orgUnitFields,
-                          filter: { id: { in: orgUnitIds } },
-                          order,
-                      })
-                      .getData();
+        const d2OrgUnitsNested = await promiseMap(
+            _.chunk(orgUnitIds, 300),
+            async orgUnitIdsGroup => {
+                const { objects } = await api.models.organisationUnits
+                    .get({
+                        paging: false,
+                        fields: orgUnitFields,
+                        filter: { id: { in: orgUnitIdsGroup } },
+                        order,
+                    })
+                    .getData();
+                return objects;
+            }
+        );
+        const d2OrgUnits = _(d2OrgUnitsNested)
+            .flatten()
+            .orderBy([sorting.field], [sorting.order])
+            .value();
 
         const projects = d2OrgUnits.map(getProjectFromOrgUnit);
-        const dataSetCodes = new Set(_.sortBy(projects.map(ou => `${ou.id}_ACTUAL`)));
+        const dataSetCodes = new Set(projects.map(ou => `${ou.id}_ACTUAL`));
 
         const res = _(dataSetCodes).isEmpty()
             ? { dataSets: [], organisationUnitGroupSets: [] }
