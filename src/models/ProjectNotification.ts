@@ -123,10 +123,12 @@ The reason provided by the user was:
     }
 }
 
+const nbsp = /\xa0/g;
+
 function html2Text(element: ReactElement): string {
     const html = ReactDOMServer.renderToStaticMarkup(element);
     const text = striptags(html, [], "\n");
-    const textWithoutBlankLines = text.replace(/^\s*$(?:\r\n?|\n)/gm, "");
+    const textWithoutBlankLines = text.replace(/^\s*$(?:\r\n?|\n)/gm, "").replace(nbsp, " ");
     return textWithoutBlankLines;
 }
 
