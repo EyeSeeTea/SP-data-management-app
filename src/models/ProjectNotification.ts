@@ -44,7 +44,7 @@ export class ProjectNotification {
             `
 User {{user}} ({{username}}) has edited a project and removed some indicators with existing data.
 
-Project: {{projectName}}
+Project: [{{projectCode}}] {{projectName}}
 
 Removed indicators:
 
@@ -57,6 +57,7 @@ The reason provided by the user was:
                 user,
                 username,
                 projectName: this.project.name,
+                projectCode: this.project.code,
                 dataElementsList,
                 message,
                 nsSeparator: false,
@@ -122,10 +123,12 @@ The reason provided by the user was:
     }
 }
 
+const nbsp = /\xa0/g;
+
 function html2Text(element: ReactElement): string {
     const html = ReactDOMServer.renderToStaticMarkup(element);
     const text = striptags(html, [], "\n");
-    const textWithoutBlankLines = text.replace(/^\s*$(?:\r\n?|\n)/gm, "");
+    const textWithoutBlankLines = text.replace(/^\s*$(?:\r\n?|\n)/gm, "").replace(nbsp, " ");
     return textWithoutBlankLines;
 }
 
