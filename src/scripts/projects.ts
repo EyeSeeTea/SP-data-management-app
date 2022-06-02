@@ -6,11 +6,16 @@ import ProjectDb, { ProjectJson } from "../models/ProjectDb";
 import { D2Api } from "../types/d2-api";
 import { getApp, readJson, writeJson } from "./common";
 
+interface Opts {
+    url: string;
+    from: string;
+}
+
 async function main() {
     const parser = parse({
         opts: { url: {}, from: {} },
     });
-    const { opts, args } = parser(process.argv);
+    const { opts, args } = parser(process.argv) as { opts: Opts; args: string[] };
 
     const usage = `projects
             --url=DHIS2_URL
@@ -83,17 +88,16 @@ async function importProjects(app: { api: D2Api; config: Config }, options: { js
     const orgUnits$ = api.metadata.get({ organisationUnits: { fields: { id: true } } });
     const { organisationUnits: existingOrgUnits } = await orgUnits$.getData();
 
-    const allOrgUnitIds = new Set(
-        _(jsonCollection)
-            .flatMap(json => json.metadata.organisationUnits.map(ou => ou.id))
-            .concat(existingOrgUnits.map(ou => ou.id))
-            .compact()
-            .value()
-    );
-
     for (const json of jsonCollection) {
+        const referenceableOrgUnitIds = new Set(
+            _(json.metadata.organisationUnits.map(ou => ou.id))
+                .concat(existingOrgUnits.map(ou => ou.id))
+                .compact()
+                .value()
+        );
+
         console.debug(`Import: ${json.name} (${json.id})`);
-        await ProjectDb.fromJSON(api, config, json, allOrgUnitIds);
+        await ProjectDb.fromJSON(api, config, json, referenceableOrgUnitIds);
     }
 }
 
