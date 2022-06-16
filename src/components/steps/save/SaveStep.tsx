@@ -6,7 +6,7 @@ import ExitWizardButton from "../../wizard/ExitWizardButton";
 import i18n from "../../../locales";
 import { StepProps } from "../../../pages/project-wizard/ProjectWizard";
 import Project from "../../../models/Project";
-import { useSnackbar } from "@eyeseetea/d2-ui-components";
+import { useLoading, useSnackbar } from "@eyeseetea/d2-ui-components";
 import { useHistory } from "react-router";
 import { generateUrl } from "../../../router";
 import { useAppContext } from "../../../contexts/api-context";
@@ -31,6 +31,7 @@ const SaveStep: React.FC<StepProps> = ({ project, onCancel, action }) => {
     const { appConfig, api, currentUser, isTest } = useAppContext();
     const snackbar = useSnackbar();
     const classes = useStyles();
+    const loading = useLoading();
     const projectInfo = React.useMemo(() => <ProjectInfo project={project} />, [project]);
 
     const [dialogOpen, setDialogOpen] = useState(false);
@@ -57,20 +58,25 @@ const SaveStep: React.FC<StepProps> = ({ project, onCancel, action }) => {
     );
 
     const checkExistingDataAndSave = React.useCallback(async () => {
-        const validation = await project.validate();
-        const error = _(validation).values().flatten().join("\n");
-        if (error) {
-            snackbar.error(error);
-            return;
-        }
+        try {
+            loading.show(true);
+            const validation = await project.validate();
+            const error = _(validation).values().flatten().join("\n");
+            if (error) {
+                snackbar.error(error);
+                return;
+            }
 
-        const existingDataCheck = await project.checkExistingDataForDataElementsToBeRemoved();
+            const existingDataCheck = await project.checkExistingDataForDataElementsToBeRemoved();
 
-        switch (existingDataCheck.type) {
-            case "no-values":
-                return save();
-            case "with-values":
-                return setExistingData(existingDataCheck);
+            switch (existingDataCheck.type) {
+                case "no-values":
+                    return save();
+                case "with-values":
+                    return setExistingData(existingDataCheck);
+            }
+        } finally {
+            loading.hide();
         }
     }, [save, project, snackbar]);
 
@@ -105,8 +111,6 @@ const SaveStep: React.FC<StepProps> = ({ project, onCancel, action }) => {
                 >
                     {i18n.t("Save")}
                 </Button>
-
-                {isSaving && <LinearProgress />}
 
                 <pre>{errorMessage}</pre>
             </div>
