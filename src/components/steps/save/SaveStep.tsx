@@ -1,12 +1,12 @@
 import React, { useState, ReactNode, ReactElement } from "react";
-import { Button, LinearProgress } from "@material-ui/core";
+import { Button } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
 import ExitWizardButton from "../../wizard/ExitWizardButton";
 import i18n from "../../../locales";
 import { StepProps } from "../../../pages/project-wizard/ProjectWizard";
 import Project from "../../../models/Project";
-import { useLoading, useSnackbar } from "@eyeseetea/d2-ui-components";
+import { LoadingState, useLoading, useSnackbar } from "@eyeseetea/d2-ui-components";
 import { useHistory } from "react-router";
 import { generateUrl } from "../../../router";
 import { useAppContext } from "../../../contexts/api-context";
@@ -58,25 +58,23 @@ const SaveStep: React.FC<StepProps> = ({ project, onCancel, action }) => {
     );
 
     const checkExistingDataAndSave = React.useCallback(async () => {
-        try {
-            loading.show(true);
-            const validation = await project.validate();
-            const error = _(validation).values().flatten().join("\n");
-            if (error) {
-                snackbar.error(error);
-                return;
-            }
+        loading.show(true, i18n.t("Validating Project"));
+        const validation = await project.validate();
+        const error = _(validation).values().flatten().join("\n");
+        if (error) {
+            snackbar.error(error);
+            return;
+        }
 
-            const existingDataCheck = await project.checkExistingDataForDataElementsToBeRemoved();
+        loading.updateMessage(i18n.t("Checking Existing Data"));
+        const existingDataCheck = await project.checkExistingDataForDataElementsToBeRemoved();
 
-            switch (existingDataCheck.type) {
-                case "no-values":
-                    return save();
-                case "with-values":
-                    return setExistingData(existingDataCheck);
-            }
-        } finally {
-            loading.hide();
+        loading.updateMessage(i18n.t("Saving Project"));
+        switch (existingDataCheck.type) {
+            case "no-values":
+                return save(loading);
+            case "with-values":
+                return setExistingData(existingDataCheck);
         }
     }, [save, project, snackbar]);
 
@@ -218,43 +216,52 @@ function useSave(project: Project, action: StepProps["action"], projectInfo: Rea
     const snackbar = useSnackbar();
     const history = useHistory();
 
-    const save = React.useCallback(async () => {
-        try {
-            setSaving(true);
-            const { payload, response, project: projectSaved } = await project.save();
-            const recipients = appConfig.app.notifyEmailOnProjectSave;
-            setSaving(false);
+    const save = React.useCallback(
+        async (loading?: LoadingState) => {
+            try {
+                setSaving(true);
+                const { payload, response, project: projectSaved } = await project.save();
+                const recipients = appConfig.app.notifyEmailOnProjectSave;
+                setSaving(false);
 
-            if (response && response.status === "OK") {
-                const notificator = new ProjectNotification(api, projectSaved, currentUser, isTest);
-                notificator.notifyOnProjectSave(projectInfo, recipients, action);
-                const baseMsg =
-                    action === "create" ? i18n.t("Project created") : i18n.t("Project updated");
-                const msg = `${baseMsg}: ${projectSaved.name}`;
-                history.push(generateUrl("projects"));
-                if (isDev) saveDataValues(api, projectSaved);
-                snackbar.success(msg);
-            } else {
-                setErrorMessage(JSON.stringify({ response, payload }, null, 2));
+                if (response && response.status === "OK") {
+                    const notificator = new ProjectNotification(
+                        api,
+                        projectSaved,
+                        currentUser,
+                        isTest
+                    );
+                    notificator.notifyOnProjectSave(projectInfo, recipients, action);
+                    const baseMsg =
+                        action === "create" ? i18n.t("Project created") : i18n.t("Project updated");
+                    const msg = `${baseMsg}: ${projectSaved.name}`;
+                    history.push(generateUrl("projects"));
+                    if (isDev) saveDataValues(api, projectSaved);
+                    snackbar.success(msg);
+                } else {
+                    setErrorMessage(JSON.stringify({ response, payload }, null, 2));
+                }
+                loading?.hide();
+            } catch (err: any) {
+                setSaving(false);
+                console.error(err);
+                snackbar.error(err.message || err.toString());
             }
-        } catch (err: any) {
-            setSaving(false);
-            console.error(err);
-            snackbar.error(err.message || err.toString());
-        }
-    }, [
-        project,
-        setSaving,
-        history,
-        snackbar,
-        action,
-        api,
-        appConfig,
-        isDev,
-        projectInfo,
-        currentUser,
-        isTest,
-    ]);
+        },
+        [
+            project,
+            setSaving,
+            history,
+            snackbar,
+            action,
+            api,
+            appConfig,
+            isDev,
+            projectInfo,
+            currentUser,
+            isTest,
+        ]
+    );
 
     return { isSaving, errorMessage, save };
 }

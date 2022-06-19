@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2022-06-02T10:08:13.648Z\n"
-"PO-Revision-Date: 2022-06-02T10:08:13.648Z\n"
+"POT-Creation-Date: 2022-06-17T12:15:11.536Z\n"
+"PO-Revision-Date: 2022-06-17T12:15:11.536Z\n"
 
 msgid "Name"
 msgstr ""
@@ -234,6 +234,15 @@ msgid "Save Project"
 msgstr ""
 
 msgid "Before saving, please explain why these indicators have been removed"
+msgstr ""
+
+msgid "Validating Project"
+msgstr ""
+
+msgid "Checking Existing Data"
+msgstr ""
+
+msgid "Saving Project"
 msgstr ""
 
 msgid "Save"
