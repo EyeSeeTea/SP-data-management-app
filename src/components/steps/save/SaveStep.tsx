@@ -43,7 +43,7 @@ const SaveStep: React.FC<StepProps> = ({ project, onCancel, action }) => {
     const saveAndSendExistingDataMessage = React.useCallback(
         async (message: string) => {
             closeExistingDataDialog();
-            await save();
+            await save(loading);
             if (!existingData) return;
 
             const notificator = new ProjectNotification(api, project, currentUser, isTest);
@@ -76,7 +76,7 @@ const SaveStep: React.FC<StepProps> = ({ project, onCancel, action }) => {
             case "with-values":
                 return setExistingData(existingDataCheck);
         }
-    }, [save, project, snackbar]);
+    }, [save, project, snackbar, loading]);
 
     return (
         <React.Fragment>
@@ -217,8 +217,9 @@ function useSave(project: Project, action: StepProps["action"], projectInfo: Rea
     const history = useHistory();
 
     const save = React.useCallback(
-        async (loading?: LoadingState) => {
+        async (loading: LoadingState) => {
             try {
+                loading.show(true, i18n.t("Saving Project"));
                 setSaving(true);
                 const { payload, response, project: projectSaved } = await project.save();
                 const recipients = appConfig.app.notifyEmailOnProjectSave;
@@ -241,9 +242,10 @@ function useSave(project: Project, action: StepProps["action"], projectInfo: Rea
                 } else {
                     setErrorMessage(JSON.stringify({ response, payload }, null, 2));
                 }
-                loading?.hide();
+                loading.hide();
             } catch (err: any) {
                 setSaving(false);
+                loading.hide();
                 console.error(err);
                 snackbar.error(err.message || err.toString());
             }
