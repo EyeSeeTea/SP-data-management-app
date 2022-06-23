@@ -68,6 +68,7 @@ const SaveStep: React.FC<StepProps> = ({ project, onCancel, action }) => {
 
         loading.updateMessage(i18n.t("Checking Existing Data"));
         const existingDataCheck = await project.checkExistingDataForDataElementsToBeRemoved();
+        loading.hide();
 
         switch (existingDataCheck.type) {
             case "no-values":
