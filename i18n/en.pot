@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2022-06-17T12:15:11.536Z\n"
-"PO-Revision-Date: 2022-06-17T12:15:11.536Z\n"
+"POT-Creation-Date: 2022-06-23T11:42:56.537Z\n"
+"PO-Revision-Date: 2022-06-23T11:42:56.537Z\n"
 
 msgid "Name"
 msgstr ""
@@ -242,9 +242,6 @@ msgstr ""
 msgid "Checking Existing Data"
 msgstr ""
 
-msgid "Saving Project"
-msgstr ""
-
 msgid "Save"
 msgstr ""
 
@@ -285,6 +282,9 @@ msgid "Hidden in data entry as it is selected in multiple sectors!"
 msgstr ""
 
 msgid "MER"
+msgstr ""
+
+msgid "Saving Project"
 msgstr ""
 
 msgid "Project created"
