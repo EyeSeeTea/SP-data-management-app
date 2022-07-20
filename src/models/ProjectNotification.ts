@@ -2,13 +2,14 @@ import _ from "lodash";
 import striptags from "striptags";
 import ReactDOMServer from "react-dom/server";
 
-import Project from "./Project";
+import Project, { DataSet } from "./Project";
 import { ReactElement } from "react";
 import i18n from "../locales";
 import User from "./user";
 import { generateUrl } from "../router";
 import { D2Api } from "../types/d2-api";
 import ProjectDb, { ExistingData, getStringDataValue } from "./ProjectDb";
+import { baseConfig } from "./Config";
 
 type Email = string;
 type Action = "create" | "update";
@@ -24,6 +25,55 @@ export class ProjectNotification {
     async notifyOnProjectSave(element: ReactElement, recipients: Email[], action: Action) {
         await this.notifySave(element, recipients, action);
         await this.notifyDanglingDataValues(recipients);
+    }
+
+    async notifyOnDataReady(period: string) {
+        const res = await this.api.metadata
+            .get({
+                userRoles: {
+                    fields: {
+                        id: true,
+                        users: { email: true },
+                    },
+                    filter: { name: { in: baseConfig.userRoles.dataReviewer } },
+                },
+            })
+            .getData();
+
+        const { displayName: user, username } = this.currentUser.data;
+
+        const subject = i18n.t("{{username}} is requesting for data review", { username });
+        const pageLink = window.location.href;
+        const dataSetType = pageLink.includes("actual") ? "ACTUAL" : "TARGET";
+        const recipients = res.userRoles[0].users.map(user => {
+            return user.email;
+        });
+
+        const text = i18n.t(
+            `
+User {{user}} ({{username}}) is requesting Data Review.
+
+Project: [{{projectCode}}] {{projectName}}.
+
+Dataset Type: {{dataSetType}}
+
+Period: {{period}}
+
+The reason provided by the user was:
+
+{{message}}`,
+            {
+                user,
+                username,
+                projectName: this.project.name,
+                projectCode: this.project.code,
+                dataSetType,
+                period,
+                nsSeparator: false,
+            }
+        );
+
+        await this.sendMessage({ recipients, subject, text: text.trim() });
     }
 
     async sendMessageForIndicatorsRemoval(options: {

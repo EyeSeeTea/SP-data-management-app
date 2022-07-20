@@ -8,6 +8,7 @@ import { makeStyles } from "@material-ui/styles";
 import { useConfirmation, useSnackbarOnError } from "../../utils/hooks";
 import { DataSetOpenInfo } from "../../models/ProjectDataSet";
 import { UseValidationResponse } from "./validation-hooks";
+import { ProjectNotification } from "../../models/ProjectNotification";
 
 interface DataSetStateButtonProps {
     project: Project;
@@ -19,7 +20,7 @@ interface DataSetStateButtonProps {
 
 const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = props => {
     const [isActive, setActive] = React.useState(false);
-    const { currentUser } = useAppContext();
+    const { api, currentUser, isTest } = useAppContext();
     const { period, dataSet, project, onChange, validation } = props;
     const classes = useStyles();
     const projectDataSet = project.getProjectDataSet(dataSet);
@@ -50,6 +51,11 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
         projectDataSet.reset().then(notifyOnChange).catch(showErrorAndSetInactive);
     }, [projectDataSet, notifyOnChange, showErrorAndSetInactive, validation]);
 
+    const notifyUsers = React.useCallback(async () => {
+        const notificator = new ProjectNotification(api, project, currentUser, isTest);
+        await notificator.notifyOnDataReady(period);
+    }, [api, currentUser, isTest, project, period]);
+
     const reopenConfirmation = useConfirmation({
         title: i18n.t("Reopen data set"),
         text: i18n.t(
@@ -70,14 +76,24 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
                 : null}
 
             {!dataSetInfo.isOpen && userCanReopen && (
-                <Button
-                    disabled={isActive}
-                    className={classes.button}
-                    onClick={dataSetInfo.isOpenByData ? reopen : reopenConfirmation.open}
-                    variant="contained"
-                >
-                    {i18n.t("Edit Data")}
-                </Button>
+                <>
+                    <Button
+                        disabled={isActive}
+                        className={classes.button}
+                        onClick={dataSetInfo.isOpenByData ? reopen : reopenConfirmation.open}
+                        variant="contained"
+                    >
+                        {i18n.t("Edit Data")}
+                    </Button>
+                    <Button
+                        disabled={isActive}
+                        className={classes.button}
+                        onClick={notifyUsers}
+                        variant="contained"
+                    >
+                        {i18n.t("Ask for Data Review")}
+                    </Button>
+                </>
             )}
 
             {dataSetInfo.isOpen && dataSetInfo.isReopened && userCanReopen && (

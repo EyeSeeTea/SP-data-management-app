@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2022-06-02T10:08:13.648Z\n"
-"PO-Revision-Date: 2022-06-02T10:08:13.648Z\n"
+"POT-Creation-Date: 2022-07-20T10:25:19.900Z\n"
+"PO-Revision-Date: 2022-07-20T10:25:19.900Z\n"
 
 msgid "Name"
 msgstr ""
@@ -64,6 +64,9 @@ msgid "Project closed for this period, please contact the administrators"
 msgstr ""
 
 msgid "Edit Data"
+msgstr ""
+
+msgid "Ask for Data Review"
 msgstr ""
 
 msgid "Editing Complete"
