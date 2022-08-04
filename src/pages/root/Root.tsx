@@ -61,6 +61,10 @@ const Root = () => {
                         })}
                         render={() => <DataApproval />}
                     />
+                    <Route
+                        path={generateUrl("dataApproval", { id: ":id" })}
+                        render={() => <DataApproval />}
+                    />
                     <Route path={generateUrl("countries")} render={() => <CountriesList />} />
 
                     <Route render={() => <ProjectsList />} />

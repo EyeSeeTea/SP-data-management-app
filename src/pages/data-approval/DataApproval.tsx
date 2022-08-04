@@ -45,6 +45,12 @@ type State = {
 
 const DataApproval: React.FC = () => {
     const { api, config } = useAppContext();
+    const match = useRouteMatch<RouterParams>();
+    const projectId = match ? match.params.id : null;
+    const projectDataSetType = match.params.dataSetType;
+    const projectPeriod = match.params.period;
+    const appHistory = useAppHistory(generateUrl("projects"));
+    const goTo = useGoTo();
 
     const [state, setState] = useState<State>({
         loading: true,
@@ -52,22 +58,27 @@ const DataApproval: React.FC = () => {
         showUnapproveButton: false,
     });
     const { project, date, dataSetType, projectDataSet, report, error } = state;
-
-    const match = useRouteMatch<RouterParams>();
-    const projectId = match ? match.params.id : null;
-    const projectDataSetType = match.params.dataSetType;
-    const projectPeriod = match.params.period;
-    const goTo = useGoTo();
-    const appHistory = useAppHistory(generateUrl("projects"));
-
     const classes = useStyles();
 
     useEffect(() => {
-        if (!projectDataSetType || !projectPeriod) {
-            const period = "2022-07";
+        if (
+            project &&
+            project.startDate &&
+            project.endDate &&
+            (!projectDataSetType || !projectPeriod)
+        ) {
+            const projectStartDate = project.startDate.format(monthFormat);
+            const projectEndDate = project.endDate.format(monthFormat);
+            const previousMonth = moment().subtract(1, "month").format(monthFormat);
+            const period =
+                previousMonth > projectEndDate
+                    ? projectEndDate
+                    : previousMonth < projectStartDate
+                    ? projectStartDate
+                    : previousMonth;
             goTo("dataApproval", { id: projectId || "", dataSetType: "actual", period: period });
         }
-    }, [projectId, projectDataSetType, projectPeriod, goTo]);
+    }, [goTo, project, projectDataSetType, projectId, projectPeriod]);
 
     const categoryComboItems = React.useMemo(
         () => [
@@ -89,24 +100,12 @@ const DataApproval: React.FC = () => {
         }
     }, [project]);
 
-    console.log(project);
-    console.log(match.params);
-    console.log(projectPeriod);
-    console.log(projectDataSetType);
-
     const title = i18n.t("Data Approval") + (project ? ` - ${project.name}` : "");
 
     useEffect(() => loadData(projectId, api, config, setState), [api, config, projectId]);
-    useEffect(
-        () =>
-            getReport(
-                projectDataSet,
-                date ? date : projectPeriod,
-                dataSetType ? dataSetType : projectDataSetType,
-                setState
-            ),
-        [dataSetType, date, projectDataSet, projectDataSetType, projectPeriod]
-    );
+    useEffect(() => {
+        getReport(projectDataSet, date ? date : projectPeriod, setState);
+    }, [projectDataSet, date, projectPeriod]);
 
     useDebugValuesOnDev(project, setState);
 
@@ -116,7 +115,17 @@ const DataApproval: React.FC = () => {
 
     const dataApprovalDialog = useDialog();
 
-    const setDate = React.useCallback(value => setState(prev => ({ ...prev, date: value })), []);
+    const setDate = React.useCallback(
+        value => {
+            setState(prev => ({ ...prev, date: value }));
+            goTo("dataApproval", {
+                id: projectId || "",
+                dataSetType: dataSetType ? dataSetType : projectDataSetType,
+                period: value ? value : projectPeriod,
+            });
+        },
+        [dataSetType, goTo, projectDataSetType, projectId, projectPeriod]
+    );
 
     const setDataSet = React.useCallback(
         dataSetType => {
@@ -124,8 +133,13 @@ const DataApproval: React.FC = () => {
                 const projectDataSet = project.dataSetsByType[dataSetType];
                 setState(prev => ({ ...prev, projectDataSet, dataSetType }));
             }
+            goTo("dataApproval", {
+                id: projectId || "",
+                dataSetType: dataSetType,
+                period: date ? date : projectPeriod,
+            });
         },
-        [project]
+        [date, goTo, project, projectId, projectPeriod]
     );
 
     if (!projectPeriod || !projectDataSetType) return null;
@@ -252,10 +266,9 @@ async function approve(
 function getReport(
     projectDataSet: ProjectDataSet | undefined,
     date: string | undefined,
-    dataSetType: "actual" | "target" | undefined,
     setState: React.Dispatch<React.SetStateAction<State>>
 ) {
-    if (!projectDataSet || !date || !dataSetType) return;
+    if (!projectDataSet || !date) return;
 
     projectDataSet
         .getDataApproval(date)
@@ -293,8 +306,6 @@ function getReport(
 
                 setState(state => ({
                     ...state,
-                    date: date,
-                    dataSetType: dataSetType,
                     report: htmlReport.html(),
                     loading: false,
                     showApproveButton: showApproveButton,
