@@ -54,7 +54,11 @@ const Root = () => {
                         render={() => <CountryDashboard />}
                     />
                     <Route
-                        path={generateUrl("dataApproval", idParam)}
+                        path={generateUrl("dataApproval", {
+                            id: ":id",
+                            period: ":period",
+                            dataSetType: ":dataSetType",
+                        })}
                         render={() => <DataApproval />}
                     />
                     <Route path={generateUrl("countries")} render={() => <CountriesList />} />
