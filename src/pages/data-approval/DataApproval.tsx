@@ -42,7 +42,7 @@ type State = {
 const DataApproval: React.FC = () => {
     const { api, config } = useAppContext();
     const match = useRouteMatch<RouterParams>();
-    const projectId = match ? match.params.id : null;
+    const projectId = match.params.id;
     const projectDataSetType = match.params.dataSetType;
     const projectPeriod = match.params.period;
     const history = useHistory();
@@ -78,7 +78,7 @@ const DataApproval: React.FC = () => {
                     : previousMonth < projectStartDate
                     ? projectStartDate
                     : previousMonth;
-            goTo("dataApproval", { id: projectId || "", dataSetType: "actual", period: period });
+            goTo("dataApproval", { id: projectId, dataSetType: "actual", period: period });
         }
     }, [goTo, project, projectDataSetType, projectId, projectPeriod]);
 
@@ -120,9 +120,9 @@ const DataApproval: React.FC = () => {
     const setDate = React.useCallback(
         (date: string | undefined) => {
             goTo("dataApproval", {
-                id: projectId || "",
+                id: projectId,
                 dataSetType: projectDataSetType,
-                period: date ? date : projectPeriod,
+                period: date || projectPeriod,
             });
         },
         [goTo, projectDataSetType, projectId, projectPeriod]
@@ -131,8 +131,8 @@ const DataApproval: React.FC = () => {
     const setDataSet = React.useCallback(
         (dataSetType: string | undefined) => {
             goTo("dataApproval", {
-                id: projectId || "",
-                dataSetType: dataSetType ? dataSetType : projectDataSetType,
+                id: projectId,
+                dataSetType: dataSetType || projectDataSetType,
                 period: projectPeriod,
             });
         },
@@ -156,7 +156,7 @@ const DataApproval: React.FC = () => {
                 <Dropdown
                     items={periodItems}
                     value={projectPeriod}
-                    onChange={date => setDate(date)}
+                    onChange={setDate}
                     label={i18n.t("Period")}
                     hideEmpty={true}
                 />
@@ -164,7 +164,7 @@ const DataApproval: React.FC = () => {
                 <Dropdown
                     items={categoryComboItems ? categoryComboItems : []}
                     value={projectDataSetType}
-                    onChange={dataSetType => setDataSet(dataSetType)}
+                    onChange={setDataSet}
                     label={i18n.t("Actual/Target")}
                     hideEmpty={true}
                 />
