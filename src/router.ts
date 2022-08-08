@@ -12,23 +12,20 @@ const routes = {
     projectDashboard: ({ id }: { id: string }) => `/project-dashboard/${id}`,
     awardNumberDashboard: ({ id }: { id: string }) => `/award-number-dashboard/${id}`,
     countryDashboard: ({ id }: { id: string }) => `/country-dashboard/${id}`,
-    dataApproval: ({
-        id,
-        dataSetType,
-        period,
-    }: {
-        id: string;
-        dataSetType?: string;
-        period?: string;
-    }) =>
-        dataSetType && period
-            ? `/data-approval/${id}/${dataSetType}/${period}`
-            : `/data-approval/${id}`,
+    dataApproval: dataApproval,
     countries: () => `/countries`,
 };
 
 type Routes = typeof routes;
 export type GoTo = typeof generateUrl;
+
+function dataApproval(params: { id: string; dataSetType?: string; period?: string }): string {
+    const { id, dataSetType, period } = params;
+
+    return dataSetType && period
+        ? `/data-approval/${id}/${dataSetType}/${period}`
+        : `/data-approval/${id}`;
+}
 
 export function generateUrl<Name extends keyof Routes>(
     name: Name,
