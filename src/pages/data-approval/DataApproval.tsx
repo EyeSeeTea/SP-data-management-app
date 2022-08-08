@@ -15,8 +15,8 @@ import ProjectDataSet from "../../models/ProjectDataSet";
 import "./widgets.css";
 import { useDialog } from "./data-approval-hooks";
 import { DataApprovalMessage } from "./DataApprovalMessage";
-import { useAppHistory } from "../../utils/use-app-history";
-import { generateUrl, useGoTo } from "../../router";
+import { useGoTo } from "../../router";
+import { useHistory } from "react-router-dom";
 
 declare global {
     interface Window {
@@ -45,7 +45,7 @@ const DataApproval: React.FC = () => {
     const projectId = match ? match.params.id : null;
     const projectDataSetType = match.params.dataSetType;
     const projectPeriod = match.params.period;
-    const appHistory = useAppHistory(generateUrl("projects"));
+    const history = useHistory();
     const goTo = useGoTo();
 
     const [state, setState] = useState<State>({
@@ -117,21 +117,27 @@ const DataApproval: React.FC = () => {
 
     const dataApprovalDialog = useDialog();
 
-    const setDate = (date: string | undefined) => {
-        goTo("dataApproval", {
-            id: projectId || "",
-            dataSetType: projectDataSetType,
-            period: date ? date : projectPeriod,
-        });
-    };
+    const setDate = React.useCallback(
+        (date: string | undefined) => {
+            goTo("dataApproval", {
+                id: projectId || "",
+                dataSetType: projectDataSetType,
+                period: date ? date : projectPeriod,
+            });
+        },
+        [goTo, projectDataSetType, projectId, projectPeriod]
+    );
 
-    const setDataSet = (dataSetType: string | undefined) => {
-        goTo("dataApproval", {
-            id: projectId || "",
-            dataSetType: dataSetType ? dataSetType : projectDataSetType,
-            period: projectPeriod,
-        });
-    };
+    const setDataSet = React.useCallback(
+        (dataSetType: string | undefined) => {
+            goTo("dataApproval", {
+                id: projectId || "",
+                dataSetType: dataSetType ? dataSetType : projectDataSetType,
+                period: projectPeriod,
+            });
+        },
+        [goTo, projectDataSetType, projectId, projectPeriod]
+    );
 
     if (!projectPeriod || !projectDataSetType) return null;
 
@@ -145,7 +151,7 @@ const DataApproval: React.FC = () => {
                     period={projectPeriod}
                 />
             )}
-            <PageHeader title={title} help={getHelp()} onBackClick={appHistory.goBack} />
+            <PageHeader title={title} help={getHelp()} onBackClick={() => history.push("/")} />
             <Paper style={{ marginBottom: 20, padding: 20 }}>
                 <Dropdown
                     items={periodItems}
