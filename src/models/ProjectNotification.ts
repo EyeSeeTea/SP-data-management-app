@@ -36,7 +36,6 @@ export class ProjectNotification {
                         users: {
                             email: true,
                             id: true,
-                            name: true,
                             userGroups: {
                                 id: true,
                                 name: true,
@@ -61,12 +60,35 @@ export class ProjectNotification {
         const subject = i18n.t("{{username}} is requesting for data review", { username });
         const pageLink = window.location.href;
         const dataSetType = pageLink.includes("actual") ? "ACTUAL" : "TARGET";
-        const filteredRecipients = res.userRoles[0].users.filter(user => {
-            return res.dataSets[0].userAccesses.some(userAccess => {
-                return userAccess.id === user.id;
-            });
-        });
-        const recipients = filteredRecipients.map(user => user.email);
+        const userAccessEmails = res.userRoles[0].users
+            .filter(user => {
+                return res.dataSets[0].userAccesses.some(userAccess => {
+                    return userAccess.id === user.id;
+                });
+            })
+            .map(user => user.email);
+        const userGroupEmails = res.userRoles[0].users
+            .map(user => {
+                const a = user.userGroups.filter(userGroup => {
+                    return res.dataSets[0].userGroupAccesses.some(userGroupAccess => {
+                        return userGroupAccess.id === userGroup.id;
+                    });
+                });
+                return a;
+            })
+            .map((e, i) => {
+                if (e.length !== 0) {
+                    return i;
+                } else {
+                    return null;
+                }
+            })
+            .filter(element => element && element >= 0)
+            .map(e => {
+                return res.userRoles[0].users[e ? e : 0];
+            })
+            .map(user => user.email);
+        const recipients = _.union(userAccessEmails, userGroupEmails);
 
         const text = i18n.t(
             `
@@ -91,20 +113,6 @@ The reason provided by the user was:
                 nsSeparator: false,
             }
         );
-
-        const filtered2 = res.userRoles[0].users.map(user => {
-            const a = user.userGroups.filter(userGroup => {
-                return res.dataSets[0].userGroupAccesses.some(userGroupAccess => {
-                    return userGroupAccess.id === userGroup.id;
-                });
-            });
-            return a;
-        });
-
-        console.log(res.userRoles);
-        console.log(res.dataSets);
-        console.log(recipients);
-        console.log(filtered2);
 
         await this.sendMessage({ recipients, subject, text: text.trim() });
     }
