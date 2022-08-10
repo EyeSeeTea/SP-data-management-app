@@ -2,7 +2,7 @@ import _ from "lodash";
 import striptags from "striptags";
 import ReactDOMServer from "react-dom/server";
 
-import Project, { DataSet } from "./Project";
+import Project from "./Project";
 import { ReactElement } from "react";
 import i18n from "../locales";
 import User from "./user";
@@ -27,15 +27,31 @@ export class ProjectNotification {
         await this.notifyDanglingDataValues(recipients);
     }
 
-    async notifyOnDataReady(period: string) {
+    async notifyOnDataReady(period: string, id: string) {
         const res = await this.api.metadata
             .get({
                 userRoles: {
                     fields: {
                         id: true,
-                        users: { email: true },
+                        users: {
+                            email: true,
+                            id: true,
+                            name: true,
+                            userGroups: {
+                                id: true,
+                                name: true,
+                            },
+                        },
                     },
                     filter: { name: { in: baseConfig.userRoles.dataReviewer } },
+                },
+                dataSets: {
+                    fields: {
+                        id: true,
+                        userGroupAccesses: true,
+                        userAccesses: { id: true },
+                    },
+                    filter: { id: { in: [id] } },
                 },
             })
             .getData();
@@ -45,9 +61,12 @@ export class ProjectNotification {
         const subject = i18n.t("{{username}} is requesting for data review", { username });
         const pageLink = window.location.href;
         const dataSetType = pageLink.includes("actual") ? "ACTUAL" : "TARGET";
-        const recipients = res.userRoles[0].users.map(user => {
-            return user.email;
+        const filteredRecipients = res.userRoles[0].users.filter(user => {
+            return res.dataSets[0].userAccesses.some(userAccess => {
+                return userAccess.id === user.id;
+            });
         });
+        const recipients = filteredRecipients.map(user => user.email);
 
         const text = i18n.t(
             `
@@ -72,6 +91,20 @@ The reason provided by the user was:
                 nsSeparator: false,
             }
         );
+
+        const filtered2 = res.userRoles[0].users.map(user => {
+            const a = user.userGroups.filter(userGroup => {
+                return res.dataSets[0].userGroupAccesses.some(userGroupAccess => {
+                    return userGroupAccess.id === userGroup.id;
+                });
+            });
+            return a;
+        });
+
+        console.log(res.userRoles);
+        console.log(res.dataSets);
+        console.log(recipients);
+        console.log(filtered2);
 
         await this.sendMessage({ recipients, subject, text: text.trim() });
     }
@@ -102,7 +135,7 @@ Removed indicators:
 
 The reason provided by the user was:
 
-{{message}}`,
+    {{message}}`,
             {
                 user,
                 username,

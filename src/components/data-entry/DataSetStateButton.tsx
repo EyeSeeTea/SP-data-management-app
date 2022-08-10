@@ -53,8 +53,8 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
 
     const notifyUsers = React.useCallback(async () => {
         const notificator = new ProjectNotification(api, project, currentUser, isTest);
-        await notificator.notifyOnDataReady(period);
-    }, [api, currentUser, isTest, project, period]);
+        await notificator.notifyOnDataReady(period, dataSet.id);
+    }, [api, project, currentUser, isTest, period, dataSet.id]);
 
     const reopenConfirmation = useConfirmation({
         title: i18n.t("Reopen data set"),
