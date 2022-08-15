@@ -2,7 +2,7 @@ import * as React from "react";
 import moment from "moment";
 import { Button, LinearProgress } from "@material-ui/core";
 import i18n from "../../locales";
-import Project, { DataSet, monthFormat } from "../../models/Project";
+import Project, { DataSet, DataSetType, monthFormat } from "../../models/Project";
 import { useAppContext } from "../../contexts/api-context";
 import { makeStyles } from "@material-ui/styles";
 import { useConfirmation, useSnackbarOnError } from "../../utils/hooks";
@@ -13,6 +13,7 @@ import { ProjectNotification } from "../../models/ProjectNotification";
 interface DataSetStateButtonProps {
     project: Project;
     dataSet: DataSet;
+    dataSetType: DataSetType;
     period: string;
     onChange(): void;
     validation: UseValidationResponse;
@@ -21,7 +22,7 @@ interface DataSetStateButtonProps {
 const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = props => {
     const [isActive, setActive] = React.useState(false);
     const { api, currentUser, isTest } = useAppContext();
-    const { period, dataSet, project, onChange, validation } = props;
+    const { period, dataSetType, dataSet, project, onChange, validation } = props;
     const classes = useStyles();
     const projectDataSet = project.getProjectDataSet(dataSet);
     const showErrorAndSetInactive = useSnackbarOnError(() => setActive(false));
@@ -53,8 +54,8 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
 
     const notifyUsers = React.useCallback(async () => {
         const notificator = new ProjectNotification(api, project, currentUser, isTest);
-        await notificator.notifyForDataReview(period, dataSet.id);
-    }, [api, project, currentUser, isTest, period, dataSet.id]);
+        await notificator.notifyForDataReview(period, dataSet.id, dataSetType);
+    }, [api, project, currentUser, isTest, period, dataSet.id, dataSetType]);
 
     const reopenConfirmation = useConfirmation({
         title: i18n.t("Reopen data set"),

@@ -2,7 +2,7 @@ import _ from "lodash";
 import striptags from "striptags";
 import ReactDOMServer from "react-dom/server";
 
-import Project from "./Project";
+import Project, { DataSetType } from "./Project";
 import { ReactElement } from "react";
 import i18n from "../locales";
 import User from "./user";
@@ -27,7 +27,7 @@ export class ProjectNotification {
         await this.notifyDanglingDataValues(recipients);
     }
 
-    async notifyForDataReview(period: string, id: string) {
+    async notifyForDataReview(period: string, id: string, dataSetType: DataSetType) {
         const res = await this.api.metadata
             .get({
                 userRoles: {
@@ -56,30 +56,23 @@ export class ProjectNotification {
             .getData();
 
         const { displayName: user, username } = this.currentUser.data;
-
         const subject = i18n.t("{{username}} is requesting a data review", { username });
-        const pageLink = window.location.href;
-        const dataSetType = pageLink.includes("actual") ? "ACTUAL" : "TARGET";
-        const userAccessEmails = res.userRoles.flatMap(userRole =>
-            userRole.users
-                .filter(user => {
-                    return res.dataSets.flatMap(dataSet =>
-                        dataSet.userAccesses.some(userAccess => {
-                            return userAccess.id === user.id;
-                        })
-                    );
+        const userAccessEmails = res.userRoles
+            .flatMap(userRole =>
+                userRole.users.filter(user => {
+                    return res.dataSets[0].userAccesses.some(userAccess => {
+                        return userAccess.id === user.id;
+                    });
                 })
-                .map(user => user.email)
-        );
+            )
+            .map(user => user.email);
         const userGroupEmails = res.userRoles
             .flatMap(userRole =>
                 userRole.users.map(user => {
                     return user.userGroups.filter(userGroup => {
-                        return res.dataSets.flatMap(dataSet =>
-                            dataSet.userGroupAccesses.some(userGroupAccess => {
-                                return userGroupAccess.id === userGroup.id;
-                            })
-                        );
+                        return res.dataSets[0].userGroupAccesses.some(userGroupAccess => {
+                            return userGroupAccess.id === userGroup.id;
+                        });
                     });
                 })
             )
