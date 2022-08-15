@@ -27,7 +27,7 @@ export class ProjectNotification {
         await this.notifyDanglingDataValues(recipients);
     }
 
-    async notifyOnDataReady(period: string, id: string) {
+    async notifyForDataReview(period: string, id: string) {
         const res = await this.api.metadata
             .get({
                 userRoles: {
@@ -57,25 +57,32 @@ export class ProjectNotification {
 
         const { displayName: user, username } = this.currentUser.data;
 
-        const subject = i18n.t("{{username}} is requesting for data review", { username });
+        const subject = i18n.t("{{username}} is requesting a data review", { username });
         const pageLink = window.location.href;
         const dataSetType = pageLink.includes("actual") ? "ACTUAL" : "TARGET";
-        const userAccessEmails = res.userRoles[0].users
-            .filter(user => {
-                return res.dataSets[0].userAccesses.some(userAccess => {
-                    return userAccess.id === user.id;
-                });
-            })
-            .map(user => user.email);
-        const userGroupEmails = res.userRoles[0].users
-            .map(user => {
-                const a = user.userGroups.filter(userGroup => {
-                    return res.dataSets[0].userGroupAccesses.some(userGroupAccess => {
-                        return userGroupAccess.id === userGroup.id;
+        const userAccessEmails = res.userRoles.flatMap(userRole =>
+            userRole.users
+                .filter(user => {
+                    return res.dataSets.flatMap(dataSet =>
+                        dataSet.userAccesses.some(userAccess => {
+                            return userAccess.id === user.id;
+                        })
+                    );
+                })
+                .map(user => user.email)
+        );
+        const userGroupEmails = res.userRoles
+            .flatMap(userRole =>
+                userRole.users.map(user => {
+                    return user.userGroups.filter(userGroup => {
+                        return res.dataSets.flatMap(dataSet =>
+                            dataSet.userGroupAccesses.some(userGroupAccess => {
+                                return userGroupAccess.id === userGroup.id;
+                            })
+                        );
                     });
-                });
-                return a;
-            })
+                })
+            )
             .map((e, i) => {
                 if (e.length !== 0) {
                     return i;
@@ -92,17 +99,13 @@ export class ProjectNotification {
 
         const text = i18n.t(
             `
-User {{user}} ({{username}}) is requesting Data Review.
+User {{user}} ({{username}}) is requesting a data Review.
 
 Project: [{{projectCode}}] {{projectName}}.
 
 Dataset Type: {{dataSetType}}
 
-Period: {{period}}
-
-The reason provided by the user was:
-
-{{message}}`,
+Period: {{period}}`,
             {
                 user,
                 username,
@@ -143,7 +146,7 @@ Removed indicators:
 
 The reason provided by the user was:
 
-    {{message}}`,
+{{message}}`,
             {
                 user,
                 username,

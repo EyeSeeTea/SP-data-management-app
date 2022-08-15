@@ -53,7 +53,7 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
 
     const notifyUsers = React.useCallback(async () => {
         const notificator = new ProjectNotification(api, project, currentUser, isTest);
-        await notificator.notifyOnDataReady(period, dataSet.id);
+        await notificator.notifyForDataReview(period, dataSet.id);
     }, [api, project, currentUser, isTest, period, dataSet.id]);
 
     const reopenConfirmation = useConfirmation({
@@ -78,6 +78,7 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
             {!dataSetInfo.isOpen && userCanReopen && (
                 <>
                     <Button
+                        style={{ marginRight: 20 }}
                         disabled={isActive}
                         className={classes.button}
                         onClick={dataSetInfo.isOpenByData ? reopen : reopenConfirmation.open}
