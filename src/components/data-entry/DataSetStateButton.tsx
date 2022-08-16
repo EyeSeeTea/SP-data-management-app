@@ -9,6 +9,7 @@ import { useConfirmation, useSnackbarOnError } from "../../utils/hooks";
 import { DataSetOpenInfo } from "../../models/ProjectDataSet";
 import { UseValidationResponse } from "./validation-hooks";
 import { ProjectNotification } from "../../models/ProjectNotification";
+import { useSnackbar } from "@eyeseetea/d2-ui-components";
 
 interface DataSetStateButtonProps {
     project: Project;
@@ -26,6 +27,7 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
     const classes = useStyles();
     const projectDataSet = project.getProjectDataSet(dataSet);
     const showErrorAndSetInactive = useSnackbarOnError(() => setActive(false));
+    const snackbar = useSnackbar();
 
     const [dataSetInfo, setDataSetInfo] = React.useState<DataSetOpenInfo>();
     React.useEffect(() => {
@@ -53,9 +55,14 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
     }, [projectDataSet, notifyOnChange, showErrorAndSetInactive, validation]);
 
     const notifyUsers = React.useCallback(async () => {
-        const notificator = new ProjectNotification(api, project, currentUser, isTest);
-        await notificator.notifyForDataReview(period, dataSet.id, dataSetType);
-    }, [api, project, currentUser, isTest, period, dataSet.id, dataSetType]);
+        try {
+            const notificator = new ProjectNotification(api, project, currentUser, isTest);
+            await notificator.notifyForDataReview(period, dataSet.id, dataSetType);
+            snackbar.success(i18n.t("The email has been successfully sent to data reviewers."));
+        } catch (err) {
+            snackbar.error(i18n.t("There was an error notifying the data reviewers."));
+        }
+    }, [api, project, currentUser, isTest, period, dataSet.id, dataSetType, snackbar]);
 
     const reopenConfirmation = useConfirmation({
         title: i18n.t("Reopen data set"),
