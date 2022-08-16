@@ -66,28 +66,19 @@ export class ProjectNotification {
                 })
             )
             .map(user => user.email);
-        const userGroupEmails = res.userRoles
-            .flatMap(userRole =>
-                userRole.users.map(user => {
-                    return user.userGroups.filter(userGroup => {
-                        return res.dataSets[0].userGroupAccesses.some(userGroupAccess => {
-                            return userGroupAccess.id === userGroup.id;
-                        });
+
+        const userGroupEmails = res.userRoles.flatMap(userRole =>
+            userRole.users.filter(user => {
+                return res.dataSets[0].userGroupAccesses.some(userGroupAccess => {
+                    return user.userGroups.some(userGroup => {
+                        return (
+                            userGroupAccess.id === userGroup.id
+                        );
                     });
-                })
-            )
-            .map((e, i) => {
-                if (e.length !== 0) {
-                    return i;
-                } else {
-                    return null;
-                }
+                });
             })
-            .filter(element => element && element >= 0)
-            .map(e => {
-                return res.userRoles[0].users[e ? e : 0];
-            })
-            .map(user => user.email);
+        ).map(user => user.email);
+
         const recipients = _.union(userAccessEmails, userGroupEmails);
 
         const text = i18n.t(
