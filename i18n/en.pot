@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2022-08-15T14:17:21.536Z\n"
-"PO-Revision-Date: 2022-08-15T14:17:21.536Z\n"
+"POT-Creation-Date: 2022-08-16T15:15:24.861Z\n"
+"PO-Revision-Date: 2022-08-16T15:15:24.861Z\n"
 
 msgid "Name"
 msgstr ""
@@ -49,6 +49,12 @@ msgid "Cannot load dashboard"
 msgstr ""
 
 msgid "Data Entry"
+msgstr ""
+
+msgid "The email has been successfully sent to data reviewers."
+msgstr ""
+
+msgid "There was an error notifying the data reviewers."
 msgstr ""
 
 msgid "Reopen data set"

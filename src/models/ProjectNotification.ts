@@ -67,17 +67,17 @@ export class ProjectNotification {
             )
             .map(user => user.email);
 
-        const userGroupEmails = res.userRoles.flatMap(userRole =>
-            userRole.users.filter(user => {
-                return res.dataSets[0].userGroupAccesses.some(userGroupAccess => {
-                    return user.userGroups.some(userGroup => {
-                        return (
-                            userGroupAccess.id === userGroup.id
-                        );
+        const userGroupEmails = res.userRoles
+            .flatMap(userRole =>
+                userRole.users.filter(user => {
+                    return res.dataSets[0].userGroupAccesses.some(userGroupAccess => {
+                        return user.userGroups.some(userGroup => {
+                            return userGroupAccess.id === userGroup.id;
+                        });
                     });
-                });
-            })
-        ).map(user => user.email);
+                })
+            )
+            .map(user => user.email);
 
         const recipients = _.union(userAccessEmails, userGroupEmails);
 
