@@ -24,7 +24,6 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
     const [isActive, setActive] = React.useState(false);
     const { api, currentUser, isTest } = useAppContext();
     const { period, dataSetType, dataSet, project, onChange, validation } = props;
-    const classes = useStyles();
     const projectDataSet = project.getProjectDataSet(dataSet);
     const showErrorAndSetInactive = useSnackbarOnError(() => setActive(false));
     const snackbar = useSnackbar();
@@ -58,9 +57,9 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
         try {
             const notificator = new ProjectNotification(api, project, currentUser, isTest);
             await notificator.notifyForDataReview(period, dataSet.id, dataSetType);
-            snackbar.success(i18n.t("The email has been successfully sent to data reviewers."));
-        } catch (err) {
-            snackbar.error(i18n.t("There was an error notifying the data reviewers."));
+            snackbar.success(i18n.t("An email has been sent to the data reviewers"));
+        } catch (err: any) {
+            snackbar.error(err.message);
         }
     }, [api, project, currentUser, isTest, period, dataSet.id, dataSetType, snackbar]);
 
@@ -86,9 +85,8 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
             {!dataSetInfo.isOpen && userCanReopen && (
                 <>
                     <Button
-                        style={{ marginRight: 20 }}
                         disabled={isActive}
-                        className={classes.button}
+                        style={styles.button}
                         onClick={dataSetInfo.isOpenByData ? reopen : reopenConfirmation.open}
                         variant="contained"
                     >
@@ -96,7 +94,7 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
                     </Button>
                     <Button
                         disabled={isActive}
-                        className={classes.button}
+                        style={styles.button}
                         onClick={notifyUsers}
                         variant="contained"
                     >
@@ -108,7 +106,7 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
             {dataSetInfo.isOpen && dataSetInfo.isReopened && userCanReopen && (
                 <Button
                     disabled={isActive}
-                    className={classes.button}
+                    style={styles.button}
                     onClick={reset}
                     variant="contained"
                 >
@@ -121,8 +119,8 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
     );
 };
 
-const useStyles = makeStyles({
+const styles = {
     button: { marginLeft: 10, marginRight: 10 },
-});
+};
 
 export default React.memo(DataSetStateButton);
