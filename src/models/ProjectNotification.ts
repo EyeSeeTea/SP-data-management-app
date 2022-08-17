@@ -57,26 +57,25 @@ export class ProjectNotification {
 
         const { displayName: user, username } = this.currentUser.data;
         const subject = i18n.t("{{username}} is requesting a data review", { username });
-        const userAccessEmails = res.userRoles
-            .flatMap(userRole =>
-                userRole.users.filter(user => {
-                    return res.dataSets[0].userAccesses.some(userAccess => {
-                        return userAccess.id === user.id;
-                    });
-                })
-            )
+        const users = res.userRoles.flatMap(userRole => userRole.users);
+        const dataSet = res.dataSets[0];
+
+        const userAccessEmails = users
+            .filter(user => {
+                return dataSet.userAccesses.some(userAccess => {
+                    return userAccess.id === user.id;
+                });
+            })
             .map(user => user.email);
 
-        const userGroupEmails = res.userRoles
-            .flatMap(userRole =>
-                userRole.users.filter(user => {
-                    return res.dataSets[0].userGroupAccesses.some(userGroupAccess => {
-                        return user.userGroups.some(userGroup => {
-                            return userGroupAccess.id === userGroup.id;
-                        });
+        const userGroupEmails = users
+            .filter(user => {
+                return dataSet.userGroupAccesses.some(userGroupAccess => {
+                    return user.userGroups.some(userGroup => {
+                        return userGroupAccess.id === userGroup.id;
                     });
-                })
-            )
+                });
+            })
             .map(user => user.email);
 
         const recipients = _.union(userAccessEmails, userGroupEmails);
