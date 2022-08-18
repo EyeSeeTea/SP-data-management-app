@@ -21,7 +21,7 @@ type Option = { value: string; text: string; code: string };
 
 const Funders: React.FC<FundersProps> = ({ project, onChange }) => {
     const [isDialogOpen, setDialogOpen] = React.useState(false);
-    const [automaticFill, setAutomaticFill] = React.useState(false);
+    const [automaticFill, setAutomaticFill] = React.useState(true);
     const [value, setValue] = React.useState<
         {
             id: string;
@@ -64,15 +64,6 @@ const Funders: React.FC<FundersProps> = ({ project, onChange }) => {
         onChange(newProject);
     };
 
-    if (automaticFill) {
-        const additionalDesignation = value.reduce(
-            (accumulator, { shortName }) =>
-                accumulator ? `${accumulator}-${shortName}` : shortName,
-            ""
-        );
-        updateAdditionalDesignationField("additional", additionalDesignation);
-    }
-
     return (
         <>
             <CardContent style={{ padding: "5px 0 0 0" }}>
@@ -106,6 +97,14 @@ const Funders: React.FC<FundersProps> = ({ project, onChange }) => {
                     }}
                     onSave={() => {
                         setAutomaticFill(true);
+                        if (automaticFill) {
+                            const additionalDesignation = value.reduce(
+                                (accumulator, { shortName }) =>
+                                    accumulator ? `${accumulator}-${shortName}` : shortName,
+                                ""
+                            );
+                            updateAdditionalDesignationField("additional", additionalDesignation);
+                        }
                         setDialogOpen(false);
                     }}
                     maxWidth="sm"
