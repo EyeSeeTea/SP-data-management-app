@@ -29,7 +29,7 @@ interface State {
 
 const Dashboard: React.FC<DashboardProps> = props => {
     const { id, name, backUrl } = props;
-    const { dhis2Url: baseUrl, appConfig } = useAppContext();
+    const { dhis2Url: baseUrl } = useAppContext();
 
     // We must set a large initial height, otherwise only the top items of the dashboards are rendered.
     const [state, setState] = React.useState<State>({ type: "loading", height: 10000 });
