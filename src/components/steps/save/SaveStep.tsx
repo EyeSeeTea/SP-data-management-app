@@ -1,12 +1,12 @@
 import React, { useState, ReactNode, ReactElement } from "react";
-import { Button, LinearProgress } from "@material-ui/core";
+import { Button } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
 import ExitWizardButton from "../../wizard/ExitWizardButton";
 import i18n from "../../../locales";
 import { StepProps } from "../../../pages/project-wizard/ProjectWizard";
 import Project from "../../../models/Project";
-import { useSnackbar } from "@eyeseetea/d2-ui-components";
+import { useLoading, useSnackbar } from "@eyeseetea/d2-ui-components";
 import { useHistory } from "react-router";
 import { generateUrl } from "../../../router";
 import { useAppContext } from "../../../contexts/api-context";
@@ -31,6 +31,7 @@ const SaveStep: React.FC<StepProps> = ({ project, onCancel, action }) => {
     const { appConfig, api, currentUser, isTest } = useAppContext();
     const snackbar = useSnackbar();
     const classes = useStyles();
+    const loading = useLoading();
     const projectInfo = React.useMemo(() => <ProjectInfo project={project} />, [project]);
 
     const [dialogOpen, setDialogOpen] = useState(false);
@@ -57,6 +58,7 @@ const SaveStep: React.FC<StepProps> = ({ project, onCancel, action }) => {
     );
 
     const checkExistingDataAndSave = React.useCallback(async () => {
+        loading.show(true, i18n.t("Validating Project"));
         const validation = await project.validate();
         const error = _(validation).values().flatten().join("\n");
         if (error) {
@@ -64,7 +66,9 @@ const SaveStep: React.FC<StepProps> = ({ project, onCancel, action }) => {
             return;
         }
 
+        loading.updateMessage(i18n.t("Checking Existing Data"));
         const existingDataCheck = await project.checkExistingDataForDataElementsToBeRemoved();
+        loading.hide();
 
         switch (existingDataCheck.type) {
             case "no-values":
@@ -72,7 +76,7 @@ const SaveStep: React.FC<StepProps> = ({ project, onCancel, action }) => {
             case "with-values":
                 return setExistingData(existingDataCheck);
         }
-    }, [save, project, snackbar]);
+    }, [save, project, snackbar, loading]);
 
     return (
         <React.Fragment>
@@ -105,8 +109,6 @@ const SaveStep: React.FC<StepProps> = ({ project, onCancel, action }) => {
                 >
                     {i18n.t("Save")}
                 </Button>
-
-                {isSaving && <LinearProgress />}
 
                 <pre>{errorMessage}</pre>
             </div>
@@ -213,9 +215,11 @@ function useSave(project: Project, action: StepProps["action"], projectInfo: Rea
     const [errorMessage, setErrorMessage] = useState("");
     const snackbar = useSnackbar();
     const history = useHistory();
+    const loading = useLoading();
 
     const save = React.useCallback(async () => {
         try {
+            loading.show(true, i18n.t("Saving Project"));
             setSaving(true);
             const { payload, response, project: projectSaved } = await project.save();
             const recipients = appConfig.app.notifyEmailOnProjectSave;
@@ -233,8 +237,10 @@ function useSave(project: Project, action: StepProps["action"], projectInfo: Rea
             } else {
                 setErrorMessage(JSON.stringify({ response, payload }, null, 2));
             }
+            loading.hide();
         } catch (err: any) {
             setSaving(false);
+            loading.hide();
             console.error(err);
             snackbar.error(err.message || err.toString());
         }
@@ -250,6 +256,7 @@ function useSave(project: Project, action: StepProps["action"], projectInfo: Rea
         projectInfo,
         currentUser,
         isTest,
+        loading,
     ]);
 
     return { isSaving, errorMessage, save };
