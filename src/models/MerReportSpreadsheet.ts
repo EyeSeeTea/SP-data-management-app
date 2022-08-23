@@ -98,6 +98,9 @@ class MerReportSpreadsheet {
                     text(value, { colspan: 5 }),
                 ]),
             [],
+            [bold(i18n.t("Additional comments"), { colspan: 6 })],
+            [text(merReport.data.additionalComments, { colspan: 6 })],
+            [],
             [bold(i18n.t("Ministry Summary"), { colspan: 6 })],
             [text(merReport.data.ministrySummary, { colspan: 6 })],
             [],
@@ -107,9 +110,6 @@ class MerReportSpreadsheet {
             [],
             [bold(i18n.t("Projected Activities for the Next Month"), { colspan: 6 })],
             [text(projectedActivitiesNextMonth, { colspan: 6 })],
-            [],
-            [bold(i18n.t("Additional comments"), { colspan: 6 })],
-            [text(merReport.data.additionalComments, { colspan: 6 })],
             [],
         ];
 

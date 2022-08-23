@@ -8,6 +8,7 @@ msgstr ""
 "POT-Creation-Date: 2022-06-23T11:42:56.537Z\n"
 "PO-Revision-Date: 2022-06-23T11:42:56.537Z\n"
 
+
 msgid "Name"
 msgstr ""
 
@@ -359,6 +360,9 @@ msgstr ""
 msgid "Prepared by"
 msgstr ""
 
+msgid "Additional comments"
+msgstr ""
+
 msgid "Ministry Summary"
 msgstr ""
 
@@ -366,9 +370,6 @@ msgid "Staff Summary"
 msgstr ""
 
 msgid "Projected Activities for the Next Month"
-msgstr ""
-
-msgid "Additional comments"
 msgstr ""
 
 msgid "Narrative"
