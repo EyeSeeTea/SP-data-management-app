@@ -15,20 +15,20 @@ interface FundersProps {
     onChange: (project: Project) => void;
 }
 
+interface Funder {
+    id: string;
+    displayName: string;
+    shortName: string;
+}
+
 type ModelCollectionField = "funders";
 type AdditionalDesignationField = "additional";
 type Option = { value: string; text: string; code: string };
 
 const Funders: React.FC<FundersProps> = ({ project, onChange }) => {
     const [isDialogOpen, setDialogOpen] = React.useState(false);
-    const [automaticFill, setAutomaticFill] = React.useState(true);
-    const [value, setValue] = React.useState<
-        {
-            id: string;
-            displayName: string;
-            shortName: string;
-        }[]
-    >([]);
+    const [fundersAdded, setFundersAdded] = React.useState<Funder[]>([]);
+    const [code, setCode] = React.useState<string[]>([]);
 
     const { d2, config } = useAppContext();
     const onUpdateField = <K extends ModelCollectionField>(
@@ -44,7 +44,7 @@ const Funders: React.FC<FundersProps> = ({ project, onChange }) => {
             .value();
         const newProject = project.set(fieldName, newValue);
         onChange(newProject);
-        setValue(newValue);
+        setFundersAdded(newValue);
     };
     const [funderOptions] = useMemo(() => {
         return [
@@ -92,18 +92,13 @@ const Funders: React.FC<FundersProps> = ({ project, onChange }) => {
                     cancelText={i18n.t("No")}
                     saveText={i18n.t("Yes")}
                     onCancel={() => {
-                        setAutomaticFill(false);
                         setDialogOpen(false);
                     }}
                     onSave={() => {
-                        setAutomaticFill(true);
-                        if (automaticFill) {
-                            const additionalDesignation = value.reduce(
-                                (accumulator, { shortName }) =>
-                                    accumulator ? `${accumulator}-${shortName}` : shortName,
-                                ""
-                            );
-                            updateAdditionalDesignationField("additional", additionalDesignation);
+                        if (fundersAdded) {
+                            code.push(fundersAdded[fundersAdded.length - 1].shortName);
+                            setCode(code);
+                            updateAdditionalDesignationField("additional", code.join("-"));
                         }
                         setDialogOpen(false);
                     }}
