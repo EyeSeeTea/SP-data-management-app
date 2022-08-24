@@ -2,16 +2,18 @@ import * as React from "react";
 import moment from "moment";
 import { Button, LinearProgress } from "@material-ui/core";
 import i18n from "../../locales";
-import Project, { DataSet, monthFormat } from "../../models/Project";
+import Project, { DataSet, DataSetType, monthFormat } from "../../models/Project";
 import { useAppContext } from "../../contexts/api-context";
-import { makeStyles } from "@material-ui/styles";
 import { useConfirmation, useSnackbarOnError } from "../../utils/hooks";
 import { DataSetOpenInfo } from "../../models/ProjectDataSet";
 import { UseValidationResponse } from "./validation-hooks";
+import { ProjectNotification } from "../../models/ProjectNotification";
+import { useSnackbar } from "@eyeseetea/d2-ui-components";
 
 interface DataSetStateButtonProps {
     project: Project;
     dataSet: DataSet;
+    dataSetType: DataSetType;
     period: string;
     onChange(): void;
     validation: UseValidationResponse;
@@ -19,11 +21,11 @@ interface DataSetStateButtonProps {
 
 const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = props => {
     const [isActive, setActive] = React.useState(false);
-    const { currentUser } = useAppContext();
-    const { period, dataSet, project, onChange, validation } = props;
-    const classes = useStyles();
+    const { api, currentUser, isTest } = useAppContext();
+    const { period, dataSetType, dataSet, project, onChange, validation } = props;
     const projectDataSet = project.getProjectDataSet(dataSet);
     const showErrorAndSetInactive = useSnackbarOnError(() => setActive(false));
+    const snackbar = useSnackbar();
 
     const [dataSetInfo, setDataSetInfo] = React.useState<DataSetOpenInfo>();
     React.useEffect(() => {
@@ -50,6 +52,16 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
         projectDataSet.reset().then(notifyOnChange).catch(showErrorAndSetInactive);
     }, [projectDataSet, notifyOnChange, showErrorAndSetInactive, validation]);
 
+    const notifyUsers = React.useCallback(async () => {
+        try {
+            const notificator = new ProjectNotification(api, project, currentUser, isTest);
+            await notificator.notifyForDataReview(period, dataSet.id, dataSetType);
+            snackbar.success(i18n.t("An email has been sent to the data reviewers"));
+        } catch (err: any) {
+            snackbar.error(err.message);
+        }
+    }, [api, project, currentUser, isTest, period, dataSet.id, dataSetType, snackbar]);
+
     const reopenConfirmation = useConfirmation({
         title: i18n.t("Reopen data set"),
         text: i18n.t(
@@ -58,32 +70,51 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
         onConfirm: reopen,
     });
 
+    const openDataReviewConfirmation = useConfirmation({
+        title: i18n.t("Notify users on data review"),
+        text: i18n.t(
+            "Are you sure you want to send an email to administrators asking for a data review?"
+        ),
+        onConfirm: notifyUsers,
+    });
+
     const userCanReopen = currentUser.can("reopen");
     if (!dataSetInfo) return <LinearProgress />;
 
     return (
         <React.Fragment>
             {reopenConfirmation.render()}
+            {openDataReviewConfirmation.render()}
 
             {!dataSetInfo.isOpen && !userCanReopen
                 ? i18n.t("Project closed for this period, please contact the administrators")
                 : null}
 
             {!dataSetInfo.isOpen && userCanReopen && (
-                <Button
-                    disabled={isActive}
-                    className={classes.button}
-                    onClick={dataSetInfo.isOpenByData ? reopen : reopenConfirmation.open}
-                    variant="contained"
-                >
-                    {i18n.t("Edit Data")}
-                </Button>
+                <>
+                    <Button
+                        disabled={isActive}
+                        style={styles.button}
+                        onClick={dataSetInfo.isOpenByData ? reopen : reopenConfirmation.open}
+                        variant="contained"
+                    >
+                        {i18n.t("Edit Data")}
+                    </Button>
+                    <Button
+                        disabled={isActive}
+                        style={styles.button}
+                        onClick={openDataReviewConfirmation.open}
+                        variant="contained"
+                    >
+                        {i18n.t("Ask for Data Review")}
+                    </Button>
+                </>
             )}
 
             {dataSetInfo.isOpen && dataSetInfo.isReopened && userCanReopen && (
                 <Button
                     disabled={isActive}
-                    className={classes.button}
+                    style={styles.button}
                     onClick={reset}
                     variant="contained"
                 >
@@ -96,8 +127,8 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
     );
 };
 
-const useStyles = makeStyles({
+const styles = {
     button: { marginLeft: 10, marginRight: 10 },
-});
+};
 
 export default React.memo(DataSetStateButton);
