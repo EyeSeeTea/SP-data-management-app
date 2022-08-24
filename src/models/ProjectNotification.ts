@@ -89,7 +89,7 @@ Project: [{{projectCode}}] {{projectName}}.
 
 Dataset Type: {{dataSetType}}
 
-URL: {{projectUrl}}
+URL: {{- projectUrl}}
 
 Period: {{period}}`,
             {

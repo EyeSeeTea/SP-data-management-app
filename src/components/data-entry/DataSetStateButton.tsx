@@ -4,7 +4,6 @@ import { Button, LinearProgress } from "@material-ui/core";
 import i18n from "../../locales";
 import Project, { DataSet, DataSetType, monthFormat } from "../../models/Project";
 import { useAppContext } from "../../contexts/api-context";
-import { makeStyles } from "@material-ui/styles";
 import { useConfirmation, useSnackbarOnError } from "../../utils/hooks";
 import { DataSetOpenInfo } from "../../models/ProjectDataSet";
 import { UseValidationResponse } from "./validation-hooks";
