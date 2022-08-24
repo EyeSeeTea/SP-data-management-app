@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2022-08-18T08:27:27.873Z\n"
-"PO-Revision-Date: 2022-08-18T08:27:27.873Z\n"
+"POT-Creation-Date: 2022-08-24T12:37:09.864Z\n"
+"PO-Revision-Date: 2022-08-24T12:37:09.864Z\n"
 
 msgid "Name"
 msgstr ""
@@ -51,6 +51,9 @@ msgstr ""
 msgid "Data Entry"
 msgstr ""
 
+msgid "An email has been sent to the data reviewers"
+msgstr ""
+
 msgid "Reopen data set"
 msgstr ""
 
@@ -60,10 +63,21 @@ msgid ""
 "Do you want to proceed?"
 msgstr ""
 
+msgid "Notify users on data review"
+msgstr ""
+
+msgid ""
+"Are you sure you want to send an email to administrators asking for a data "
+"review?"
+msgstr ""
+
 msgid "Project closed for this period, please contact the administrators"
 msgstr ""
 
 msgid "Edit Data"
+msgstr ""
+
+msgid "Ask for Data Review"
 msgstr ""
 
 msgid "Editing Complete"
@@ -239,6 +253,12 @@ msgstr ""
 msgid "Before saving, please explain why these indicators have been removed"
 msgstr ""
 
+msgid "Validating Project"
+msgstr ""
+
+msgid "Checking Existing Data"
+msgstr ""
+
 msgid "Save"
 msgstr ""
 
@@ -279,6 +299,9 @@ msgid "Hidden in data entry as it is selected in multiple sectors!"
 msgstr ""
 
 msgid "MER"
+msgstr ""
+
+msgid "Saving Project"
 msgstr ""
 
 msgid "Project created"
@@ -353,6 +376,9 @@ msgstr ""
 msgid "Prepared by"
 msgstr ""
 
+msgid "Additional comments"
+msgstr ""
+
 msgid "Ministry Summary"
 msgstr ""
 
@@ -360,9 +386,6 @@ msgid "Staff Summary"
 msgstr ""
 
 msgid "Projected Activities for the Next Month"
-msgstr ""
-
-msgid "Additional comments"
 msgstr ""
 
 msgid "Narrative"
@@ -586,6 +609,22 @@ msgid "Total Actual People"
 msgstr ""
 
 msgid "People"
+msgstr ""
+
+msgid "{{username}} is requesting a data review"
+msgstr ""
+
+msgid ""
+"\n"
+"User {{user}} ({{username}}) is requesting a data Review.\n"
+"\n"
+"Project: [{{projectCode}}] {{projectName}}.\n"
+"\n"
+"Dataset Type: {{dataSetType}}\n"
+"\n"
+"URL: {{- projectUrl}}\n"
+"\n"
+"Period: {{period}}"
 msgstr ""
 
 msgid "{{username}} has removed indicators with data"
