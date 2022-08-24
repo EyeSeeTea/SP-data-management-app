@@ -15,20 +15,12 @@ interface FundersProps {
     onChange: (project: Project) => void;
 }
 
-interface Funder {
-    id: string;
-    displayName: string;
-    shortName: string;
-}
-
 type ModelCollectionField = "funders";
 type AdditionalDesignationField = "additional";
 type Option = { value: string; text: string; code: string };
 
 const Funders: React.FC<FundersProps> = ({ project, onChange }) => {
     const [isDialogOpen, setDialogOpen] = React.useState(false);
-    const [fundersAdded, setFundersAdded] = React.useState<Funder[]>([]);
-    const [code, setCode] = React.useState<string[]>([]);
 
     const { d2, config } = useAppContext();
     const onUpdateField = <K extends ModelCollectionField>(
@@ -40,11 +32,10 @@ const Funders: React.FC<FundersProps> = ({ project, onChange }) => {
             .keyBy(option => option.value)
             .at(selected)
             .compact()
-            .map(({ value, text, code }) => ({ id: value, displayName: text, shortName: code }))
+            .map(({ value, text, code }) => ({ id: value, displayName: text, code: code }))
             .value();
         const newProject = project.set(fieldName, newValue);
         onChange(newProject);
-        setFundersAdded(newValue);
     };
     const [funderOptions] = useMemo(() => {
         return [
@@ -95,11 +86,8 @@ const Funders: React.FC<FundersProps> = ({ project, onChange }) => {
                         setDialogOpen(false);
                     }}
                     onSave={() => {
-                        if (fundersAdded) {
-                            code.push(fundersAdded[fundersAdded.length - 1].shortName);
-                            setCode(code);
-                            updateAdditionalDesignationField("additional", code.join("-"));
-                        }
+                        const funders = project.funders.map(funder => funder.code);
+                        updateAdditionalDesignationField("additional", funders.join("-"));
                         setDialogOpen(false);
                     }}
                     maxWidth="sm"
