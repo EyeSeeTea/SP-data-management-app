@@ -71,12 +71,21 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
         onConfirm: reopen,
     });
 
+    const openDataReviewConfirmation = useConfirmation({
+        title: i18n.t("Notify users on data review"),
+        text: i18n.t(
+            "Are you sure want to send an email to administrators asking for a data review?"
+        ),
+        onConfirm: notifyUsers,
+    });
+
     const userCanReopen = currentUser.can("reopen");
     if (!dataSetInfo) return <LinearProgress />;
 
     return (
         <React.Fragment>
             {reopenConfirmation.render()}
+            {openDataReviewConfirmation.render()}
 
             {!dataSetInfo.isOpen && !userCanReopen
                 ? i18n.t("Project closed for this period, please contact the administrators")
@@ -95,7 +104,7 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
                     <Button
                         disabled={isActive}
                         style={styles.button}
-                        onClick={notifyUsers}
+                        onClick={openDataReviewConfirmation.open}
                         variant="contained"
                     >
                         {i18n.t("Ask for Data Review")}

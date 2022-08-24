@@ -57,6 +57,7 @@ export class ProjectNotification {
 
         const { displayName: user, username } = this.currentUser.data;
         const subject = i18n.t("{{username}} is requesting a data review", { username });
+        const pageLink = window.location.href;
         const users = res.userRoles.flatMap(userRole => userRole.users);
         const dataSet = res.dataSets[0];
 
@@ -88,6 +89,8 @@ Project: [{{projectCode}}] {{projectName}}.
 
 Dataset Type: {{dataSetType}}
 
+URL: {{projectUrl}}
+
 Period: {{period}}`,
             {
                 user,
@@ -95,6 +98,7 @@ Period: {{period}}`,
                 projectName: this.project.name,
                 projectCode: this.project.code,
                 dataSetType,
+                projectUrl: pageLink,
                 period,
                 nsSeparator: false,
             }
