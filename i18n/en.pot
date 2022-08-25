@@ -8,7 +8,6 @@ msgstr ""
 "POT-Creation-Date: 2022-08-24T12:37:09.864Z\n"
 "PO-Revision-Date: 2022-08-24T12:37:09.864Z\n"
 
-
 msgid "Name"
 msgstr ""
 
@@ -231,6 +230,9 @@ msgid "Add COVID-19 disaggregation"
 msgstr ""
 
 msgid "Remove COVID-19 disaggregation"
+msgstr ""
+
+msgid "Would you like to use the funder code in the additional designation field?"
 msgstr ""
 
 msgid "Field should be a 5-digit number"
