@@ -86,8 +86,11 @@ const Funders: React.FC<FundersProps> = ({ project, onChange }) => {
                         setDialogOpen(false);
                     }}
                     onSave={() => {
-                        const funders = project.funders.map(funder => funder.code);
-                        updateAdditionalDesignationField("additional", funders.join("-"));
+                        const newAdditional = _(project.funders)
+                            .map(funder => funder.code)
+                            .compact()
+                            .join("-");
+                        updateAdditionalDesignationField("additional", newAdditional);
                         setDialogOpen(false);
                     }}
                     maxWidth="sm"
