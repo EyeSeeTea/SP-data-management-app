@@ -75,7 +75,7 @@ Project model.
     )
 */
 
-type NamedObject = { id: Id; displayName: string };
+type NamedObject = { id: Id; displayName: string; code?: string };
 type CodedObject = { id: Id; code: string };
 
 export type Sector = NamedObject & CodedObject;

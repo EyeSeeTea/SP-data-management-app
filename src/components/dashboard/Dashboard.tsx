@@ -29,7 +29,7 @@ interface State {
 
 const Dashboard: React.FC<DashboardProps> = props => {
     const { id, name, backUrl } = props;
-    const { dhis2Url: baseUrl, appConfig } = useAppContext();
+    const { dhis2Url: baseUrl } = useAppContext();
 
     // We must set a large initial height, otherwise only the top items of the dashboards are rendered.
     const [state, setState] = React.useState<State>({ type: "loading", height: 10000 });
@@ -39,11 +39,6 @@ const Dashboard: React.FC<DashboardProps> = props => {
     const dashboardUrl = dashboardUrlBase + `/#/${id}`;
     const translations = getTranslations(name);
     const appHistory = useAppHistory(backUrl);
-
-    const temporalMessageForVersion_2_36_8 = i18n.t(
-        "PLEASE NOTE: monthly % achieved dashboards are not functional in this version of Platform, but plan to be restored by May 31. In the interim, reach out to {{recipients}} if you need visibility on this data.",
-        { recipients: appConfig.app.notifyEmailOnProjectSave.join(" / "), nsSeparator: false }
-    );
 
     React.useEffect(() => {
         const iframe = iframeRef.current;
@@ -71,8 +66,6 @@ const Dashboard: React.FC<DashboardProps> = props => {
                 help={translations.help}
                 onBackClick={appHistory.goBack}
             />
-
-            <div style={styles.warning}>{temporalMessageForVersion_2_36_8}</div>
 
             {isLoading && (
                 <div style={styles.progress}>
