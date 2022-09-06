@@ -2,13 +2,14 @@ import _ from "lodash";
 import striptags from "striptags";
 import ReactDOMServer from "react-dom/server";
 
-import Project from "./Project";
+import Project, { DataSetType } from "./Project";
 import { ReactElement } from "react";
 import i18n from "../locales";
 import User from "./user";
 import { generateUrl } from "../router";
 import { D2Api } from "../types/d2-api";
 import ProjectDb, { ExistingData, getStringDataValue } from "./ProjectDb";
+import { baseConfig } from "./Config";
 
 type Email = string;
 type Action = "create" | "update";
@@ -24,6 +25,86 @@ export class ProjectNotification {
     async notifyOnProjectSave(element: ReactElement, recipients: Email[], action: Action) {
         await this.notifySave(element, recipients, action);
         await this.notifyDanglingDataValues(recipients);
+    }
+
+    async notifyForDataReview(period: string, id: string, dataSetType: DataSetType) {
+        const res = await this.api.metadata
+            .get({
+                userRoles: {
+                    fields: {
+                        id: true,
+                        users: {
+                            email: true,
+                            id: true,
+                            userGroups: {
+                                id: true,
+                                name: true,
+                            },
+                        },
+                    },
+                    filter: { name: { in: baseConfig.userRoles.dataReviewer } },
+                },
+                dataSets: {
+                    fields: {
+                        id: true,
+                        userGroupAccesses: true,
+                        userAccesses: { id: true },
+                    },
+                    filter: { id: { in: [id] } },
+                },
+            })
+            .getData();
+
+        const { displayName: user, username } = this.currentUser.data;
+        const subject = i18n.t("{{username}} is requesting a data review", { username });
+        const pageLink = window.location.href;
+        const users = res.userRoles.flatMap(userRole => userRole.users);
+        const dataSet = res.dataSets[0];
+
+        const userAccessEmails = users
+            .filter(user => {
+                return dataSet.userAccesses.some(userAccess => {
+                    return userAccess.id === user.id;
+                });
+            })
+            .map(user => user.email);
+
+        const userGroupEmails = users
+            .filter(user => {
+                return dataSet.userGroupAccesses.some(userGroupAccess => {
+                    return user.userGroups.some(userGroup => {
+                        return userGroupAccess.id === userGroup.id;
+                    });
+                });
+            })
+            .map(user => user.email);
+
+        const recipients = _.union(userAccessEmails, userGroupEmails);
+
+        const text = i18n.t(
+            `
+User {{user}} ({{username}}) is requesting a data Review.
+
+Project: [{{projectCode}}] {{projectName}}.
+
+Dataset Type: {{dataSetType}}
+
+URL: {{- projectUrl}}
+
+Period: {{period}}`,
+            {
+                user,
+                username,
+                projectName: this.project.name,
+                projectCode: this.project.code,
+                dataSetType,
+                projectUrl: pageLink,
+                period,
+                nsSeparator: false,
+            }
+        );
+
+        await this.sendMessage({ recipients, subject, text: text.trim() });
     }
 
     async sendMessageForIndicatorsRemoval(options: {

@@ -263,6 +263,7 @@ const DataEntry = (props: DataEntryProps) => {
                 {state.dropdownHasValues && state.dropdownValue && (
                     <div style={styles.buttons}>
                         <DataSetStateButton
+                            dataSetType={dataSetType}
                             project={project}
                             dataSet={dataSet}
                             period={state.dropdownValue}
