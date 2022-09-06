@@ -17,7 +17,6 @@ export function paginate<Obj>(objects: Obj[], pagination: Pagination) {
 
     const paginatedObjects = _(objects)
         .slice(start, start + pageSize)
-        .sortBy()
         .value();
 
     return { pager, objects: paginatedObjects };
