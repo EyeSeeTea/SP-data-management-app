@@ -91,6 +91,6 @@ const defaultMouseActionsMapping: MouseActionsMapping = {
 };
 
 const useStyles = makeStyles({
-    wrapper: { marginTop: 25 },
+    wrapper: { marginTop: 15 },
     searchBox: { maxWidth: "500px", width: "30%" },
 });
