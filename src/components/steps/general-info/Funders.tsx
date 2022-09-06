@@ -17,7 +17,7 @@ interface FundersProps {
 
 type ModelCollectionField = "funders";
 type AdditionalDesignationField = "additional";
-type Option = { value: string; text: string; code: string };
+type Option = { value: string; text: string; shortName: string; code: string };
 
 const Funders: React.FC<FundersProps> = ({ project, onChange }) => {
     const [isDialogOpen, setDialogOpen] = React.useState(false);
@@ -32,7 +32,12 @@ const Funders: React.FC<FundersProps> = ({ project, onChange }) => {
             .keyBy(option => option.value)
             .at(selected)
             .compact()
-            .map(({ value, text, code }) => ({ id: value, displayName: text, code: code }))
+            .map(({ value, text, shortName, code }) => ({
+                id: value,
+                displayName: text,
+                shortName: shortName,
+                code: code,
+            }))
             .value();
         const newProject = project.set(fieldName, newValue);
         onChange(newProject);
@@ -42,7 +47,8 @@ const Funders: React.FC<FundersProps> = ({ project, onChange }) => {
             config.funders.map(funder => ({
                 value: funder.id,
                 text: funder.displayName,
-                code: funder.shortName,
+                shortName: funder.shortName,
+                code: funder.code,
             })),
         ];
     }, [config]);
@@ -87,7 +93,7 @@ const Funders: React.FC<FundersProps> = ({ project, onChange }) => {
                     }}
                     onSave={() => {
                         const newAdditional = _(project.funders)
-                            .map(funder => funder.code)
+                            .map(funder => funder.code?.split("_").pop())
                             .compact()
                             .join("-");
                         updateAdditionalDesignationField("additional", newAdditional);
