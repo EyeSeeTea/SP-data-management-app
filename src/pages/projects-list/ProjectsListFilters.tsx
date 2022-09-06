@@ -55,21 +55,19 @@ const ProjectsListFilters: React.FC<ProjectsListFiltersProps> = props => {
     );
 
     return (
-        <div>
+        <div className={classes.wrapper}>
             <MultipleDropdown
                 items={countryItems}
                 values={filter.countries || emptyValues}
                 onChange={notifyCountriesChange}
                 label={i18n.t("Countries")}
             />
-
             <MultipleDropdown
                 items={sectorItems}
                 values={filter.sectors || emptyValues}
                 onChange={notifySectorsChange}
                 label={i18n.t("Sectors")}
             />
-
             <FormControlLabel
                 label={i18n.t("Active")}
                 className={classes.checkbox}
@@ -82,7 +80,8 @@ const ProjectsListFilters: React.FC<ProjectsListFiltersProps> = props => {
 };
 
 const useStyles = makeStyles({
-    checkbox: { marginLeft: 5 },
+    checkbox: { marginLeft: "5px !important" },
+    wrapper: { marginLeft: 10, marginTop: 10 },
 });
 
 function useMemoOptions(options: Option[]) {
