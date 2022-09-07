@@ -57,7 +57,12 @@ export class ProjectNotification {
 
         const { displayName: user, username } = this.currentUser.data;
         const subject = i18n.t("{{username}} is requesting a data review", { username });
-        const pageLink = window.location.href;
+
+        const pageOrigin = window.location.origin;
+        const projectId = this.project.id;
+        const dataApprovalLink =
+            pageOrigin + "/data-approval/" + projectId + "/" + dataSetType + "/" + period;
+
         const users = res.userRoles.flatMap(userRole => userRole.users);
         const dataSet = res.dataSets[0];
 
@@ -98,7 +103,7 @@ Period: {{period}}`,
                 projectName: this.project.name,
                 projectCode: this.project.code,
                 dataSetType,
-                projectUrl: pageLink,
+                projectUrl: dataApprovalLink,
                 period,
                 nsSeparator: false,
             }
