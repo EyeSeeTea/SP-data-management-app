@@ -61,7 +61,13 @@ export class ProjectNotification {
         const pageOrigin = window.location.origin;
         const projectId = this.project.id;
         const dataApprovalLink =
-            pageOrigin + "/data-approval/" + projectId + "/" + dataSetType + "/" + period;
+            pageOrigin +
+            "/api/apps/Data-Management-App/index.html#/data-approval/" +
+            projectId +
+            "/" +
+            dataSetType +
+            "/" +
+            period;
 
         const users = res.userRoles.flatMap(userRole => userRole.users);
         const dataSet = res.dataSets[0];
