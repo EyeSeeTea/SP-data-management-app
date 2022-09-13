@@ -57,7 +57,11 @@ export class ProjectNotification {
 
         const { displayName: user, username } = this.currentUser.data;
         const subject = i18n.t("{{username}} is requesting a data review", { username });
-        const pageLink = window.location.href;
+
+        const projectId = this.project.id;
+        const path = generateUrl("dataApproval", { id: projectId, dataSetType, period });
+        const dataApprovalLink = getFullUrl(path);
+
         const users = res.userRoles.flatMap(userRole => userRole.users);
         const dataSet = res.dataSets[0];
 
@@ -98,7 +102,7 @@ Period: {{period}}`,
                 projectName: this.project.name,
                 projectCode: this.project.code,
                 dataSetType,
-                projectUrl: pageLink,
+                projectUrl: dataApprovalLink,
                 period,
                 nsSeparator: false,
             }
@@ -162,7 +166,7 @@ The reason provided by the user was:
             }),
 
             // Cypress fails when body includes an URL,
-            !this.isTest ? getUrl(project) : "test-url",
+            !this.isTest ? getProjectUrl(project) : "test-url",
             html2Text(element),
         ];
 
@@ -213,7 +217,11 @@ function html2Text(element: ReactElement): string {
     return textWithoutBlankLines;
 }
 
-function getUrl(project: Project) {
+function getProjectUrl(project: Project) {
     const path = generateUrl("projects", undefined, { search: project.code });
+    return getFullUrl(path);
+}
+
+function getFullUrl(path: string): string {
     return window.location.href.split("#")[0] + "#" + path;
 }
