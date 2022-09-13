@@ -62,8 +62,6 @@ export class ProjectNotification {
         const path = generateUrl("dataApproval", { id: projectId, dataSetType, period });
         const dataApprovalLink = getFullUrl(path);
 
-        console.log(dataApprovalLink);
-
         const users = res.userRoles.flatMap(userRole => userRole.users);
         const dataSet = res.dataSets[0];
 
