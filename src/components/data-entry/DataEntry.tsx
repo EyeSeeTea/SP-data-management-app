@@ -239,7 +239,7 @@ const DataEntry = (props: DataEntryProps) => {
             execute: () => !isValidationEnabled || validate({ showValidation: true }),
         });
     }, [isValidationEnabled, onValidateFnChange, validate]);
-
+    console.log("check: " + state.dropdownHasValues, state.dropdownValue);
     return (
         <React.Fragment>
             <ValidationDialog result={validation.result} onClose={validation.clear} />
@@ -260,7 +260,7 @@ const DataEntry = (props: DataEntryProps) => {
                     </div>
                 )}
 
-                {state.dropdownHasValues && state.dropdownValue && (
+                {state.dropdownValue && (
                     <div style={styles.buttons}>
                         <DataSetStateButton
                             dataSetType={dataSetType}
