@@ -73,7 +73,7 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
     const openDataReviewConfirmation = useConfirmation({
         title: i18n.t("Notify users on data review"),
         text: i18n.t(
-            "Are you sure you want to send an email to administrators asking for a data review?"
+            "Are you sure you want to send an email to Data Reviewers asking for approval?"
         ),
         onConfirm: notifyUsers,
     });
