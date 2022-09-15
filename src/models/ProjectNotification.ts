@@ -48,7 +48,10 @@ export class ProjectNotification {
                 dataSets: {
                     fields: {
                         id: true,
-                        userGroupAccesses: true,
+                        userGroupAccesses: {
+                            id: true,
+                            displayName: true,
+                        },
                         userAccesses: { id: true },
                     },
                     filter: { id: { in: [id] } },
@@ -61,7 +64,7 @@ export class ProjectNotification {
 
         const year = period.slice(0, 4);
         const month = moment.months(Number(period.slice(4)) - 1);
-        
+
         const projectId = this.project.id;
         const path = generateUrl("dataApproval", { id: projectId, dataSetType, period });
         const dataApprovalLink = getFullUrl(path);
@@ -79,11 +82,13 @@ export class ProjectNotification {
 
         const userGroupEmails = users
             .filter(user => {
-                return dataSet.userGroupAccesses.some(userGroupAccess => {
-                    return user.userGroups.some(userGroup => {
-                        return userGroupAccess.id === userGroup.id;
+                return dataSet.userGroupAccesses
+                    .filter(ug => ug.displayName.includes("Country Admin"))
+                    .some(userGroupAccess => {
+                        return user.userGroups.some(userGroup => {
+                            return userGroupAccess.id === userGroup.id;
+                        });
                     });
-                });
             })
             .map(user => user.email);
 
