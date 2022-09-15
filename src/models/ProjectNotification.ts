@@ -10,6 +10,7 @@ import { generateUrl } from "../router";
 import { D2Api } from "../types/d2-api";
 import ProjectDb, { ExistingData, getStringDataValue } from "./ProjectDb";
 import { baseConfig } from "./Config";
+import moment from "moment";
 
 type Email = string;
 type Action = "create" | "update";
@@ -56,8 +57,11 @@ export class ProjectNotification {
             .getData();
 
         const { displayName: user, username } = this.currentUser.data;
-        const subject = i18n.t("{{username}} is requesting a data review", { username });
+        const subject = i18n.t("[SP Platform - Test] Request for Data Review", { username });
 
+        const year = period.slice(0, 4);
+        const month = moment.months(Number(period.slice(4)) - 1);
+        
         const projectId = this.project.id;
         const path = generateUrl("dataApproval", { id: projectId, dataSetType, period });
         const dataApprovalLink = getFullUrl(path);
@@ -87,15 +91,13 @@ export class ProjectNotification {
 
         const text = i18n.t(
             `
-User {{user}} ({{username}}) is requesting a data Review.
+User {{user}} ({{username}}) is requesting data approval.
 
 Project: [{{projectCode}}] {{projectName}}.
 
-Dataset Type: {{dataSetType}}
+Dataset: {{dataSetType}} values for {{month}} {{year}}
 
-URL: {{- projectUrl}}
-
-Period: {{period}}`,
+Go to approval screen: {{- projectUrl}}`,
             {
                 user,
                 username,
@@ -103,7 +105,8 @@ Period: {{period}}`,
                 projectCode: this.project.code,
                 dataSetType,
                 projectUrl: dataApprovalLink,
-                period,
+                month,
+                year,
                 nsSeparator: false,
             }
         );
