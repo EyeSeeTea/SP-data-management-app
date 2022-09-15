@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import i18n from "../../../locales";
 import _ from "lodash";
 
-import { ConfirmationDialog } from "@eyeseetea/d2-ui-components";
+import { ConfirmationDialog, useSnackbar } from "@eyeseetea/d2-ui-components";
 import { useAppContext } from "../../../contexts/api-context";
 import { CardContent } from "@material-ui/core";
 import { MultiSelector } from "@eyeseetea/d2-ui-components";
@@ -21,8 +21,11 @@ type Option = { value: string; text: string; shortName: string; code: string };
 
 const Funders: React.FC<FundersProps> = ({ project, onChange }) => {
     const [isDialogOpen, setDialogOpen] = React.useState(false);
+    const [selectedFunders, setSelectedFunders] = React.useState<string[]>([]);
 
     const { d2, config } = useAppContext();
+    const snackbar = useSnackbar();
+
     const onUpdateField = <K extends ModelCollectionField>(
         fieldName: K,
         options: Option[],
@@ -72,8 +75,17 @@ const Funders: React.FC<FundersProps> = ({ project, onChange }) => {
                         ordered={false}
                         height={300}
                         onChange={(selected: string[]) => {
+                            setSelectedFunders(selected);
                             onUpdateField("funders", funderOptions, selected);
-                            setDialogOpen(true);
+                            if (selectedFunders.length < selected.length) {
+                                setDialogOpen(true);
+                            } else if (selectedFunders.length > selected.length) {
+                                snackbar.success(
+                                    i18n.t(
+                                        "The additional designation field has been updated due to funder change"
+                                    )
+                                );
+                            }
                         }}
                         options={funderOptions}
                         selected={project.funders.map(funder => funder.id)}
