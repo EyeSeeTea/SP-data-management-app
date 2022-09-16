@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2022-09-16T12:11:07.600Z\n"
-"PO-Revision-Date: 2022-09-16T12:11:07.600Z\n"
+"POT-Creation-Date: 2022-09-16T12:23:32.822Z\n"
+"PO-Revision-Date: 2022-09-16T12:23:32.822Z\n"
 
 msgid "Name"
 msgstr ""
@@ -80,10 +80,10 @@ msgstr ""
 msgid "Edit Data"
 msgstr ""
 
-msgid "Ask for Data Review"
+msgid "Editing Complete"
 msgstr ""
 
-msgid "Editing Complete"
+msgid "Ask for Data Review"
 msgstr ""
 
 msgid "Validation results"
@@ -614,7 +614,7 @@ msgstr ""
 msgid "People"
 msgstr ""
 
-msgid "[SP Platform - Test] Request for Data Review: {{name}} ({{code}})"
+msgid "[SP Platform] Request for Data Review: {{name}} ({{code}})"
 msgstr ""
 
 msgid ""

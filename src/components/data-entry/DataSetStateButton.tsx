@@ -108,14 +108,6 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
                     >
                         {i18n.t("Edit Data")}
                     </Button>
-                    <Button
-                        disabled={isActive}
-                        style={styles.button}
-                        onClick={openDataReviewConfirmation.open}
-                        variant="contained"
-                    >
-                        {i18n.t("Ask for Data Review")}
-                    </Button>
                 </>
             )}
 
@@ -129,6 +121,15 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
                     {i18n.t("Editing Complete")}
                 </Button>
             )}
+
+            <Button
+                disabled={isActive}
+                style={styles.button}
+                onClick={openDataReviewConfirmation.open}
+                variant="contained"
+            >
+                {i18n.t("Ask for Data Review")}
+            </Button>
 
             {isActive && <LinearProgress style={{ marginTop: 20 }} />}
         </React.Fragment>

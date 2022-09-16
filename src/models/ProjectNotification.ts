@@ -66,10 +66,11 @@ export class ProjectNotification {
 
         const { displayName: user, username } = this.currentUser.data;
 
-        const subject = i18n.t(
-            "[SP Platform - Test] Request for Data Review: {{name}} ({{code}})",
-            { name: project.name, code: project.code, nsSeparator: false }
-        );
+        const subject = i18n.t("[SP Platform] Request for Data Review: {{name}} ({{code}})", {
+            name: project.name,
+            code: project.code,
+            nsSeparator: false,
+        });
 
         const year = period.slice(0, 4);
         const month = moment.months(Number(period.slice(4)) - 1);

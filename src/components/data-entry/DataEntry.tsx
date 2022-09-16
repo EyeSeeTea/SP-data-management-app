@@ -260,7 +260,7 @@ const DataEntry = (props: DataEntryProps) => {
                     </div>
                 )}
 
-                {state.dropdownValue && (
+                {state.dropdownHasValues && state.dropdownValue && (
                     <div style={styles.buttons}>
                         <DataSetStateButton
                             dataSetType={dataSetType}
