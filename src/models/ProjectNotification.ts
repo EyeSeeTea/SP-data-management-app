@@ -60,7 +60,7 @@ export class ProjectNotification {
             .getData();
 
         const { displayName: user, username } = this.currentUser.data;
-        const subject = i18n.t("[SP Platform - Test] Request for Data Review", { username });
+        const subject = i18n.t("[SP Platform - Test] Request for Data Review");
 
         const year = period.slice(0, 4);
         const month = moment.months(Number(period.slice(4)) - 1);
