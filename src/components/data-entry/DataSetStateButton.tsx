@@ -55,8 +55,16 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
     const notifyUsers = React.useCallback(async () => {
         try {
             const notificator = new ProjectNotification(api, project, currentUser, isTest);
-            await notificator.notifyForDataReview(period, dataSet.id, dataSetType);
-            snackbar.success(i18n.t("An email has been sent to the data reviewers"));
+            const emailSent = await notificator.notifyForDataReview(
+                period,
+                dataSet.id,
+                dataSetType
+            );
+            if (emailSent) {
+                snackbar.success(i18n.t("An email has been sent to the data reviewers"));
+            } else {
+                snackbar.warning(i18n.t("No data reviewers found, no email sent"));
+            }
         } catch (err: any) {
             snackbar.error(err.message);
         }

@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2022-09-15T12:19:35.211Z\n"
-"PO-Revision-Date: 2022-09-15T12:19:35.211Z\n"
+"POT-Creation-Date: 2022-09-16T12:11:07.600Z\n"
+"PO-Revision-Date: 2022-09-16T12:11:07.600Z\n"
 
 msgid "Name"
 msgstr ""
@@ -52,6 +52,9 @@ msgid "Data Entry"
 msgstr ""
 
 msgid "An email has been sent to the data reviewers"
+msgstr ""
+
+msgid "No data reviewers found, no email sent"
 msgstr ""
 
 msgid "Reopen data set"
@@ -611,7 +614,7 @@ msgstr ""
 msgid "People"
 msgstr ""
 
-msgid "[SP Platform - Test] Request for Data Review"
+msgid "[SP Platform - Test] Request for Data Review: {{name}} ({{code}})"
 msgstr ""
 
 msgid ""

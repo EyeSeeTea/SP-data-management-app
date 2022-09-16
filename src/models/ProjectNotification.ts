@@ -28,7 +28,12 @@ export class ProjectNotification {
         await this.notifyDanglingDataValues(recipients);
     }
 
-    async notifyForDataReview(period: string, id: string, dataSetType: DataSetType) {
+    async notifyForDataReview(
+        period: string,
+        id: string,
+        dataSetType: DataSetType
+    ): Promise<boolean> {
+        const { project } = this;
         const res = await this.api.metadata
             .get({
                 userRoles: {
@@ -60,7 +65,11 @@ export class ProjectNotification {
             .getData();
 
         const { displayName: user, username } = this.currentUser.data;
-        const subject = i18n.t("[SP Platform - Test] Request for Data Review");
+
+        const subject = i18n.t(
+            "[SP Platform - Test] Request for Data Review: {{name}} ({{code}})",
+            { name: project.name, code: project.code, nsSeparator: false }
+        );
 
         const year = period.slice(0, 4);
         const month = moment.months(Number(period.slice(4)) - 1);
@@ -116,7 +125,7 @@ Go to approval screen: {{- projectUrl}}`,
             }
         );
 
-        await this.sendMessage({ recipients, subject, text: text.trim() });
+        return this.sendMessage({ recipients, subject, text: text.trim() });
     }
 
     async sendMessageForIndicatorsRemoval(options: {
@@ -157,7 +166,7 @@ The reason provided by the user was:
             }
         );
 
-        await this.sendMessage({ recipients, subject, text: text.trim() });
+        return this.sendMessage({ recipients, subject, text: text.trim() });
     }
 
     private async notifySave(element: ReactElement, recipients: Email[], action: Action) {
@@ -179,7 +188,7 @@ The reason provided by the user was:
         ];
 
         const text = body.join("\n\n");
-        await this.sendMessage({ recipients, subject, text });
+        return this.sendMessage({ recipients, subject, text });
     }
 
     private async notifyDanglingDataValues(recipients: Email[]) {
@@ -196,22 +205,28 @@ The reason provided by the user was:
             "\n\n" +
             dataValues.map(getStringDataValue).join("\n");
 
-        await this.sendMessage({ recipients, subject, text });
+        return this.sendMessage({ recipients, subject, text });
     }
 
     private async sendMessage(options: {
         recipients: string[];
         subject: string;
         text: string;
-    }): Promise<void> {
+    }): Promise<boolean> {
         const { api } = this;
-        const recipients = localStorage.getItem("recipients")?.split(",") || options.recipients;
+        const devRecipients = localStorage.getItem("recipients");
+        const recipients =
+            devRecipients !== null ? _.compact(devRecipients.split(",")) : options.recipients;
+
+        if (_.isEmpty(recipients)) return false;
 
         try {
             await api.email.sendMessage({ ...options, recipients }).getData();
+            return true;
         } catch (err) {
             // If the message could not be sent, just log to the console and continue the process.
             console.error(err);
+            return false;
         }
     }
 }
