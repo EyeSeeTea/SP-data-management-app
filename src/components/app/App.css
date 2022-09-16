@@ -19,3 +19,7 @@ li {
 .resizable textarea {
     resize: vertical;
 }
+
+div[data-test="search"] {
+    width: 20%;
+}

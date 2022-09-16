@@ -199,6 +199,7 @@ const metadataParams = {
             organisationUnitGroups: {
                 id: yes,
                 shortName: yes,
+                code: yes,
                 displayName: yes,
                 organisationUnits: { id: yes, level: yes },
             },
@@ -259,7 +260,7 @@ type NamedObject = { id: Id; displayName: string };
 type CodedObject = { id: Id; code: string };
 
 export type Sector = NamedObject & CodedObject;
-export type Funder = NamedObject & { shortName: string };
+export type Funder = NamedObject & { shortName: string; code: string };
 export type Country = NamedObject & CodedObject;
 export type Location = NamedObject & { countries: Ref[] };
 export type DataApprovalWorkflow = CodedObject;
