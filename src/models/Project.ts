@@ -591,6 +591,13 @@ class Project {
         const newProject = this.setObj({ disaggregation: newDisaggregation });
         return { selectionInfo, project: newProject };
     }
+
+    getAdditionalFromFunders() {
+        return _(this.funders)
+            .map(funder => _.last(funder.code?.split("_")))
+            .compact()
+            .join("-");
+    }
 }
 
 interface Project extends ProjectData {}

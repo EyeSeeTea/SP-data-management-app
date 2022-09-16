@@ -16,7 +16,6 @@ interface FundersProps {
 }
 
 type ModelCollectionField = "funders";
-type AdditionalDesignationField = "additional";
 type Option = { value: string; text: string; shortName: string; code: string };
 
 const Funders: React.FC<FundersProps> = ({ project, onChange }) => {
@@ -26,7 +25,7 @@ const Funders: React.FC<FundersProps> = ({ project, onChange }) => {
     const { d2, config } = useAppContext();
     const snackbar = useSnackbar();
 
-    const onUpdateField = <K extends ModelCollectionField>(
+    const updateProject = <K extends ModelCollectionField>(
         fieldName: K,
         options: Option[],
         selected: string[]
@@ -42,9 +41,9 @@ const Funders: React.FC<FundersProps> = ({ project, onChange }) => {
                 code: code,
             }))
             .value();
-        const newProject = project.set(fieldName, newValue);
-        onChange(newProject);
+        return project.set(fieldName, newValue);
     };
+
     const [funderOptions] = useMemo(() => {
         return [
             config.funders.map(funder => ({
@@ -56,13 +55,13 @@ const Funders: React.FC<FundersProps> = ({ project, onChange }) => {
         ];
     }, [config]);
 
-    const updateAdditionalDesignationField = <K extends AdditionalDesignationField>(
-        fieldName: K,
-        selected: string
-    ) => {
-        const newProject = project.set(fieldName, selected);
-        onChange(newProject);
-    };
+    const updateAdditionalDesignation = React.useCallback(
+        (project: Project) => {
+            const newProject = project.set("additional", project.getAdditionalFromFunders());
+            onChange(newProject);
+        },
+        [onChange]
+    );
 
     return (
         <>
@@ -76,10 +75,14 @@ const Funders: React.FC<FundersProps> = ({ project, onChange }) => {
                         height={300}
                         onChange={(selected: string[]) => {
                             setSelectedFunders(selected);
-                            onUpdateField("funders", funderOptions, selected);
-                            if (selectedFunders.length < selected.length) {
+                            const prevSelected = selectedFunders;
+                            const newProject = updateProject("funders", funderOptions, selected);
+
+                            if (prevSelected.length < selected.length) {
+                                onChange(newProject);
                                 setDialogOpen(true);
-                            } else if (selectedFunders.length > selected.length) {
+                            } else if (prevSelected.length > selected.length) {
+                                updateAdditionalDesignation(newProject);
                                 snackbar.success(
                                     i18n.t(
                                         "The additional designation field has been updated due to funder change"
@@ -104,11 +107,7 @@ const Funders: React.FC<FundersProps> = ({ project, onChange }) => {
                         setDialogOpen(false);
                     }}
                     onSave={() => {
-                        const newAdditional = _(project.funders)
-                            .map(funder => funder.code?.split("_").pop())
-                            .compact()
-                            .join("-");
-                        updateAdditionalDesignationField("additional", newAdditional);
+                        updateAdditionalDesignation(project);
                         setDialogOpen(false);
                     }}
                     maxWidth="sm"
