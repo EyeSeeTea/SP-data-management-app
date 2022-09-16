@@ -227,7 +227,7 @@ The reason provided by the user was:
         } catch (err) {
             // If the message could not be sent, just log to the console and continue the process.
             console.error(err);
-            return false;
+            return true;
         }
     }
 }
