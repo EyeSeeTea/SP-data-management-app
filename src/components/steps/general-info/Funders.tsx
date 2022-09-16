@@ -20,7 +20,9 @@ type Option = { value: string; text: string; shortName: string; code: string };
 
 const Funders: React.FC<FundersProps> = ({ project, onChange }) => {
     const [isDialogOpen, setDialogOpen] = React.useState(false);
-    const [selectedFunders, setSelectedFunders] = React.useState<string[]>([]);
+    const [selectedFunders, setSelectedFunders] = React.useState<string[]>(() =>
+        project.funders.map(funder => funder.id)
+    );
 
     const { d2, config } = useAppContext();
     const snackbar = useSnackbar();
