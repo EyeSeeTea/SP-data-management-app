@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import i18n from "../../../locales";
 import _ from "lodash";
 
-import { ConfirmationDialog } from "@eyeseetea/d2-ui-components";
+import { ConfirmationDialog, useSnackbar } from "@eyeseetea/d2-ui-components";
 import { useAppContext } from "../../../contexts/api-context";
 import { CardContent } from "@material-ui/core";
 import { MultiSelector } from "@eyeseetea/d2-ui-components";
@@ -16,14 +16,18 @@ interface FundersProps {
 }
 
 type ModelCollectionField = "funders";
-type AdditionalDesignationField = "additional";
 type Option = { value: string; text: string; shortName: string; code: string };
 
 const Funders: React.FC<FundersProps> = ({ project, onChange }) => {
     const [isDialogOpen, setDialogOpen] = React.useState(false);
+    const [selectedFunders, setSelectedFunders] = React.useState<string[]>(() =>
+        project.funders.map(funder => funder.id)
+    );
 
     const { d2, config } = useAppContext();
-    const onUpdateField = <K extends ModelCollectionField>(
+    const snackbar = useSnackbar();
+
+    const updateProject = <K extends ModelCollectionField>(
         fieldName: K,
         options: Option[],
         selected: string[]
@@ -39,9 +43,9 @@ const Funders: React.FC<FundersProps> = ({ project, onChange }) => {
                 code: code,
             }))
             .value();
-        const newProject = project.set(fieldName, newValue);
-        onChange(newProject);
+        return project.set(fieldName, newValue);
     };
+
     const [funderOptions] = useMemo(() => {
         return [
             config.funders.map(funder => ({
@@ -53,13 +57,13 @@ const Funders: React.FC<FundersProps> = ({ project, onChange }) => {
         ];
     }, [config]);
 
-    const updateAdditionalDesignationField = <K extends AdditionalDesignationField>(
-        fieldName: K,
-        selected: string
-    ) => {
-        const newProject = project.set(fieldName, selected);
-        onChange(newProject);
-    };
+    const updateAdditionalDesignation = React.useCallback(
+        (project: Project) => {
+            const newProject = project.set("additional", project.getAdditionalFromFunders());
+            onChange(newProject);
+        },
+        [onChange]
+    );
 
     return (
         <>
@@ -72,8 +76,21 @@ const Funders: React.FC<FundersProps> = ({ project, onChange }) => {
                         ordered={false}
                         height={300}
                         onChange={(selected: string[]) => {
-                            onUpdateField("funders", funderOptions, selected);
-                            setDialogOpen(true);
+                            setSelectedFunders(selected);
+                            const prevSelected = selectedFunders;
+                            const newProject = updateProject("funders", funderOptions, selected);
+
+                            if (prevSelected.length < selected.length) {
+                                onChange(newProject);
+                                setDialogOpen(true);
+                            } else if (prevSelected.length > selected.length) {
+                                updateAdditionalDesignation(newProject);
+                                snackbar.success(
+                                    i18n.t(
+                                        "The additional designation field has been updated due to funder change"
+                                    )
+                                );
+                            }
                         }}
                         options={funderOptions}
                         selected={project.funders.map(funder => funder.id)}
@@ -92,11 +109,7 @@ const Funders: React.FC<FundersProps> = ({ project, onChange }) => {
                         setDialogOpen(false);
                     }}
                     onSave={() => {
-                        const newAdditional = _(project.funders)
-                            .map(funder => funder.code?.split("_").pop())
-                            .compact()
-                            .join("-");
-                        updateAdditionalDesignationField("additional", newAdditional);
+                        updateAdditionalDesignation(project);
                         setDialogOpen(false);
                     }}
                     maxWidth="sm"

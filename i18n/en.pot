@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2022-09-16T12:23:32.822Z\n"
-"PO-Revision-Date: 2022-09-16T12:23:32.822Z\n"
+"POT-Creation-Date: 2022-09-15T15:24:44.935Z\n"
+"PO-Revision-Date: 2022-09-15T15:24:44.935Z\n"
 
 msgid "Name"
 msgstr ""
@@ -233,6 +233,9 @@ msgid "Add COVID-19 disaggregation"
 msgstr ""
 
 msgid "Remove COVID-19 disaggregation"
+msgstr ""
+
+msgid "The additional designation field has been updated due to funder change"
 msgstr ""
 
 msgid "Would you like to use the funder code in the additional designation field?"
