@@ -55,8 +55,16 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
     const notifyUsers = React.useCallback(async () => {
         try {
             const notificator = new ProjectNotification(api, project, currentUser, isTest);
-            await notificator.notifyForDataReview(period, dataSet.id, dataSetType);
-            snackbar.success(i18n.t("An email has been sent to the data reviewers"));
+            const emailSent = await notificator.notifyForDataReview(
+                period,
+                dataSet.id,
+                dataSetType
+            );
+            if (emailSent) {
+                snackbar.success(i18n.t("An email has been sent to the data reviewers"));
+            } else {
+                snackbar.warning(i18n.t("No data reviewers found, no email sent"));
+            }
         } catch (err: any) {
             snackbar.error(err.message);
         }
@@ -73,7 +81,7 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
     const openDataReviewConfirmation = useConfirmation({
         title: i18n.t("Notify users on data review"),
         text: i18n.t(
-            "Are you sure you want to send an email to administrators asking for a data review?"
+            "Are you sure you want to send an email to Data Reviewers asking for approval?"
         ),
         onConfirm: notifyUsers,
     });
@@ -100,14 +108,6 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
                     >
                         {i18n.t("Edit Data")}
                     </Button>
-                    <Button
-                        disabled={isActive}
-                        style={styles.button}
-                        onClick={openDataReviewConfirmation.open}
-                        variant="contained"
-                    >
-                        {i18n.t("Ask for Data Review")}
-                    </Button>
                 </>
             )}
 
@@ -121,6 +121,15 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
                     {i18n.t("Editing Complete")}
                 </Button>
             )}
+
+            <Button
+                disabled={isActive}
+                style={styles.button}
+                onClick={openDataReviewConfirmation.open}
+                variant="contained"
+            >
+                {i18n.t("Ask for Data Review")}
+            </Button>
 
             {isActive && <LinearProgress style={{ marginTop: 20 }} />}
         </React.Fragment>
