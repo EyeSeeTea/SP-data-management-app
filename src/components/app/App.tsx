@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 //@ts-ignore
-import { HeaderBar } from "@dhis2/ui-widgets";
+import { HeaderBar } from "@dhis2/ui";
 import { MuiThemeProvider } from "@material-ui/core/styles";
 //@ts-ignore
 import OldMuiThemeProvider from "material-ui/styles/MuiThemeProvider";
@@ -19,7 +19,7 @@ import Share from "../share/Share";
 import { ApiContext, AppContext } from "../../contexts/api-context";
 import { getConfig } from "../../models/Config";
 import User from "../../models/user";
-import { LinearProgress } from "@material-ui/core";
+import { createGenerateClassName, LinearProgress, StylesProvider } from "@material-ui/core";
 import Migrations from "../migrations/Migrations";
 import { useMigrations } from "../migrations/hooks";
 
@@ -148,25 +148,31 @@ const App: React.FC<AppProps> = props => {
         );
     } else {
         return (
-            <MuiThemeProvider theme={muiTheme}>
-                <OldMuiThemeProvider muiTheme={muiThemeLegacy}>
-                    <LoadingProvider>
-                        <SnackbarProvider>
-                            <HeaderBar appName={"Data Management"} />
+            <StylesProvider generateClassName={generateClassName}>
+                <MuiThemeProvider theme={muiTheme}>
+                    <OldMuiThemeProvider muiTheme={muiThemeLegacy}>
+                        <LoadingProvider>
+                            <SnackbarProvider>
+                                <HeaderBar appName={"Data Management"} />
 
-                            <div id="app" className="content">
-                                <ApiContext.Provider value={appContext}>
-                                    <Root />
-                                </ApiContext.Provider>
-                            </div>
+                                <div id="app" className="content">
+                                    <ApiContext.Provider value={appContext}>
+                                        <Root />
+                                    </ApiContext.Provider>
+                                </div>
 
-                            <Share visible={showShareButton} />
-                        </SnackbarProvider>
-                    </LoadingProvider>
-                </OldMuiThemeProvider>
-            </MuiThemeProvider>
+                                <Share visible={showShareButton} />
+                            </SnackbarProvider>
+                        </LoadingProvider>
+                    </OldMuiThemeProvider>
+                </MuiThemeProvider>
+            </StylesProvider>
         );
     }
 };
+
+const generateClassName = createGenerateClassName({
+    seed: "dm",
+});
 
 export default React.memo(App);
