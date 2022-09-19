@@ -10,6 +10,7 @@ import { generateUrl } from "../router";
 import { D2Api } from "../types/d2-api";
 import ProjectDb, { ExistingData, getStringDataValue } from "./ProjectDb";
 import { baseConfig } from "./Config";
+import moment from "moment";
 
 type Email = string;
 type Action = "create" | "update";
@@ -27,7 +28,12 @@ export class ProjectNotification {
         await this.notifyDanglingDataValues(recipients);
     }
 
-    async notifyForDataReview(period: string, id: string, dataSetType: DataSetType) {
+    async notifyForDataReview(
+        period: string,
+        id: string,
+        dataSetType: DataSetType
+    ): Promise<boolean> {
+        const { project } = this;
         const res = await this.api.metadata
             .get({
                 userRoles: {
@@ -47,7 +53,10 @@ export class ProjectNotification {
                 dataSets: {
                     fields: {
                         id: true,
-                        userGroupAccesses: true,
+                        userGroupAccesses: {
+                            id: true,
+                            displayName: true,
+                        },
                         userAccesses: { id: true },
                     },
                     filter: { id: { in: [id] } },
@@ -56,7 +65,15 @@ export class ProjectNotification {
             .getData();
 
         const { displayName: user, username } = this.currentUser.data;
-        const subject = i18n.t("{{username}} is requesting a data review", { username });
+
+        const subject = i18n.t("[SP Platform] Request for Data Review: {{name}} ({{code}})", {
+            name: project.name,
+            code: project.code,
+            nsSeparator: false,
+        });
+
+        const year = period.slice(0, 4);
+        const month = moment.months(Number(period.slice(4)) - 1);
 
         const projectId = this.project.id;
         const path = generateUrl("dataApproval", { id: projectId, dataSetType, period });
@@ -75,11 +92,13 @@ export class ProjectNotification {
 
         const userGroupEmails = users
             .filter(user => {
-                return dataSet.userGroupAccesses.some(userGroupAccess => {
-                    return user.userGroups.some(userGroup => {
-                        return userGroupAccess.id === userGroup.id;
+                return dataSet.userGroupAccesses
+                    .filter(ug => ug.displayName.includes("Country Admin"))
+                    .some(userGroupAccess => {
+                        return user.userGroups.some(userGroup => {
+                            return userGroupAccess.id === userGroup.id;
+                        });
                     });
-                });
             })
             .map(user => user.email);
 
@@ -87,15 +106,13 @@ export class ProjectNotification {
 
         const text = i18n.t(
             `
-User {{user}} ({{username}}) is requesting a data Review.
+User {{user}} ({{username}}) is requesting data approval.
 
 Project: [{{projectCode}}] {{projectName}}.
 
-Dataset Type: {{dataSetType}}
+Dataset: {{dataSetType}} values for {{month}} {{year}}
 
-URL: {{- projectUrl}}
-
-Period: {{period}}`,
+Go to approval screen: {{- projectUrl}}`,
             {
                 user,
                 username,
@@ -103,12 +120,13 @@ Period: {{period}}`,
                 projectCode: this.project.code,
                 dataSetType,
                 projectUrl: dataApprovalLink,
-                period,
+                month,
+                year,
                 nsSeparator: false,
             }
         );
 
-        await this.sendMessage({ recipients, subject, text: text.trim() });
+        return this.sendMessage({ recipients, subject, text: text.trim() });
     }
 
     async sendMessageForIndicatorsRemoval(options: {
@@ -149,7 +167,7 @@ The reason provided by the user was:
             }
         );
 
-        await this.sendMessage({ recipients, subject, text: text.trim() });
+        return this.sendMessage({ recipients, subject, text: text.trim() });
     }
 
     private async notifySave(element: ReactElement, recipients: Email[], action: Action) {
@@ -171,7 +189,7 @@ The reason provided by the user was:
         ];
 
         const text = body.join("\n\n");
-        await this.sendMessage({ recipients, subject, text });
+        return this.sendMessage({ recipients, subject, text });
     }
 
     private async notifyDanglingDataValues(recipients: Email[]) {
@@ -188,22 +206,28 @@ The reason provided by the user was:
             "\n\n" +
             dataValues.map(getStringDataValue).join("\n");
 
-        await this.sendMessage({ recipients, subject, text });
+        return this.sendMessage({ recipients, subject, text });
     }
 
     private async sendMessage(options: {
         recipients: string[];
         subject: string;
         text: string;
-    }): Promise<void> {
+    }): Promise<boolean> {
         const { api } = this;
-        const recipients = localStorage.getItem("recipients")?.split(",") || options.recipients;
+        const devRecipients = localStorage.getItem("recipients");
+        const recipients =
+            devRecipients !== null ? _.compact(devRecipients.split(",")) : options.recipients;
+
+        if (_.isEmpty(recipients)) return false;
 
         try {
             await api.email.sendMessage({ ...options, recipients }).getData();
+            return true;
         } catch (err) {
             // If the message could not be sent, just log to the console and continue the process.
             console.error(err);
+            return true;
         }
     }
 }
