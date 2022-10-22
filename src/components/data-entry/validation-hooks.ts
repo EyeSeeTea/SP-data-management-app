@@ -67,11 +67,16 @@ export function useValidation(hookOptions: {
                     });
                 }
                 case "dataValueSaved": {
-                    // Executed after data value successfully saved
+                    const validatorUpdated = validator.onSave(msg.dataValue);
+                    validatorUpdated
+                        .updateOrgUnitWithLastUpdatedData(api, config, project)
+                        .then(orgUnitWithLastUpdatedData => {
+                            return orgUnitWithLastUpdatedData;
+                        });
                 }
             }
         },
-        [validator, snackbar]
+        [validator, snackbar, project, config, api]
     );
 
     const [validationResult, setValidationResult] = React.useState<ValidationResult>({});
