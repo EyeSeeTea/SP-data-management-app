@@ -8,6 +8,7 @@ import { ValidationResult } from "../../models/validators/validator-common";
 import { useSnackbar } from "@eyeseetea/d2-ui-components";
 import i18n from "../../locales";
 import { usePageExitConfirmation } from "../../utils/hooks";
+import ProjectDb from "../../models/ProjectDb";
 
 export interface UseValidationResponse {
     result: ValidationResult;
@@ -67,12 +68,8 @@ export function useValidation(hookOptions: {
                     });
                 }
                 case "dataValueSaved": {
-                    const validatorUpdated = validator.onSave(msg.dataValue);
-                    validatorUpdated
-                        .updateOrgUnitWithLastUpdatedData(api, config, project)
-                        .then(orgUnitWithLastUpdatedData => {
-                            return orgUnitWithLastUpdatedData;
-                        });
+                    const projectDb = new ProjectDb(project);
+                    projectDb.updateOrgUnitWithLastUpdatedData(api, config, project)
                 }
             }
         },

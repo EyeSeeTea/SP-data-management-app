@@ -8,8 +8,6 @@ import { DataValue, ValidationItem, ValidationResult } from "./validators/valida
 import { GlobalValidator } from "./validators/GlobalValidator";
 import { BenefitValidator } from "./validators/BenefitValidator";
 import { Config } from "./Config";
-import { addAttributeValueToObj } from "./Attributes";
-import moment from "moment";
 
 interface Validators {
     actual: ActualValidator;
@@ -60,30 +58,6 @@ export class Validator {
     validate(): ValidationResult {
         const items: ValidationItem[] = this.validators.global.validate();
         return this.getValidationResult(items);
-    }
-
-    async updateOrgUnitWithLastUpdatedData(api: D2Api, config: Config, project: Project) {
-        const { organisationUnits } = await api.metadata
-            .get({
-                organisationUnits: {
-                    fields: { $owner: true },
-                    filter: { id: { eq: project.id } },
-                },
-            })
-            .getData();
-        const orgUnit = _(organisationUnits).get(0, null);
-
-        if (orgUnit) {
-            const lastUpdatedData = addAttributeValueToObj(orgUnit, {
-                attribute: config.attributes.lastUpdatedData,
-                value: moment().format("YYYY-MM-DDTHH:mm:ss.SSS"),
-            });
-
-            const orgUnitAttrs = { ...lastUpdatedData, id: orgUnit.id };
-            const res = await api.models.organisationUnits.put(orgUnitAttrs).getData();
-
-            if (res.status !== "OK") throw new Error("Error saving data set");
-        }
     }
 
     private getValidationResult(items: ValidationItem[]): ValidationResult {
