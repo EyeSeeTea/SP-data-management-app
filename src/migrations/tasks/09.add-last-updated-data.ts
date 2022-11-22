@@ -1,45 +1,41 @@
-import { baseConfig } from "../../models/Config";
-import { D2Api } from "../../types/d2-api";
-import { addAttributeValueToObj } from "../../models/Attributes";
+import { D2Api, Id } from "../../types/d2-api";
 import { Debug, Migration } from "../types";
 import { post } from "./common";
+import { getUid } from "../../utils/dhis2";
 
 class AddLastUpdatedDataMigration {
     constructor(private api: D2Api, private debug: Debug) {}
 
-    async execute() {
-        await this.updateOrgUnits();
+    private async post<Payload>(payload: Payload) {
+        post(this.api, this.debug, payload);
     }
 
-    async updateOrgUnits() {
-        const { organisationUnits, attributes } = await this.api.metadata
-            .get({
-                organisationUnits: {
-                    fields: { $owner: true },
-                    filter: { level: { eq: baseConfig.orgUnits.levelForCountries.toString() } },
-                },
-                attributes: {
-                    fields: { id: true, code: true },
-                    filter: { code: { eq: baseConfig.attributes.lastUpdatedData } },
-                },
-            })
-            .getData();
+    async execute() {
+        await this.createAttributeForOrgUnitLastUpdated();
+    }
 
-        const orgUnitAttribute = attributes[0];
-
-        const orgUnitsUpdated = organisationUnits.map(organisationUnit =>
-            addAttributeValueToObj(organisationUnit, {
-                attribute: orgUnitAttribute,
-                value: "",
-            })
+    async createAttributeForOrgUnitLastUpdated() {
+        this.debug(
+            "Create the attribute metadata to store last update data for organisation units"
         );
-
-        await post(this.api, this.debug, { organisationUnits: orgUnitsUpdated });
+        return this.post({
+            attributes: [
+                {
+                    id: getId("attributes", "last-updated-org-unit"),
+                    name: "Last Updated Organisation Unit",
+                    code: "DM_LAST_UPDATED_DATA",
+                },
+            ],
+        });
     }
 }
 
+function getId(model: string, key: string): Id {
+    return getUid(model + "-", key);
+}
+
 const migration: Migration = {
-    name: "Add last updated data",
+    name: "Create the attribute metadata to store last update data for organisation units",
     migrate: async (api: D2Api, debug: Debug) =>
         new AddLastUpdatedDataMigration(api, debug).execute(),
 };
