@@ -7,7 +7,7 @@ class AddLastUpdatedDataMigration {
     constructor(private api: D2Api, private debug: Debug) {}
 
     private async post<Payload>(payload: Payload) {
-        post(this.api, this.debug, payload);
+        await post(this.api, this.debug, payload);
     }
 
     async execute() {
@@ -24,6 +24,7 @@ class AddLastUpdatedDataMigration {
                     id: getId("attributes", "last-updated-org-unit"),
                     name: "Last Updated Organisation Unit",
                     code: "DM_LAST_UPDATED_DATA",
+                    valueType: "DATE_AND_TIME",
                 },
             ],
         });
