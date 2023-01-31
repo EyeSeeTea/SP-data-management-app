@@ -24,7 +24,7 @@ class AddLastUpdatedDataMigration {
                     id: getId("attributes", "last-updated-org-unit"),
                     name: "Last Updated Organisation Unit",
                     code: "DM_LAST_UPDATED_DATA",
-                    valueType: "DATE_AND_TIME",
+                    valueType: "DATETIME",
                 },
             ],
         });
