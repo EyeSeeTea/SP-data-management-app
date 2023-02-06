@@ -46,10 +46,15 @@ const SaveStep: React.FC<StepProps> = ({ project, onCancel, action }) => {
             await save();
             if (!existingData) return;
 
-            const notificator = new ProjectNotification(api, project, currentUser, isTest);
+            const notificator = new ProjectNotification(
+                api,
+                appConfig,
+                project,
+                currentUser,
+                isTest
+            );
             await notificator.sendMessageForIndicatorsRemoval({
                 message,
-                recipients: appConfig.app.notifyEmailOnProjectSave,
                 currentUser,
                 existingData,
             });
@@ -223,12 +228,17 @@ function useSave(project: Project, action: StepProps["action"], projectInfo: Rea
             loading.show(true, i18n.t("Saving Project"));
             setSaving(true);
             const { payload, response, project: projectSaved } = await project.save();
-            const recipients = appConfig.app.notifyEmailOnProjectSave;
             setSaving(false);
 
             if (response && response.status === "OK") {
-                const notificator = new ProjectNotification(api, projectSaved, currentUser, isTest);
-                notificator.notifyOnProjectSave(projectInfo, recipients, action);
+                const notificator = new ProjectNotification(
+                    api,
+                    appConfig,
+                    projectSaved,
+                    currentUser,
+                    isTest
+                );
+                notificator.notifyOnProjectSave(projectInfo, action);
                 const baseMsg =
                     action === "create" ? i18n.t("Project created") : i18n.t("Project updated");
                 const msg = `${baseMsg}: ${projectSaved.name}`;

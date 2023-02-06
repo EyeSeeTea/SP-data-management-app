@@ -11,6 +11,7 @@ import { D2Api } from "../types/d2-api";
 import ProjectDb, { ExistingData, getStringDataValue } from "./ProjectDb";
 import { baseConfig } from "./Config";
 import moment from "moment";
+import { AppConfig } from "../components/app/App";
 
 type Email = string;
 type Action = "create" | "update";
@@ -18,12 +19,32 @@ type Action = "create" | "update";
 export class ProjectNotification {
     constructor(
         private api: D2Api,
+        private appConfig: AppConfig,
         private project: Project,
         private currentUser: User,
         private isTest: boolean
     ) {}
 
-    async notifyOnProjectSave(element: ReactElement, recipients: Email[], action: Action) {
+    private async getRecipients() {
+        const groupCode = "DATA_MANAGEMENT_NOTIFICATION";
+        const { users } = await this.api.metadata
+            .get({
+                users: {
+                    fields: { email: true },
+                    filter: { "userGroups.code": { eq: groupCode } },
+                },
+            })
+            .getData();
+
+        return _(this.appConfig.app.notifyEmailOnProjectSave)
+            .concat(users.map(user => user.email))
+            .compact()
+            .uniq()
+            .value();
+    }
+
+    async notifyOnProjectSave(element: ReactElement, action: Action) {
+        const recipients = await this.getRecipients();
         await this.notifySave(element, recipients, action);
         await this.notifyDanglingDataValues(recipients);
     }
@@ -130,13 +151,13 @@ Go to approval screen: {{- projectUrl}}`,
     }
 
     async sendMessageForIndicatorsRemoval(options: {
-        recipients: Email[];
         currentUser: User;
         message: string;
         existingData: ExistingData;
     }) {
-        const { recipients, currentUser, message, existingData } = options;
+        const { currentUser, message, existingData } = options;
         const { displayName: user, username } = currentUser.data;
+        const recipients = await this.getRecipients();
         const subject = i18n.t("{{username}} has removed indicators with data", { username });
 
         const dataElementsList = existingData.dataElementsWithData
@@ -215,6 +236,7 @@ The reason provided by the user was:
         text: string;
     }): Promise<boolean> {
         const { api } = this;
+        console.debug(`sendMessage: recipients=${options.recipients.join(", ")}`);
         const devRecipients = localStorage.getItem("recipients");
         const recipients =
             devRecipients !== null ? _.compact(devRecipients.split(",")) : options.recipients;

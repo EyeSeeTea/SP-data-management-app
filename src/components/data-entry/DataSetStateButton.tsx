@@ -21,7 +21,7 @@ interface DataSetStateButtonProps {
 
 const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = props => {
     const [isActive, setActive] = React.useState(false);
-    const { api, currentUser, isTest } = useAppContext();
+    const { api, currentUser, isTest, appConfig } = useAppContext();
     const { period, dataSetType, dataSet, project, onChange, validation } = props;
     const projectDataSet = project.getProjectDataSet(dataSet);
     const showErrorAndSetInactive = useSnackbarOnError(() => setActive(false));
@@ -54,7 +54,13 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
 
     const notifyUsers = React.useCallback(async () => {
         try {
-            const notificator = new ProjectNotification(api, project, currentUser, isTest);
+            const notificator = new ProjectNotification(
+                api,
+                appConfig,
+                project,
+                currentUser,
+                isTest
+            );
             const emailSent = await notificator.notifyForDataReview(
                 period,
                 dataSet.id,
@@ -68,7 +74,7 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
         } catch (err: any) {
             snackbar.error(err.message);
         }
-    }, [api, project, currentUser, isTest, period, dataSet.id, dataSetType, snackbar]);
+    }, [api, project, currentUser, isTest, period, dataSet.id, dataSetType, snackbar, appConfig]);
 
     const reopenConfirmation = useConfirmation({
         title: i18n.t("Reopen data set"),
