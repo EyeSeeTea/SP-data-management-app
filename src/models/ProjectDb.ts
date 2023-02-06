@@ -126,11 +126,39 @@ export default class ProjectDb {
         const cleanOrgUnits = (orgUnits: Array<{ id?: Id }> | undefined) =>
             (orgUnits || []).filter(ou => ou.id && orgUnitIds.has(ou.id));
 
+        const existingMetadata = await api.metadata
+            .get({
+                organisationUnitGroupSets: {
+                    fields: { $owner: true },
+                    filter: {
+                        id: { in: _.compact(metadata.organisationUnitGroupSets.map(o => o.id)) },
+                    },
+                },
+            })
+            .getData();
+
         /* Remove non-existing org units from references */
+
         const metadata2 = {
             ...metadata,
             organisationUnitGroups: metadata.organisationUnitGroups.map(oug => {
                 return { ...oug, organisationUnits: cleanOrgUnits(oug.organisationUnits) };
+            }),
+            organisationUnitGroupSets: metadata.organisationUnitGroupSets.map(ougSet => {
+                return {
+                    ...ougSet,
+                    organisationUnitGroups: _.intersectionBy(
+                        _.unionBy(
+                            existingMetadata.organisationUnitGroupSets.find(
+                                ougs_ => ougs_.id === ougSet.id
+                            )?.organisationUnitGroups || [],
+                            metadata.organisationUnitGroups.map(oug => ({ id: oug.id })),
+                            o => o.id
+                        ),
+                        (ougSet.organisationUnitGroups || []).map(oug => ({ id: oug.id })),
+                        o => o.id
+                    ),
+                };
             }),
             visualizations: metadata.visualizations.map(visualization => {
                 return {
@@ -631,7 +659,12 @@ export default class ProjectDb {
 
         const getDataSet = (type: DataSetType) => {
             const dataSet = _(dataSets).find(dataSet => dataSet.code.endsWith(type.toUpperCase()));
-            if (!dataSet) throw new Error(`Cannot find dataset: ${type}`);
+            if (!dataSet)
+                throw new Error(
+                    `Cannot find dataset: ${type} (dataSets: ${
+                        dataSets.map(ds => ds.id).join(", ") || "-"
+                    })`
+                );
             return dataSet;
         };
 
