@@ -10,5 +10,6 @@ export async function getMigrationTasks(): Promise<MigrationTasks> {
         migration(6, (await import("./06.add-benefits-disaggregation")).default),
         migration(7, (await import("./07.update-to-v2.36")).default),
         migration(8, (await import("./08.set-integer-people-dataelements")).default),
+        migration(9, (await import("./09.add-last-updated-data")).default),
     ];
 }

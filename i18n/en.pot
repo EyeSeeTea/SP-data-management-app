@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2022-09-15T15:24:44.935Z\n"
-"PO-Revision-Date: 2022-09-15T15:24:44.935Z\n"
+"POT-Creation-Date: 2022-10-24T06:53:19.502Z\n"
+"PO-Revision-Date: 2022-10-24T06:53:19.502Z\n"
 
 msgid "Name"
 msgstr ""
@@ -906,6 +906,12 @@ msgid "Monthly Report"
 msgstr ""
 
 msgid "Create Project"
+msgstr ""
+
+msgid "Last Updated (metadata)"
+msgstr ""
+
+msgid "Last Updated (data)"
 msgstr ""
 
 msgid "Created By"

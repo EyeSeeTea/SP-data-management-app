@@ -456,6 +456,31 @@ export default class ProjectDb {
         }
     }
 
+    async updateOrgUnitWithLastUpdatedData(api: D2Api, config: Config, project: Project) {
+        const { organisationUnits } = await api.metadata
+            .get({
+                organisationUnits: {
+                    fields: { $owner: true },
+                    filter: { id: { eq: project.id } },
+                },
+            })
+            .getData();
+        const orgUnit = _(organisationUnits).get(0, null);
+
+        if (orgUnit) {
+            const lastUpdatedData = addAttributeValueToObj(orgUnit, {
+                attribute: config.attributes.lastUpdatedData,
+                value: moment().toISOString(),
+            });
+
+            const orgUnitAttrs = { ...lastUpdatedData };
+            const res = await api.models.organisationUnits.put(orgUnitAttrs).getData();
+
+            if (res.status !== "OK") throw new Error("Error saving data set");
+            else console.error(`Org unit not found: ${project.id}`);
+        }
+    }
+
     getDataElementsBySector() {
         const { project } = this;
         const sectorIdForDataElementId = this.getDataElementsBySectorMapping();
