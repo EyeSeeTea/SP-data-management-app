@@ -62,6 +62,7 @@ const SaveStep: React.FC<StepProps> = ({ project, onCancel, action }) => {
         const validation = await project.validate();
         const error = _(validation).values().flatten().join("\n");
         if (error) {
+            loading.hide();
             snackbar.error(error);
             return;
         }
