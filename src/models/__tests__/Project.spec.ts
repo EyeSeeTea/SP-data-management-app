@@ -330,12 +330,48 @@ describe("Project", () => {
         ];
 
         const organisationUnits = [
-            { id: "1", code: "code1", displayName: "name1", organisationUnitGroups: [] },
-            { id: "2", code: "other2", displayName: "other2", organisationUnitGroups: [] },
-            { id: "3", code: "CODE3", displayName: "name3", organisationUnitGroups: [] },
-            { id: "4", code: "other4", displayName: "other4", organisationUnitGroups: [] },
-            { id: "5", code: "code5", displayName: "NAME5", organisationUnitGroups: [] },
-            { id: "6", code: "code6", displayName: "NAME6", organisationUnitGroups: [] },
+            {
+                id: "1",
+                code: "code1",
+                displayName: "name1",
+                organisationUnitGroups: [],
+                attributeValues: [],
+            },
+            {
+                id: "2",
+                code: "other2",
+                displayName: "other2",
+                organisationUnitGroups: [],
+                attributeValues: [],
+            },
+            {
+                id: "3",
+                code: "CODE3",
+                displayName: "name3",
+                organisationUnitGroups: [],
+                attributeValues: [],
+            },
+            {
+                id: "4",
+                code: "other4",
+                displayName: "other4",
+                organisationUnitGroups: [],
+                attributeValues: [],
+            },
+            {
+                id: "5",
+                code: "code5",
+                displayName: "NAME5",
+                organisationUnitGroups: [],
+                attributeValues: [],
+            },
+            {
+                id: "6",
+                code: "code6",
+                displayName: "NAME6",
+                organisationUnitGroups: [],
+                attributeValues: [],
+            },
         ];
 
         const orgUnitsById = _.keyBy(organisationUnits, ou => ou.id);
@@ -358,7 +394,7 @@ describe("Project", () => {
             mock.onGet("/organisationUnits", {
                 params: {
                     paging: false,
-                    fields: "closedDate,code,created,displayDescription,displayName,href,id,lastUpdated,lastUpdatedBy[name],openingDate,organisationUnitGroups[groupSets[id],id],parent[displayName,id],user[displayName,id]",
+                    fields: "attributeValues[attribute[id],value],closedDate,code,created,displayDescription,displayName,href,id,lastUpdated,lastUpdatedBy[name],openingDate,organisationUnitGroups[groupSets[id],id],parent[displayName,id],user[displayName,id]",
                     filter: ["id:in:[5,3,1]"],
                     order: "displayName:idesc",
                 },
@@ -411,7 +447,7 @@ describe("Project", () => {
 
             expect(pagination).toEqual({ page: 1, pageSize: 2, total: 1, pageCount: 1 });
             const emptySharing = { userAccesses: [], userGroupAccesses: [] };
-            expect(objects).toEqual([
+            expect(objects).toMatchObject([
                 {
                     id: "3",
                     code: "CODE3",
