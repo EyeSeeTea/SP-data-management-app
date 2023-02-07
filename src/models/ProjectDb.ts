@@ -239,6 +239,17 @@ export default class ProjectDb {
             { value: "true", attribute: { id: config.attributes.createdByApp.id } },
         ];
 
+        const metadata = await this.api.metadata
+            .get({
+                organisationUnits: {
+                    fields: { attributeValues: { attribute: { id: true }, value: true } },
+                    filter: { id: { eq: project.id } },
+                },
+            })
+            .getData();
+
+        const existingOrgUnit = metadata.organisationUnits[0];
+
         const orgUnit = {
             id: project.id,
             created: project.created ? toISOString(project.created) : undefined,
@@ -252,7 +263,7 @@ export default class ProjectDb {
             ...getOrgUnitDatesFromProject(startDate, endDate),
             openingDate: toISOString(startDate.clone().subtract(1, "month")),
             closedDate: toISOString(endDate.clone().add(1, "month").endOf("month")),
-            attributeValues: baseAttributeValues,
+            attributeValues: existingOrgUnit?.attributeValues || [],
             // No sharing, permissions through user.organisationUnits
         };
 
@@ -290,10 +301,16 @@ export default class ProjectDb {
         );
         if (!dashboards.project) throw new Error("Dashboards error");
 
-        const projectOrgUnit = addAttributeValueToObj(orgUnit, {
-            attribute: config.attributes.projectDashboard,
-            value: dashboards.project.id,
-        });
+        const projectOrgUnit = addAttributeValueToObj(
+            addAttributeValueToObj(orgUnit, {
+                attribute: config.attributes.createdByApp,
+                value: "true",
+            }),
+            {
+                attribute: config.attributes.projectDashboard,
+                value: dashboards.project.id,
+            }
+        );
 
         const orgUnitGroupsMetadata = await getOrgUnitGroupsMetadata(api, project, dashboards);
 
