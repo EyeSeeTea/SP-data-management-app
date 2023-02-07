@@ -239,6 +239,17 @@ export default class ProjectDb {
             { value: "true", attribute: { id: config.attributes.createdByApp.id } },
         ];
 
+        const metadata = await this.api.metadata
+            .get({
+                organisationUnits: {
+                    fields: { attributeValues: { attribute: { id: true }, value: true } },
+                    filter: { id: { eq: project.id } },
+                },
+            })
+            .getData();
+
+        const existingOrgUnit = metadata.organisationUnits[0];
+
         const orgUnit = {
             id: project.id,
             created: project.created ? toISOString(project.created) : undefined,
@@ -252,14 +263,26 @@ export default class ProjectDb {
             ...getOrgUnitDatesFromProject(startDate, endDate),
             openingDate: toISOString(startDate.clone().subtract(1, "month")),
             closedDate: toISOString(endDate.clone().add(1, "month").endOf("month")),
-            attributeValues: baseAttributeValues,
+            attributeValues: existingOrgUnit?.attributeValues || [],
             // No sharing, permissions through user.organisationUnits
         };
 
         const projectWithOrgUnit = project.set("orgUnit", orgUnit);
 
+        const dataSetActualId = getUid("dataSet", project.uid + "ACTUAL");
+        const dataSetsMetadata = await this.api.metadata
+            .get({
+                dataSets: {
+                    fields: { $owner: true },
+                    filter: { id: { eq: dataSetActualId } },
+                },
+            })
+            .getData();
+
+        const existingDataSetActual = _.get(dataSetsMetadata.dataSets, 0, null);
+
         const dataSetAttributeValues = addAttributeValue(
-            baseAttributeValues,
+            _.concat(existingDataSetActual?.attributeValues || [], baseAttributeValues),
             config.attributes.orgUnitProject,
             orgUnit.id
         );
@@ -290,10 +313,16 @@ export default class ProjectDb {
         );
         if (!dashboards.project) throw new Error("Dashboards error");
 
-        const projectOrgUnit = addAttributeValueToObj(orgUnit, {
-            attribute: config.attributes.projectDashboard,
-            value: dashboards.project.id,
-        });
+        const projectOrgUnit = addAttributeValueToObj(
+            addAttributeValueToObj(orgUnit, {
+                attribute: config.attributes.createdByApp,
+                value: "true",
+            }),
+            {
+                attribute: config.attributes.projectDashboard,
+                value: dashboards.project.id,
+            }
+        );
 
         const orgUnitGroupsMetadata = await getOrgUnitGroupsMetadata(api, project, dashboards);
 
@@ -433,7 +462,7 @@ export default class ProjectDb {
             case "actual": {
                 const actualPeriods = getMonthsRange(startDate, endDate).map(date => ({
                     period: { id: date.format("YYYYMM") },
-                    openingDate: toISOString(projectOpeningDate),
+                    openingDate: toISOString(projectOpeningDate.clone().startOf("month")),
                     closingDate: toISOString(
                         date.clone().startOf("month").add(1, "month").date(expiryDaysInMonthActual)
                     ),
@@ -484,28 +513,31 @@ export default class ProjectDb {
         }
     }
 
-    async updateOrgUnitWithLastUpdatedData(api: D2Api, config: Config, project: Project) {
-        const { organisationUnits } = await api.metadata
+    async updateLastUpdatedData(api: D2Api, config: Config, project: Project) {
+        const dataSetRef = project.dataSets?.actual;
+        if (!dataSetRef) return;
+
+        const { dataSets } = await api.metadata
             .get({
-                organisationUnits: {
+                dataSets: {
                     fields: { $owner: true },
-                    filter: { id: { eq: project.id } },
+                    filter: { id: { eq: dataSetRef.id } },
                 },
             })
             .getData();
-        const orgUnit = _(organisationUnits).get(0, null);
 
-        if (orgUnit) {
-            const lastUpdatedData = addAttributeValueToObj(orgUnit, {
+        const dataSet = _(dataSets).get(0, null);
+        if (!dataSet) return;
+
+        if (dataSet) {
+            const dataSetUpdated = addAttributeValueToObj(dataSet, {
                 attribute: config.attributes.lastUpdatedData,
                 value: moment().toISOString(),
             });
 
-            const orgUnitAttrs = { ...lastUpdatedData };
-            const res = await api.models.organisationUnits.put(orgUnitAttrs).getData();
+            const res = await api.models.dataSets.put(dataSetUpdated).getData();
 
-            if (res.status !== "OK") throw new Error("Error saving data set");
-            else console.error(`Org unit not found: ${project.id}`);
+            if (res.status !== "OK") console.error("Error saving data set");
         }
     }
 

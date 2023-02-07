@@ -101,6 +101,7 @@ export default class ProjectsList {
                               userAccesses: { id: true, displayName: true, access: true },
                               userGroupAccesses: { id: true, displayName: true, access: true },
                               access: true,
+                              attributeValues: { attribute: { id: true }, value: true },
                           },
                           // When there are many projects, this results in a 414 error, filter on the response.
                           // filter: { code: { in: dataSetCodes } },
@@ -138,7 +139,7 @@ export default class ProjectsList {
 
             const hasAwardNumberDashboard = (orgUnitsByAwardNumber[orgUnit.id] || 0) > 1;
             const lastUpdatedData =
-                orgUnit.attributeValues.find(
+                dataSet.attributeValues.find(
                     attributeValue =>
                         attributeValue.attribute.id === config.attributes.lastUpdatedData.id
                 )?.value ?? "";

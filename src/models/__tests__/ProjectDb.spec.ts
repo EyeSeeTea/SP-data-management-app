@@ -35,6 +35,20 @@ describe("ProjectDb", () => {
 
             mock.onGet("/metadata", {
                 params: {
+                    "organisationUnits:fields": "attributeValues[attribute[id],value]",
+                    "organisationUnits:filter": ["id:eq:WGC0DJ0YSis"],
+                },
+            }).replyOnce(200, []);
+
+            mock.onGet("/metadata", {
+                params: {
+                    "dataSets:fields": ":owner",
+                    "dataSets:filter": ["id:eq:CwUxT9UIX3z"],
+                },
+            }).replyOnce(200, []);
+
+            mock.onGet("/metadata", {
+                params: {
                     "organisationUnits:fields": "children[id,name,parent],id,name,parent",
                     "organisationUnits:filter": ["id:eq:WGC0DJ0YSis"],
                     "dataSets:fields":

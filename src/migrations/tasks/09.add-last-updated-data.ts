@@ -22,10 +22,10 @@ class AddLastUpdatedDataMigration {
             attributes: [
                 {
                     id: getId("attributes", "last-updated-org-unit"),
-                    name: "Last Updated Organisation Unit",
+                    name: "Last Updated Data",
                     code: "DM_LAST_UPDATED_DATA",
                     valueType: "DATETIME",
-                    organisationUnitAttribute: true,
+                    dataSetAttribute: true,
                 },
             ],
         });
