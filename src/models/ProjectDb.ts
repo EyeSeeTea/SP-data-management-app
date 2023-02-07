@@ -433,7 +433,7 @@ export default class ProjectDb {
             case "actual": {
                 const actualPeriods = getMonthsRange(startDate, endDate).map(date => ({
                     period: { id: date.format("YYYYMM") },
-                    openingDate: toISOString(projectOpeningDate),
+                    openingDate: toISOString(projectOpeningDate.clone().startOf("month")),
                     closingDate: toISOString(
                         date.clone().startOf("month").add(1, "month").date(expiryDaysInMonthActual)
                     ),
