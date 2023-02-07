@@ -34,7 +34,9 @@ module.exports = function (app) {
         pathRewrite: { "^/dhis2/": "/" },
         onProxyReq: function (proxyReq, _req, res) {
             const { path } = proxyReq;
-            const shouldRedirect = redirectPaths.some(redirectPath => path.startsWith(redirectPath));
+            const shouldRedirect = redirectPaths.some(redirectPath =>
+                path.startsWith(redirectPath)
+            );
 
             if (shouldRedirect) {
                 const redirectUrl = targetUrl.replace(/\/$/, "") + path;
