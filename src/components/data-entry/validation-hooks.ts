@@ -69,7 +69,7 @@ export function useValidation(hookOptions: {
                 }
                 case "dataValueSaved": {
                     const projectDb = new ProjectDb(project);
-                    projectDb.updateOrgUnitWithLastUpdatedData(api, config, project);
+                    projectDb.updateLastUpdatedData(api, config, project);
                 }
             }
         },
