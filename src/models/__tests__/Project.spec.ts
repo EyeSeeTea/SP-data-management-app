@@ -403,7 +403,7 @@ describe("Project", () => {
             mock.onGet("/metadata", {
                 params: {
                     "dataSets:fields":
-                        "access,code,sections[code],userAccesses[access,displayName,id],userGroupAccesses[access,displayName,id]",
+                        "access,attributeValues[attribute[id],value],code,sections[code],userAccesses[access,displayName,id],userGroupAccesses[access,displayName,id]",
                     "dataSets:filter": ["code:like$:_ACTUAL"],
                     "organisationUnitGroupSets:fields":
                         "id,organisationUnitGroups[id,organisationUnits[id]]",
@@ -418,6 +418,7 @@ describe("Project", () => {
                             { code: "SECTOR_AGRICULTURE_ds3", dataElements: [{ id: "de1" }] },
                         ],
                         access: fullAccess,
+                        attributeValues: [],
                     },
                     {
                         id: "ds5",
@@ -426,6 +427,7 @@ describe("Project", () => {
                             { code: "SECTOR_AGRICULTURE_ds5", dataElements: [{ id: "de2" }] },
                         ],
                         access: metadataAccess,
+                        attributeValues: [],
                     },
                 ],
             });
