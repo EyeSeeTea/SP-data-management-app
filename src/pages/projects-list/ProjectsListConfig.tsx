@@ -70,7 +70,16 @@ export function getComponentConfig(
             text: i18n.t("Created"),
             sortable: true,
         },
-        { ...columnDate("lastUpdated", "datetime"), text: i18n.t("Last Updated"), sortable: true },
+        {
+            ...columnDate("lastUpdated", "datetime"),
+            text: i18n.t("Last Updated (metadata)"),
+            sortable: true,
+        },
+        {
+            ...columnDate("lastUpdatedData", "datetime"),
+            text: i18n.t("Last Updated (data)"),
+            sortable: true,
+        },
     ];
 
     const details = [

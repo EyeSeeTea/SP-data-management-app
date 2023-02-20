@@ -71,13 +71,18 @@ async function exportProjects(
 
     const jsonCollection = await promiseMap(orgUnits, async orgUnit => {
         console.debug(`Get project: ${orgUnit.name} (${orgUnit.id})`);
-        const project = await ProjectDb.get(api, config, orgUnit.id);
-        const projectDb = new ProjectDb(project);
-        const json = await projectDb.toJSON();
-        return json;
+        try {
+            const project = await ProjectDb.get(api, config, orgUnit.id);
+            if (!project) return;
+            const projectDb = new ProjectDb(project);
+            const json = await projectDb.toJSON();
+            return json;
+        } catch (err) {
+            console.error((err as any).message);
+        }
     });
 
-    await writeJson(jsonPath, jsonCollection);
+    await writeJson(jsonPath, _.compact(jsonCollection));
 }
 
 async function importProjects(app: { api: D2Api; config: Config }, options: { jsonPath: string }) {
