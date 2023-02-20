@@ -8,7 +8,10 @@ export function formatDateLong(inputDate: string | Date | Moment | undefined): s
     if (!inputDate) {
         return "";
     } else {
-        const date = moment(inputDate);
+        // Assume all dates are UTC (sufix Z), add if not found
+        const inputDateUtc =
+            typeof inputDate === "string" && !inputDate.endsWith("Z") ? inputDate + "Z" : inputDate;
+        const date = moment(inputDateUtc);
         return date.format("YYYY-MM-DD HH:mm:ss");
     }
 }

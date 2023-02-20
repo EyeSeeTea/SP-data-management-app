@@ -37,6 +37,7 @@ const orgUnitFields = {
     openingDate: true,
     closedDate: true,
     code: true,
+    attributeValues: { value: true, attribute: { id: true } },
 } as const;
 
 type BaseProject = Omit<
@@ -48,6 +49,7 @@ export interface ProjectForList extends BaseProject {
     sectors: Sector[];
     sharing: Sharing;
     hasAwardNumberDashboard: boolean;
+    lastUpdatedData: string;
 }
 
 export default class ProjectsList {
@@ -99,6 +101,7 @@ export default class ProjectsList {
                               userAccesses: { id: true, displayName: true, access: true },
                               userGroupAccesses: { id: true, displayName: true, access: true },
                               access: true,
+                              attributeValues: { attribute: { id: true }, value: true },
                           },
                           // When there are many projects, this results in a 414 error, filter on the response.
                           // filter: { code: { in: dataSetCodes } },
@@ -135,12 +138,18 @@ export default class ProjectsList {
                 .value();
 
             const hasAwardNumberDashboard = (orgUnitsByAwardNumber[orgUnit.id] || 0) > 1;
+            const lastUpdatedData =
+                dataSet.attributeValues.find(
+                    attributeValue =>
+                        attributeValue.attribute.id === config.attributes.lastUpdatedData.id
+                )?.value ?? "";
 
             const project: ProjectForList = {
                 ..._.omit(orgUnit, ["organisationUnitGroups"]),
                 sectors,
                 sharing,
                 hasAwardNumberDashboard,
+                lastUpdatedData,
             };
             return project;
         });
