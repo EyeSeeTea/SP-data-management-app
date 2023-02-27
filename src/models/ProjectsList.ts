@@ -45,6 +45,8 @@ type BaseProject = Omit<
     "organisationUnitGroups"
 >;
 
+type D2OrgUnit = SelectedPick<D2OrganisationUnitSchema, typeof orgUnitFields>;
+
 export interface ProjectForList extends BaseProject {
     sectors: Sector[];
     sharing: Sharing;
@@ -68,9 +70,8 @@ export default class ProjectsList {
         const order = `${sorting.field}:i${sorting.order}`;
         const orgUnitIds = await this.getBaseOrgUnitIds(api, config, filters, order);
 
-        const d2OrgUnitsNested = await promiseMap(
-            _.chunk(orgUnitIds, 300),
-            async orgUnitIdsGroup => {
+        const d2OrgUnitsUnsorted = _.flatten(
+            await promiseMap(_.chunk(orgUnitIds, 300), async orgUnitIdsGroup => {
                 const { objects } = await api.models.organisationUnits
                     .get({
                         paging: false,
@@ -80,12 +81,10 @@ export default class ProjectsList {
                     })
                     .getData();
                 return objects;
-            }
+            })
         );
-        const d2OrgUnits = _(d2OrgUnitsNested)
-            .flatten()
-            .orderBy([sorting.field], [sorting.order])
-            .value();
+
+        const d2OrgUnits = await this.sortOrgUnits(d2OrgUnitsUnsorted, sorting);
 
         const projects = d2OrgUnits.map(getProjectFromOrgUnit);
         const dataSetCodes = new Set(projects.map(ou => `${ou.id}_ACTUAL`));
@@ -155,6 +154,73 @@ export default class ProjectsList {
         });
 
         return paginate(_.compact(projectsWithSectors), pagination);
+    }
+
+    private async getDataSetsWithLastUpdatedData() {
+        const { objects: dataSets } = await this.api.models.dataSets
+            .get({
+                paging: false,
+                fields: { attributeValues: { attribute: { id: true }, value: true } },
+                filter: {
+                    "attributeValues.attribute.id": {
+                        eq: this.config.attributes.lastUpdatedData.id,
+                    },
+                },
+            })
+            .getData();
+        return dataSets;
+    }
+
+    private async sortOrgUnits(
+        orgUnits: D2OrgUnit[],
+        sorting: TableSorting<ProjectForList>
+    ): Promise<D2OrgUnit[]> {
+        switch (sorting.field) {
+            case "lastUpdatedData": {
+                const dataSets = await this.getDataSetsWithLastUpdatedData();
+                const orgUnitsInfo = this.getOrgUnitsWithLastUpdatedData(dataSets, orgUnits);
+                const [orgUnitsWithUpdate, orgUnitsWithoutUpdate] = _.partition(
+                    orgUnitsInfo,
+                    info => Boolean(info.lastUpdatedData)
+                );
+
+                return _(orgUnitsWithUpdate)
+                    .orderBy([info => info.lastUpdatedData], [sorting.order])
+                    .concat(orgUnitsWithoutUpdate)
+                    .map(info => info.orgUnit)
+                    .value();
+            }
+            default:
+                return _(orgUnits).orderBy([sorting.field], [sorting.order]).value();
+        }
+    }
+
+    private getOrgUnitsWithLastUpdatedData(
+        dataSets: {
+            attributeValues: Array<{ attribute: { id: string }; value: string }>;
+        }[],
+        orgUnits: D2OrgUnit[]
+    ) {
+        const lastUpdatedDataByOrgUnitId = _(dataSets)
+            .map((dataSet): [Id, string] | null => {
+                const orgUnitId = dataSet.attributeValues.find(
+                    dv => dv.attribute.id === this.config.attributes.orgUnitProject.id
+                )?.value;
+
+                const lastUpdatedData = dataSet.attributeValues.find(
+                    dv => dv.attribute.id === this.config.attributes.lastUpdatedData.id
+                )?.value;
+
+                return orgUnitId && lastUpdatedData ? [orgUnitId, lastUpdatedData] : null;
+            })
+            .compact()
+            .fromPairs()
+            .value();
+
+        return orgUnits.map(orgUnit => ({
+            orgUnit: orgUnit,
+            lastUpdatedData: lastUpdatedDataByOrgUnitId[orgUnit.id],
+        }));
     }
 
     private getOrgUnitsCountByAwardNumber(

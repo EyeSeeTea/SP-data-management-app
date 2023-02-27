@@ -78,23 +78,23 @@ export function getComponentConfig(
         {
             ...columnDate("lastUpdatedData", "datetime"),
             text: i18n.t("Last Updated (data)"),
+            getValue: project => formatDateLong(project.lastUpdatedData) || "-",
             sortable: true,
         },
     ];
 
-    const details = [
+    const details: TableColumn<ProjectForList>[] = [
         ...columns,
         { name: "displayDescription" as const, text: i18n.t("Description") },
         {
             name: "user" as const,
             text: i18n.t("Created By"),
-            getValue: (project: ProjectForList) => `${project.user.displayName}`,
+            getValue: project => `${project.user.displayName}`,
         },
         {
             name: "lastUpdatedBy" as const,
             text: i18n.t("Last Updated By"),
-            getValue: (project: ProjectForList) =>
-                `${project.lastUpdatedBy ? project.lastUpdatedBy.name : "-"}`,
+            getValue: project => `${project.lastUpdatedBy ? project.lastUpdatedBy.name : "-"}`,
         },
         {
             name: "sharing" as const,
