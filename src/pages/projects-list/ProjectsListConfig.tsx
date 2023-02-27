@@ -78,7 +78,7 @@ export function getComponentConfig(
         {
             ...columnDate("lastUpdatedData", "datetime"),
             text: i18n.t("Last Updated (data)"),
-            getValue: project => project.lastUpdatedData || "-",
+            getValue: project => formatDateLong(project.lastUpdatedData) || "-",
             sortable: true,
         },
     ];
