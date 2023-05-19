@@ -27,14 +27,18 @@ export class ProjectNotification {
 
     private async getRecipients() {
         const groupCode = "DATA_MANAGEMENT_NOTIFICATION";
-        const { users } = await this.api.metadata
+        const { users: usersInGroup } = await this.api.metadata
             .get({
                 users: {
-                    fields: { email: true },
+                    fields: { email: true, userCredentials: { disabled: true } },
                     filter: { "userGroups.code": { eq: groupCode } },
                 },
             })
             .getData();
+
+        const users = _(usersInGroup)
+            .reject(user => user.userCredentials.disabled)
+            .value();
 
         return _(this.appConfig.app.notifyEmailOnProjectSave)
             .concat(users.map(user => user.email))
@@ -63,6 +67,7 @@ export class ProjectNotification {
                         users: {
                             email: true,
                             id: true,
+                            userCredentials: { disabled: true },
                             userGroups: {
                                 id: true,
                                 name: true,
@@ -99,9 +104,12 @@ export class ProjectNotification {
         const projectId = this.project.id;
         const path = generateUrl("dataApproval", { id: projectId, dataSetType, period });
         const dataApprovalLink = getFullUrl(path);
-
-        const users = res.userRoles.flatMap(userRole => userRole.users);
         const dataSet = res.dataSets[0];
+
+        const users = _(res.userRoles)
+            .flatMap(userRole => userRole.users)
+            .reject(user => user.userCredentials.disabled)
+            .value();
 
         const userAccessEmails = users
             .filter(user => {
