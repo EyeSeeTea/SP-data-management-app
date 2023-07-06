@@ -9,6 +9,7 @@ import { useDataQuery, useConfig } from "@dhis2/app-runtime";
 import _ from "lodash";
 //@ts-ignore
 import { SnackbarProvider, LoadingProvider } from "@eyeseetea/d2-ui-components";
+import { Feedback } from "@eyeseetea/feedback-component";
 import { D2Api } from "../../types/d2-api";
 
 import "./App.css";
@@ -22,57 +23,7 @@ import User from "../../models/user";
 import { createGenerateClassName, LinearProgress, StylesProvider } from "@material-ui/core";
 import Migrations from "../migrations/Migrations";
 import { useMigrations } from "../migrations/hooks";
-
-const appKey = "data-management-app";
-
-export interface AppConfig {
-    appKey: string;
-    appearance: {
-        showShareButton: boolean;
-    };
-    app: {
-        notifyEmailOnProjectSave: string[];
-    };
-    feedback: {
-        token: string[];
-        createIssue: boolean;
-        sendToDhis2UserGroups: string[];
-        issues: {
-            repository: string;
-            title: string;
-            body: string;
-        };
-        snapshots: {
-            repository: string;
-            branch: string;
-        };
-        feedbackOptions: {};
-    };
-}
-
-type D2 = object;
-
-type AppWindow = Window & {
-    $: {
-        feedbackDhis2: (
-            d2: D2,
-            appKey: string,
-            appConfig: AppConfig["feedback"]["feedbackOptions"]
-        ) => void;
-    };
-};
-
-function initFeedbackTool(d2: D2, appConfig: AppConfig): void {
-    const appKey = _(appConfig).get("appKey");
-
-    if (appConfig && appConfig.feedback) {
-        const feedbackOptions = {
-            ...appConfig.feedback,
-            i18nPath: "feedback-tool/i18n",
-        };
-        (window as unknown as AppWindow).$.feedbackDhis2(d2, appKey, feedbackOptions);
-    }
-}
+import { appConfig } from "../../app-config";
 
 const settingsQuery = { userSettings: { resource: "/userSettings" } };
 
@@ -89,32 +40,22 @@ const App: React.FC<AppProps> = props => {
     const [showShareButton, setShowShareButton] = useState(false);
     const { loading, error, data } = useDataQuery(settingsQuery);
     const isDev = _.last(window.location.hash.split("#")) === "dev";
-    const migrations = useMigrations(api, appKey);
+    const migrations = useMigrations(api, appConfig.appKey);
     const [loadError, setLoadError] = useState<string>();
+    const [username, setUsername] = useState("");
 
     useEffect(() => {
         const run = async () => {
-            const appConfigUrl = process.env.PUBLIC_URL + "/app-config.json";
-            const appConfig = await fetch(appConfigUrl, {
-                credentials: "same-origin",
-            }).then(res => res.json());
             const config = await getConfig(api);
             const currentUser = new User(config);
             const isTest = process.env.REACT_APP_CYPRESS === "true";
             const appContext = { d2, api, config, currentUser, isDev, isTest, appConfig, dhis2Url };
+            setUsername(currentUser.data.username);
             setAppContext(appContext);
 
             Object.assign(window, { dm: appContext });
 
             setShowShareButton(_(appConfig).get("appearance.showShareButton") || false);
-            const isFeedbackRole =
-                _.intersection(
-                    config.currentUser.userRoles.map(userRole => userRole.name),
-                    config.base.userRoles.feedback
-                ).length > 0;
-            if (isFeedbackRole) {
-                initFeedbackTool(d2, appConfig);
-            }
         };
 
         if (data && migrations.state.type === "checked") {
@@ -162,6 +103,7 @@ const App: React.FC<AppProps> = props => {
                                 </div>
 
                                 <Share visible={showShareButton} />
+                                <Feedback options={appConfig.feedback} username={username} />
                             </SnackbarProvider>
                         </LoadingProvider>
                     </OldMuiThemeProvider>

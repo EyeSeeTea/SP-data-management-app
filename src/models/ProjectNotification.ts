@@ -11,7 +11,7 @@ import { D2Api } from "../types/d2-api";
 import ProjectDb, { ExistingData, getStringDataValue } from "./ProjectDb";
 import { baseConfig } from "./Config";
 import moment from "moment";
-import { AppConfig } from "../components/app/App";
+import { AppConfig } from "../components/app/AppConfig";
 
 type Email = string;
 type Action = "create" | "update";
