@@ -1,3 +1,4 @@
+import _ from "lodash";
 import { TableSorting } from "@eyeseetea/d2-ui-components";
 import React, { useCallback, useState } from "react";
 import styled from "styled-components";
@@ -137,8 +138,21 @@ function useFilterOptions() {
 
     React.useEffect(() => {
         async function run() {
-            const countriesOnlyActive = await Project.getCountriesOnlyActive(api, config);
-            setFilterOptions(prev => ({ ...prev, countriesOnlyActive }));
+            const countriesFromProjects = await Project.getCountries(api, config);
+
+            const countriesAll = _.intersectionBy(
+                countriesFromProjects,
+                currentUser.getCountries(),
+                country => country.id
+            );
+
+            const newFilterOptions: FilterOptions = {
+                countriesAll: countriesAll,
+                sectors: config.sectors,
+                countriesOnlyActive: await Project.getCountriesOnlyActive(api, config),
+            };
+
+            setFilterOptions(newFilterOptions);
         }
         run();
     }, [api, currentUser, config]);

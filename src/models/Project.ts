@@ -496,6 +496,16 @@ class Project {
         return countries;
     }
 
+    static async getCountries(api: D2Api, config: Config) {
+        const projectsList = new ProjectList(api, config);
+        const { countries } = await projectsList.get(
+            {},
+            { field: "id", order: "asc" },
+            { page: 1, pageSize: 1 }
+        );
+        return countries;
+    }
+
     setSectors(sectors: Sector[]): Project {
         return this.setObj({
             sectors: sectors,
