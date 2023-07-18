@@ -891,9 +891,12 @@ async function getOrgUnitGroupsMetadata(
         })
         .getData();
 
+    const name = `Award Number ${project.awardNumber}`;
+
     const awardNumberOrgUnitGroupBase: OrgUnitGroup = {
         id: getUid("awardNumber", project.awardNumber),
-        name: `Award Number ${project.awardNumber}`,
+        name: name,
+        shortName: name,
         code: config.base.organisationUnitGroups.awardNumberPrefix + project.awardNumber,
         organisationUnits: [],
         attributeValues: [],
@@ -916,6 +919,7 @@ async function getOrgUnitGroupsMetadata(
         .concat(newOrgUnitGroups as OrgUnitGroup[])
         .concat([awardNumberOrgUnitGroupBase])
         .uniqBy(oug => oug.id)
+        .map(setDefaultShortName)
         .map(oug =>
             oug.id === awardNumberOrgUnitGroupBase.id && dashboards.awardNumber // Set dashboard ID to awardNumber group
                 ? addAttributeValueToObj(oug, {
@@ -1120,3 +1124,9 @@ const dataValuesDatesGetAll: Required<Pick<DataValueSetsGetRequest, "startDate" 
     startDate: "1970",
     endDate: (new Date().getFullYear() + 10).toString(),
 };
+
+type ObjWithShortName = Partial<{ name: string; shortName: string }>;
+
+function setDefaultShortName<T extends ObjWithShortName>(obj: T): T {
+    return { ...obj, shortName: obj.shortName || obj.name };
+}
