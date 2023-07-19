@@ -46,7 +46,7 @@
         "striptags": "^3.1.1",
         "styled-components": "^5.2.1",
         "styled-jsx": "3.4.1",
-        "word-wrap": "^1.2.3"
+        "word-wrap": "^1.2.4"
     },
     "scripts": {
         "prestart": "yarn localize && d2-manifest package.json manifest.webapp",
