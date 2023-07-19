@@ -463,6 +463,14 @@ class Project {
         return new Project(api, config, projectData);
     }
 
+    isPersisted() {
+        return Boolean(this.initialData);
+    }
+
+    hasCovid19Disaggregation() {
+        return this.disaggregation.hasAnyCovid19();
+    }
+
     download() {
         return new ProjectDownload(this).generate();
     }
