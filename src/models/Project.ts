@@ -26,7 +26,7 @@ import ProjectSharing from "./ProjectSharing";
 import { Disaggregation, SetCovid19WithRelationsOptions } from "./Disaggregation";
 import { Sharing } from "./Sharing";
 import { getIds } from "../utils/dhis2";
-import { isTest } from "../utils/tests";
+import { isTest } from "../utils/testing";
 
 /*
 Project model.

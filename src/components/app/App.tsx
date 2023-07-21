@@ -22,7 +22,7 @@ import User from "../../models/user";
 import { createGenerateClassName, LinearProgress, StylesProvider } from "@material-ui/core";
 import Migrations from "../migrations/Migrations";
 import { useMigrations } from "../migrations/hooks";
-import { isTest } from "../../utils/tests";
+import { isTest } from "../../utils/testing";
 
 const appKey = "data-management-app";
 
