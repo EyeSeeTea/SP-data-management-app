@@ -273,9 +273,11 @@ class Project {
     };
 
     validateMER(): ValidationError {
+        const selected = this.dataElementsSelection.getAllSelected();
+
         return _.concat(
             this.dataElementsMER.validateTotalSelectedCount(this.sectors, {
-                min: isTest() ? 1 : 3,
+                min: isTest() ? 1 : Math.min(selected.length, 3),
                 max: 5,
             })
         );
