@@ -22,6 +22,7 @@ import User from "../../models/user";
 import { createGenerateClassName, LinearProgress, StylesProvider } from "@material-ui/core";
 import Migrations from "../migrations/Migrations";
 import { useMigrations } from "../migrations/hooks";
+import { isTest } from "../../utils/tests";
 
 const appKey = "data-management-app";
 
@@ -100,8 +101,16 @@ const App: React.FC<AppProps> = props => {
             }).then(res => res.json());
             const config = await getConfig(api);
             const currentUser = new User(config);
-            const isTest = process.env.REACT_APP_CYPRESS === "true";
-            const appContext = { d2, api, config, currentUser, isDev, isTest, appConfig, dhis2Url };
+            const appContext = {
+                d2,
+                api,
+                config,
+                currentUser,
+                isDev,
+                isTest: isTest(),
+                appConfig,
+                dhis2Url,
+            };
             setAppContext(appContext);
 
             Object.assign(window, { dm: appContext });

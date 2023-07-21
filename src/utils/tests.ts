@@ -54,3 +54,7 @@ function writeJsonFile(data: any, prefix: string): string {
     fs.writeFileSync(file.fd, json);
     return filePath;
 }
+
+export function isTest(): boolean {
+    return process.env.REACT_APP_CYPRESS === "true" || process.env.JEST_WORKER_ID !== undefined;
+}

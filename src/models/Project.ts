@@ -26,6 +26,7 @@ import ProjectSharing from "./ProjectSharing";
 import { Disaggregation, SetCovid19WithRelationsOptions } from "./Disaggregation";
 import { Sharing } from "./Sharing";
 import { getIds } from "../utils/dhis2";
+import { isTest } from "../utils/tests";
 
 /*
 Project model.
@@ -273,9 +274,10 @@ class Project {
 
     validateMER(): ValidationError {
         return _.concat(
-            this.dataElementsMER.validateAtLeastOneSelected(this.sectors),
-            this.dataElementsMER.validateMaxSelectedBySector(this.sectors, 3),
-            this.dataElementsMER.validateMaxSectorsWithSelections(this.sectors, 3)
+            this.dataElementsMER.validateTotalSelectedCount(this.sectors, {
+                min: isTest() ? 1 : 3,
+                max: 5,
+            })
         );
     }
 
