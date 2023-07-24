@@ -1,4 +1,4 @@
-import React, { useState, ReactNode, ReactElement } from "react";
+import React, { useState } from "react";
 import { Button } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -15,6 +15,7 @@ import { ProjectNotification } from "../../../models/ProjectNotification";
 import ExistingDataValuesDialog from "./ExistingDataValuesDialog";
 import { ExistingData } from "../../../models/ProjectDb";
 import _ from "lodash";
+import { ProjectInfoNode } from "../../../models/ProjectInfo";
 
 const useStyles = makeStyles({
     wrapper: {
@@ -32,10 +33,10 @@ const SaveStep: React.FC<StepProps> = ({ project, onCancel, action }) => {
     const snackbar = useSnackbar();
     const classes = useStyles();
     const loading = useLoading();
-    const projectInfo = React.useMemo(() => <ProjectInfo project={project} />, [project]);
+    const projectInfo2 = React.useMemo(() => project.info.getNodes(), [project]);
 
     const [dialogOpen, setDialogOpen] = useState(false);
-    const { isSaving, errorMessage, save } = useSave(project, action, projectInfo);
+    const { isSaving, errorMessage, save } = useSave(project, action);
 
     const [existingData, setExistingData] = React.useState<ExistingData>();
     const closeExistingDataDialog = React.useCallback(() => setExistingData(undefined), []);
@@ -101,7 +102,7 @@ const SaveStep: React.FC<StepProps> = ({ project, onCancel, action }) => {
             )}
 
             <div className={classes.wrapper}>
-                {projectInfo}
+                <NodeList nodes={projectInfo2} />
 
                 <Button onClick={() => setDialogOpen(true)} variant="contained">
                     {i18n.t("Cancel")}
@@ -127,95 +128,39 @@ interface LiEntryProps {
     value?: React.ReactNode;
 }
 
+const NodeList: React.FC<{ nodes: ProjectInfoNode[] }> = props => {
+    const { nodes } = props;
+
+    return (
+        <ul>
+            {nodes.map(node => {
+                switch (node.type) {
+                    case "field":
+                        return <LiEntry label={node.name} value={node.value} />;
+                    case "section":
+                        return (
+                            <li>
+                                {node.name}:
+                                <NodeList nodes={node.children} />
+                            </li>
+                        );
+                }
+            })}
+        </ul>
+    );
+};
+
 const LiEntry: React.FC<LiEntryProps> = props => {
     const { label, value, children } = props;
     return (
         <li key={label}>
-            {label}:&nbsp;{value || children || "-"}
+            {label && <>{label}:&nbsp;</>}
+            {value || children || "-"}
         </li>
     );
 };
 
-const ProjectInfo: React.FC<{ project: Project }> = ({ project }) => (
-    <ul>
-        <LiEntry label={i18n.t("Name")} value={project.name} />
-        <LiEntry label={i18n.t("Description")} value={project.description} />
-        <LiEntry label={i18n.t("Award Number")} value={project.awardNumber} />
-        <LiEntry label={i18n.t("Subsequent Lettering")} value={project.subsequentLettering} />
-        <LiEntry label={Project.fieldNames.additional} value={project.additional} />
-        <LiEntry label={i18n.t("Period dates")} value={getProjectPeriodDateString(project)} />
-        <LiEntry label={i18n.t("Funders")} value={getNames(project.funders)} />
-
-        <LiEntry
-            label={i18n.t("Selected country")}
-            value={project.parentOrgUnit ? project.parentOrgUnit.displayName : "-"}
-        />
-
-        <LiEntry
-            label={i18n.t("Locations")}
-            value={project.locations.map(location => location.displayName).join(", ")}
-        />
-
-        <LiEntry label={i18n.t("Sharing")}>
-            <ul>
-                <li>
-                    {i18n.t("Users") + ": "}
-                    {project.sharing.userAccesses.map(ua => ua.name).join(", ") || " - "}
-                </li>
-                <li>
-                    {i18n.t("User groups") + ": "}
-                    {project.sharing.userGroupAccesses.map(uga => uga.name).join(", ") || " -"}
-                </li>
-            </ul>
-        </LiEntry>
-
-        <LiEntry label={i18n.t("Sectors")} value={getSectorsInfo(project)} />
-    </ul>
-);
-
-function getSectorsInfo(project: Project): ReactNode {
-    const sectorsInfo = project.getSectorsInfo();
-    const hiddenMsg = i18n.t("Hidden in data entry as it is selected in multiple sectors!");
-
-    return (
-        <ul>
-            {sectorsInfo.map(({ sector, dataElementsInfo }) => {
-                const value = (
-                    <ul>
-                        {dataElementsInfo.map(
-                            ({ dataElement, isMER, isCovid19, usedInDataSetSection }) => (
-                                <li key={dataElement.id}>
-                                    {dataElement.name} - {dataElement.code}
-                                    {isCovid19 ? ` [${i18n.t("COVID-19")}]` : ""}
-                                    {isMER ? ` [${i18n.t("MER")}]` : ""}
-                                    {usedInDataSetSection ? "" : <i> - {hiddenMsg}</i>}
-                                </li>
-                            )
-                        )}
-                    </ul>
-                );
-                return <LiEntry key={sector.id} label={sector.displayName} value={value} />;
-            })}
-        </ul>
-    );
-}
-
-function getNames(objects: { displayName: string }[]) {
-    return objects.map(obj => obj.displayName).join(", ");
-}
-
-function getProjectPeriodDateString(project: Project): string {
-    const { startDate, endDate } = project;
-    const dateFormat = "MMMM YYYY";
-
-    if (startDate && endDate) {
-        return [startDate.format(dateFormat), "-", endDate.format(dateFormat)].join(" ");
-    } else {
-        return "-";
-    }
-}
-
-function useSave(project: Project, action: StepProps["action"], projectInfo: ReactElement) {
+function useSave(project: Project, action: StepProps["action"]) {
     const { api, isDev, isTest, appConfig, currentUser } = useAppContext();
     const [isSaving, setSaving] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
@@ -238,7 +183,7 @@ function useSave(project: Project, action: StepProps["action"], projectInfo: Rea
                     currentUser,
                     isTest
                 );
-                notificator.notifyOnProjectSave(projectInfo, action);
+                notificator.notifyOnProjectSave(action);
                 const baseMsg =
                     action === "create" ? i18n.t("Project created") : i18n.t("Project updated");
                 const msg = `${baseMsg}: ${projectSaved.name}`;
@@ -264,7 +209,6 @@ function useSave(project: Project, action: StepProps["action"], projectInfo: Rea
         api,
         appConfig,
         isDev,
-        projectInfo,
         currentUser,
         isTest,
         loading,

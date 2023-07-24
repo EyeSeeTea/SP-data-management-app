@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2022-10-24T06:53:19.502Z\n"
-"PO-Revision-Date: 2022-10-24T06:53:19.502Z\n"
+"POT-Creation-Date: 2023-07-24T11:34:19.738Z\n"
+"PO-Revision-Date: 2023-07-24T11:34:19.738Z\n"
 
 msgid "Name"
 msgstr ""
@@ -268,45 +268,6 @@ msgstr ""
 msgid "Save"
 msgstr ""
 
-msgid "Description"
-msgstr ""
-
-msgid "Award Number"
-msgstr ""
-
-msgid "Subsequent Lettering"
-msgstr ""
-
-msgid "Period dates"
-msgstr ""
-
-msgid "Funders"
-msgstr ""
-
-msgid "Selected country"
-msgstr ""
-
-msgid "Locations"
-msgstr ""
-
-msgid "Sharing"
-msgstr ""
-
-msgid "Users"
-msgstr ""
-
-msgid "User groups"
-msgstr ""
-
-msgid "Sectors"
-msgstr ""
-
-msgid "Hidden in data entry as it is selected in multiple sectors!"
-msgstr ""
-
-msgid "MER"
-msgstr ""
-
 msgid "Saving Project"
 msgstr ""
 
@@ -397,6 +358,9 @@ msgstr ""
 msgid "Narrative"
 msgstr ""
 
+msgid "Locations"
+msgstr ""
+
 msgid "Project"
 msgstr ""
 
@@ -459,6 +423,15 @@ msgstr ""
 msgid "Data Elements MER"
 msgstr ""
 
+msgid "Description"
+msgstr ""
+
+msgid "Award Number"
+msgstr ""
+
+msgid "Subsequent Lettering"
+msgstr ""
+
 msgid "Additional Designation (Location/Sector)"
 msgstr ""
 
@@ -466,6 +439,12 @@ msgid "Start Date"
 msgstr ""
 
 msgid "End Date"
+msgstr ""
+
+msgid "Sectors"
+msgstr ""
+
+msgid "Funders"
 msgstr ""
 
 msgid "Project Locations"
@@ -484,6 +463,9 @@ msgid "Dashboard"
 msgstr ""
 
 msgid "Initial Data"
+msgstr ""
+
+msgid "Sharing"
 msgstr ""
 
 msgid "Award Number should be a number of 5 digits"
@@ -615,6 +597,24 @@ msgid "Total Actual People"
 msgstr ""
 
 msgid "People"
+msgstr ""
+
+msgid "Period dates"
+msgstr ""
+
+msgid "Selected country"
+msgstr ""
+
+msgid "Users"
+msgstr ""
+
+msgid "User groups"
+msgstr ""
+
+msgid "Hidden in data entry as it is selected in multiple sectors!"
+msgstr ""
+
+msgid "MER"
 msgstr ""
 
 msgid "[SP Platform] Request for Data Review: {{name}} ({{code}})"

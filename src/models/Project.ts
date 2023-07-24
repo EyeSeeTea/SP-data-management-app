@@ -26,6 +26,7 @@ import ProjectSharing from "./ProjectSharing";
 import { Disaggregation, SetCovid19WithRelationsOptions } from "./Disaggregation";
 import { Sharing } from "./Sharing";
 import { getIds } from "../utils/dhis2";
+import { ProjectInfo } from "./ProjectInfo";
 
 /*
 Project model.
@@ -528,6 +529,10 @@ class Project {
         return this.id;
     }
 
+    get info() {
+        return new ProjectInfo(this);
+    }
+
     async validateCodeUniqueness(): Promise<ValidationError> {
         const { api, code } = this;
         if (!code) return [];
@@ -567,6 +572,17 @@ class Project {
         return !toDate ? periods : periods.filter(period => period.date <= now);
     }
 
+    getPeriodInterval(): string {
+        const { startDate, endDate } = this.data;
+        const dateFormat = "MMMM YYYY";
+
+        if (startDate && endDate) {
+            return [startDate.format(dateFormat), "-", endDate.format(dateFormat)].join(" ");
+        } else {
+            return "-";
+        }
+    }
+
     getDates(): { startDate: Moment; endDate: Moment } {
         const { startDate, endDate } = this;
         if (!startDate || !endDate) throw new Error("No project dates");
@@ -576,6 +592,15 @@ class Project {
     getProjectDataSet(dataSet: DataSet) {
         const dataSetType: DataSetType = dataSet.code.endsWith("ACTUAL") ? "actual" : "target";
         return this.dataSetsByType[dataSetType];
+    }
+
+    getInitialProject(): Maybe<Project> {
+        return this.initialData
+            ? new Project(this.api, this.config, {
+                  ...this.initialData,
+                  initialData: undefined,
+              })
+            : undefined;
     }
 
     static async delete(config: Config, api: D2Api, ids: Id[]): Promise<void> {

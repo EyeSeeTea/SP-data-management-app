@@ -1,9 +1,6 @@
 import _ from "lodash";
-import striptags from "striptags";
-import ReactDOMServer from "react-dom/server";
 
 import Project, { DataSetType } from "./Project";
-import { ReactElement } from "react";
 import i18n from "../locales";
 import User from "./user";
 import { generateUrl } from "../router";
@@ -47,9 +44,9 @@ export class ProjectNotification {
             .value();
     }
 
-    async notifyOnProjectSave(element: ReactElement, action: Action) {
+    async notifyOnProjectSave(action: Action) {
         const recipients = await this.getRecipients();
-        await this.notifySave(element, recipients, action);
+        await this.notifySave(recipients, action);
         await this.notifyDanglingDataValues(recipients);
     }
 
@@ -199,7 +196,7 @@ The reason provided by the user was:
         return this.sendMessage({ recipients, subject, text: text.trim() });
     }
 
-    private async notifySave(element: ReactElement, recipients: Email[], action: Action) {
+    private async notifySave(recipients: Email[], action: Action) {
         const { project, currentUser } = this;
         const baseMsg = action === "create" ? i18n.t("Project created") : i18n.t("Project updated");
         const subject = `${baseMsg}: ${this.project.name}`;
@@ -214,7 +211,7 @@ The reason provided by the user was:
 
             // Cypress fails when body includes an URL,
             !this.isTest ? getProjectUrl(project) : "test-url",
-            html2Text(element),
+            project.info.getAsString(),
         ];
 
         const text = body.join("\n\n");
@@ -260,15 +257,6 @@ The reason provided by the user was:
             return true;
         }
     }
-}
-
-const nbsp = /\xa0/g;
-
-function html2Text(element: ReactElement): string {
-    const html = ReactDOMServer.renderToStaticMarkup(element);
-    const text = striptags(html, [], "\n");
-    const textWithoutBlankLines = text.replace(/^\s*$(?:\r\n?|\n)/gm, "").replace(nbsp, " ");
-    return textWithoutBlankLines;
 }
 
 function getProjectUrl(project: Project) {
