@@ -382,15 +382,7 @@ class Project {
         return selectedDataElementsSorted;
     }
 
-    public getSectorsInfo(): Array<{
-        sector: Sector;
-        dataElementsInfo: Array<{
-            dataElement: DataElement;
-            isMER: boolean;
-            isCovid19: boolean;
-            usedInDataSetSection: boolean;
-        }>;
-    }> {
+    public getSectorsInfo(): SectorsInfo {
         const { dataElementsSelection, dataElementsMER, sectors } = this;
         const dataElementsBySectorMapping = new ProjectDb(this).getDataElementsBySectorMapping();
         const selectedMER = new Set(dataElementsMER.get({ onlySelected: true }).map(de => de.id));
@@ -678,5 +670,17 @@ export function getPeriodsData(dataSet: DataSet) {
 
     return { periodIds, currentPeriodId };
 }
+
+export type DataElementInfo = {
+    dataElement: DataElement;
+    isMER: boolean;
+    isCovid19: boolean;
+    usedInDataSetSection: boolean;
+};
+
+export type SectorsInfo = Array<{
+    sector: Sector;
+    dataElementsInfo: Array<DataElementInfo>;
+}>;
 
 export default Project;

@@ -15,7 +15,8 @@ import { ProjectNotification } from "../../../models/ProjectNotification";
 import ExistingDataValuesDialog from "./ExistingDataValuesDialog";
 import { ExistingData } from "../../../models/ProjectDb";
 import _ from "lodash";
-import { ProjectInfoNode } from "../../../models/ProjectInfo";
+import { Action, actionNames, ProjectInfoNode } from "../../../models/ProjectInfo";
+import { Maybe } from "../../../types/utils";
 
 const useStyles = makeStyles({
     wrapper: {
@@ -123,11 +124,6 @@ const SaveStep: React.FC<StepProps> = ({ project, onCancel, action }) => {
     );
 };
 
-interface LiEntryProps {
-    label: string;
-    value?: React.ReactNode;
-}
-
 const NodeList: React.FC<{ nodes: ProjectInfoNode[] }> = props => {
     const { nodes } = props;
 
@@ -136,13 +132,28 @@ const NodeList: React.FC<{ nodes: ProjectInfoNode[] }> = props => {
             {nodes.map(node => {
                 switch (node.type) {
                     case "field":
-                        return <LiEntry label={node.name} value={node.value} />;
+                        return (
+                            <LiEntry
+                                label={node.name}
+                                value={node.value}
+                                prevValue={node.prevValue}
+                                action={undefined}
+                            />
+                        );
+                    case "value":
+                        return (
+                            <LiEntry
+                                label={undefined}
+                                value={node.value}
+                                prevValue={node.prevValue}
+                                action={node.action}
+                            />
+                        );
                     case "section":
                         return (
-                            <li>
-                                {node.name}:
+                            <LiEntry label={node.title} value={undefined} action={node.action}>
                                 <NodeList nodes={node.children} />
-                            </li>
+                            </LiEntry>
                         );
                 }
             })}
@@ -150,12 +161,27 @@ const NodeList: React.FC<{ nodes: ProjectInfoNode[] }> = props => {
     );
 };
 
+interface LiEntryProps {
+    label: Maybe<string>;
+    value?: string;
+    prevValue?: Maybe<string>;
+    action: Maybe<Action>;
+}
+
 const LiEntry: React.FC<LiEntryProps> = props => {
-    const { label, value, children } = props;
+    const { label, value, prevValue, action, children } = props;
+
     return (
         <li key={label}>
-            {label && <>{label}:&nbsp;</>}
-            {value || children || "-"}
+            {action && action !== "none" && <span>[{actionNames[action]}]&nbsp;</span>}
+            {label && (
+                <>
+                    <b>{label}</b>:&nbsp;
+                </>
+            )}
+            {prevValue !== undefined && prevValue !== value && <span>{prevValue} ➔ </span>}
+            {value}
+            {children}
         </li>
     );
 };

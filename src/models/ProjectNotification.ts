@@ -211,7 +211,7 @@ The reason provided by the user was:
 
             // Cypress fails when body includes an URL,
             !this.isTest ? getProjectUrl(project) : "test-url",
-            project.info.getAsString(),
+            replaceInitialSpacesByNbsp(project.info.getAsString()),
         ];
 
         const text = body.join("\n\n");
@@ -266,4 +266,11 @@ function getProjectUrl(project: Project) {
 
 function getFullUrl(path: string): string {
     return window.location.href.split("#")[0] + "#" + path;
+}
+
+function replaceInitialSpacesByNbsp(s: string): string {
+    return s
+        .split(/\n/)
+        .map(line => _.repeat("&nbsp;", line.match(/^\s+/)?.[0].length || 0) + line.trimLeft())
+        .join("\n");
 }
