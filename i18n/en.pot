@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2023-07-24T11:34:19.738Z\n"
-"PO-Revision-Date: 2023-07-24T11:34:19.738Z\n"
+"POT-Creation-Date: 2023-07-26T06:45:28.331Z\n"
+"PO-Revision-Date: 2023-07-26T06:45:28.332Z\n"
 
 msgid "Name"
 msgstr ""
@@ -599,6 +599,18 @@ msgstr ""
 msgid "People"
 msgstr ""
 
+msgid "NONE"
+msgstr ""
+
+msgid "UPDATED"
+msgstr ""
+
+msgid "ADDED"
+msgstr ""
+
+msgid "REMOVED"
+msgstr ""
+
 msgid "Period dates"
 msgstr ""
 
@@ -608,7 +620,7 @@ msgstr ""
 msgid "Users"
 msgstr ""
 
-msgid "User groups"
+msgid "User Groups"
 msgstr ""
 
 msgid "Hidden in data entry as it is selected in multiple sectors!"
@@ -942,6 +954,9 @@ msgid "Edit"
 msgstr ""
 
 msgid "Delete"
+msgstr ""
+
+msgid "User groups"
 msgstr ""
 
 msgid "Countries"

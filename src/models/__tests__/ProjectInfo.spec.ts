@@ -22,8 +22,8 @@ test("getAsString on new project", () => {
 });
 
 function getProjectWithChanges() {
-    const baseProject0 = getProject(api, {});
-    const baseProject = baseProject0.set("initialData", baseProject0.data);
+    const project0 = getProject(api, {});
+    const baseProject = project0.set("initialData", project0.data);
     const newSectors = baseProject.config.sectors.filter(s => s.code === "SECTOR_EDUCATION");
     const keepSector = baseProject.sectors[0];
 

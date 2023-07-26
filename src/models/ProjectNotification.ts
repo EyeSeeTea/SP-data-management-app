@@ -227,6 +227,7 @@ The reason provided by the user was:
 
         const subject = i18n.t("Project '{{projectName}}' [dangling data values]", { projectName });
 
+        // TODO: show only N first + say the total
         const text =
             i18n.t("Project '{{projectName}}' has dangling data values:", { projectName }) +
             "\n\n" +

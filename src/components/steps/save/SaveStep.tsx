@@ -15,7 +15,7 @@ import { ProjectNotification } from "../../../models/ProjectNotification";
 import ExistingDataValuesDialog from "./ExistingDataValuesDialog";
 import { ExistingData } from "../../../models/ProjectDb";
 import _ from "lodash";
-import { Action, actionNames, ProjectInfoNode } from "../../../models/ProjectInfo";
+import { Action, ProjectInfo, ProjectInfoNode } from "../../../models/ProjectInfo";
 import { Maybe } from "../../../types/utils";
 
 const useStyles = makeStyles({
@@ -137,7 +137,7 @@ const NodeList: React.FC<{ nodes: ProjectInfoNode[] }> = props => {
                                 label={node.name}
                                 value={node.value}
                                 prevValue={node.prevValue}
-                                action={undefined}
+                                action={node.action}
                             />
                         );
                     case "value":
@@ -170,15 +170,16 @@ interface LiEntryProps {
 
 const LiEntry: React.FC<LiEntryProps> = props => {
     const { label, value, prevValue, action, children } = props;
+    const actionNames = ProjectInfo.getActionNames();
 
     return (
         <li key={label}>
-            {action && action !== "none" && <span>[{actionNames[action]}]&nbsp;</span>}
             {label && (
                 <>
                     <b>{label}</b>:&nbsp;
                 </>
             )}
+            {action && action !== "none" && <i>[{actionNames[action]}]&nbsp;</i>}
             {prevValue !== undefined && prevValue !== value && <span>{prevValue} ➔ </span>}
             {value}
             {children}
