@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2023-07-26T06:45:28.331Z\n"
-"PO-Revision-Date: 2023-07-26T06:45:28.332Z\n"
+"POT-Creation-Date: 2023-08-01T08:41:29.934Z\n"
+"PO-Revision-Date: 2023-08-01T08:41:29.934Z\n"
 
 msgid "Name"
 msgstr ""
@@ -672,6 +672,9 @@ msgid "updated"
 msgstr ""
 
 msgid "Project '{{projectName}}' [dangling data values]"
+msgstr ""
+
+msgid "... and {{countMore}} more"
 msgstr ""
 
 msgid "Award Number {{awardNumber}}"
