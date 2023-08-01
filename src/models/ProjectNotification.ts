@@ -221,17 +221,26 @@ The reason provided by the user was:
     private async notifyDanglingDataValues(recipients: Email[]) {
         const { project } = this;
         const dataValues = await new ProjectDb(project).getDanglingDataValues();
-        const projectName = project.name;
-
         if (_.isEmpty(dataValues)) return;
 
+        const projectName = project.name;
         const subject = i18n.t("Project '{{projectName}}' [dangling data values]", { projectName });
+        const limit = 10;
+        const dataValuesToShow = _.take(dataValues, limit);
+        const showWasLimited = dataValuesToShow.length < dataValues.length;
+        const countMore = dataValues.length - dataValuesToShow.length;
 
-        // TODO: show only N first + say the total
-        const text =
-            i18n.t("Project '{{projectName}}' has dangling data values:", { projectName }) +
-            "\n\n" +
-            dataValues.map(getStringDataValue).join("\n");
+        const parts = [
+            i18n.t("Project '{{projectName}}' has {{count}} dangling data values:", {
+                count: dataValues.length,
+                projectName: projectName,
+            }),
+            "",
+            ...dataValuesToShow.map(getStringDataValue),
+            showWasLimited ? i18n.t("... and {{countMore}} more", { countMore: countMore }) : null,
+        ];
+
+        const text = parts.filter(s => s !== null).join("\n");
 
         return this.sendMessage({ recipients, subject, text });
     }
