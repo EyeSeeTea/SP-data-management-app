@@ -11,6 +11,7 @@ const selector = {
     organisationUnit: {
         path: "/J0hschZVMBt/PJb0RtEnqlf",
         id: "PJb0RtEnqlf",
+        name: "Sierra Leona",
         displayName: "Sierra Leona",
     },
 };
