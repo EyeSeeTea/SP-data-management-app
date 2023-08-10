@@ -18,6 +18,7 @@ import Project, {
     DataSetType,
     Dashboards,
     Dashboard,
+    getProjectFromOrgUnit,
 } from "./Project";
 import { getMonthsRange, toISOString } from "../utils/date";
 import "../utils/lodash-mixins";
@@ -249,12 +250,13 @@ export default class ProjectDb {
             .getData();
 
         const existingOrgUnit = metadata.organisationUnits[0];
+        const name = `${project.awardNumber.trim()}${project.subsequentLettering.trim()} - ${project.name.trim()}`;
 
         const orgUnit = {
             id: project.id,
             created: project.created ? toISOString(project.created) : undefined,
-            name: project.name,
-            displayName: project.name,
+            name: name,
+            displayName: name,
             path: project.parentOrgUnit.path + "/" + project.id,
             code: project.code,
             shortName: project.shortName,
@@ -735,10 +737,11 @@ export default class ProjectDb {
         const { dataSetElements } = projectDataSets.actual;
         const disaggregation = Disaggregation.buildFromDataSetElements(config, dataSetElements);
         const codeInfo = ProjectDb.getCodeInfo(code);
+        const { displayName } = getProjectFromOrgUnit(orgUnit);
 
         const projectData = {
             id: orgUnit.id,
-            name: orgUnit.name,
+            name: displayName,
             created: orgUnit.created ? moment(orgUnit.created) : undefined,
             description: orgUnit.description,
             ...codeInfo,
