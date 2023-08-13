@@ -65,8 +65,8 @@ export default class IndicatorsPage {
 function getCodes(cb, options) {
     const { onlySelected } = options;
     const extra = onlySelected ? ".Mui-selected" : "";
-    cy.get(".MuiTableBody-root").then(() => {
-        const codeFields = Cypress.$(`.MuiTableRow-root${extra} td:nth-child(3)`)
+    cy.get(".dm-MuiTableBody-root").then(() => {
+        const codeFields = Cypress.$(`.dm-MuiTableRow-root${extra} td:nth-child(3)`)
             .get()
             .map(x => x.innerText);
         const codes = _(codeFields)

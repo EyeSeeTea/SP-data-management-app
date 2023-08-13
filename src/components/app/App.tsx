@@ -24,6 +24,7 @@ import { createGenerateClassName, LinearProgress, StylesProvider } from "@materi
 import Migrations from "../migrations/Migrations";
 import { useMigrations } from "../migrations/hooks";
 import { appConfig } from "../../app-config";
+import { isTest } from "../../utils/testing";
 
 const settingsQuery = { userSettings: { resource: "/userSettings" } };
 
@@ -48,9 +49,17 @@ const App: React.FC<AppProps> = props => {
         const run = async () => {
             const config = await getConfig(api);
             const currentUser = new User(config);
-            const isTest = process.env.REACT_APP_CYPRESS === "true";
-            const appContext = { d2, api, config, currentUser, isDev, isTest, appConfig, dhis2Url };
             setUsername(currentUser.data.username);
+            const appContext = {
+                d2,
+                api,
+                config,
+                currentUser,
+                isDev,
+                isTest: isTest(),
+                appConfig,
+                dhis2Url,
+            };
             setAppContext(appContext);
 
             Object.assign(window, { dm: appContext });

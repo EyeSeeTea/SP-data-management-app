@@ -20,6 +20,7 @@ module.exports = {
         "no-debugger": "warn",
         "no-useless-constructor": "off",
         "default-case": "off",
+        "array-callback-return": "off",
         "@typescript-eslint/ban-types": "off",
         "@typescript-eslint/ban-ts-comment": "off",
         "@typescript-eslint/no-use-before-define": "off",

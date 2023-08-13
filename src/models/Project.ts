@@ -26,6 +26,8 @@ import ProjectSharing from "./ProjectSharing";
 import { Disaggregation, SetCovid19WithRelationsOptions } from "./Disaggregation";
 import { Sharing } from "./Sharing";
 import { getIds } from "../utils/dhis2";
+import { ProjectInfo } from "./ProjectInfo";
+import { isTest } from "../utils/testing";
 
 /*
 Project model.
@@ -215,7 +217,7 @@ class Project {
         description: i18n.t("Description"),
         awardNumber: i18n.t("Award Number"),
         subsequentLettering: i18n.t("Subsequent Lettering"),
-        additional: i18n.t("Additional Designation (Location/Sector)"),
+        additional: i18n.t("Additional Designation (Funder, Location, Sector, etc)"),
         startDate: i18n.t("Start Date"),
         endDate: i18n.t("End Date"),
         sectors: i18n.t("Sectors"),
@@ -272,10 +274,13 @@ class Project {
     };
 
     validateMER(): ValidationError {
+        const selected = this.dataElementsSelection.getAllSelected();
+
         return _.concat(
-            this.dataElementsMER.validateAtLeastOneSelected(this.sectors),
-            this.dataElementsMER.validateMaxSelectedBySector(this.sectors, 3),
-            this.dataElementsMER.validateMaxSectorsWithSelections(this.sectors, 3)
+            this.dataElementsMER.validateTotalSelectedCount(this.sectors, {
+                min: isTest() ? 1 : Math.min(selected.length, 3),
+                max: 5,
+            })
         );
     }
 
@@ -381,15 +386,7 @@ class Project {
         return selectedDataElementsSorted;
     }
 
-    public getSectorsInfo(): Array<{
-        sector: Sector;
-        dataElementsInfo: Array<{
-            dataElement: DataElement;
-            isMER: boolean;
-            isCovid19: boolean;
-            usedInDataSetSection: boolean;
-        }>;
-    }> {
+    public getSectorsInfo(): SectorsInfo {
         const { dataElementsSelection, dataElementsMER, sectors } = this;
         const dataElementsBySectorMapping = new ProjectDb(this).getDataElementsBySectorMapping();
         const selectedMER = new Set(dataElementsMER.get({ onlySelected: true }).map(de => de.id));
@@ -463,6 +460,14 @@ class Project {
         return new Project(api, config, projectData);
     }
 
+    isPersisted() {
+        return Boolean(this.initialData);
+    }
+
+    hasCovid19Disaggregation() {
+        return this.disaggregation.hasAnyCovid19();
+    }
+
     download() {
         return new ProjectDownload(this).generate();
     }
@@ -484,6 +489,26 @@ class Project {
     ) {
         const projectsList = new ProjectList(api, config);
         return projectsList.get(filters, sorting, pagination);
+    }
+
+    static async getCountriesOnlyActive(api: D2Api, config: Config) {
+        const projectsList = new ProjectList(api, config);
+        const { countries } = await projectsList.get(
+            { onlyActive: true },
+            { field: "id", order: "asc" },
+            { page: 1, pageSize: 1 }
+        );
+        return countries;
+    }
+
+    static async getCountries(api: D2Api, config: Config) {
+        const projectsList = new ProjectList(api, config);
+        const { countries } = await projectsList.get(
+            {},
+            { field: "id", order: "asc" },
+            { page: 1, pageSize: 1 }
+        );
+        return countries;
     }
 
     setSectors(sectors: Sector[]): Project {
@@ -528,6 +553,10 @@ class Project {
         return this.id;
     }
 
+    get info() {
+        return new ProjectInfo(this);
+    }
+
     async validateCodeUniqueness(): Promise<ValidationError> {
         const { api, code } = this;
         if (!code) return [];
@@ -567,6 +596,17 @@ class Project {
         return !toDate ? periods : periods.filter(period => period.date <= now);
     }
 
+    getPeriodInterval(): string {
+        const { startDate, endDate } = this.data;
+        const dateFormat = "MMMM YYYY";
+
+        if (startDate && endDate) {
+            return [startDate.format(dateFormat), "-", endDate.format(dateFormat)].join(" ");
+        } else {
+            return "-";
+        }
+    }
+
     getDates(): { startDate: Moment; endDate: Moment } {
         const { startDate, endDate } = this;
         if (!startDate || !endDate) throw new Error("No project dates");
@@ -576,6 +616,15 @@ class Project {
     getProjectDataSet(dataSet: DataSet) {
         const dataSetType: DataSetType = dataSet.code.endsWith("ACTUAL") ? "actual" : "target";
         return this.dataSetsByType[dataSetType];
+    }
+
+    getInitialProject(): Maybe<Project> {
+        return this.initialData
+            ? new Project(this.api, this.config, {
+                  ...this.initialData,
+                  initialData: undefined,
+              })
+            : undefined;
     }
 
     static async delete(config: Config, api: D2Api, ids: Id[]): Promise<void> {
@@ -653,5 +702,17 @@ export function getPeriodsData(dataSet: DataSet) {
 
     return { periodIds, currentPeriodId };
 }
+
+export type DataElementInfo = {
+    dataElement: DataElement;
+    isMER: boolean;
+    isCovid19: boolean;
+    usedInDataSetSection: boolean;
+};
+
+export type SectorsInfo = Array<{
+    sector: Sector;
+    dataElementsInfo: Array<DataElementInfo>;
+}>;
 
 export default Project;
