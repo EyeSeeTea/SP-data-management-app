@@ -196,7 +196,7 @@ describe("Project", () => {
             const errors2 = await project2.validate(["additional"]);
             expect(errors2["additional"]).toHaveLength(1);
             expect(errors2["additional"]).toContain(
-                "Additional Designation (Location&#x2F;Sector) must be less than or equal to 40"
+                "Additional Designation (Funder, Location, Sector, etc) must be less than or equal to 40"
             );
         });
 
