@@ -9,7 +9,7 @@ describe("Projects - Edit", () => {
     });
 
     it("gets data from the user to edit a project", () => {
-        const startDate = moment();
+        const startDate = moment.utc({ year: 2022, month: 1, day: 1 });
         const endDate = moment().add(3, "months");
 
         cy.contains("Edit project");
@@ -25,9 +25,6 @@ describe("Projects - Edit", () => {
         cy.contains("Next").click();
 
         cy.waitForStep("Selection of Indicators");
-        cy.contains("Next").click();
-
-        cy.waitForStep("Disaggregation");
         cy.contains("Next").click();
 
         cy.waitForStep("Selection of MER Indicators");

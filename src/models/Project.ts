@@ -26,6 +26,7 @@ import ProjectSharing from "./ProjectSharing";
 import { Disaggregation, SetCovid19WithRelationsOptions } from "./Disaggregation";
 import { Sharing } from "./Sharing";
 import { getIds } from "../utils/dhis2";
+import { isTest } from "../utils/testing";
 
 /*
 Project model.
@@ -272,10 +273,13 @@ class Project {
     };
 
     validateMER(): ValidationError {
+        const selected = this.dataElementsSelection.getAllSelected();
+
         return _.concat(
-            this.dataElementsMER.validateAtLeastOneSelected(this.sectors),
-            this.dataElementsMER.validateMaxSelectedBySector(this.sectors, 3),
-            this.dataElementsMER.validateMaxSectorsWithSelections(this.sectors, 3)
+            this.dataElementsMER.validateTotalSelectedCount(this.sectors, {
+                min: isTest() ? 1 : Math.min(selected.length, 3),
+                max: 5,
+            })
         );
     }
 
@@ -463,6 +467,14 @@ class Project {
         return new Project(api, config, projectData);
     }
 
+    isPersisted() {
+        return Boolean(this.initialData);
+    }
+
+    hasCovid19Disaggregation() {
+        return this.disaggregation.hasAnyCovid19();
+    }
+
     download() {
         return new ProjectDownload(this).generate();
     }
@@ -484,6 +496,26 @@ class Project {
     ) {
         const projectsList = new ProjectList(api, config);
         return projectsList.get(filters, sorting, pagination);
+    }
+
+    static async getCountriesOnlyActive(api: D2Api, config: Config) {
+        const projectsList = new ProjectList(api, config);
+        const { countries } = await projectsList.get(
+            { onlyActive: true },
+            { field: "id", order: "asc" },
+            { page: 1, pageSize: 1 }
+        );
+        return countries;
+    }
+
+    static async getCountries(api: D2Api, config: Config) {
+        const projectsList = new ProjectList(api, config);
+        const { countries } = await projectsList.get(
+            {},
+            { field: "id", order: "asc" },
+            { page: 1, pageSize: 1 }
+        );
+        return countries;
     }
 
     setSectors(sectors: Sector[]): Project {
