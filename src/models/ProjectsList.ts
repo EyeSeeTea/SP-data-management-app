@@ -87,7 +87,7 @@ export default class ProjectsList {
                     .getData();
                 return objects;
             })
-        );
+        ).map((ou): typeof ou => ({ ...ou, displayName: ou.displayName?.trim() }));
 
         const d2OrgUnits = await this.sortOrgUnits(d2OrgUnitsUnsorted, sorting);
 
