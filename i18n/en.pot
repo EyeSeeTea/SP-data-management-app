@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2022-10-24T06:53:19.502Z\n"
-"PO-Revision-Date: 2022-10-24T06:53:19.502Z\n"
+"POT-Creation-Date: 2023-07-21T10:15:22.368Z\n"
+"PO-Revision-Date: 2023-07-21T10:15:22.368Z\n"
 
 msgid "Name"
 msgstr ""
@@ -668,7 +668,10 @@ msgstr ""
 msgid "The following sectors have no indicators selected"
 msgstr ""
 
-msgid "Select at least one indicator"
+msgid "Select at least a total of {{min}} indicators"
+msgstr ""
+
+msgid "Select at most a total of {{max}} indicators"
 msgstr ""
 
 msgid ""
