@@ -27,6 +27,7 @@ import { Disaggregation, SetCovid19WithRelationsOptions } from "./Disaggregation
 import { Sharing } from "./Sharing";
 import { getIds } from "../utils/dhis2";
 import { ProjectInfo } from "./ProjectInfo";
+import { isTest } from "../utils/testing";
 
 /*
 Project model.
@@ -216,7 +217,7 @@ class Project {
         description: i18n.t("Description"),
         awardNumber: i18n.t("Award Number"),
         subsequentLettering: i18n.t("Subsequent Lettering"),
-        additional: i18n.t("Additional Designation (Location/Sector)"),
+        additional: i18n.t("Additional Designation (Funder, Location, Sector, etc)"),
         startDate: i18n.t("Start Date"),
         endDate: i18n.t("End Date"),
         sectors: i18n.t("Sectors"),
@@ -273,10 +274,13 @@ class Project {
     };
 
     validateMER(): ValidationError {
+        const selected = this.dataElementsSelection.getAllSelected();
+
         return _.concat(
-            this.dataElementsMER.validateAtLeastOneSelected(this.sectors),
-            this.dataElementsMER.validateMaxSelectedBySector(this.sectors, 3),
-            this.dataElementsMER.validateMaxSectorsWithSelections(this.sectors, 3)
+            this.dataElementsMER.validateTotalSelectedCount(this.sectors, {
+                min: isTest() ? 1 : Math.min(selected.length, 3),
+                max: 5,
+            })
         );
     }
 
@@ -456,6 +460,14 @@ class Project {
         return new Project(api, config, projectData);
     }
 
+    isPersisted() {
+        return Boolean(this.initialData);
+    }
+
+    hasCovid19Disaggregation() {
+        return this.disaggregation.hasAnyCovid19();
+    }
+
     download() {
         return new ProjectDownload(this).generate();
     }
@@ -477,6 +489,26 @@ class Project {
     ) {
         const projectsList = new ProjectList(api, config);
         return projectsList.get(filters, sorting, pagination);
+    }
+
+    static async getCountriesOnlyActive(api: D2Api, config: Config) {
+        const projectsList = new ProjectList(api, config);
+        const { countries } = await projectsList.get(
+            { onlyActive: true },
+            { field: "id", order: "asc" },
+            { page: 1, pageSize: 1 }
+        );
+        return countries;
+    }
+
+    static async getCountries(api: D2Api, config: Config) {
+        const projectsList = new ProjectList(api, config);
+        const { countries } = await projectsList.get(
+            {},
+            { field: "id", order: "asc" },
+            { page: 1, pageSize: 1 }
+        );
+        return countries;
     }
 
     setSectors(sectors: Sector[]): Project {

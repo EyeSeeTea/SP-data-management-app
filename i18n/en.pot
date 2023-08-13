@@ -432,7 +432,7 @@ msgstr ""
 msgid "Subsequent Lettering"
 msgstr ""
 
-msgid "Additional Designation (Location/Sector)"
+msgid "Additional Designation (Funder, Location, Sector, etc)"
 msgstr ""
 
 msgid "Start Date"
@@ -683,7 +683,10 @@ msgstr ""
 msgid "The following sectors have no indicators selected"
 msgstr ""
 
-msgid "Select at least one indicator"
+msgid "Select at least a total of {{min}} indicators"
+msgstr ""
+
+msgid "Select at most a total of {{max}} indicators"
 msgstr ""
 
 msgid ""

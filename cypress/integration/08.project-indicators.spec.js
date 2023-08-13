@@ -17,8 +17,8 @@ describe("Projects - Indicators", () => {
         cy.contains("Next").click();
 
         // Change pageSize so all indicators are shown in a single page
-        cy.get(".MuiTablePagination-root").contains("20").click();
-        cy.get(".MuiMenu-list").contains("100").click();
+        cy.get(".dm-MuiTablePagination-root").contains("20").click();
+        cy.get(".dm-MuiMenu-list").contains("100").click();
 
         new IndicatorsPage(cy)
             .selectSector("Agriculture")
@@ -101,6 +101,6 @@ describe("Projects - Indicators", () => {
         cy.contains("P020105");
 
         // Livelihoods
-        cy.contains("P020100 [COVID-19] [MER]");
+        cy.contains("P020100 [MER]");
     });
 });

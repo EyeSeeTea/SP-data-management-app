@@ -54,6 +54,11 @@ export interface ProjectForList extends BaseProject {
     lastUpdatedData: string;
 }
 
+export interface Country {
+    id: string;
+    displayName: string;
+}
+
 export default class ProjectsList {
     currentUser: User;
 
@@ -65,7 +70,7 @@ export default class ProjectsList {
         filters: FiltersForList,
         sorting: TableSorting<ProjectForList>,
         pagination: Pagination
-    ): Promise<{ objects: ProjectForList[]; pager: Pager }> {
+    ): Promise<{ objects: ProjectForList[]; countries: Country[]; pager: Pager }> {
         const { api, config } = this;
         const order = `${sorting.field}:i${sorting.order}`;
         const orgUnitIds = await this.getBaseOrgUnitIds(api, config, filters, order);
@@ -82,7 +87,7 @@ export default class ProjectsList {
                     .getData();
                 return objects;
             })
-        );
+        ).map((ou): typeof ou => ({ ...ou, displayName: ou.displayName?.trim() }));
 
         const d2OrgUnits = await this.sortOrgUnits(d2OrgUnitsUnsorted, sorting);
 
@@ -153,7 +158,16 @@ export default class ProjectsList {
             return project;
         });
 
-        return paginate(_.compact(projectsWithSectors), pagination);
+        const { pager, objects } = paginate(_.compact(projectsWithSectors), pagination);
+
+        const countries: Country[] = _(projects)
+            .map(project => project.parent)
+            .compact()
+            .uniqBy(country => country.id)
+            .sortBy(country => country.displayName)
+            .value();
+
+        return { pager, objects, countries: countries };
     }
 
     private async getDataSetsWithLastUpdatedData() {
