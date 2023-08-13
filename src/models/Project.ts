@@ -26,6 +26,7 @@ import ProjectSharing from "./ProjectSharing";
 import { Disaggregation, SetCovid19WithRelationsOptions } from "./Disaggregation";
 import { Sharing } from "./Sharing";
 import { getIds } from "../utils/dhis2";
+import { ProjectInfo } from "./ProjectInfo";
 import { isTest } from "../utils/testing";
 
 /*
@@ -385,15 +386,7 @@ class Project {
         return selectedDataElementsSorted;
     }
 
-    public getSectorsInfo(): Array<{
-        sector: Sector;
-        dataElementsInfo: Array<{
-            dataElement: DataElement;
-            isMER: boolean;
-            isCovid19: boolean;
-            usedInDataSetSection: boolean;
-        }>;
-    }> {
+    public getSectorsInfo(): SectorsInfo {
         const { dataElementsSelection, dataElementsMER, sectors } = this;
         const dataElementsBySectorMapping = new ProjectDb(this).getDataElementsBySectorMapping();
         const selectedMER = new Set(dataElementsMER.get({ onlySelected: true }).map(de => de.id));
@@ -560,6 +553,10 @@ class Project {
         return this.id;
     }
 
+    get info() {
+        return new ProjectInfo(this);
+    }
+
     async validateCodeUniqueness(): Promise<ValidationError> {
         const { api, code } = this;
         if (!code) return [];
@@ -599,6 +596,17 @@ class Project {
         return !toDate ? periods : periods.filter(period => period.date <= now);
     }
 
+    getPeriodInterval(): string {
+        const { startDate, endDate } = this.data;
+        const dateFormat = "MMMM YYYY";
+
+        if (startDate && endDate) {
+            return [startDate.format(dateFormat), "-", endDate.format(dateFormat)].join(" ");
+        } else {
+            return "-";
+        }
+    }
+
     getDates(): { startDate: Moment; endDate: Moment } {
         const { startDate, endDate } = this;
         if (!startDate || !endDate) throw new Error("No project dates");
@@ -608,6 +616,15 @@ class Project {
     getProjectDataSet(dataSet: DataSet) {
         const dataSetType: DataSetType = dataSet.code.endsWith("ACTUAL") ? "actual" : "target";
         return this.dataSetsByType[dataSetType];
+    }
+
+    getInitialProject(): Maybe<Project> {
+        return this.initialData
+            ? new Project(this.api, this.config, {
+                  ...this.initialData,
+                  initialData: undefined,
+              })
+            : undefined;
     }
 
     static async delete(config: Config, api: D2Api, ids: Id[]): Promise<void> {
@@ -685,5 +702,17 @@ export function getPeriodsData(dataSet: DataSet) {
 
     return { periodIds, currentPeriodId };
 }
+
+export type DataElementInfo = {
+    dataElement: DataElement;
+    isMER: boolean;
+    isCovid19: boolean;
+    usedInDataSetSection: boolean;
+};
+
+export type SectorsInfo = Array<{
+    sector: Sector;
+    dataElementsInfo: Array<DataElementInfo>;
+}>;
 
 export default Project;

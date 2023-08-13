@@ -1,0 +1,194 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`getAsString 1`] = `
+"- Name: [UPDATED] MyProject -> Old name
+- Description: -
+- Award Number: 12345
+- Subsequent Lettering: en
+- Additional Designation (Location/Sector): -
+- Period dates: October 2018 - March 2019
+- Funders: funder-aOYJkeWdv2t, funder-yQKIZzBl22A
+- Selected country: Bahamas
+- Locations: loc-GsGG8967YDU
+- Sharing:
+  - Users: admin admin
+  - User Groups: System Admin, Data Management Admin
+- Sectors:
+  - Agriculture:
+    - de-B010200 - B010200
+    - [UPDATED] de-P010100 - P010100 -> de-P010100 - P010100 [COVID-19]
+    - [UPDATED] de-P010101 - P010101 -> de-P010101 - P010101 [COVID-19]
+  - [ADDED] Education:
+  - [REMOVED] Livelihoods:
+    - de-B020200 - B020200 [MER]
+    - de-P020300 - P020300"
+`;
+
+exports[`getAsString on new project 1`] = `
+"- Name: MyProject
+- Description: -
+- Award Number: 12345
+- Subsequent Lettering: en
+- Additional Designation (Location/Sector): -
+- Period dates: October 2018 - March 2019
+- Funders: funder-aOYJkeWdv2t, funder-yQKIZzBl22A
+- Selected country: Bahamas
+- Locations: loc-GsGG8967YDU
+- Sharing:
+  - Users: admin admin
+  - User Groups: System Admin, Data Management Admin
+- Sectors:
+  - Agriculture:
+    - de-B010200 - B010200
+    - de-P010100 - P010100
+    - de-P010101 - P010101
+  - Livelihoods:
+    - de-B020200 - B020200 [MER]
+    - de-P020300 - P020300"
+`;
+
+exports[`getNodes 1`] = `
+Array [
+  Object {
+    "action": "updated",
+    "name": "Name",
+    "prevValue": "MyProject",
+    "type": "field",
+    "value": "Old name",
+  },
+  Object {
+    "action": "none",
+    "name": "Description",
+    "prevValue": "",
+    "type": "field",
+    "value": "",
+  },
+  Object {
+    "action": "none",
+    "name": "Award Number",
+    "prevValue": "12345",
+    "type": "field",
+    "value": "12345",
+  },
+  Object {
+    "action": "none",
+    "name": "Subsequent Lettering",
+    "prevValue": "en",
+    "type": "field",
+    "value": "en",
+  },
+  Object {
+    "action": "none",
+    "name": "Additional Designation (Location/Sector)",
+    "prevValue": "",
+    "type": "field",
+    "value": "",
+  },
+  Object {
+    "action": "none",
+    "name": "Period dates",
+    "prevValue": "October 2018 - March 2019",
+    "type": "field",
+    "value": "October 2018 - March 2019",
+  },
+  Object {
+    "action": "none",
+    "name": "Funders",
+    "prevValue": "funder-aOYJkeWdv2t, funder-yQKIZzBl22A",
+    "type": "field",
+    "value": "funder-aOYJkeWdv2t, funder-yQKIZzBl22A",
+  },
+  Object {
+    "action": "none",
+    "name": "Selected country",
+    "prevValue": "Bahamas",
+    "type": "field",
+    "value": "Bahamas",
+  },
+  Object {
+    "action": "none",
+    "name": "Locations",
+    "prevValue": "loc-GsGG8967YDU",
+    "type": "field",
+    "value": "loc-GsGG8967YDU",
+  },
+  Object {
+    "action": "none",
+    "children": Array [
+      Object {
+        "action": "none",
+        "name": "Users",
+        "prevValue": "admin admin",
+        "type": "field",
+        "value": "admin admin",
+      },
+      Object {
+        "action": "none",
+        "name": "User Groups",
+        "prevValue": "System Admin, Data Management Admin",
+        "type": "field",
+        "value": "System Admin, Data Management Admin",
+      },
+    ],
+    "title": "Sharing",
+    "type": "section",
+  },
+  Object {
+    "action": "none",
+    "children": Array [
+      Object {
+        "action": "none",
+        "children": Array [
+          Object {
+            "action": "none",
+            "prevValue": "de-B010200 - B010200",
+            "type": "value",
+            "value": "de-B010200 - B010200",
+          },
+          Object {
+            "action": "updated",
+            "prevValue": "de-P010100 - P010100",
+            "type": "value",
+            "value": "de-P010100 - P010100 [COVID-19]",
+          },
+          Object {
+            "action": "updated",
+            "prevValue": "de-P010101 - P010101",
+            "type": "value",
+            "value": "de-P010101 - P010101 [COVID-19]",
+          },
+        ],
+        "title": "Agriculture",
+        "type": "section",
+      },
+      Object {
+        "action": "added",
+        "children": Array [],
+        "title": "Education",
+        "type": "section",
+      },
+      Object {
+        "action": "removed",
+        "children": Array [
+          Object {
+            "action": "none",
+            "prevValue": "de-B020200 - B020200 [MER]",
+            "type": "value",
+            "value": "de-B020200 - B020200 [MER]",
+          },
+          Object {
+            "action": "none",
+            "prevValue": "de-P020300 - P020300",
+            "type": "value",
+            "value": "de-P020300 - P020300",
+          },
+        ],
+        "title": "Livelihoods",
+        "type": "section",
+      },
+    ],
+    "title": "Sectors",
+    "type": "section",
+  },
+]
+`;

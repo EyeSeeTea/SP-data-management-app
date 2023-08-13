@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2023-07-24T08:56:11.767Z\n"
-"PO-Revision-Date: 2023-07-24T08:56:11.767Z\n"
+"POT-Creation-Date: 2023-08-01T08:41:29.934Z\n"
+"PO-Revision-Date: 2023-08-01T08:41:29.934Z\n"
 
 msgid "Name"
 msgstr ""
@@ -268,45 +268,6 @@ msgstr ""
 msgid "Save"
 msgstr ""
 
-msgid "Description"
-msgstr ""
-
-msgid "Award Number"
-msgstr ""
-
-msgid "Subsequent Lettering"
-msgstr ""
-
-msgid "Period dates"
-msgstr ""
-
-msgid "Funders"
-msgstr ""
-
-msgid "Selected country"
-msgstr ""
-
-msgid "Locations"
-msgstr ""
-
-msgid "Sharing"
-msgstr ""
-
-msgid "Users"
-msgstr ""
-
-msgid "User groups"
-msgstr ""
-
-msgid "Sectors"
-msgstr ""
-
-msgid "Hidden in data entry as it is selected in multiple sectors!"
-msgstr ""
-
-msgid "MER"
-msgstr ""
-
 msgid "Saving Project"
 msgstr ""
 
@@ -397,6 +358,9 @@ msgstr ""
 msgid "Narrative"
 msgstr ""
 
+msgid "Locations"
+msgstr ""
+
 msgid "Project"
 msgstr ""
 
@@ -459,6 +423,15 @@ msgstr ""
 msgid "Data Elements MER"
 msgstr ""
 
+msgid "Description"
+msgstr ""
+
+msgid "Award Number"
+msgstr ""
+
+msgid "Subsequent Lettering"
+msgstr ""
+
 msgid "Additional Designation (Funder, Location, Sector, etc)"
 msgstr ""
 
@@ -466,6 +439,12 @@ msgid "Start Date"
 msgstr ""
 
 msgid "End Date"
+msgstr ""
+
+msgid "Sectors"
+msgstr ""
+
+msgid "Funders"
 msgstr ""
 
 msgid "Project Locations"
@@ -484,6 +463,9 @@ msgid "Dashboard"
 msgstr ""
 
 msgid "Initial Data"
+msgstr ""
+
+msgid "Sharing"
 msgstr ""
 
 msgid "Award Number should be a number of 5 digits"
@@ -617,6 +599,36 @@ msgstr ""
 msgid "People"
 msgstr ""
 
+msgid "NONE"
+msgstr ""
+
+msgid "UPDATED"
+msgstr ""
+
+msgid "ADDED"
+msgstr ""
+
+msgid "REMOVED"
+msgstr ""
+
+msgid "Period dates"
+msgstr ""
+
+msgid "Selected country"
+msgstr ""
+
+msgid "Users"
+msgstr ""
+
+msgid "User Groups"
+msgstr ""
+
+msgid "Hidden in data entry as it is selected in multiple sectors!"
+msgstr ""
+
+msgid "MER"
+msgstr ""
+
 msgid "[SP Platform] Request for Data Review: {{name}} ({{code}})"
 msgstr ""
 
@@ -660,6 +672,9 @@ msgid "updated"
 msgstr ""
 
 msgid "Project '{{projectName}}' [dangling data values]"
+msgstr ""
+
+msgid "... and {{countMore}} more"
 msgstr ""
 
 msgid "Award Number {{awardNumber}}"
@@ -945,6 +960,9 @@ msgid "Edit"
 msgstr ""
 
 msgid "Delete"
+msgstr ""
+
+msgid "User groups"
 msgstr ""
 
 msgid "Countries"
