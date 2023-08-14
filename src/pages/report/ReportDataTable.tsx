@@ -110,12 +110,13 @@ const LocationCell: RowComponent<DataElementMER> = props => {
 
 const ProjectCell: RowComponent<DataElementMER> = props => {
     const { row: dataElementMER, rowSpan } = props;
+    const { project } = dataElementMER;
 
     return (
         <TableCell rowSpan={rowSpan}>
-            {dataElementMER.project.name}
+            {project.prefix} - {project.name}
             <br />
-            <i>{dataElementMER.project.dateInfo}</i>
+            <i>{project.dateInfo}</i>
         </TableCell>
     );
 };
