@@ -1,9 +1,6 @@
 import _ from "lodash";
-import striptags from "striptags";
-import ReactDOMServer from "react-dom/server";
 
 import Project, { DataSetType } from "./Project";
-import { ReactElement } from "react";
 import i18n from "../locales";
 import User from "./user";
 import { generateUrl } from "../router";
@@ -11,7 +8,7 @@ import { D2Api } from "../types/d2-api";
 import ProjectDb, { ExistingData, getStringDataValue } from "./ProjectDb";
 import { baseConfig } from "./Config";
 import moment from "moment";
-import { AppConfig } from "../components/app/App";
+import { AppConfig } from "../components/app/AppConfig";
 
 type Email = string;
 type Action = "create" | "update";
@@ -47,9 +44,9 @@ export class ProjectNotification {
             .value();
     }
 
-    async notifyOnProjectSave(element: ReactElement, action: Action) {
+    async notifyOnProjectSave(action: Action) {
         const recipients = await this.getRecipients();
-        await this.notifySave(element, recipients, action);
+        await this.notifySave(recipients, action);
         await this.notifyDanglingDataValues(recipients);
     }
 
@@ -92,7 +89,7 @@ export class ProjectNotification {
 
         const { displayName: user, username } = this.currentUser.data;
 
-        const subject = i18n.t("[SP Platform] Request for Data Review: {{name}} ({{code}})", {
+        const subject = i18n.t("[SP Platform] Request for Data Review: {{-name}} ({{code}})", {
             name: project.name,
             code: project.code,
             nsSeparator: false,
@@ -199,7 +196,7 @@ The reason provided by the user was:
         return this.sendMessage({ recipients, subject, text: text.trim() });
     }
 
-    private async notifySave(element: ReactElement, recipients: Email[], action: Action) {
+    private async notifySave(recipients: Email[], action: Action) {
         const { project, currentUser } = this;
         const baseMsg = action === "create" ? i18n.t("Project created") : i18n.t("Project updated");
         const subject = `${baseMsg}: ${this.project.name}`;
@@ -214,7 +211,7 @@ The reason provided by the user was:
 
             // Cypress fails when body includes an URL,
             !this.isTest ? getProjectUrl(project) : "test-url",
-            html2Text(element),
+            replaceInitialSpacesByNbsp(project.info.getAsString()),
         ];
 
         const text = body.join("\n\n");
@@ -224,16 +221,26 @@ The reason provided by the user was:
     private async notifyDanglingDataValues(recipients: Email[]) {
         const { project } = this;
         const dataValues = await new ProjectDb(project).getDanglingDataValues();
-        const projectName = project.name;
-
         if (_.isEmpty(dataValues)) return;
 
+        const projectName = project.name;
         const subject = i18n.t("Project '{{projectName}}' [dangling data values]", { projectName });
+        const limit = 10;
+        const dataValuesToShow = _.take(dataValues, limit);
+        const showWasLimited = dataValuesToShow.length < dataValues.length;
+        const countMore = dataValues.length - dataValuesToShow.length;
 
-        const text =
-            i18n.t("Project '{{projectName}}' has dangling data values:", { projectName }) +
-            "\n\n" +
-            dataValues.map(getStringDataValue).join("\n");
+        const parts = [
+            i18n.t("Project '{{projectName}}' has {{count}} dangling data values:", {
+                count: dataValues.length,
+                projectName: projectName,
+            }),
+            "",
+            ...dataValuesToShow.map(getStringDataValue),
+            showWasLimited ? i18n.t("... and {{countMore}} more", { countMore: countMore }) : null,
+        ];
+
+        const text = parts.filter(s => s !== null).join("\n");
 
         return this.sendMessage({ recipients, subject, text });
     }
@@ -262,15 +269,6 @@ The reason provided by the user was:
     }
 }
 
-const nbsp = /\xa0/g;
-
-function html2Text(element: ReactElement): string {
-    const html = ReactDOMServer.renderToStaticMarkup(element);
-    const text = striptags(html, [], "\n");
-    const textWithoutBlankLines = text.replace(/^\s*$(?:\r\n?|\n)/gm, "").replace(nbsp, " ");
-    return textWithoutBlankLines;
-}
-
 function getProjectUrl(project: Project) {
     const path = generateUrl("projects", undefined, { search: project.code });
     return getFullUrl(path);
@@ -278,4 +276,11 @@ function getProjectUrl(project: Project) {
 
 function getFullUrl(path: string): string {
     return window.location.href.split("#")[0] + "#" + path;
+}
+
+function replaceInitialSpacesByNbsp(s: string): string {
+    return s
+        .split(/\n/)
+        .map(line => _.repeat("&nbsp;", line.match(/^\s+/)?.[0].length || 0) + line.trimLeft())
+        .join("\n");
 }

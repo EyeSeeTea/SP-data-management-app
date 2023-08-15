@@ -44,8 +44,8 @@ const DataValues: React.FC<DataValuesProps> = ({ type }) => {
 
     const [validateFn, setValidateFn] = React.useState<ValidateFn>();
 
-    const goBack = React.useCallback(() => {
-        if (!validateFn || validateFn.execute()) {
+    const goBack = React.useCallback(async () => {
+        if (!validateFn || (await validateFn.execute())) {
             appHistory.goBack();
         }
     }, [validateFn, appHistory]);

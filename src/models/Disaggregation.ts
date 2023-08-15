@@ -108,6 +108,10 @@ export class Disaggregation {
         return new Disaggregation(this.config, newData);
     }
 
+    hasAnyCovid19(): boolean {
+        return _(this.data.mapping).values().some();
+    }
+
     isCovid19(dataElementId: Id): boolean {
         return !!this.data.mapping[dataElementId];
     }

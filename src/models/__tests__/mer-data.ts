@@ -16,7 +16,7 @@ export function mockApiForMerReportEmpty(mock: MockAdapter) {
     mock.onGet("/metadata", {
         params: {
             "organisationUnits:fields":
-                "closedDate,code,displayName,id,openingDate,organisationUnitGroups[id]",
+                "closedDate,code,id,name,openingDate,organisationUnitGroups[id]",
             "organisationUnits:filter": ["id:in:[]"],
         },
     }).replyOnce(200, {});
@@ -86,7 +86,7 @@ export function mockApiForMerReportWithData(mock: MockAdapter) {
     mock.onGet("/metadata", {
         params: {
             "organisationUnits:fields":
-                "closedDate,code,displayName,id,openingDate,organisationUnitGroups[id]",
+                "closedDate,code,id,name,openingDate,organisationUnitGroups[id]",
             "organisationUnits:filter": ["id:in:[]"],
         },
     }).replyOnce(200, {
@@ -94,6 +94,7 @@ export function mockApiForMerReportWithData(mock: MockAdapter) {
             {
                 id: "uWuM0QT2pVl",
                 closedDate: "2020-04-30T00:00:00.000",
+                name: "0Test1-25236",
                 displayName: "0Test1-25236",
                 openingDate: "2019-10-01T00:00:00.000",
                 organisationUnitGroups: [],
@@ -101,6 +102,7 @@ export function mockApiForMerReportWithData(mock: MockAdapter) {
             {
                 id: "SKuiiu7Vbwv",
                 closedDate: "2020-04-30T00:00:00.000",
+                name: "0Test1-48852",
                 displayName: "0Test1-48852",
                 openingDate: "2019-10-01T00:00:00.000",
                 organisationUnitGroups: [{ id: "GG0k0oNhgS7" }, { id: "GsGG8967YDU" }],

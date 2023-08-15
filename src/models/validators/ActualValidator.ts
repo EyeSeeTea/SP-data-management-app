@@ -61,13 +61,13 @@ export class ActualValidator {
 
         const actualValue = toFloat(dataValue.value);
         const isValid = actualValue <= 1.2 * targetValue;
-        const msg: () => string = () =>
+        const getMsg: () => string = () =>
             i18n.t(
                 "Actual value ({{actualValue}}) should not be greater than 20% of the target value ({{targetValue}})",
                 { targetValue: targetValue, actualValue: dataValue.value }
             );
 
-        return isValid ? [] : [["warning", msg()]];
+        return isValid ? [] : [{ level: "warning", message: getMsg() }];
     }
 }
 

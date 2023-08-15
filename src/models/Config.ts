@@ -153,7 +153,7 @@ const metadataParams = {
             categoryOptionCombos: {
                 id: yes,
                 displayName: yes,
-                categoryOptions: { id: yes, displayName: yes },
+                categoryOptions: { id: yes, displayName: yes, code: yes },
             },
         },
     },
@@ -273,7 +273,7 @@ type IndexedObjs<Key extends keyof BaseConfig, ValueType> = Record<
 >;
 
 export type Attribute = CodedObject;
-export type CategoryOptionCombo = NamedObject & { categoryOptions: NamedObject[] };
+export type CategoryOptionCombo = NamedObject & { categoryOptions: CodedObject[] };
 export type CategoryCombo = NamedObject &
     CodedObject & { categories: Ref[]; categoryOptionCombos: CategoryOptionCombo[] };
 export type CategoryOption = CodedObject & { categoryOptionCombos: NamedObject[] };

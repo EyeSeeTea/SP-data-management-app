@@ -196,7 +196,7 @@ describe("Project", () => {
             const errors2 = await project2.validate(["additional"]);
             expect(errors2["additional"]).toHaveLength(1);
             expect(errors2["additional"]).toContain(
-                "Additional Designation (Location&#x2F;Sector) must be less than or equal to 40"
+                "Additional Designation (Funder, Location, Sector, etc) must be less than or equal to 40"
             );
         });
 
@@ -333,6 +333,7 @@ describe("Project", () => {
             {
                 id: "1",
                 code: "code1",
+                name: "name1",
                 displayName: "name1",
                 organisationUnitGroups: [],
                 attributeValues: [],
@@ -340,6 +341,7 @@ describe("Project", () => {
             {
                 id: "2",
                 code: "other2",
+                name: "other2",
                 displayName: "other2",
                 organisationUnitGroups: [],
                 attributeValues: [],
@@ -347,6 +349,7 @@ describe("Project", () => {
             {
                 id: "3",
                 code: "CODE3",
+                name: "name3",
                 displayName: "name3",
                 organisationUnitGroups: [],
                 attributeValues: [],
@@ -354,6 +357,7 @@ describe("Project", () => {
             {
                 id: "4",
                 code: "other4",
+                name: "other4",
                 displayName: "other4",
                 organisationUnitGroups: [],
                 attributeValues: [],
@@ -361,6 +365,7 @@ describe("Project", () => {
             {
                 id: "5",
                 code: "code5",
+                name: "NAME5",
                 displayName: "NAME5",
                 organisationUnitGroups: [],
                 attributeValues: [],
@@ -368,6 +373,7 @@ describe("Project", () => {
             {
                 id: "6",
                 code: "code6",
+                name: "NAME6",
                 displayName: "NAME6",
                 organisationUnitGroups: [],
                 attributeValues: [],
@@ -394,7 +400,7 @@ describe("Project", () => {
             mock.onGet("/organisationUnits", {
                 params: {
                     paging: false,
-                    fields: "attributeValues[attribute[id],value],closedDate,code,created,displayDescription,displayName,href,id,lastUpdated,lastUpdatedBy[name],openingDate,organisationUnitGroups[groupSets[id],id],parent[displayName,id],user[displayName,id]",
+                    fields: "attributeValues[attribute[id],value],closedDate,code,created,displayDescription,displayName,href,id,lastUpdated,lastUpdatedBy[name],name,openingDate,organisationUnitGroups[groupSets[id],id],parent[displayName,id],user[displayName,id]",
                     filter: ["id:in:[5,3,1]"],
                     order: "displayName:idesc",
                 },
@@ -453,6 +459,7 @@ describe("Project", () => {
                 {
                     id: "3",
                     code: "CODE3",
+                    name: "name3",
                     displayName: "name3",
                     hasAwardNumberDashboard: false,
                     sectors: expect.arrayContaining([

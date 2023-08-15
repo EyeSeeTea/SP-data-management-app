@@ -26,6 +26,7 @@ export type FiltersForList = Partial<{
 const orgUnitFields = {
     id: true,
     user: { id: true, displayName: true },
+    name: true,
     displayName: true,
     displayDescription: true,
     href: true,
@@ -45,13 +46,18 @@ type BaseProject = Omit<
     "organisationUnitGroups"
 >;
 
-type D2OrgUnit = SelectedPick<D2OrganisationUnitSchema, typeof orgUnitFields>;
+export type D2OrgUnit = SelectedPick<D2OrganisationUnitSchema, typeof orgUnitFields>;
 
 export interface ProjectForList extends BaseProject {
     sectors: Sector[];
     sharing: Sharing;
     hasAwardNumberDashboard: boolean;
     lastUpdatedData: string;
+}
+
+export interface Country {
+    id: string;
+    displayName: string;
 }
 
 export default class ProjectsList {
@@ -65,7 +71,7 @@ export default class ProjectsList {
         filters: FiltersForList,
         sorting: TableSorting<ProjectForList>,
         pagination: Pagination
-    ): Promise<{ objects: ProjectForList[]; pager: Pager }> {
+    ): Promise<{ objects: ProjectForList[]; countries: Country[]; pager: Pager }> {
         const { api, config } = this;
         const order = `${sorting.field}:i${sorting.order}`;
         const orgUnitIds = await this.getBaseOrgUnitIds(api, config, filters, order);
@@ -82,7 +88,7 @@ export default class ProjectsList {
                     .getData();
                 return objects;
             })
-        );
+        ).map((ou): typeof ou => ({ ...ou, displayName: ou.displayName?.trim() }));
 
         const d2OrgUnits = await this.sortOrgUnits(d2OrgUnitsUnsorted, sorting);
 
@@ -153,7 +159,16 @@ export default class ProjectsList {
             return project;
         });
 
-        return paginate(_.compact(projectsWithSectors), pagination);
+        const { pager, objects } = paginate(_.compact(projectsWithSectors), pagination);
+
+        const countries: Country[] = _(projects)
+            .map(project => project.parent)
+            .compact()
+            .uniqBy(country => country.id)
+            .sortBy(country => country.displayName)
+            .value();
+
+        return { pager, objects, countries: countries };
     }
 
     private async getDataSetsWithLastUpdatedData() {

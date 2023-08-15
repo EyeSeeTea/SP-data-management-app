@@ -46,8 +46,8 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
             .catch(showErrorAndSetInactive);
     }, [projectDataSet, period, dataSetInfo, notifyOnChange, showErrorAndSetInactive]);
 
-    const reset = React.useCallback(() => {
-        if (!validation.validate({ showValidation: true })) return;
+    const reset = React.useCallback(async () => {
+        if (!(await validation.validate({ showValidation: true }))) return;
         setActive(true);
         projectDataSet.reset().then(notifyOnChange).catch(showErrorAndSetInactive);
     }, [projectDataSet, notifyOnChange, showErrorAndSetInactive, validation]);
@@ -92,6 +92,13 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
         onConfirm: notifyUsers,
     });
 
+    const { validate } = validation;
+
+    const askForDataReview = React.useCallback(async () => {
+        if (!(await validate({ showValidation: true }))) return;
+        openDataReviewConfirmation.open();
+    }, [validate, openDataReviewConfirmation]);
+
     const userCanReopen = currentUser.can("reopen");
     if (!dataSetInfo) return <LinearProgress />;
 
@@ -131,7 +138,7 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
             <Button
                 disabled={isActive}
                 style={styles.button}
-                onClick={openDataReviewConfirmation.open}
+                onClick={askForDataReview}
                 variant="contained"
             >
                 {i18n.t("Ask for Data Review")}

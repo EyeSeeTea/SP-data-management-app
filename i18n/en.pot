@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2022-10-24T06:53:19.502Z\n"
-"PO-Revision-Date: 2022-10-24T06:53:19.502Z\n"
+"POT-Creation-Date: 2023-08-15T12:39:46.508Z\n"
+"PO-Revision-Date: 2023-08-15T12:39:46.508Z\n"
 
 msgid "Name"
 msgstr ""
@@ -89,7 +89,13 @@ msgstr ""
 msgid "Validation results"
 msgstr ""
 
-msgid "OK"
+msgid "Close"
+msgstr ""
+
+msgid "Save"
+msgstr ""
+
+msgid "Comments saved"
 msgstr ""
 
 msgid "Validation data is not loaded, skip validation"
@@ -265,48 +271,6 @@ msgstr ""
 msgid "Checking Existing Data"
 msgstr ""
 
-msgid "Save"
-msgstr ""
-
-msgid "Description"
-msgstr ""
-
-msgid "Award Number"
-msgstr ""
-
-msgid "Subsequent Lettering"
-msgstr ""
-
-msgid "Period dates"
-msgstr ""
-
-msgid "Funders"
-msgstr ""
-
-msgid "Selected country"
-msgstr ""
-
-msgid "Locations"
-msgstr ""
-
-msgid "Sharing"
-msgstr ""
-
-msgid "Users"
-msgstr ""
-
-msgid "User groups"
-msgstr ""
-
-msgid "Sectors"
-msgstr ""
-
-msgid "Hidden in data entry as it is selected in multiple sectors!"
-msgstr ""
-
-msgid "MER"
-msgstr ""
-
 msgid "Saving Project"
 msgstr ""
 
@@ -397,6 +361,9 @@ msgstr ""
 msgid "Narrative"
 msgstr ""
 
+msgid "Locations"
+msgstr ""
+
 msgid "Project"
 msgstr ""
 
@@ -459,13 +426,28 @@ msgstr ""
 msgid "Data Elements MER"
 msgstr ""
 
-msgid "Additional Designation (Location/Sector)"
+msgid "Description"
+msgstr ""
+
+msgid "Award Number"
+msgstr ""
+
+msgid "Subsequent Lettering"
+msgstr ""
+
+msgid "Additional Designation (Funder, Location, Sector, etc)"
 msgstr ""
 
 msgid "Start Date"
 msgstr ""
 
 msgid "End Date"
+msgstr ""
+
+msgid "Sectors"
+msgstr ""
+
+msgid "Funders"
 msgstr ""
 
 msgid "Project Locations"
@@ -484,6 +466,9 @@ msgid "Dashboard"
 msgstr ""
 
 msgid "Initial Data"
+msgstr ""
+
+msgid "Sharing"
 msgstr ""
 
 msgid "Award Number should be a number of 5 digits"
@@ -617,7 +602,37 @@ msgstr ""
 msgid "People"
 msgstr ""
 
-msgid "[SP Platform] Request for Data Review: {{name}} ({{code}})"
+msgid "NONE"
+msgstr ""
+
+msgid "UPDATED"
+msgstr ""
+
+msgid "ADDED"
+msgstr ""
+
+msgid "REMOVED"
+msgstr ""
+
+msgid "Period dates"
+msgstr ""
+
+msgid "Selected country"
+msgstr ""
+
+msgid "Users"
+msgstr ""
+
+msgid "User Groups"
+msgstr ""
+
+msgid "Hidden in data entry as it is selected in multiple sectors!"
+msgstr ""
+
+msgid "MER"
+msgstr ""
+
+msgid "[SP Platform] Request for Data Review: {{-name}} ({{code}})"
 msgstr ""
 
 msgid ""
@@ -662,13 +677,19 @@ msgstr ""
 msgid "Project '{{projectName}}' [dangling data values]"
 msgstr ""
 
+msgid "... and {{countMore}} more"
+msgstr ""
+
 msgid "Award Number {{awardNumber}}"
 msgstr ""
 
 msgid "The following sectors have no indicators selected"
 msgstr ""
 
-msgid "Select at least one indicator"
+msgid "Select at least a total of {{min}} indicators"
+msgstr ""
+
+msgid "Select at most a total of {{max}} indicators"
 msgstr ""
 
 msgid ""
@@ -702,6 +723,16 @@ msgid "Benefit value should be positive ({{value}})"
 msgstr ""
 
 msgid "Benefit value should have 5 or less decimal places ({{value}})"
+msgstr ""
+
+msgid ""
+"Global indicator {{-name}} must have a value (as some sub-indicator has a "
+"value)"
+msgstr ""
+
+msgid ""
+"Global indicator {{-name}} value ({{value}}) must be inferior to the sum of "
+"new+returning of its sub-indicators ({{subFormula}})"
 msgstr ""
 
 msgid ""
@@ -942,6 +973,9 @@ msgid "Edit"
 msgstr ""
 
 msgid "Delete"
+msgstr ""
+
+msgid "User groups"
 msgstr ""
 
 msgid "Countries"

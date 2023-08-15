@@ -239,13 +239,13 @@ export class RecurringValidator {
                     "Returning value ({{returningFormula}}) is greater than the sum of New values for past periods: {{pastFormula}}",
                     { nsSeparator: false, returningFormula, pastFormula }
                 );
-                return [["warning", msg]];
+                return [{ level: "warning", message: msg }];
             } else {
                 const msg = i18n.t(
                     "Returning value ({{returningFormula}}) cannot be greater than the sum of New values for past periods: {{pastFormula}}",
                     { nsSeparator: false, returningFormula, pastFormula }
                 );
-                return [["error", msg]];
+                return [{ level: "error", message: msg }];
             }
         } else {
             const msg = i18n.t(
@@ -257,7 +257,7 @@ export class RecurringValidator {
                     nsSeparator: false,
                 }
             );
-            return [["warning", msg]];
+            return [{ level: "warning", message: msg }];
         }
     }
 

@@ -18,6 +18,7 @@ import Project, {
     DataSetType,
     Dashboards,
     Dashboard,
+    getProjectFromOrgUnit,
 } from "./Project";
 import { getMonthsRange, toISOString } from "../utils/date";
 import "../utils/lodash-mixins";
@@ -249,15 +250,16 @@ export default class ProjectDb {
             .getData();
 
         const existingOrgUnit = metadata.organisationUnits[0];
+        const name = `${project.awardNumber.trim()}${project.subsequentLettering.trim()} - ${project.name.trim()}`;
 
         const orgUnit = {
             id: project.id,
             created: project.created ? toISOString(project.created) : undefined,
-            name: project.name,
-            displayName: project.name,
+            name: name,
+            displayName: name,
             path: project.parentOrgUnit.path + "/" + project.id,
             code: project.code,
-            shortName: project.shortName,
+            shortName: name.slice(0, 50),
             description: project.description,
             parent: { id: getOrgUnitId(project.parentOrgUnit) },
             ...getOrgUnitDatesFromProject(startDate, endDate),
@@ -735,10 +737,11 @@ export default class ProjectDb {
         const { dataSetElements } = projectDataSets.actual;
         const disaggregation = Disaggregation.buildFromDataSetElements(config, dataSetElements);
         const codeInfo = ProjectDb.getCodeInfo(code);
+        const { displayName } = getProjectFromOrgUnit(orgUnit);
 
         const projectData = {
             id: orgUnit.id,
-            name: orgUnit.name,
+            name: displayName,
             created: orgUnit.created ? moment(orgUnit.created) : undefined,
             description: orgUnit.description,
             ...codeInfo,
@@ -891,9 +894,12 @@ async function getOrgUnitGroupsMetadata(
         })
         .getData();
 
+    const name = `Award Number ${project.awardNumber}`;
+
     const awardNumberOrgUnitGroupBase: OrgUnitGroup = {
         id: getUid("awardNumber", project.awardNumber),
-        name: `Award Number ${project.awardNumber}`,
+        name: name,
+        shortName: name,
         code: config.base.organisationUnitGroups.awardNumberPrefix + project.awardNumber,
         organisationUnits: [],
         attributeValues: [],
@@ -916,6 +922,7 @@ async function getOrgUnitGroupsMetadata(
         .concat(newOrgUnitGroups as OrgUnitGroup[])
         .concat([awardNumberOrgUnitGroupBase])
         .uniqBy(oug => oug.id)
+        .map(setDefaultShortName)
         .map(oug =>
             oug.id === awardNumberOrgUnitGroupBase.id && dashboards.awardNumber // Set dashboard ID to awardNumber group
                 ? addAttributeValueToObj(oug, {
@@ -1120,3 +1127,9 @@ const dataValuesDatesGetAll: Required<Pick<DataValueSetsGetRequest, "startDate" 
     startDate: "1970",
     endDate: (new Date().getFullYear() + 10).toString(),
 };
+
+type ObjWithShortName = Partial<{ name: string; shortName: string }>;
+
+function setDefaultShortName<T extends ObjWithShortName>(obj: T): T {
+    return { ...obj, shortName: obj.shortName || obj.name };
+}
