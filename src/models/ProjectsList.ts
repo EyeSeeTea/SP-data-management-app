@@ -26,6 +26,7 @@ export type FiltersForList = Partial<{
 const orgUnitFields = {
     id: true,
     user: { id: true, displayName: true },
+    name: true,
     displayName: true,
     displayDescription: true,
     href: true,
@@ -45,7 +46,7 @@ type BaseProject = Omit<
     "organisationUnitGroups"
 >;
 
-type D2OrgUnit = SelectedPick<D2OrganisationUnitSchema, typeof orgUnitFields>;
+export type D2OrgUnit = SelectedPick<D2OrganisationUnitSchema, typeof orgUnitFields>;
 
 export interface ProjectForList extends BaseProject {
     sectors: Sector[];

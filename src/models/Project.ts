@@ -2,7 +2,6 @@ import { Config } from "./Config";
 import moment, { Moment } from "moment";
 import _ from "lodash";
 import { D2Api, Id, Ref } from "../types/d2-api";
-import { D2OrganisationUnit } from "../types/d2-api";
 // @ts-ignore
 import { generateUid } from "d2/uid";
 import { TableSorting } from "@eyeseetea/d2-ui-components";
@@ -331,10 +330,6 @@ class Project {
         return new Project(this.api, this.config, { ...this.data, ...obj });
     }
 
-    public get shortName(): string {
-        return this.data.name.slice(0, 50);
-    }
-
     public get code(): string {
         return _([
             this.awardNumber,
@@ -651,7 +646,11 @@ class Project {
 
 interface Project extends ProjectData {}
 
-type OrgUnitWithDates = Pick<D2OrganisationUnit, "openingDate" | "closedDate">;
+type Dates = { openingDate: string; closedDate: string };
+
+type OrgUnitWithDates = BaseOrgUnit & Dates;
+
+type BaseOrgUnit = { name: string; code: string };
 
 export function getDatesFromOrgUnit<OU extends OrgUnitWithDates>(
     orgUnit: OU
@@ -664,17 +663,41 @@ export function getDatesFromOrgUnit<OU extends OrgUnitWithDates>(
     };
 }
 
+function getPrefix(orgUnit: OrgUnitWithDates): string {
+    // code: `${awardNumber}${subsequentLettering}[-${location}]`
+    const awardNumberWithSubsequentLettering = orgUnit.code?.split("-")[0] || "";
+    return awardNumberWithSubsequentLettering + " - ";
+}
+
+function removeAwardNumberPrefixFromOrgUnit(orgUnit: OrgUnitWithDates): string {
+    const prefix = getPrefix(orgUnit);
+    return orgUnit.name.startsWith(prefix) ? orgUnit.name.slice(prefix.length) : orgUnit.name;
+}
+
+export function addAwardNumberPrefixForOrgUnit(orgUnit: OrgUnitWithDates): string {
+    const prefix = getPrefix(orgUnit);
+
+    if (orgUnit.name.startsWith(prefix)) {
+        return orgUnit.name;
+    } else {
+        return prefix + orgUnit.name;
+    }
+}
+
 export function getProjectFromOrgUnit<OU extends OrgUnitWithDates>(orgUnit: OU): OU {
     const { startDate, endDate } = getDatesFromOrgUnit(orgUnit);
+    const name = removeAwardNumberPrefixFromOrgUnit(orgUnit);
 
     return {
         ...orgUnit,
+        name: name,
+        displayName: name,
         ...(startDate ? { openingDate: toISOString(startDate) } : {}),
         ...(endDate ? { closedDate: toISOString(endDate) } : {}),
     };
 }
 
-export function getOrgUnitDatesFromProject(startDate: Moment, endDate: Moment): OrgUnitWithDates {
+export function getOrgUnitDatesFromProject(startDate: Moment, endDate: Moment): Dates {
     return {
         openingDate: toISOString(startDate.clone().subtract(1, "month").startOf("day")),
         closedDate: toISOString(endDate.clone().add(1, "month").endOf("month").startOf("day")),
