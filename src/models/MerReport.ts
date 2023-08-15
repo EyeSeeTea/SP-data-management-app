@@ -85,7 +85,7 @@ export interface DataElementMER extends DataElementInfo {
 interface OrgUnit {
     id: Id;
     code: string;
-    displayName: string;
+    name: string;
     openingDate: string;
     closedDate: string;
     organisationUnitGroups: Ref[];
@@ -140,6 +140,7 @@ export interface DataElementInfo {
 export interface ProjectForMer {
     id: string;
     code: string;
+    prefix: string;
     dateInfo: string;
     name: string;
     dataElements: DataElementInfo[];
@@ -443,8 +444,9 @@ class MerReport {
 
             const projectForMer: ProjectForMer = {
                 id: orgUnit.id,
-                name: project.displayName,
+                name: project.name,
                 code: orgUnit.code,
+                prefix: orgUnit.code?.split("-")[0] || "",
                 locations: locations.map(({ id, displayName }) => ({ id, name: displayName })),
                 dateInfo: `${formatDate(project.openingDate)} - ${formatDate(project.closedDate)}`,
                 dataElements: _.compact(dataElementIds.map(getDataElementInfo)),
@@ -501,7 +503,7 @@ async function getOrgUnitsForProjects(api: D2Api, projects: Ref[]): Promise<OrgU
                 fields: {
                     id: true,
                     code: true,
-                    displayName: true,
+                    name: true,
                     openingDate: true,
                     closedDate: true,
                     organisationUnitGroups: { id: true },

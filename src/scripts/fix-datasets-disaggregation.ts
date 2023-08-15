@@ -15,12 +15,12 @@ import { writeDataFilePath } from "./common";
 
     Usage:
 
-    $ yarn ts-node src/scripts/fix-datasets-disaggregation.ts --url "http://USER:ADMIN@URL"
+    $ yarn ts-node src/scripts/fix-datasets-disaggregation.ts --url "http://USER:PASSWORD@URL"
 
     Check that generated JSON files are correct. Now post data values and data sets, in that order:
 
-    $ yarn ts-node src/scripts/fix-datasets-disaggregation.ts --url "http://USER:ADMIN@URL" --postDataValues
-    $ yarn ts-node src/scripts/fix-datasets-disaggregation.ts --url "http://USER:ADMIN@URL" --postDataSets
+    $ yarn ts-node src/scripts/fix-datasets-disaggregation.ts --url "http://USER:PASSWORD@URL" --postDataValues
+    $ yarn ts-node src/scripts/fix-datasets-disaggregation.ts --url "http://USER:PASSWORD@URL" --postDataSets
 */
 
 const cocMapping: Record<CocName, CocName> = {
