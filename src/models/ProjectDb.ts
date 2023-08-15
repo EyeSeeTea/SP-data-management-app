@@ -259,7 +259,7 @@ export default class ProjectDb {
             displayName: name,
             path: project.parentOrgUnit.path + "/" + project.id,
             code: project.code,
-            shortName: project.shortName,
+            shortName: name.slice(0, 50),
             description: project.description,
             parent: { id: getOrgUnitId(project.parentOrgUnit) },
             ...getOrgUnitDatesFromProject(startDate, endDate),
