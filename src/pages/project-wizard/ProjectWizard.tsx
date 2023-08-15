@@ -25,6 +25,7 @@ import DisaggregationStep from "../../components/steps/disaggregation/Disaggrega
 import DataElementsSelectionStep from "../../components/steps/data-elements-selection/DataElementsSelectionStep";
 import MerSelectionStep from "../../components/steps/mer-selection/MerSelectionStep";
 import { useAppHistory } from "../../utils/use-app-history";
+import { Maybe } from "../../types/utils";
 
 type Action = { type: "create" } | { type: "edit"; id: string };
 
@@ -94,7 +95,12 @@ class ProjectWizardImpl extends React.Component<Props, State> {
     }
 
     getStepsBaseInfo(): Step[] {
-        return [
+        const { project } = this.state;
+        if (!project) return [];
+
+        const isDisaggregationVisible = project.isPersisted() && project.hasCovid19Disaggregation();
+
+        const steps: Array<Maybe<Step>> = [
             {
                 key: "general-info",
                 label: i18n.t("General info"),
@@ -136,13 +142,15 @@ class ProjectWizardImpl extends React.Component<Props, State> {
                 validationKeys: ["dataElementsSelection"],
                 help: helpTexts.indicators,
             },
-            {
-                key: "disaggregation",
-                label: i18n.t("Disaggregation"),
-                component: DisaggregationStep,
-                validationKeys: [],
-                help: helpTexts.disaggregation,
-            },
+            isDisaggregationVisible
+                ? {
+                      key: "disaggregation",
+                      label: i18n.t("Disaggregation"),
+                      component: DisaggregationStep,
+                      validationKeys: [],
+                      help: helpTexts.disaggregation,
+                  }
+                : null,
             {
                 key: "mer-indicators",
                 label: i18n.t("Selection of MER Indicators"),
@@ -166,6 +174,8 @@ class ProjectWizardImpl extends React.Component<Props, State> {
                 help: helpTexts.save,
             },
         ];
+
+        return _.compact(steps);
     }
 
     cancelSave = () => {

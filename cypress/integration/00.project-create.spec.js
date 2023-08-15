@@ -21,12 +21,14 @@ describe("Projects - Create", () => {
         cy.contains("Award Number should be a number of 5 digits");
         cy.contains("Subsequent Lettering must contain exactly two letters");
 
+        cy.get(".dm-MuiSnackbarContent-action .dm-MuiIconButton-root").click();
+
         cy.get("[data-field='name']").type("00Cypress Project");
         cy.get("[data-field='description']").type("Some description");
         cy.get("[data-field='awardNumber']").type(Math.floor(10000 + Math.random() * 90000));
         cy.get("[data-field='subsequentLettering']").type("SL");
 
-        const startDate = moment();
+        const startDate = moment.utc({ year: 2022, month: 1, day: 1 });
         const endDate = moment().add(3, "months");
 
         cy.contains("Start Date (*)").click({ force: true });
@@ -39,6 +41,9 @@ describe("Projects - Create", () => {
 
         cy.contains("Funders");
         selectInMultiSelector("funders", "Samaritan's Purse - IHQ");
+
+        cy.contains("Would you like to use the funder code");
+        cy.contains("Yes").click();
 
         cy.contains("Next").click();
 
@@ -80,19 +85,6 @@ describe("Projects - Create", () => {
         cy.contains("# of people trained in livelihood topics").parent("td").prev("td").click();
 
         cy.contains("# of people trained on microfinance").parent("td").prev("td").click();
-
-        cy.contains("Next").click();
-
-        // Disaggregation
-
-        cy.waitForStep("Disaggregation");
-        cy.get("[data-cy=covid19-selector-B010200]").contains("No").click();
-        cy.get(".MuiPopover-paper").contains("Yes").click();
-
-        cy.contains("Livelihoods").click();
-
-        cy.get("[data-cy=covid19-selector-P020100]").contains("No").click();
-        cy.get(".MuiPopover-paper").contains("Yes").click();
 
         cy.contains("Next").click();
 
@@ -142,10 +134,8 @@ describe("Projects - Create", () => {
         cy.contains("Agriculture");
         cy.contains("Livelihoods");
 
-        cy.contains(
-            "# of agriculture groups receiving support for improved livelihoods - B010200 [COVID-19]"
-        );
-        cy.contains("# of people trained in livelihood topics - P020100 [COVID-19] [MER]");
+        cy.contains("# of agriculture groups receiving support for improved livelihoods - B010200");
+        cy.contains("# of people trained in livelihood topics - P020100 [MER]");
         cy.contains("# of people trained on microfinance - P020103");
 
         cy.server();

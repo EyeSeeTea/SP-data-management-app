@@ -2,7 +2,6 @@ import { Config } from "./Config";
 import moment, { Moment } from "moment";
 import _ from "lodash";
 import { D2Api, Id, Ref } from "../types/d2-api";
-import { D2OrganisationUnit } from "../types/d2-api";
 // @ts-ignore
 import { generateUid } from "d2/uid";
 import { TableSorting } from "@eyeseetea/d2-ui-components";
@@ -26,6 +25,8 @@ import ProjectSharing from "./ProjectSharing";
 import { Disaggregation, SetCovid19WithRelationsOptions } from "./Disaggregation";
 import { Sharing } from "./Sharing";
 import { getIds } from "../utils/dhis2";
+import { ProjectInfo } from "./ProjectInfo";
+import { isTest } from "../utils/testing";
 
 /*
 Project model.
@@ -215,7 +216,7 @@ class Project {
         description: i18n.t("Description"),
         awardNumber: i18n.t("Award Number"),
         subsequentLettering: i18n.t("Subsequent Lettering"),
-        additional: i18n.t("Additional Designation (Location/Sector)"),
+        additional: i18n.t("Additional Designation (Funder, Location, Sector, etc)"),
         startDate: i18n.t("Start Date"),
         endDate: i18n.t("End Date"),
         sectors: i18n.t("Sectors"),
@@ -272,10 +273,13 @@ class Project {
     };
 
     validateMER(): ValidationError {
+        const selected = this.dataElementsSelection.getAllSelected();
+
         return _.concat(
-            this.dataElementsMER.validateAtLeastOneSelected(this.sectors),
-            this.dataElementsMER.validateMaxSelectedBySector(this.sectors, 3),
-            this.dataElementsMER.validateMaxSectorsWithSelections(this.sectors, 3)
+            this.dataElementsMER.validateTotalSelectedCount(this.sectors, {
+                min: isTest() ? 1 : Math.min(selected.length, 3),
+                max: 5,
+            })
         );
     }
 
@@ -324,10 +328,6 @@ class Project {
 
     public setObj<K extends keyof ProjectData>(obj: Pick<ProjectData, K>): Project {
         return new Project(this.api, this.config, { ...this.data, ...obj });
-    }
-
-    public get shortName(): string {
-        return this.data.name.slice(0, 50);
     }
 
     public get code(): string {
@@ -381,15 +381,7 @@ class Project {
         return selectedDataElementsSorted;
     }
 
-    public getSectorsInfo(): Array<{
-        sector: Sector;
-        dataElementsInfo: Array<{
-            dataElement: DataElement;
-            isMER: boolean;
-            isCovid19: boolean;
-            usedInDataSetSection: boolean;
-        }>;
-    }> {
+    public getSectorsInfo(): SectorsInfo {
         const { dataElementsSelection, dataElementsMER, sectors } = this;
         const dataElementsBySectorMapping = new ProjectDb(this).getDataElementsBySectorMapping();
         const selectedMER = new Set(dataElementsMER.get({ onlySelected: true }).map(de => de.id));
@@ -463,6 +455,14 @@ class Project {
         return new Project(api, config, projectData);
     }
 
+    isPersisted() {
+        return Boolean(this.initialData);
+    }
+
+    hasCovid19Disaggregation() {
+        return this.disaggregation.hasAnyCovid19();
+    }
+
     download() {
         return new ProjectDownload(this).generate();
     }
@@ -484,6 +484,26 @@ class Project {
     ) {
         const projectsList = new ProjectList(api, config);
         return projectsList.get(filters, sorting, pagination);
+    }
+
+    static async getCountriesOnlyActive(api: D2Api, config: Config) {
+        const projectsList = new ProjectList(api, config);
+        const { countries } = await projectsList.get(
+            { onlyActive: true },
+            { field: "id", order: "asc" },
+            { page: 1, pageSize: 1 }
+        );
+        return countries;
+    }
+
+    static async getCountries(api: D2Api, config: Config) {
+        const projectsList = new ProjectList(api, config);
+        const { countries } = await projectsList.get(
+            {},
+            { field: "id", order: "asc" },
+            { page: 1, pageSize: 1 }
+        );
+        return countries;
     }
 
     setSectors(sectors: Sector[]): Project {
@@ -528,6 +548,10 @@ class Project {
         return this.id;
     }
 
+    get info() {
+        return new ProjectInfo(this);
+    }
+
     async validateCodeUniqueness(): Promise<ValidationError> {
         const { api, code } = this;
         if (!code) return [];
@@ -567,6 +591,17 @@ class Project {
         return !toDate ? periods : periods.filter(period => period.date <= now);
     }
 
+    getPeriodInterval(): string {
+        const { startDate, endDate } = this.data;
+        const dateFormat = "MMMM YYYY";
+
+        if (startDate && endDate) {
+            return [startDate.format(dateFormat), "-", endDate.format(dateFormat)].join(" ");
+        } else {
+            return "-";
+        }
+    }
+
     getDates(): { startDate: Moment; endDate: Moment } {
         const { startDate, endDate } = this;
         if (!startDate || !endDate) throw new Error("No project dates");
@@ -576,6 +611,15 @@ class Project {
     getProjectDataSet(dataSet: DataSet) {
         const dataSetType: DataSetType = dataSet.code.endsWith("ACTUAL") ? "actual" : "target";
         return this.dataSetsByType[dataSetType];
+    }
+
+    getInitialProject(): Maybe<Project> {
+        return this.initialData
+            ? new Project(this.api, this.config, {
+                  ...this.initialData,
+                  initialData: undefined,
+              })
+            : undefined;
     }
 
     static async delete(config: Config, api: D2Api, ids: Id[]): Promise<void> {
@@ -602,7 +646,11 @@ class Project {
 
 interface Project extends ProjectData {}
 
-type OrgUnitWithDates = Pick<D2OrganisationUnit, "openingDate" | "closedDate">;
+type Dates = { openingDate: string; closedDate: string };
+
+type OrgUnitWithDates = BaseOrgUnit & Dates;
+
+type BaseOrgUnit = { name: string; code: string };
 
 export function getDatesFromOrgUnit<OU extends OrgUnitWithDates>(
     orgUnit: OU
@@ -615,17 +663,41 @@ export function getDatesFromOrgUnit<OU extends OrgUnitWithDates>(
     };
 }
 
+function getPrefix(orgUnit: OrgUnitWithDates): string {
+    // code: `${awardNumber}${subsequentLettering}[-${location}]`
+    const awardNumberWithSubsequentLettering = orgUnit.code?.split("-")[0] || "";
+    return awardNumberWithSubsequentLettering + " - ";
+}
+
+function removeAwardNumberPrefixFromOrgUnit(orgUnit: OrgUnitWithDates): string {
+    const prefix = getPrefix(orgUnit);
+    return orgUnit.name.startsWith(prefix) ? orgUnit.name.slice(prefix.length) : orgUnit.name;
+}
+
+export function addAwardNumberPrefixForOrgUnit(orgUnit: OrgUnitWithDates): string {
+    const prefix = getPrefix(orgUnit);
+
+    if (orgUnit.name.startsWith(prefix)) {
+        return orgUnit.name;
+    } else {
+        return prefix + orgUnit.name;
+    }
+}
+
 export function getProjectFromOrgUnit<OU extends OrgUnitWithDates>(orgUnit: OU): OU {
     const { startDate, endDate } = getDatesFromOrgUnit(orgUnit);
+    const name = removeAwardNumberPrefixFromOrgUnit(orgUnit);
 
     return {
         ...orgUnit,
+        name: name,
+        displayName: name,
         ...(startDate ? { openingDate: toISOString(startDate) } : {}),
         ...(endDate ? { closedDate: toISOString(endDate) } : {}),
     };
 }
 
-export function getOrgUnitDatesFromProject(startDate: Moment, endDate: Moment): OrgUnitWithDates {
+export function getOrgUnitDatesFromProject(startDate: Moment, endDate: Moment): Dates {
     return {
         openingDate: toISOString(startDate.clone().subtract(1, "month").startOf("day")),
         closedDate: toISOString(endDate.clone().add(1, "month").endOf("month").startOf("day")),
@@ -653,5 +725,17 @@ export function getPeriodsData(dataSet: DataSet) {
 
     return { periodIds, currentPeriodId };
 }
+
+export type DataElementInfo = {
+    dataElement: DataElement;
+    isMER: boolean;
+    isCovid19: boolean;
+    usedInDataSetSection: boolean;
+};
+
+export type SectorsInfo = Array<{
+    sector: Sector;
+    dataElementsInfo: Array<DataElementInfo>;
+}>;
 
 export default Project;

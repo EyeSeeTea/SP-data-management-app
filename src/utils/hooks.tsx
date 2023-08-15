@@ -78,10 +78,10 @@ export function useSnackbarOnError(onError: Callback) {
     };
 }
 
-export function usePageExitConfirmation(showPromptFn: () => boolean) {
+export function usePageExitConfirmation(showPromptFn: () => Promise<boolean>) {
     const confirmPageExit = React.useCallback(
-        (ev: BeforeUnloadEvent) => {
-            if (showPromptFn()) {
+        async (ev: BeforeUnloadEvent) => {
+            if (await showPromptFn()) {
                 ev.preventDefault();
                 ev.returnValue = "";
             }

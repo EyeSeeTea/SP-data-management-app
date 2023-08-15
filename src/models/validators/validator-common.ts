@@ -1,7 +1,8 @@
 import _ from "lodash";
 import moment from "moment";
 import { DataValueSetsDataValue } from "../../types/d2-api";
-import { monthFormat } from "../Project";
+import { fromPairs } from "../../types/utils";
+import Project, { monthFormat } from "../Project";
 
 export interface DataValue {
     period: string;
@@ -10,15 +11,23 @@ export interface DataValue {
     value: string;
 }
 
-export interface ValidationResult {
-    info?: string[];
-    warning?: string[];
-    error?: string[];
-}
+export type ValidationItem = {
+    level: ValidationLevel;
+    message: string;
+    reason?: {
+        id: string;
+        project: Project;
+        dataElementId: string;
+        cocId: string;
+        period: string;
+    };
+};
 
-export type ValidationLevel = keyof ValidationResult;
+export type ValidationResult = ValidationItem[];
 
-export type ValidationItem = [ValidationLevel, string];
+export const levels = ["info", "warning", "error"] as const;
+
+export type ValidationLevel = typeof levels[number];
 
 export function isSuperset<T>(xs: T[], ys: T[]) {
     return _.difference(ys, xs).length === 0;
@@ -44,3 +53,26 @@ export function getDataValueFromD2(d2DataValue: DataValueSetsDataValue): DataVal
         value: d2DataValue.value,
     };
 }
+
+export function groupValidationByLevels(result: ValidationResult) {
+    return fromPairs(
+        levels.map(
+            level =>
+                [level, result.filter(item => item.level === level)] as [
+                    ValidationLevel,
+                    ValidationItem[]
+                ]
+        )
+    );
+}
+
+export function areAllReasonsFilled(result: ValidationResult, reasons: Reasons) {
+    return _(result)
+        .map(x => x.reason?.id)
+        .compact()
+        .every(id => Boolean(reasons[id]));
+}
+
+export type ReasonId = string;
+
+export type Reasons = Record<ReasonId, string>;

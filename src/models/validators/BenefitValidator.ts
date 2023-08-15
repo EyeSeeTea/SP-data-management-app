@@ -33,12 +33,12 @@ export class BenefitValidator {
             return [];
         } else if (value < 0) {
             const msg = i18n.t("Benefit value should be positive ({{value}})", { value });
-            return [["error", msg]];
+            return [{ level: "error", message: msg }];
         } else if (value > 0 && decimalsOf(dataValue.value) > 5) {
             const msg = i18n.t("Benefit value should have 5 or less decimal places ({{value}})", {
                 value,
             });
-            return [["error", msg]];
+            return [{ level: "error", message: msg }];
         } else {
             return [];
         }

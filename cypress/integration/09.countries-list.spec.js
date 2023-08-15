@@ -31,7 +31,7 @@ describe("Countries List page", () => {
     });
 
     it("shows list of countries sorted alphabetically", () => {
-        cy.get(".MuiTableBody-root tr > td:nth-child(2)").then(el => {
+        cy.get(".dm-MuiTableBody-root tr > td:nth-child(2)").then(el => {
             const names = el.get().map(x => x.innerText);
             const sortedNames = _(names)
                 .orderBy(name => name.toLowerCase())
@@ -46,7 +46,7 @@ describe("Countries List page", () => {
             cy.contains("Name").click();
         });
 
-        cy.get(".MuiTableBody-root tr > td:nth-child(2)").then(el => {
+        cy.get(".dm-MuiTableBody-root tr > td:nth-child(2)").then(el => {
             const names = el.get().map(x => x.innerText);
             const sortedNames = _(names)
                 .orderBy(name => name.toLowerCase())
