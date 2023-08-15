@@ -55,15 +55,12 @@ export class Validator {
         return new Validator(this.period, newValidators);
     }
 
-    validate(): ValidationResult {
-        const items: ValidationItem[] = this.validators.global.validate();
+    async validate(): Promise<ValidationResult> {
+        const items: ValidationItem[] = await this.validators.global.validate();
         return this.getValidationResult(items);
     }
 
     private getValidationResult(items: ValidationItem[]): ValidationResult {
-        return _(items)
-            .groupBy(([key, _msg]) => key)
-            .mapValues(pairs => pairs.map(([_key, msg]) => msg))
-            .value();
+        return items;
     }
 }

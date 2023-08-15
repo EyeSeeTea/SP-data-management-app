@@ -6,7 +6,7 @@ export const appConfig: AppConfig = {
         showShareButton: false,
     },
     app: {
-        notifyEmailOnProjectSave: ["userATsamaritan.org"],
+        notifyEmailOnProjectSave: [["user", "samaritan.org"].join("@")],
     },
     feedback: {
         repositories: {

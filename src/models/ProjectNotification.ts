@@ -89,7 +89,7 @@ export class ProjectNotification {
 
         const { displayName: user, username } = this.currentUser.data;
 
-        const subject = i18n.t("[SP Platform] Request for Data Review: {{name}} ({{code}})", {
+        const subject = i18n.t("[SP Platform] Request for Data Review: {{-name}} ({{code}})", {
             name: project.name,
             code: project.code,
             nsSeparator: false,

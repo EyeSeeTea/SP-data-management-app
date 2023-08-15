@@ -155,6 +155,8 @@ const NodeList: React.FC<{ nodes: ProjectInfoNode[] }> = props => {
                                 <NodeList nodes={node.children} />
                             </LiEntry>
                         );
+                    default:
+                        return null;
                 }
             })}
         </ul>

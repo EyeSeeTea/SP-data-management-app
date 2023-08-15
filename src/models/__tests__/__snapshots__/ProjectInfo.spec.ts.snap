@@ -5,7 +5,7 @@ exports[`getAsString 1`] = `
 - Description: -
 - Award Number: 12345
 - Subsequent Lettering: en
-- Additional Designation (Location/Sector): -
+- Additional Designation (Funder, Location, Sector, etc): -
 - Period dates: October 2018 - March 2019
 - Funders: funder-aOYJkeWdv2t, funder-yQKIZzBl22A
 - Selected country: Bahamas
@@ -29,7 +29,7 @@ exports[`getAsString on new project 1`] = `
 - Description: -
 - Award Number: 12345
 - Subsequent Lettering: en
-- Additional Designation (Location/Sector): -
+- Additional Designation (Funder, Location, Sector, etc): -
 - Period dates: October 2018 - March 2019
 - Funders: funder-aOYJkeWdv2t, funder-yQKIZzBl22A
 - Selected country: Bahamas
@@ -79,7 +79,7 @@ Array [
   },
   Object {
     "action": "none",
-    "name": "Additional Designation (Location/Sector)",
+    "name": "Additional Designation (Funder, Location, Sector, etc)",
     "prevValue": "",
     "type": "field",
     "value": "",

@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2023-08-01T08:41:29.934Z\n"
-"PO-Revision-Date: 2023-08-01T08:41:29.934Z\n"
+"POT-Creation-Date: 2023-08-15T12:39:46.508Z\n"
+"PO-Revision-Date: 2023-08-15T12:39:46.508Z\n"
 
 msgid "Name"
 msgstr ""
@@ -89,7 +89,13 @@ msgstr ""
 msgid "Validation results"
 msgstr ""
 
-msgid "OK"
+msgid "Close"
+msgstr ""
+
+msgid "Save"
+msgstr ""
+
+msgid "Comments saved"
 msgstr ""
 
 msgid "Validation data is not loaded, skip validation"
@@ -263,9 +269,6 @@ msgid "Validating Project"
 msgstr ""
 
 msgid "Checking Existing Data"
-msgstr ""
-
-msgid "Save"
 msgstr ""
 
 msgid "Saving Project"
@@ -629,7 +632,7 @@ msgstr ""
 msgid "MER"
 msgstr ""
 
-msgid "[SP Platform] Request for Data Review: {{name}} ({{code}})"
+msgid "[SP Platform] Request for Data Review: {{-name}} ({{code}})"
 msgstr ""
 
 msgid ""
@@ -720,6 +723,16 @@ msgid "Benefit value should be positive ({{value}})"
 msgstr ""
 
 msgid "Benefit value should have 5 or less decimal places ({{value}})"
+msgstr ""
+
+msgid ""
+"Global indicator {{-name}} must have a value (as some sub-indicator has a "
+"value)"
+msgstr ""
+
+msgid ""
+"Global indicator {{-name}} value ({{value}}) must be inferior to the sum of "
+"new+returning of its sub-indicators ({{subFormula}})"
 msgstr ""
 
 msgid ""
