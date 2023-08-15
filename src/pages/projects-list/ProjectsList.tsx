@@ -1,3 +1,4 @@
+import _ from "lodash";
 import { TableSorting } from "@eyeseetea/d2-ui-components";
 import React, { useCallback, useState } from "react";
 import styled from "styled-components";
@@ -18,7 +19,7 @@ import { FiltersForList, ProjectForList } from "../../models/ProjectsList";
 import { useGoTo } from "../../router";
 import { Id } from "../../types/d2-api";
 import { getComponentConfig, UrlState } from "./ProjectsListConfig";
-import ProjectsListFilters from "./ProjectsListFilters";
+import ProjectsListFilters, { FilterOptions } from "./ProjectsListFilters";
 import { useUrlParams } from "../../utils/use-url-params";
 import { useQueryStringParams } from "./ProjectsListParams";
 
@@ -63,9 +64,7 @@ const ProjectsList: React.FC = () => {
 
     const tableProps = useObjectsTable(componentConfig, getRows, params, updateState);
 
-    const filterOptions = React.useMemo(() => {
-        return { countries: currentUser.getCountries(), sectors: config.sectors };
-    }, [currentUser, config]);
+    const filterOptions = useFilterOptions();
 
     const closeDeleteDialog = useCallback(() => {
         setProjectIdsToDelete(undefined);
@@ -127,5 +126,38 @@ const ObjectsListStyled = styled(ObjectsList)`
         max-width: 250px;
     }
 `;
+
+function useFilterOptions() {
+    const { api, currentUser, config } = useAppContext();
+
+    const [filterOptions, setFilterOptions] = React.useState<FilterOptions>(() => ({
+        countriesAll: currentUser.getCountries(),
+        countriesOnlyActive: [],
+        sectors: config.sectors,
+    }));
+
+    React.useEffect(() => {
+        async function run() {
+            const countriesFromProjects = await Project.getCountries(api, config);
+
+            const countriesAll = _.intersectionBy(
+                countriesFromProjects,
+                currentUser.getCountries(),
+                country => country.id
+            );
+
+            const newFilterOptions: FilterOptions = {
+                countriesAll: countriesAll,
+                sectors: config.sectors,
+                countriesOnlyActive: await Project.getCountriesOnlyActive(api, config),
+            };
+
+            setFilterOptions(newFilterOptions);
+        }
+        run();
+    }, [api, currentUser, config]);
+
+    return filterOptions;
+}
 
 export default React.memo(ProjectsList);

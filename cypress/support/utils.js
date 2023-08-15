@@ -4,7 +4,7 @@ export function selectOrgUnit(label) {
 }
 
 export function selectDatePicker(year, month) {
-    const pickerSelector = "[class^=MuiPickersBasePicker-pickerView]";
+    const pickerSelector = "[class^=dm-MuiPickersBasePicker-pickerView]";
     cy.get(pickerSelector).contains(year.toString()).click();
     cy.get(pickerSelector).contains(month).click();
 }

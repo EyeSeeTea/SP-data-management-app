@@ -23,7 +23,8 @@ export interface Option {
 }
 
 export interface FilterOptions {
-    countries: Option[];
+    countriesAll: Option[];
+    countriesOnlyActive: Option[];
     sectors: Option[];
 }
 
@@ -34,7 +35,9 @@ type OnChange = NonNullable<CheckboxProps["onChange"]>;
 const ProjectsListFilters: React.FC<ProjectsListFiltersProps> = props => {
     const { filter, filterOptions, onChange } = props;
     const classes = useStyles();
-    const countryItems = useMemoOptions(filterOptions.countries);
+    const countryItems = useMemoOptions(
+        filter.onlyActive ? filterOptions.countriesOnlyActive : filterOptions.countriesAll
+    );
     const sectorItems = useMemoOptions(filterOptions.sectors);
 
     const notifyCountriesChange = React.useCallback(

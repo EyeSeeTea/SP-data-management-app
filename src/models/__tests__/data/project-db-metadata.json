@@ -46,6 +46,7 @@
             "created": "2020-01-02T12:32:30.449",
             "lastUpdated": "2020-01-02T14:28:43.045",
             "name": "Abaco",
+            "shortName": "Abaco",
             "id": "GG0k0oNhgS7",
             "publicAccess": "rw------",
             "lastUpdatedBy": {
@@ -69,6 +70,7 @@
             "created": "2020-01-02T11:55:10.244",
             "lastUpdated": "2020-01-02T14:28:43.050",
             "name": "Agridius Foundation",
+            "shortName": "Agridius Foundation",
             "id": "em8NIwi0KvM",
             "publicAccess": "rw------",
             "lastUpdatedBy": {
@@ -106,6 +108,7 @@
         {
             "id": "WIEp6vpQw6n",
             "name": "Award Number 12345",
+            "shortName": "Award Number 12345",
             "code": "AWARD_NUMBER_12345",
             "organisationUnits": [
                 {

@@ -122,9 +122,19 @@ export default class DataElementsSet {
         return this.get({ onlySelected: true }).filter(de => sectorIds.has(de.sector.id));
     }
 
-    validateAtLeastOneSelected(projectSectors: Sector[]): ValidationError {
+    validateTotalSelectedCount(
+        projectSectors: Sector[],
+        counts: { min: number; max: number }
+    ): ValidationError {
         const selected = this.getSelectedForSectors(projectSectors);
-        return _.isEmpty(selected) ? [i18n.t("Select at least one indicator")] : [];
+
+        if (selected.length < counts.min) {
+            return [i18n.t("Select at least a total of {{min}} indicators", counts)];
+        } else if (selected.length > counts.max) {
+            return [i18n.t("Select at most a total of {{max}} indicators", counts)];
+        } else {
+            return [];
+        }
     }
 
     validateMaxSelectedBySector(projectSectors: Sector[], maxCount: number): ValidationError {
