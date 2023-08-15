@@ -14,6 +14,7 @@ module.exports = {
         "@typescript-eslint/no-unused-vars": [1, { argsIgnorePattern: "^_" }],
         "react/prop-types": "off",
         "no-unused-expressions": "warn",
+        "@typescript-eslint/no-unused-expressions": "warn",
         "no-useless-concat": "off",
         "no-redeclare": "off",
         "no-use-before-define": "off",
