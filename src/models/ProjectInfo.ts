@@ -126,6 +126,8 @@ export class ProjectInfo {
                             ["- ", this.action(node), node.title, ":"].join(""),
                             ...applyIndent(this.nodesToString(node.children)),
                         ];
+                    default:
+                        return [];
                 }
             })
             .value();

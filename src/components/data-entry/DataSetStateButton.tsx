@@ -46,8 +46,8 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
             .catch(showErrorAndSetInactive);
     }, [projectDataSet, period, dataSetInfo, notifyOnChange, showErrorAndSetInactive]);
 
-    const reset = React.useCallback(() => {
-        if (!validation.validate({ showValidation: true })) return;
+    const reset = React.useCallback(async () => {
+        if (!(await validation.validate({ showValidation: true }))) return;
         setActive(true);
         projectDataSet.reset().then(notifyOnChange).catch(showErrorAndSetInactive);
     }, [projectDataSet, notifyOnChange, showErrorAndSetInactive, validation]);

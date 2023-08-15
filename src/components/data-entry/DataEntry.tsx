@@ -227,8 +227,8 @@ const DataEntry = (props: DataEntryProps) => {
     const { validate } = validation;
 
     const setPeriod = React.useCallback(
-        value => {
-            if (!validate({ showValidation: true })) return;
+        async value => {
+            if (!(await validate({ showValidation: true }))) return;
             return setState(prevState => ({ ...prevState, dropdownValue: value }));
         },
         [setState, validate]
@@ -236,13 +236,21 @@ const DataEntry = (props: DataEntryProps) => {
 
     React.useEffect(() => {
         onValidateFnChange({
-            execute: () => !isValidationEnabled || validate({ showValidation: true }),
+            execute: async () => !isValidationEnabled || (await validate({ showValidation: true })),
         });
     }, [isValidationEnabled, onValidateFnChange, validate]);
 
     return (
         <React.Fragment>
-            <ValidationDialog result={validation.result} onClose={validation.clear} />
+            {period && (
+                <ValidationDialog
+                    period={period}
+                    project={project}
+                    dataSetType={dataSetType}
+                    result={validation.result}
+                    onClose={validation.clear}
+                />
+            )}
 
             <div style={styles.selector}>
                 {!state.dropdownHasValues && <Spinner isLoading={state.loading} />}

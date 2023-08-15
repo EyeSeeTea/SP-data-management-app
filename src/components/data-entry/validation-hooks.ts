@@ -13,7 +13,7 @@ import ProjectDb from "../../models/ProjectDb";
 export interface UseValidationResponse {
     result: ValidationResult;
     clear: () => void;
-    validate: (options?: { showValidation: boolean }) => boolean;
+    validate: (options?: { showValidation: boolean }) => Promise<boolean>;
 }
 
 export function useValidation(hookOptions: {
@@ -56,7 +56,7 @@ export function useValidation(hookOptions: {
                     const validatorUpdated = validator.onSave(msg.dataValue);
 
                     return validatorUpdated.validateDataValue(msg.dataValue).then(validation => {
-                        const hasErrors = validation.error && validation.error.length > 0;
+                        const hasErrors = validation.some(v => v.level === "error");
                         setValidationResult(validation);
 
                         if (!hasErrors) {
@@ -76,23 +76,26 @@ export function useValidation(hookOptions: {
         [validator, snackbar, project, config, api]
     );
 
-    const [validationResult, setValidationResult] = React.useState<ValidationResult>({});
-    const clearResult = React.useCallback(() => setValidationResult({}), [setValidationResult]);
+    const [validationResult, setValidationResult] = React.useState<ValidationResult>([]);
+    const clearResult = React.useCallback(() => setValidationResult([]), [setValidationResult]);
 
     const validate = React.useCallback<UseValidationResponse["validate"]>(
-        options => {
+        async options => {
             if (!isValidationEnabled) return true;
             const { showValidation = false } = options || {};
             if (!validator) return true;
-            const newValidationResult = validator.validate();
+            const newValidationResult = await validator.validate();
             if (showValidation) setValidationResult(newValidationResult);
-            const isValid = !newValidationResult.error || newValidationResult.error.length === 0;
+            const isValid = newValidationResult.every(r => r.level !== "error");
             return isValid;
         },
         [validator, isValidationEnabled]
     );
 
-    const showPromptFn = React.useCallback(() => !validate({ showValidation: true }), [validate]);
+    const showPromptFn = React.useCallback(
+        async () => !(await validate({ showValidation: true })),
+        [validate]
+    );
 
     usePageExitConfirmation(showPromptFn);
 
