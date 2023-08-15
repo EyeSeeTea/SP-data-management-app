@@ -325,10 +325,6 @@ class Project {
         return new Project(this.api, this.config, { ...this.data, ...obj });
     }
 
-    public get shortName(): string {
-        return this.data.name.slice(0, 50);
-    }
-
     public get code(): string {
         return _([
             this.awardNumber,

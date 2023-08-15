@@ -64,9 +64,10 @@ class UpdateProjectName {
         return _(projectOrgUnits)
             .map((orgUnit): typeof orgUnit | undefined => {
                 const newName = addAwardNumberPrefixForOrgUnit(orgUnit).trim();
-                if (newName !== orgUnit.name) {
+                const newOrgUnit = { ...orgUnit, name: newName, shortName: newName.slice(0, 50) };
+                if (!_.isEqual(orgUnit, newOrgUnit)) {
                     log(`Fix org unit name [id=${orgUnit.id}]: "${orgUnit.name}" -> "${newName}"`);
-                    return { ...orgUnit, name: newName };
+                    return newOrgUnit;
                 } else {
                     return undefined;
                 }
