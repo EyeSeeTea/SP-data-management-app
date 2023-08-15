@@ -202,7 +202,7 @@ export class GlobalValidator {
                                 { name: globalDataElement.name }
                             );
                             return [{ level: "error", message: msg, reason: reason }];
-                        } else if (subValuesSum && globalValue >= subValuesSum) {
+                        } else if (subValuesSum && globalValue > subValuesSum) {
                             const msg = i18n.t(
                                 "Global indicator {{-name}} value ({{value}}) must be inferior to the sum of new+returning of its sub-indicators ({{subFormula}})",
                                 {
