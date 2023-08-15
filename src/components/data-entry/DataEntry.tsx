@@ -23,7 +23,7 @@ interface DataEntryProps {
     onValidateFnChange(validateFn: ValidateFn): void;
 }
 
-export type ValidateFn = { execute: () => void };
+export type ValidateFn = { execute: () => Promise<boolean> };
 
 function autoResizeIframeByContent(iframe: HTMLIFrameElement) {
     const resize = () => {

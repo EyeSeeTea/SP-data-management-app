@@ -92,6 +92,13 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
         onConfirm: notifyUsers,
     });
 
+    const { validate } = validation;
+
+    const askForDataReview = React.useCallback(async () => {
+        if (!(await validate({ showValidation: true }))) return;
+        openDataReviewConfirmation.open();
+    }, [validate, openDataReviewConfirmation]);
+
     const userCanReopen = currentUser.can("reopen");
     if (!dataSetInfo) return <LinearProgress />;
 
@@ -131,7 +138,7 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
             <Button
                 disabled={isActive}
                 style={styles.button}
-                onClick={openDataReviewConfirmation.open}
+                onClick={askForDataReview}
                 variant="contained"
             >
                 {i18n.t("Ask for Data Review")}
