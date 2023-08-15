@@ -37,7 +37,7 @@ set_default_short_name() {
     local count
     debug "Set default shortName: model=$model"
 
-    curl2 "$url/api/$model.json?paging=false&fields=:owner" | jq-clean >"metadata-$model.json"
+    curl2 "$url/api/$model.json?paging=false&fields=:owner" | jq --sort-keys >"metadata-$model.json"
 
     cat "metadata-$model.json" |
         jq --arg model "$model" '
