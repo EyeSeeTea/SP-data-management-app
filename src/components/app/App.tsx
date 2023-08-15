@@ -25,6 +25,7 @@ import Migrations from "../migrations/Migrations";
 import { useMigrations } from "../migrations/hooks";
 import { appConfig } from "../../app-config";
 import { isTest } from "../../utils/testing";
+import i18n from "../../locales";
 
 const settingsQuery = { userSettings: { resource: "/userSettings" } };
 
@@ -62,7 +63,7 @@ const App: React.FC<AppProps> = props => {
             };
             setAppContext(appContext);
 
-            Object.assign(window, { dm: appContext });
+            Object.assign(window, { dm: appContext, i18n: i18n });
 
             setShowShareButton(_(appConfig).get("appearance.showShareButton") || false);
         };
