@@ -9,6 +9,7 @@ import { useAppContext } from "../../contexts/api-context";
 import i18n from "../../locales";
 import { ValidationDialog } from "./ValidationDialog";
 import { useValidation } from "./validation-hooks";
+import { DataSetOpenInfo } from "../../models/ProjectDataSet";
 
 const showControls = false;
 
@@ -240,9 +241,18 @@ const DataEntry = (props: DataEntryProps) => {
         });
     }, [isValidationEnabled, onValidateFnChange, validate]);
 
+    const [dataSetInfo, setDataSetInfo] = React.useState<DataSetOpenInfo>();
+    const projectDataSet = React.useMemo(
+        () => project.getProjectDataSet(dataSet),
+        [project, dataSet]
+    );
+    React.useEffect(() => {
+        projectDataSet.getOpenInfo(moment(period, monthFormat)).then(setDataSetInfo);
+    }, [projectDataSet, period]);
+
     return (
         <React.Fragment>
-            {period && (
+            {period && dataSetInfo?.isOpen && (
                 <ValidationDialog
                     period={period}
                     project={project}
@@ -271,6 +281,7 @@ const DataEntry = (props: DataEntryProps) => {
                 {state.dropdownHasValues && state.dropdownValue && (
                     <div style={styles.buttons}>
                         <DataSetStateButton
+                            dataSetInfo={dataSetInfo}
                             dataSetType={dataSetType}
                             project={project}
                             dataSet={dataSet}
