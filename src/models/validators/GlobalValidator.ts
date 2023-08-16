@@ -1,7 +1,8 @@
-import { D2Api, DataValueSetsGetRequest, Id } from "../../types/d2-api";
+import fs from "fs";
+import { D2Api, DataValueSetsDataValue, DataValueSetsGetRequest } from "../../types/d2-api";
 import _ from "lodash";
 
-import Project, { DataSet, DataSetType } from "../Project";
+import { DataSet, DataSetType, ProjectBasic } from "../Project";
 import i18n from "../../locales";
 import { DataValue, toFloat, ValidationItem } from "./validator-common";
 import { Maybe } from "../../types/utils";
@@ -9,6 +10,11 @@ import { baseConfig, Config } from "../Config";
 import { getId } from "../../utils/dhis2";
 import { DataElementBase, getDataElementName, getGlobal, getSubs } from "../dataElementsSet";
 import { DataEntry } from "../DataEntry";
+import { assert } from "../../scripts/common";
+import moment from "moment";
+import { dataSetFields } from "../ProjectDb";
+import { ProjectNotification } from "../ProjectNotification";
+import { promiseMap } from "../../migrations/utils";
 
 /*
     Validate:
@@ -22,7 +28,7 @@ type IndexedDataValues = Record<DataValueId, Maybe<DataValue>>;
 type DataValueId = string; // `${dataElementId}-${categoryOptionComboId]`
 
 interface Data {
-    project: Project;
+    project: ProjectBasic;
     config: Config;
     dataValues: IndexedDataValues;
     dataSetType: DataSetType;
@@ -43,7 +49,7 @@ export class GlobalValidator {
 
     static async build(
         api: D2Api,
-        project: Project,
+        project: ProjectBasic,
         dataSetType: DataSetType,
         period: string
     ): Promise<GlobalValidator> {
@@ -81,7 +87,7 @@ export class GlobalValidator {
         });
     }
 
-    private static getGlobalDataElements(config: Config, dataSet: DataSet): GlobalDataElement[] {
+    static getGlobalDataElements(config: Config, dataSet: DataSet): GlobalDataElement[] {
         const dataElementsById = _.keyBy(config.dataElements, de => de.id);
 
         const projectDataElements = _(dataSet.dataSetElements)
@@ -108,6 +114,7 @@ export class GlobalValidator {
             })
             .compact()
             .value();
+
         return globalDataElements;
     }
 
@@ -145,9 +152,9 @@ export class GlobalValidator {
         return items.filter(item => !item.reason || pendingReasonIds.includes(item.reason.id));
     }
 
-    private getItemsForValidateThatGlobalsAreLessThanSumOfSubsForNewAndReturning() {
-        const { period, globalDataElements } = this.data;
-        const cocIdsMapping = this.getCocIdsMapping();
+    getItemsForValidateThatGlobalsAreLessThanSumOfSubsForNewAndReturning() {
+        const { period, globalDataElements, project } = this.data;
+        const cocIdsMapping = getCocIdsMapping(this.data.config);
 
         return _(globalDataElements)
             .filter(de => de.dataElement.peopleOrBenefit === "people")
@@ -155,21 +162,12 @@ export class GlobalValidator {
                 return _.flatMap(
                     globalDataElement.categoryOptionComboIds,
                     (cocId): ValidationItem[] => {
-                        const globalDataValue: DataValue = {
-                            dataElementId: globalDataElement.id,
-                            categoryOptionComboId: cocId,
-                            period: period,
-                            value: this.getValue(globalDataElement.id, cocId) || "",
-                        };
-                        const { value: strValue } = globalDataValue;
+                        const strValue = this.getValue(globalDataElement.id, cocId) || "";
                         if (!strValue) return [];
 
-                        const subDataElements = getSubs(
-                            this.data.config,
-                            globalDataValue.dataElementId
-                        );
+                        const subDataElements = getSubs(this.data.config, globalDataElement.id);
                         const globalValue = toFloat(strValue);
-                        const relatedCocIds = _.compact(cocIdsMapping[cocId] || []);
+                        const relatedCocIds = _.compact(cocIdsMapping[cocId]?.subCocIds || []);
 
                         const subData = _(subDataElements)
                             .flatMap(subDataElement => {
@@ -187,14 +185,17 @@ export class GlobalValidator {
                         const subValuesSum = _.sum(subData.map(obj => obj.value));
 
                         const dataElementId = globalDataElement.dataElement.id;
+                        assert(project.orgUnit);
 
                         const reason: ValidationItem["reason"] = {
                             id: [period, dataElementId, cocId].join("."),
-                            project: this.data.project,
+                            project: { id: project.orgUnit.id },
                             dataElementId: dataElementId,
                             period: period,
                             cocId: cocId,
                         };
+
+                        const cocName = cocIdsMapping[cocId]?.name;
 
                         if (subValuesSum >= 0 && !globalValue) {
                             const msg = i18n.t(
@@ -206,7 +207,7 @@ export class GlobalValidator {
                             const msg = i18n.t(
                                 "Global indicator {{-name}} value ({{value}}) must be inferior to the sum of new+returning of its sub-indicators ({{subFormula}})",
                                 {
-                                    name: globalDataElement.name,
+                                    name: `${globalDataElement.name} (${cocName})`,
                                     value: globalValue,
                                     subFormula: `${subData
                                         .map(o => o.value)
@@ -222,23 +223,6 @@ export class GlobalValidator {
                 );
             })
             .value();
-    }
-
-    private getCocIdsMapping() {
-        const { config } = this.data;
-        const cos = baseConfig.categoryOptions;
-        const newMale = getCocId(config, [cos.new, cos.male]);
-        const newFemale = getCocId(config, [cos.new, cos.female]);
-        const returningMale = getCocId(config, [cos.recurring, cos.male]);
-        const returningFemale = getCocId(config, [cos.recurring, cos.female]);
-
-        const cocIdsMapping = {
-            [newMale]: [newMale, returningMale],
-            [newFemale]: [newFemale, returningFemale],
-            [returningMale]: [newMale, returningMale],
-            [returningFemale]: [newFemale, returningFemale],
-        };
-        return cocIdsMapping;
     }
 
     validateAllGlobalsAreEqualOrGreaterThanMaxSub(): ValidationItem[] {
@@ -359,8 +343,21 @@ export class GlobalValidator {
     }
 }
 
-function getKey(dataElementId: string, categoryOptionComboId: string): DataValueId {
-    return [dataElementId, categoryOptionComboId].join("-");
+function getCocIdsMapping(config: Config) {
+    const cos = baseConfig.categoryOptions;
+    const newMale = getCocId(config, [cos.new, cos.male]);
+    const newFemale = getCocId(config, [cos.new, cos.female]);
+    const returningMale = getCocId(config, [cos.recurring, cos.male]);
+    const returningFemale = getCocId(config, [cos.recurring, cos.female]);
+
+    const cocIdsMapping = {
+        [newMale]: { name: "New/Male", subCocIds: [newMale, returningMale] },
+        [newFemale]: { name: "New/Female", subCocIds: [newFemale, returningFemale] },
+        [returningMale]: { name: "Returning/Male", subCocIds: [newMale, returningMale] },
+        [returningFemale]: { name: "Returning/Female", subCocIds: [newFemale, returningFemale] },
+    };
+
+    return cocIdsMapping;
 }
 
 function getIndexedDataValues(dataValues: DataValue[]): IndexedDataValues {
@@ -373,6 +370,10 @@ function getIndexedDataValues(dataValues: DataValue[]): IndexedDataValues {
         .value();
 }
 
+function getKey(dataElementId: string, categoryOptionComboId: string): DataValueId {
+    return [dataElementId, categoryOptionComboId].join("-");
+}
+
 function getCocId(config: Config, codes: string[]): string {
     return (
         config.categoryCombos.genderNewRecurring.categoryOptionCombos.find(
@@ -383,4 +384,276 @@ function getCocId(config: Config, codes: string[]): string {
                     .size() === 0
         )?.id || ""
     );
+}
+
+export class GlobalValidatorReport {
+    constructor(private api: D2Api, private config: Config) {}
+
+    async execute(options: { parentOrgUnitId?: Id }) {
+        const { config } = this;
+        const { dataElementGroups } = config.base;
+        const degCodes = [dataElementGroups.global, dataElementGroups.sub];
+
+        console.debug(`Get metadata`);
+        const metadata = await this.api.metadata
+            .get({
+                organisationUnits: { fields: { id: true, level: true, name: true } },
+                dataElementGroups: { fields: { id: true }, filter: { code: { in: degCodes } } },
+                dataSets: {
+                    fields: {
+                        ...dataSetFields,
+                        attributeValues: { attribute: { code: true }, value: true },
+                    },
+                },
+            })
+            .getData();
+
+        const rootOrgUnitId =
+            options.parentOrgUnitId || metadata.organisationUnits.find(ou => ou.level === 1)?.id;
+        assert(rootOrgUnitId, "Org unit not found");
+
+        const orgUnitsById = _.keyBy(metadata.organisationUnits, ou => ou.id);
+
+        const format = "YYYY-MM";
+        const startDate = moment().subtract(1, "year");
+        const endDate = moment().add(1, "month");
+
+        const getSetOptions: DataValueSetsGetRequest = {
+            orgUnit: [rootOrgUnitId],
+            dataSet: [],
+            children: true,
+            dataElementGroup: metadata.dataElementGroups.map(deg => deg.id),
+            startDate: startDate.format(format),
+            endDate: endDate.format(format),
+        };
+
+        console.debug(`Get data`);
+        const { dataValues } = await this.api.dataValues.getSet(getSetOptions).getData();
+
+        const dataSetsByOrgUnitId = _.keyBy(metadata.dataSets, dataSet => {
+            return (
+                dataSet.attributeValues.find(
+                    av => av.attribute.code === config.base.attributes.orgUnitProject
+                )?.value || ""
+            );
+        });
+
+        const groups = _(dataValues)
+            .groupBy(dv => [dv.orgUnit, dv.attributeOptionCombo, dv.period].join("."))
+            .toPairs()
+            .value();
+
+        type Entry = {
+            orgUnit: { id: Id; name: string };
+            dataSetType: DataSetType;
+            period: string;
+            messages: string[];
+        };
+
+        const dataValuesById = _.keyBy(dataValues, dv => getDataValueId(dv));
+
+        const entries = groups.map(([groupId, dataValuesForGroup]): Entry | undefined => {
+            const [orgUnitId, aocId, period] = groupId.split(".");
+            const dataSet = dataSetsByOrgUnitId[orgUnitId];
+            const orgUnit = orgUnitsById[orgUnitId];
+
+            if (!dataSet) {
+                console.error(`Dataset not found for orgunitId=${orgUnitId}`);
+                return undefined;
+            } else if (!orgUnit) {
+                console.error(`Org unit not found for orgunitId=${orgUnitId}`);
+                return undefined;
+            }
+
+            console.debug(
+                `Get validations for orgUnit=${orgUnitId}, dataSet=${dataSet.id}, period=${period}`
+            );
+
+            const validation = validateNonEmptyGlobalsWhenSubsHaveValues({
+                config: config,
+                dataValues: dataValuesForGroup,
+                globalDataElements: GlobalValidator.getGlobalDataElements(config, dataSet),
+                orgUnitId: orgUnitId,
+                period: period,
+                aocId: aocId,
+            });
+
+            const dataSetType: DataSetType = dataSet.code.includes(
+                config.base.categoryOptions.target
+            )
+                ? "target"
+                : "actual";
+
+            if (validation.length === 0) return undefined;
+
+            const messages = validation.map(item => {
+                const reason = item.reason;
+                const comment = reason
+                    ? dataValuesById[
+                          getDataValueId({
+                              period: period,
+                              orgUnit: orgUnitId,
+                              attributeOptionCombo: aocId,
+                              dataElement: reason.dataElementId,
+                              categoryOptionCombo: reason.cocId,
+                          })
+                      ]?.comment
+                    : undefined;
+
+                const commentLines = comment?.split(/\n/) || [];
+                const index = commentLines.findIndex(line => line === DataEntry.commentSeparator);
+                const comment2 = index >= 0 ? commentLines.slice(0, index).join("\n") : "";
+
+                return `${item.message}: ${comment2 || "-"}`;
+            });
+
+            const period2 = period.slice(0, 4) + "-" + period.slice(4, 6);
+
+            return { orgUnit, dataSetType, period: period2, messages };
+        });
+
+        const lines = _(entries)
+            .compact()
+            .orderBy([e => e.orgUnit.name, e => e.period, e => e.dataSetType])
+            .flatMap(entry => {
+                return [
+                    `${entry.orgUnit.name} - ${entry.dataSetType.toUpperCase()} - ${entry.period}:`,
+                    ...entry.messages.map(message => `&nbsp;&nbsp;- ${message}`),
+                ];
+            })
+            .value();
+
+        fs.writeFileSync("output.txt", lines.join("\n") + "\n");
+
+        console.debug(`Total report lines: ${lines.length}`);
+
+        const recipients = await ProjectNotification.getRecipients(this.api);
+        const chunks = _.chunk(lines, 25).map((chunk, index) => [chunk, index] as const);
+        const debugRecipients = process.env["RECIPIENTS"];
+
+        await promiseMap(chunks, ([linesGroup, chunkIdx]) => {
+            const subject = `[SP Platform] Validations (${chunkIdx + 1}/${chunks.length})`;
+            const mailRecipients = debugRecipients ? debugRecipients.split(",") : recipients;
+            const body = linesGroup.join("\n") + "\n\n";
+            console.debug(`Send message: ${subject} -> ${mailRecipients} (size: ${body.length})`);
+
+            return this.api.email
+                .sendMessage({ subject: subject, recipients: mailRecipients, text: body })
+                .getData();
+        });
+    }
+}
+
+// TODO: Refactor to reuse code in GlobalValidator
+function validateNonEmptyGlobalsWhenSubsHaveValues(options: {
+    config: Config;
+    dataValues: DataValueSetsDataValue[];
+    globalDataElements: GlobalDataElement[];
+    orgUnitId: string;
+    period: string;
+    aocId: string;
+}): ValidationItem[] {
+    const { config, globalDataElements, period } = options;
+    const indexedDataValues = _.keyBy(options.dataValues, dv => getDataValueId(dv));
+    const cocIdsMapping = getCocIdsMapping(options.config);
+
+    return _(globalDataElements)
+        .filter(de => de.dataElement.peopleOrBenefit === "people")
+        .flatMap(globalDataElement => {
+            return _.flatMap(
+                globalDataElement.categoryOptionComboIds,
+                (cocId): ValidationItem[] => {
+                    const selector = {
+                        orgUnit: options.orgUnitId,
+                        period: options.period,
+                        categoryOptionCombo: cocId,
+                        attributeOptionCombo: options.aocId,
+                    };
+                    const globalDataValueId = getDataValueId({
+                        ...selector,
+                        dataElement: globalDataElement.id,
+                    });
+                    const strValue = indexedDataValues[globalDataValueId]?.value;
+                    if (!strValue) return [];
+
+                    const subDataElements = getSubs(config, globalDataElement.id);
+                    const globalValue = toFloat(strValue);
+                    const relatedCocIds = _.compact(cocIdsMapping[cocId]?.subCocIds || []);
+
+                    const subData = _(subDataElements)
+                        .flatMap(subDataElement => {
+                            return relatedCocIds.map(cocId => {
+                                const subDataValueId = getDataValueId({
+                                    ...selector,
+                                    categoryOptionCombo: cocId,
+                                    dataElement: subDataElement.id,
+                                });
+                                const dv = indexedDataValues[subDataValueId];
+                                return dv
+                                    ? { dataElement: subDataElement, value: toFloat(dv.value) }
+                                    : null;
+                            });
+                        })
+                        .compact()
+                        .value();
+
+                    const subValuesSum = _.sum(subData.map(obj => obj.value));
+
+                    const dataElementId = globalDataElement.dataElement.id;
+
+                    const reason: ValidationItem["reason"] = {
+                        id: [period, dataElementId, cocId].join("."),
+                        project: { id: options.orgUnitId },
+                        dataElementId: dataElementId,
+                        period: period,
+                        cocId: cocId,
+                    };
+
+                    const cocName = cocIdsMapping[cocId]?.name;
+
+                    if (subValuesSum > 0 && !globalValue) {
+                        const msg = i18n.t(
+                            "Global indicator {{-name}} must have a value (as some sub-indicator has a value)",
+                            { name: globalDataElement.name }
+                        );
+                        return [{ level: "error", message: msg, reason: reason }];
+                    } else if (subValuesSum && globalValue > subValuesSum) {
+                        const msg = i18n.t(
+                            "Global indicator {{-name}} value ({{value}}) must be inferior to the sum of new+returning of its sub-indicators ({{subFormula}})",
+                            {
+                                name: `${globalDataElement.name} (${cocName})`,
+                                value: globalValue,
+                                subFormula: `${subData
+                                    .map(o => o.value)
+                                    .join(" + ")} = ${subValuesSum}`,
+                                nsSeparator: false,
+                            }
+                        );
+                        return [{ level: "error", message: msg, reason: reason }];
+                    } else {
+                        return [];
+                    }
+                }
+            );
+        })
+        .value();
+}
+
+type Id = string;
+
+type DataValueIdFields =
+    | "orgUnit"
+    | "period"
+    | "dataElement"
+    | "categoryOptionCombo"
+    | "attributeOptionCombo";
+
+function getDataValueId(dataValue: Pick<DataValueSetsDataValue, DataValueIdFields>): string {
+    return [
+        dataValue.orgUnit,
+        dataValue.period,
+        dataValue.dataElement,
+        dataValue.categoryOptionCombo,
+        dataValue.attributeOptionCombo,
+    ].join(".");
 }

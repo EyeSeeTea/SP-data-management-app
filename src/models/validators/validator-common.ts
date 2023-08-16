@@ -2,7 +2,7 @@ import _ from "lodash";
 import moment from "moment";
 import { DataValueSetsDataValue } from "../../types/d2-api";
 import { fromPairs } from "../../types/utils";
-import Project, { monthFormat } from "../Project";
+import { monthFormat } from "../Project";
 
 export interface DataValue {
     period: string;
@@ -16,7 +16,7 @@ export type ValidationItem = {
     message: string;
     reason?: {
         id: string;
-        project: Project;
+        project: { id: string };
         dataElementId: string;
         cocId: string;
         period: string;

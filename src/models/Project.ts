@@ -738,4 +738,9 @@ export type SectorsInfo = Array<{
     dataElementsInfo: Array<DataElementInfo>;
 }>;
 
+export type ProjectBasic = Pick<
+    Project,
+    "id" | "name" | "orgUnit" | "dataSets" | "config" | "api" | "dataSetsByType"
+>;
+
 export default Project;

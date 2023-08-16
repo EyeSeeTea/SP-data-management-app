@@ -1,6 +1,6 @@
 import _ from "lodash";
 import moment from "moment";
-import Project, { DataSetType } from "./Project";
+import { DataSetType, ProjectBasic } from "./Project";
 import i18n from "../locales";
 import {
     D2Api,
@@ -11,14 +11,14 @@ import {
 import { promiseMap } from "../migrations/utils";
 import { ReasonId, Reasons, ValidationItem, ValidationResult } from "./validators/validator-common";
 import { Config } from "./Config";
-import { fromPairs, Maybe } from "../types/utils";
+import { fromPairs } from "../types/utils";
 
 export class DataEntry {
-    commentSeparator = "---";
+    static commentSeparator = "---";
 
     constructor(
         private api: D2Api,
-        private project: Project,
+        private project: ProjectBasic,
         private dataSetType: "actual" | "target",
         private period: string
     ) {}
@@ -33,11 +33,16 @@ export class DataEntry {
         const dataSetId = this.project.dataSetsByType[this.dataSetType].dataSet?.id;
         if (!dataSetId) return Promise.reject("No data set");
 
+        return promiseMap(validation, item => {
+            return this.postDataValue(item, reasons, existingDataValues);
+        }).then(() => undefined);
+
+        /*
         const request: DataValueSetsPostRequest = {
             dataSet: dataSetId,
             dataValues: _(validation)
                 .map((item): Maybe<DataValue> => {
-                    return this.mergeDataValues(item, reasons, existingDataValues);
+                    return this.postDataValue(item, reasons, existingDataValues);
                 })
                 .compact()
                 .value(),
@@ -46,28 +51,35 @@ export class DataEntry {
         const response = await this.api.dataValues.postSet({}, request).getData();
 
         if (response.status !== "SUCCESS") return Promise.reject(`Error on save`);
+        */
     }
 
-    private mergeDataValues(
+    private async postDataValue(
         item: ValidationItem,
         reasons: Reasons,
-        existingDataValues: DataValue[]
-    ): Maybe<DataValue> {
+        _existingDataValues: DataValue[]
+    ): Promise<void> {
         if (!item.reason) return undefined;
         const reason = item.reason;
 
         const reasonText = reasons[reason.id];
-        const comment = [reasonText, this.commentSeparator, item.message].join("\n");
+        const comment = [reasonText, DataEntry.commentSeparator, item.message].join("\n");
 
-        const dataValue = {
-            orgUnit: this.project.orgUnit?.id,
-            dataElement: reason.dataElementId,
-            categoryOptionCombo: reason.cocId,
-            attributeOptionCombo: this.getAocId(),
-            period: reason.period,
-            comment: comment,
-        };
+        return this.api
+            .post("/dataValues", {
+                de: reason.dataElementId,
+                co: reason.cocId,
+                ds: this.project.dataSetsByType[this.dataSetType].dataSet?.id,
+                ou: this.project.orgUnit?.id,
+                pe: reason.period,
+                comment: comment,
+                cc: this.project.config.categoryCombos.targetActual.id,
+                cp: this.project.config.categoryOptions[this.dataSetType].id,
+            })
+            .getData()
+            .then(() => undefined);
 
+        /*
         const equalityFields = [
             "dataElement",
             "orgUnit",
@@ -82,6 +94,7 @@ export class DataEntry {
         });
 
         return { ...dataValue, value: existingDataValue?.value || "" };
+        */
     }
 
     private getAocId() {
@@ -142,7 +155,7 @@ export class DataEntry {
             .compact()
             .value();
 
-        const orgUnitIds = _.uniq(_.compact(reasonsList.map(o => o.project.orgUnit?.id)));
+        const orgUnitIds = _.uniq(reasonsList.map(o => o.project.id));
         const dataSetIds = _.compact([dataSet?.id]);
 
         if (!(orgUnitIds.length && dataSetIds.length)) return [];
@@ -168,7 +181,7 @@ export class DataEntry {
                 .map((dv): [ReasonId, string] | null => {
                     const justifyId = [dv.period, dv.dataElement, dv.categoryOptionCombo].join(".");
                     const lines = (dv.comment || "").split("\n");
-                    const index = lines.findIndex(line => line === this.commentSeparator);
+                    const index = lines.findIndex(line => line === DataEntry.commentSeparator);
                     const comment = lines.slice(0, index).join("\n");
                     const formula = lines.slice(index + 1).join("\n");
                     const matchingItem = validation.find(item => item.reason?.id === justifyId);
