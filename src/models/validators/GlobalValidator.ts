@@ -196,18 +196,19 @@ export class GlobalValidator {
                         };
 
                         const cocName = cocIdsMapping[cocId]?.name;
+                        const name = `${globalDataElement.name} (${cocName})`;
 
                         if (subValuesSum >= 0 && !globalValue) {
                             const msg = i18n.t(
                                 "Global indicator {{-name}} must have a value (as some sub-indicator has a value)",
-                                { name: globalDataElement.name }
+                                { name: name }
                             );
                             return [{ level: "error", message: msg, reason: reason }];
                         } else if (subValuesSum && globalValue > subValuesSum) {
                             const msg = i18n.t(
                                 "Global indicator {{-name}} value ({{value}}) must be inferior to the sum of new+returning of its sub-indicators ({{subFormula}})",
                                 {
-                                    name: `${globalDataElement.name} (${cocName})`,
+                                    name: name,
                                     value: globalValue,
                                     subFormula: `${subData
                                         .map(o => o.value)
@@ -415,7 +416,7 @@ export class GlobalValidatorReport {
         const orgUnitsById = _.keyBy(metadata.organisationUnits, ou => ou.id);
 
         const format = "YYYY-MM";
-        const startDate = moment().subtract(1, "year");
+        const startDate = moment().subtract(1, "month");
         const endDate = moment().add(1, "month");
 
         const getSetOptions: DataValueSetsGetRequest = {
@@ -610,18 +611,19 @@ function validateNonEmptyGlobalsWhenSubsHaveValues(options: {
                     };
 
                     const cocName = cocIdsMapping[cocId]?.name;
+                    const name = `${globalDataElement.name} (${cocName})`;
 
                     if (subValuesSum > 0 && !globalValue) {
                         const msg = i18n.t(
                             "Global indicator {{-name}} must have a value (as some sub-indicator has a value)",
-                            { name: globalDataElement.name }
+                            { name: name }
                         );
                         return [{ level: "error", message: msg, reason: reason }];
                     } else if (subValuesSum && globalValue > subValuesSum) {
                         const msg = i18n.t(
                             "Global indicator {{-name}} value ({{value}}) must be inferior to the sum of new+returning of its sub-indicators ({{subFormula}})",
                             {
-                                name: `${globalDataElement.name} (${cocName})`,
+                                name: name,
                                 value: globalValue,
                                 subFormula: `${subData
                                     .map(o => o.value)
