@@ -23,6 +23,10 @@ export type ValidationItem = {
     };
 };
 
+export function validationsAreValid(items: ValidationItem[]): boolean {
+    return items.every(item => item.level !== "error");
+}
+
 export type ValidationResult = ValidationItem[];
 
 export const levels = ["info", "warning", "error"] as const;

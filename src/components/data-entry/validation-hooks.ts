@@ -4,7 +4,7 @@ import React from "react";
 import { useAppContext } from "../../contexts/api-context";
 import Project, { DataSetType } from "../../models/Project";
 import { InputMsg, useDhis2EntryEvents, Options } from "./data-entry-hooks";
-import { ValidationResult } from "../../models/validators/validator-common";
+import { ValidationResult, validationsAreValid } from "../../models/validators/validator-common";
 import { useSnackbar } from "@eyeseetea/d2-ui-components";
 import i18n from "../../locales";
 import { usePageExitConfirmation } from "../../utils/hooks";
@@ -86,8 +86,7 @@ export function useValidation(hookOptions: {
             if (!validator) return true;
             const newValidationResult = await validator.validate();
             if (showValidation) setValidationResult(newValidationResult);
-            const isValid = newValidationResult.every(r => r.level !== "error");
-            return isValid;
+            return validationsAreValid(newValidationResult);
         },
         [validator, isValidationEnabled]
     );

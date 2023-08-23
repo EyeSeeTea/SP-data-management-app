@@ -147,7 +147,8 @@ export class GlobalValidator {
         const { period, project, dataSetType } = this.data;
         const items = this.getItemsForValidateThatGlobalsAreLessThanSumOfSubsForNewAndReturning();
         const dataEntry = new DataEntry(project.api, project, dataSetType, period);
-        const pendingReasonIds = _.keys(await dataEntry.getReasons(items));
+        const reasons = await dataEntry.getReasons(items);
+        const pendingReasonIds = _.keys(reasons);
 
         return items.filter(item => !item.reason || pendingReasonIds.includes(item.reason.id));
     }

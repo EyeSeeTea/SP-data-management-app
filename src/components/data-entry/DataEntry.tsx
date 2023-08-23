@@ -198,7 +198,17 @@ const DataEntry = (props: DataEntryProps) => {
 
     const period = state.dropdownValue;
 
-    const isValidationEnabled = Boolean(isDataSetOpen) && state.dropdownHasValues;
+    const [dataSetInfo, setDataSetInfo] = React.useState<DataSetOpenInfo>();
+    const projectDataSet = React.useMemo(
+        () => project.getProjectDataSet(dataSet),
+        [project, dataSet]
+    );
+    React.useEffect(() => {
+        projectDataSet.getOpenInfo(moment(period, monthFormat)).then(setDataSetInfo);
+    }, [projectDataSet, period]);
+
+    const isValidationEnabled =
+        Boolean(isDataSetOpen) && state.dropdownHasValues && Boolean(dataSetInfo?.isOpen);
 
     const validation = useValidation({
         iframeRef,
@@ -207,7 +217,7 @@ const DataEntry = (props: DataEntryProps) => {
         period,
         options: validationOptions,
         iframeKey,
-        isValidationEnabled,
+        isValidationEnabled: isValidationEnabled,
     });
 
     useEffect(() => {
@@ -240,15 +250,6 @@ const DataEntry = (props: DataEntryProps) => {
             execute: async () => !isValidationEnabled || (await validate({ showValidation: true })),
         });
     }, [isValidationEnabled, onValidateFnChange, validate]);
-
-    const [dataSetInfo, setDataSetInfo] = React.useState<DataSetOpenInfo>();
-    const projectDataSet = React.useMemo(
-        () => project.getProjectDataSet(dataSet),
-        [project, dataSet]
-    );
-    React.useEffect(() => {
-        projectDataSet.getOpenInfo(moment(period, monthFormat)).then(setDataSetInfo);
-    }, [projectDataSet, period]);
 
     return (
         <React.Fragment>
