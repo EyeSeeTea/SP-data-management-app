@@ -198,13 +198,13 @@ export class GlobalValidator {
                         const cocName = cocIdsMapping[cocId]?.name;
                         const name = `${globalDataElement.name} (${cocName})`;
 
-                        if (subValuesSum >= 0 && !globalValue) {
+                        if (subValuesSum > 0 && !globalValue) {
                             const msg = i18n.t(
                                 "Global indicator {{-name}} must have a value (as some sub-indicator has a value)",
                                 { name: name }
                             );
                             return [{ level: "error", message: msg, reason: reason }];
-                        } else if (subValuesSum && globalValue > subValuesSum) {
+                        } else if (subValuesSum > 0 && globalValue > subValuesSum) {
                             const msg = i18n.t(
                                 "Global indicator {{-name}} value ({{value}}) must be inferior to the sum of new+returning of its sub-indicators ({{subFormula}})",
                                 {
