@@ -496,10 +496,10 @@ class Project {
         return countries;
     }
 
-    static async getCountries(api: D2Api, config: Config) {
+    static async getCountries(api: D2Api, config: Config, filters: FiltersForList) {
         const projectsList = new ProjectList(api, config);
         const { countries } = await projectsList.get(
-            {},
+            filters,
             { field: "id", order: "asc" },
             { page: 1, pageSize: 1 }
         );
