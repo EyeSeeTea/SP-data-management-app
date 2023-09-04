@@ -153,76 +153,111 @@ export class GlobalValidator {
         return items.filter(item => !item.reason || pendingReasonIds.includes(item.reason.id));
     }
 
+    private getGlobalSubValidationData(options: {
+        globalDataElement: GlobalDataElement;
+        cocIdsMapping: CocIdsMapping;
+        cocId: Id;
+    }) {
+        const { globalDataElement, cocIdsMapping, cocId } = options;
+        const { period, project } = this.data;
+        const strValue = this.getValue(globalDataElement.id, cocId) || "";
+        if (!strValue) return undefined;
+
+        const subDataElements = getSubs(this.data.config, globalDataElement.id);
+        const globalValue = toFloat(strValue);
+        const relatedCocIds = _.compact(cocIdsMapping[cocId]?.subCocIds || []);
+
+        const subData = _(subDataElements)
+            .flatMap(subDataElement => {
+                return relatedCocIds.map(cocId => {
+                    const key = getKey(subDataElement.id, cocId);
+                    const dv = this.data.dataValues[key];
+                    return dv ? { dataElement: subDataElement, value: toFloat(dv.value) } : null;
+                });
+            })
+            .compact()
+            .value();
+
+        const subValuesSum = subData.length > 0 ? _.sum(subData.map(obj => obj.value)) : undefined;
+
+        const dataElementId = globalDataElement.dataElement.id;
+        assert(project.orgUnit);
+
+        const reason: ValidationItem["reason"] = {
+            id: [period, dataElementId, cocId].join("."),
+            project: { id: project.orgUnit.id },
+            dataElementId: dataElementId,
+            period: period,
+            cocId: cocId,
+        };
+
+        const cocName = cocIdsMapping[cocId]?.name;
+
+        // TODO: Copy (or refactor) same code below
+        if (
+            globalValue > 0 &&
+            subValuesSum !== undefined &&
+            (!subValuesSum || globalValue > subValuesSum)
+        ) {
+            return {
+                globalName: globalDataElement.name,
+                globalValue: globalValue,
+                cocName: cocName,
+                reason,
+                subFormula: `${subData.map(o => o.value).join(" + ")} = ${subValuesSum}`,
+            };
+        } else {
+            return undefined;
+        }
+    }
+
     getItemsForValidateThatGlobalsAreLessThanSumOfSubsForNewAndReturning() {
-        const { period, globalDataElements, project } = this.data;
         const cocIdsMapping = getCocIdsMapping(this.data.config);
 
-        return _(globalDataElements)
+        return _(this.data.globalDataElements)
             .filter(de => de.dataElement.peopleOrBenefit === "people")
             .flatMap(globalDataElement => {
-                return _.flatMap(
-                    globalDataElement.categoryOptionComboIds,
-                    (cocId): ValidationItem[] => {
-                        const strValue = this.getValue(globalDataElement.id, cocId) || "";
-                        if (!strValue) return [];
+                return _.flatMap(globalDataElement.categoryOptionComboIds, cocId => {
+                    return this.getGlobalSubValidationData({
+                        globalDataElement: globalDataElement,
+                        cocId: cocId,
+                        cocIdsMapping: cocIdsMapping,
+                    });
+                });
+            })
+            .thru(objs => this.getGlobalValidatorValidations(objs))
+            .value();
+    }
 
-                        const subDataElements = getSubs(this.data.config, globalDataElement.id);
-                        const globalValue = toFloat(strValue);
-                        const relatedCocIds = _.compact(cocIdsMapping[cocId]?.subCocIds || []);
+    private getGlobalValidatorValidations(objs: GlobalSubValidationData[]): ValidationItem[] {
+        return _(objs)
+            .compact()
+            .groupBy(obj => obj.reason.dataElementId)
+            .toPairs()
+            .map(([_dataElementId, objsForDataElement]): ValidationItem => {
+                const obj = objsForDataElement[0];
+                const problems = objsForDataElement
+                    .map(obj => {
+                        return i18n.t(
+                            "{{-cocName}}: global value ({{value}}) must be inferior to the sum its sub-indicators ({{subFormula}})",
+                            {
+                                cocName: obj.cocName,
+                                name: obj.globalName,
+                                value: obj.globalValue,
+                                subFormula: obj.subFormula,
+                                nsSeparator: false,
+                            }
+                        );
+                    })
+                    .join(", ");
 
-                        const subData = _(subDataElements)
-                            .flatMap(subDataElement => {
-                                return relatedCocIds.map(cocId => {
-                                    const key = getKey(subDataElement.id, cocId);
-                                    const dv = this.data.dataValues[key];
-                                    return dv
-                                        ? { dataElement: subDataElement, value: toFloat(dv.value) }
-                                        : null;
-                                });
-                            })
-                            .compact()
-                            .value();
+                const msg = i18n.t("Global indicator {{-name}} - {{-problems}}.", {
+                    name: obj.globalName,
+                    problems: problems,
+                    nsSeparator: false,
+                });
 
-                        const subValuesSum = _.sum(subData.map(obj => obj.value));
-
-                        const dataElementId = globalDataElement.dataElement.id;
-                        assert(project.orgUnit);
-
-                        const reason: ValidationItem["reason"] = {
-                            id: [period, dataElementId, cocId].join("."),
-                            project: { id: project.orgUnit.id },
-                            dataElementId: dataElementId,
-                            period: period,
-                            cocId: cocId,
-                        };
-
-                        const cocName = cocIdsMapping[cocId]?.name;
-                        const name = `${globalDataElement.name} (${cocName})`;
-
-                        if (subValuesSum > 0 && !globalValue) {
-                            const msg = i18n.t(
-                                "Global indicator {{-name}} must have a value (as some sub-indicator has a value)",
-                                { name: name }
-                            );
-                            return [{ level: "error", message: msg, reason: reason }];
-                        } else if (subValuesSum > 0 && globalValue > subValuesSum) {
-                            const msg = i18n.t(
-                                "Global indicator {{-name}} value ({{value}}) must be inferior to the sum of new+returning of its sub-indicators ({{subFormula}})",
-                                {
-                                    name: name,
-                                    value: globalValue,
-                                    subFormula: `${subData
-                                        .map(o => o.value)
-                                        .join(" + ")} = ${subValuesSum}`,
-                                    nsSeparator: false,
-                                }
-                            );
-                            return [{ level: "error", message: msg, reason: reason }];
-                        } else {
-                            return [];
-                        }
-                    }
-                );
+                return { level: "error", message: msg, reason: obj.reason };
             })
             .value();
     }
@@ -345,7 +380,9 @@ export class GlobalValidator {
     }
 }
 
-function getCocIdsMapping(config: Config) {
+type CocIdsMapping = Record<string, { name: string; subCocIds: Id[] }>;
+
+function getCocIdsMapping(config: Config): CocIdsMapping {
     const cos = baseConfig.categoryOptions;
     const newMale = getCocId(config, [cos.new, cos.male]);
     const newFemale = getCocId(config, [cos.new, cos.female]);
@@ -614,15 +651,9 @@ function validateNonEmptyGlobalsWhenSubsHaveValues(options: {
                     const cocName = cocIdsMapping[cocId]?.name;
                     const name = `${globalDataElement.name} (${cocName})`;
 
-                    if (subValuesSum > 0 && !globalValue) {
+                    if (globalValue > 0 && (!subValuesSum || globalValue > subValuesSum)) {
                         const msg = i18n.t(
-                            "Global indicator {{-name}} must have a value (as some sub-indicator has a value)",
-                            { name: name }
-                        );
-                        return [{ level: "error", message: msg, reason: reason }];
-                    } else if (subValuesSum && globalValue > subValuesSum) {
-                        const msg = i18n.t(
-                            "Global indicator {{-name}} value ({{value}}) must be inferior to the sum of new+returning of its sub-indicators ({{subFormula}})",
+                            "Global indicator {{-name}} value ({{value}}) must be less to the sum of new+returning of its sub-indicators ({{subFormula}})",
                             {
                                 name: name,
                                 value: globalValue,
@@ -660,3 +691,5 @@ function getDataValueId(dataValue: Pick<DataValueSetsDataValue, DataValueIdField
         dataValue.attributeOptionCombo,
     ].join(".");
 }
+
+type GlobalSubValidationData = ReturnType<GlobalValidator["getGlobalSubValidationData"]>;
