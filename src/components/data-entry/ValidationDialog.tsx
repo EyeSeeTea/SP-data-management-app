@@ -123,7 +123,7 @@ const styles = {
 function useReasons(props: ValidationDialogProps) {
     const { result, onClose, project, dataSetType, period } = props;
 
-    const [reasons, setReasons] = React.useState<Record<string, string>>({});
+    const [reasons, setReasons] = React.useState<Reasons>({});
     const snackbar = useSnackbar();
     const [isSaving, setSaving] = React.useState(false);
 
@@ -132,7 +132,7 @@ function useReasons(props: ValidationDialogProps) {
     }, [project, dataSetType, period]);
 
     React.useEffect(() => {
-        dataEntry.getReasons(result).then(setReasons);
+        dataEntry.getReasonsText(result).then(setReasons);
     }, [result, dataEntry]);
 
     const saveReason = React.useCallback(() => {

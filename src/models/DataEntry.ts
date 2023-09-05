@@ -9,7 +9,16 @@ import {
     DataValueSetsPostRequest,
 } from "../types/d2-api";
 import { promiseMap } from "../migrations/utils";
-import { ReasonId, Reasons, ValidationItem, ValidationResult } from "./validators/validator-common";
+import {
+    getReasonCocId,
+    getReasonId,
+    Reason,
+    ReasonId,
+    Reasons,
+    ReasonsState,
+    ValidationItem,
+    ValidationResult,
+} from "./validators/validator-common";
 import { Config } from "./Config";
 import { fromPairs } from "../types/utils";
 
@@ -23,9 +32,14 @@ export class DataEntry {
         private period: string
     ) {}
 
-    async getReasons(validation: ValidationResult): Promise<Reasons> {
+    async getReasons(validation: ValidationResult): Promise<ReasonsState> {
         const existingDataValues = await this.getExistingDataValues(validation);
         return this.getReasonsFromExistingDataValues(existingDataValues, validation);
+    }
+
+    async getReasonsText(validation: ValidationResult): Promise<Reasons> {
+        const reasons = await this.getReasons(validation);
+        return _.mapValues(reasons, reason => reason.text);
     }
 
     async saveReasons(reasons: Reasons, validation: ValidationItem[]): Promise<void> {
@@ -36,22 +50,6 @@ export class DataEntry {
         return promiseMap(validation, item => {
             return this.postDataValue(item, reasons, existingDataValues);
         }).then(() => undefined);
-
-        /*
-        const request: DataValueSetsPostRequest = {
-            dataSet: dataSetId,
-            dataValues: _(validation)
-                .map((item): Maybe<DataValue> => {
-                    return this.postDataValue(item, reasons, existingDataValues);
-                })
-                .compact()
-                .value(),
-        };
-
-        const response = await this.api.dataValues.postSet({}, request).getData();
-
-        if (response.status !== "SUCCESS") return Promise.reject(`Error on save`);
-        */
     }
 
     private async postDataValue(
@@ -68,7 +66,7 @@ export class DataEntry {
         return this.api
             .post("/dataValues", {
                 de: reason.dataElementId,
-                co: reason.cocId,
+                co: getReasonCocId(this.project.config),
                 ds: this.project.dataSetsByType[this.dataSetType].dataSet?.id,
                 ou: this.project.orgUnit?.id,
                 pe: reason.period,
@@ -78,27 +76,6 @@ export class DataEntry {
             })
             .getData()
             .then(() => undefined);
-
-        /*
-        const equalityFields = [
-            "dataElement",
-            "orgUnit",
-            "period",
-            "categoryOptionCombo",
-            "attributeOptionCombo",
-        ];
-        const dataValue1 = _.pick(dataValue, equalityFields);
-
-        const existingDataValue = existingDataValues.find(dv => {
-            return _.isEqual(dataValue1, _.pick(dv, equalityFields));
-        });
-
-        return { ...dataValue, value: existingDataValue?.value || "" };
-        */
-    }
-
-    private getAocId() {
-        return getAttributeOptionCombo(this.project.config, this.dataSetType);
     }
 
     async getEntryUsers(): Promise<User[]> {
@@ -148,6 +125,7 @@ export class DataEntry {
     private async getExistingDataValues(
         result: ValidationResult
     ): Promise<DataValueSetsDataValue[]> {
+        const config = this.project.config;
         const dataSet = this.project.dataSetsByType[this.dataSetType].dataSet;
         const aocId = getAttributeOptionCombo(this.project.config, this.dataSetType);
         const reasonsList = _(result)
@@ -169,25 +147,29 @@ export class DataEntry {
             })
             .getData();
 
-        return existingDataValues;
+        const reasonCocId = getReasonCocId(config);
+        return existingDataValues.filter(dv => dv.categoryOptionCombo === reasonCocId);
     }
 
     private getReasonsFromExistingDataValues(
         existingDataValues: DataValueSetsDataValue[],
         validation: ValidationResult
-    ): Reasons | PromiseLike<Reasons> {
+    ): ReasonsState {
         return fromPairs(
             _(existingDataValues)
-                .map((dv): [ReasonId, string] | null => {
-                    const justifyId = [dv.period, dv.dataElement, dv.categoryOptionCombo].join(".");
+                .map((dv): [ReasonId, Reason] | null => {
+                    const reasonId = getReasonId({
+                        period: dv.period,
+                        dataElementId: dv.dataElement,
+                    });
                     const lines = (dv.comment || "").split("\n");
                     const index = lines.findIndex(line => line === DataEntry.commentSeparator);
                     const comment = lines.slice(0, index).join("\n");
                     const formula = lines.slice(index + 1).join("\n");
-                    const matchingItem = validation.find(item => item.reason?.id === justifyId);
-                    const isUpToDate = matchingItem && formula === matchingItem.message;
+                    const matchingItem = validation.find(item => item.reason?.id === reasonId);
+                    const upToDate = matchingItem ? formula === matchingItem.message : false;
 
-                    return matchingItem && !isUpToDate ? [justifyId, comment] : null;
+                    return matchingItem ? [reasonId, { text: comment, upToDate }] : null;
                 })
                 .compact()
                 .value()

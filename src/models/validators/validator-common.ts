@@ -2,13 +2,17 @@ import _ from "lodash";
 import moment from "moment";
 import { DataValueSetsDataValue } from "../../types/d2-api";
 import { fromPairs } from "../../types/utils";
+import { Config } from "../Config";
 import { monthFormat } from "../Project";
 
 export interface DataValue {
     period: string;
+    orgUnitId: string;
     dataElementId: string;
     categoryOptionComboId: string;
+    attributeOptionComboId: string;
     value: string;
+    comment: string;
 }
 
 export type ValidationItem = {
@@ -18,7 +22,6 @@ export type ValidationItem = {
         id: string;
         project: { id: string };
         dataElementId: string;
-        cocId: string;
         period: string;
     };
 };
@@ -51,10 +54,13 @@ export function formatPeriod(period: string): string {
 
 export function getDataValueFromD2(d2DataValue: DataValueSetsDataValue): DataValue {
     return {
+        orgUnitId: d2DataValue.orgUnit,
         period: d2DataValue.period,
         dataElementId: d2DataValue.dataElement,
         categoryOptionComboId: d2DataValue.categoryOptionCombo,
+        attributeOptionComboId: d2DataValue.attributeOptionCombo,
         value: d2DataValue.value,
+        comment: d2DataValue.comment,
     };
 }
 
@@ -77,6 +83,16 @@ export function areAllReasonsFilled(result: ValidationResult, reasons: Reasons) 
         .every(id => Boolean(reasons[id]));
 }
 
+export function getReasonCocId(config: Config): string {
+    return config.categoryOptionCombos.newMale.id;
+}
+
 export type ReasonId = string;
 
-export type Reasons = Record<ReasonId, string>;
+export type Reason = { text: string; upToDate: boolean };
+export type Reasons = Record<ReasonId, Reason["text"]>;
+export type ReasonsState = Record<ReasonId, Reason>;
+
+export function getReasonId(options: { period: string; dataElementId: string }): string {
+    return [options.period, options.dataElementId].join(".");
+}

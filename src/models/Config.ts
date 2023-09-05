@@ -25,6 +25,12 @@ export type Config = {
     dataApprovalLevels: IndexedObjs<"dataApprovalLevels", DataApprovalLevel>;
     dataApprovalWorkflows: IndexedObjs<"dataApprovalWorkflows", DataApprovalWorkflow>;
     userGroups: Record<string, UserGroup>;
+    categoryOptionCombos: {
+        newMale: Ref;
+        newFemale: Ref;
+        returningMale: Ref;
+        returningFemale: Ref;
+    };
 };
 
 const yes = true as const;
@@ -295,6 +301,8 @@ class ConfigLoader {
         const { userRoles, username } = d2CurrentUser.userCredentials;
         const currentUser: Config["currentUser"] = { ...d2CurrentUser, userRoles, username };
         const dataElementsMetadata = await this.getDataElementsMetadata(currentUser, metadata);
+        const categoryCombos = indexObjects(metadata, "categoryCombos");
+        const categoryOptionCombos = this.getCategoryOptionCombos(categoryCombos);
 
         return {
             base: baseConfig,
@@ -305,7 +313,7 @@ class ConfigLoader {
             indicators: metadata.indicators,
             attributes: indexObjects(metadata, "attributes"),
             categories: indexObjects(metadata, "categories"),
-            categoryCombos: indexObjects(metadata, "categoryCombos"),
+            categoryCombos: categoryCombos,
             allCategoryCombos: metadata.categoryCombos,
             categoryOptions: indexObjects(metadata, "categoryOptions"),
             legendSets: indexObjects(metadata, "legendSets"),
@@ -314,6 +322,17 @@ class ConfigLoader {
             countries: _.sortBy(metadata.organisationUnits, ou => ou.displayName),
             userGroups: _.keyBy(metadata.userGroups, ug => ug.code),
             organisationUnitGroupSets: indexObjects(metadata, "organisationUnitGroupSets"),
+            categoryOptionCombos: categoryOptionCombos,
+        };
+    }
+
+    private getCategoryOptionCombos(categoryCombos: IndexedObjs<"categoryCombos", CategoryCombo>) {
+        const cos = baseConfig.categoryOptions;
+        return {
+            newMale: getCocRef(categoryCombos, [cos.new, cos.male]),
+            newFemale: getCocRef(categoryCombos, [cos.new, cos.female]),
+            returningMale: getCocRef(categoryCombos, [cos.recurring, cos.male]),
+            returningFemale: getCocRef(categoryCombos, [cos.recurring, cos.female]),
         };
     }
 
@@ -444,6 +463,18 @@ function getFundersAndLocations(metadata: Metadata) {
         .value();
 
     return { funders, locations };
+}
+
+function getCocRef(categoryCombos: Config["categoryCombos"], codes: string[]): Ref {
+    const coc = categoryCombos.genderNewRecurring.categoryOptionCombos.find(
+        coc =>
+            _(coc.categoryOptions)
+                .map(co => co.code)
+                .difference(codes)
+                .size() === 0
+    );
+    if (!coc) throw new Error(`Cannot get category option combo: ${codes}`);
+    return coc;
 }
 
 if (require.main === module) {

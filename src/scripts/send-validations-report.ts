@@ -1,6 +1,6 @@
 import parse from "parse-typed-args";
 import { Config, getConfig } from "../models/Config";
-import { GlobalValidatorReport } from "../models/validators/GlobalValidator";
+import { GlobalValidatorReport } from "../models/validators/GlobalValidatorReport";
 import { D2Api } from "../types/d2-api";
 
 /*
@@ -18,13 +18,13 @@ class SendValidationsReport {
         const parser = parse({ opts: { url: {}, parentOrgUnitId: {} } });
         const { opts } = parser(process.argv);
 
-        const api = new D2Api({ baseUrl: opts.url, backend: "xhr" });
+        const api = new D2Api({ baseUrl: opts.url, backend: "fetch" });
         new this(api).execute(opts);
     }
 
     async execute(options: { parentOrgUnitId?: string }) {
         const config = await this.getConfig();
-        const report = new GlobalValidatorReport(this.api, config);
+        const report = new GlobalValidatorReport({ api: this.api, config: config });
         await report.execute(options);
     }
 
