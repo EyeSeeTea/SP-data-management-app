@@ -3390,10 +3390,10 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
-"@eyeseetea/d2-api@1.13.1":
-  version "1.13.1"
-  resolved "https://registry.yarnpkg.com/@eyeseetea/d2-api/-/d2-api-1.13.1.tgz#c630cb26a9bcb69f3970129bed6ff34d7b4012c2"
-  integrity sha512-7YnwHDJTeqwfqam7kZR+pam4o7jaYX64pQnH3xI677G/tYT1sVvzEDiTK0GmHIS0zW2ViFxCV8htRBUZhOp6ng==
+"@eyeseetea/d2-api@1.13.2-beta.4":
+  version "1.13.2-beta.4"
+  resolved "https://registry.yarnpkg.com/@eyeseetea/d2-api/-/d2-api-1.13.2-beta.4.tgz#fdce22e100601af3a73d4c6f73411ac0bb394a2a"
+  integrity sha512-dN5/5cASZbK1Mqf8a9yVIoqj2ngJvKFgIulnUwUx2zcblxBwKNKqtIUQZWN/jExwl2nb2RftMHetQ7f3UxcsOg==
   dependencies:
     "@babel/runtime" "^7.5.4"
     "@dhis2/d2-i18n" "^1.0.5"
@@ -3410,6 +3410,7 @@
     d2 "^31.8.1"
     dotenv "^8.0.0"
     express "^4.17.1"
+    form-data "^4.0.0"
     iconv-lite "0.6.2"
     isomorphic-fetch "3.0.0"
     lodash "^4.17.15"
