@@ -368,7 +368,7 @@ export class GlobalSubsValidator {
                 const problems = objsForDataElement
                     .map(obj => {
                         return i18n.t(
-                            "{{-cocName}}: global value ({{value}}) cannot be less than the sum its sub-indicators ({{subFormula}})",
+                            "{{-cocName}}: global value ({{value}}) cannot be less than the sum of its sub-indicators ({{subFormula}})",
                             {
                                 cocName: obj.cocName,
                                 name: obj.globalName,
