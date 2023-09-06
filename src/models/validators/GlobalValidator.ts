@@ -264,7 +264,9 @@ export class GlobalValidator {
                     }
                 );
 
-                return isValid ? null : { level: "error", message: msg };
+                const isPeople = globalDataElement.dataElement.peopleOrBenefit === "people";
+
+                return isValid ? null : { level: isPeople ? "error" : "warning", message: msg };
             })
             .compact()
             .value();
