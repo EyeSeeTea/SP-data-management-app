@@ -1,10 +1,5 @@
-import {
-    D2Api,
-    DataValueSetsDataValue,
-    DataValueSetsGetRequest,
-    MetadataPick,
-} from "../../types/d2-api";
 import _ from "lodash";
+import * as CsvWriter from "csv-writer";
 import { DataSetType } from "../Project";
 import i18n from "../../locales";
 import { Config } from "../Config";
@@ -22,7 +17,14 @@ import {
     GlobalValidator,
     GlobalSubsValidator,
 } from "./GlobalValidator";
-import { getReasonCocId } from "./validator-common";
+import { DataValue, getReasonCocId, ValidationResult } from "./validator-common";
+import {
+    D2Api,
+    DataValueSetsDataValue,
+    DataValueSetsGetRequest,
+    MetadataPick,
+} from "../../types/d2-api";
+import { CancelableResponse } from "@eyeseetea/d2-api";
 
 type Periods = { startDate: Moment; endDate: Moment };
 
@@ -141,46 +143,23 @@ export class GlobalValidatorReport {
         }
     }
 
-    private async uploadFile(
-        entries: (Entry | undefined)[],
-        api: D2Api
-    ): Promise<{ documentUrl: string }> {
-        const lines = _(entries)
-            .compact()
-            .orderBy([e => e.orgUnit.name, e => e.period, e => e.dataSetType])
-            .map((entry, index) => {
-                return [
-                    `${(index + 1).toString()}. ${
-                        entry.orgUnit.name
-                    } - ${entry.dataSetType.toUpperCase()} - ${entry.period}:`,
-                    ...entry.messages.map(message => `  - ${message}`),
-                ].join("\n");
-            })
-            .value();
-
-        const contents = lines.join("\n\n") + "\n";
+    private async uploadFile(entries: Entry[], api: D2Api): Promise<{ documentUrl: string }> {
+        const info = await api.system.info.getData();
+        const data = this.getCsvContents({ entries: entries });
         const timestamp = new Date().getTime();
-
-        const data = Buffer.from(contents, "utf8");
-        const uploadResult = await api.files
-            .upload({
-                name: `global-validator-${timestamp}.txt`,
+        const uploadResult = await runApi(
+            api.files.upload({
+                name: `global-validator-${timestamp}.csv`,
                 data: data,
             })
-            .getData()
-            .catch(err => {
-                console.error(err);
-                throw new Error(err);
-            });
-
-        const info = await api.system.info.getData();
+        );
 
         return {
             documentUrl: `${info.contextPath}/api/documents/${uploadResult.id}/data`,
         };
     }
 
-    private getDataSetType(aocId: string) {
+    private getDataSetType(aocId: string): DataSetType | undefined {
         const { categoryOptions } = this.options.config;
 
         return _([
@@ -196,10 +175,12 @@ export class GlobalValidatorReport {
             .first();
     }
 
-    private getEntries(options: { metadata: Metadata; dataValues: DataValueSetsDataValue[] }) {
+    private getEntries(options: {
+        metadata: Metadata;
+        dataValues: DataValueSetsDataValue[];
+    }): Entry[] {
         const { metadata, dataValues } = options;
         const { config } = this.options;
-
         const orgUnitsById = _.keyBy(metadata.organisationUnits, ou => ou.id);
 
         const dataSetsByOrgUnitId = _.keyBy(metadata.dataSets, dataSet => {
@@ -222,18 +203,18 @@ export class GlobalValidatorReport {
                 const [orgUnitId, aocId, period] = groupId.split(".");
                 const dataSet = dataSetsByOrgUnitId[orgUnitId];
                 const orgUnit = orgUnitsById[orgUnitId];
+                const dataSetType = this.getDataSetType(aocId);
 
-                if (!dataSet) {
+                if (!dataSetType) {
+                    console.error(`Cannot determine data set type for aocId=${aocId}`);
+                    return undefined;
+                } else if (!dataSet) {
                     console.error(`Dataset not found for orgUnitId=${orgUnitId}`);
                     return undefined;
                 } else if (!orgUnit) {
                     console.error(`Org unit not found for orgUnitId=${orgUnitId}`);
                     return undefined;
                 }
-
-                console.debug(
-                    `Get validations for orgUnit=${orgUnitId}, dataSet=${dataSet.id}, period=${period}`
-                );
 
                 const data: BasicData = {
                     config: config,
@@ -244,54 +225,90 @@ export class GlobalValidatorReport {
                     attributeOptionComboId: aocId,
                 };
 
+                console.debug(`Get validations ${orgUnitId}/${dataSet.id}/${period}`);
                 const validation = new GlobalSubsValidator(data).execute();
-                const dataSetType = this.getDataSetType(aocId);
-
-                if (!dataSetType) {
-                    console.error(
-                        `Cannot determine data set type for attributeOptionCombo: ${aocId}`
-                    );
-                    return undefined;
-                }
-
                 if (validation.length === 0) return undefined;
 
-                const messages = validation.map(item => {
-                    const reason = item.reason;
-                    const comment = reason
-                        ? dataValuesById[
-                              getDataValueId({
-                                  period: period,
-                                  orgUnitId: orgUnitId,
-                                  attributeOptionComboId: aocId,
-                                  dataElementId: reason.dataElementId,
-                                  categoryOptionComboId: this.getCommentCocId(),
-                              })
-                          ]?.comment
-                        : undefined;
-
-                    const commentLines = comment?.split(/\n/) || [];
-                    const index = commentLines.findIndex(
-                        line => line === DataEntry.commentSeparator
-                    );
-                    const reasonStr = index >= 0 ? commentLines.slice(0, index).join("\n") : "";
-
-                    const parts = [
-                        item.message,
-                        reasonStr
-                            ? i18n.t("Reason: {{reasonStr}}", { reasonStr, nsSeparator: false })
-                            : null,
-                    ];
-
-                    return _(parts).compact().join(" - ");
+                const messages = this.getMessagesFromValidation({
+                    validation,
+                    dataValuesById,
+                    period,
+                    orgUnitId,
+                    aocId,
                 });
 
                 const period2 = period.slice(0, 4) + "-" + period.slice(4, 6);
-
                 return { orgUnit, dataSetType, period: period2, messages };
             })
             .compact()
             .value();
+    }
+
+    private getMessagesFromValidation(options: {
+        validation: ValidationResult;
+        dataValuesById: _.Dictionary<DataValue>;
+        period: string;
+        orgUnitId: string;
+        aocId: string;
+    }): string[] {
+        const { validation, dataValuesById, period, orgUnitId, aocId } = options;
+
+        return validation.map(item => {
+            const reason = item.reason;
+            const comment = reason
+                ? dataValuesById[
+                      getDataValueId({
+                          period: period,
+                          orgUnitId: orgUnitId,
+                          attributeOptionComboId: aocId,
+                          dataElementId: reason.dataElementId,
+                          categoryOptionComboId: this.getCommentCocId(),
+                      })
+                  ]?.comment
+                : undefined;
+
+            const commentLines = comment?.split(/\n/) || [];
+            const index = commentLines.findIndex(line => line === DataEntry.commentSeparator);
+            const reasonStr = index >= 0 ? commentLines.slice(0, index).join("\n") : "";
+
+            const parts = [
+                item.message,
+                reasonStr
+                    ? i18n.t("Reason: {{reasonStr}}", { reasonStr, nsSeparator: false })
+                    : null,
+            ];
+
+            return _(parts).compact().join(" - ");
+        });
+    }
+
+    private getCsvContents(options: { entries: Entry[] }): Buffer {
+        type Row = { project: string; type: string; period: string; validation: string };
+
+        const headers: Record<keyof Row, { title: string }> = {
+            project: { title: "Project" },
+            type: { title: "Type" },
+            period: { title: "Period" },
+            validation: { title: "Validation" },
+        };
+
+        const formatObj = (obj: { id: string; name: string }) => `${obj.name.trim()} [${obj.id}]`;
+
+        const records = options.entries.map((entry): Row => {
+            return {
+                project: formatObj(entry.orgUnit),
+                type: entry.dataSetType,
+                period: entry.period,
+                validation: entry.messages.join("\n"),
+            };
+        });
+
+        const csvHeader = _.map(headers, (obj, key) => ({ id: key, ...obj }));
+        const csvWriter = CsvWriter.createObjectCsvStringifier({ header: csvHeader });
+        const header = csvWriter.getHeaderString();
+        const rows = csvWriter.stringifyRecords(records);
+        const contents = [header, rows].join("\n") + "\n";
+        return Buffer.from(contents, "utf8");
     }
 }
 
@@ -316,3 +333,12 @@ function getMetadataQuery(degCodes: string[]) {
 }
 
 type Metadata = MetadataPick<ReturnType<typeof getMetadataQuery>>;
+
+async function runApi<T>(res: CancelableResponse<T>): Promise<T> {
+    try {
+        return await res.getData();
+    } catch (err: any) {
+        console.error(err);
+        throw new Error(err);
+    }
+}

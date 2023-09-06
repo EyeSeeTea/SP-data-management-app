@@ -28,6 +28,7 @@
         "axios": "0.21.1",
         "axios-retry": "^3.1.9",
         "classnames": "2.3.2",
+        "csv-writer": "^1.6.0",
         "d2": "31.9.0",
         "d2-manifest": "^1.0.0",
         "exceljs": "4.3.0",
