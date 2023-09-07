@@ -266,7 +266,7 @@ export class GlobalValidator {
 
                 const isPeople = globalDataElement.dataElement.peopleOrBenefit === "people";
 
-                return isValid ? null : { level: isPeople ? "error" : "warning", message: msg };
+                return isValid ? null : { level: isPeople ? "warning" : "error", message: msg };
             })
             .compact()
             .value();
