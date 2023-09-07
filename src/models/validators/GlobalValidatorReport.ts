@@ -15,7 +15,7 @@ import {
     BasicData,
     getIndexedDataValues,
     GlobalValidator,
-    GlobalSubsValidator,
+    GlobalPeopleSumGreaterThanSubsSumValidator,
 } from "./GlobalValidator";
 import { DataValue, getReasonCocId, ValidationResult } from "./validator-common";
 import {
@@ -226,7 +226,7 @@ export class GlobalValidatorReport {
                 };
 
                 console.debug(`Get validations ${orgUnitId}/${dataSet.id}/${period}`);
-                const validation = new GlobalSubsValidator(data).execute();
+                const validation = new GlobalPeopleSumGreaterThanSubsSumValidator(data).execute();
                 if (validation.length === 0) return undefined;
 
                 const messages = this.getMessagesFromValidation({
