@@ -220,7 +220,7 @@ export class GlobalValidator {
             .compact()
             .maxBy(({ value }) => value);
 
-        if (maxSubItem && globalValue < maxSubItem.value) {
+        if (maxSubItem && globalValue && globalValue < maxSubItem.value) {
             const msg = i18n.t(
                 "A global indicator should be equal to or greater than its maximum sub-indicator: {{-name}} ({{value}})",
                 {
