@@ -190,7 +190,7 @@ export class GlobalValidator {
         const subValue = toFloat(strValue);
         const globalValue = this.getValue(globalDataElement.id, cocId);
 
-        if (globalValue !== undefined && subValue > globalValue) {
+        if (globalValue && subValue > globalValue) {
             const msg = i18n.t(
                 "A sub-indicator should be equal to or less than its global indicator: {{-name}} ({{value}})",
                 {
