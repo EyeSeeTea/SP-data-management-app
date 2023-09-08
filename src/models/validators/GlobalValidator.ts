@@ -309,6 +309,11 @@ export class GlobalPeopleSumGreaterThanSubsSumValidator {
         const cocs = config.categoryOptionCombos;
 
         const cocGroups = [
+            { name: "New/Male", relatedCocs: [cocs.newMale] },
+            { name: "New/Female", relatedCocs: [cocs.newFemale] },
+            { name: "Returning/Male", relatedCocs: [cocs.returningMale] },
+            { name: "Returning/Female", relatedCocs: [cocs.returningFemale] },
+            // Grouped by gender
             { name: "Male", relatedCocs: [cocs.newMale, cocs.returningMale] },
             { name: "Female", relatedCocs: [cocs.newFemale, cocs.returningFemale] },
         ];
