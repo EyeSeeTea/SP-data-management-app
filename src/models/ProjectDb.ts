@@ -665,22 +665,7 @@ export default class ProjectDb {
                     filter: { id: { eq: id } },
                 },
                 dataSets: {
-                    fields: {
-                        id: true,
-                        code: true,
-                        dataSetElements: {
-                            dataElement: { id: true },
-                            categoryCombo: { id: true, categoryOptionCombos: { id: true } },
-                        },
-                        dataInputPeriods: { period: true, openingDate: true, closingDate: true },
-                        sections: { code: true, dataElements: { id: true } },
-                        openFuturePeriods: true,
-                        expiryDays: true,
-                        publicAccess: true,
-                        externalAccess: true,
-                        userAccesses: { id: true, displayName: true, access: true },
-                        userGroupAccesses: { id: true, displayName: true, access: true },
-                    },
+                    fields: dataSetFields,
                     filter: { code: { $like: id } },
                 },
             })
@@ -1133,3 +1118,20 @@ type ObjWithShortName = Partial<{ name: string; shortName: string }>;
 function setDefaultShortName<T extends ObjWithShortName>(obj: T): T {
     return { ...obj, shortName: obj.shortName || obj.name };
 }
+
+export const dataSetFields = {
+    id: true,
+    code: true,
+    dataSetElements: {
+        dataElement: { id: true },
+        categoryCombo: { id: true, categoryOptionCombos: { id: true } },
+    },
+    dataInputPeriods: { period: true, openingDate: true, closingDate: true },
+    sections: { code: true, dataElements: { id: true } },
+    openFuturePeriods: true,
+    expiryDays: true,
+    publicAccess: true,
+    externalAccess: true,
+    userAccesses: { id: true, displayName: true, access: true },
+    userGroupAccesses: { id: true, displayName: true, access: true },
+} as const;

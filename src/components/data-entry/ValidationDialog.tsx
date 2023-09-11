@@ -77,17 +77,23 @@ const Entry: React.FC<EntryProps> = props => {
         <React.Fragment>
             {items.map((item, idx) => (
                 <div key={idx} style={styles.div}>
-                    <Icon style={{ fill: color, marginRight: 5 }} />
-
-                    {item.message}
+                    <div style={styles.validationDiv}>
+                        <Icon style={{ fill: color, marginRight: 5 }} />
+                        {item.message}
+                    </div>
 
                     {item.reason && (
-                        <ReasonArea
-                            reason={reasons[item.reason.id] || ""}
-                            setReason={value =>
-                                setReasons(prev => ({ ...prev, [item.reason?.id || ""]: value }))
-                            }
-                        />
+                        <div style={styles.reasonDiv}>
+                            <ReasonArea
+                                reason={reasons[item.reason.id] || ""}
+                                setReason={value =>
+                                    setReasons(prev => ({
+                                        ...prev,
+                                        [item.reason?.id || ""]: value,
+                                    }))
+                                }
+                            />
+                        </div>
                     )}
                 </div>
             ))}
@@ -118,12 +124,14 @@ const ReasonArea: React.FC<{
 
 const styles = {
     div: { display: "flex", alignItems: "center", margin: 10 },
+    validationDiv: { width: "66%" },
+    reasonDiv: { width: "34%" },
 };
 
 function useReasons(props: ValidationDialogProps) {
     const { result, onClose, project, dataSetType, period } = props;
 
-    const [reasons, setReasons] = React.useState<Record<string, string>>({});
+    const [reasons, setReasons] = React.useState<Reasons>({});
     const snackbar = useSnackbar();
     const [isSaving, setSaving] = React.useState(false);
 
@@ -132,7 +140,7 @@ function useReasons(props: ValidationDialogProps) {
     }, [project, dataSetType, period]);
 
     React.useEffect(() => {
-        dataEntry.getReasons(result).then(setReasons);
+        dataEntry.getReasonsText(result).then(setReasons);
     }, [result, dataEntry]);
 
     const saveReason = React.useCallback(() => {

@@ -1,14 +1,14 @@
 import * as React from "react";
-import moment from "moment";
 import { Button, LinearProgress } from "@material-ui/core";
 import i18n from "../../locales";
-import Project, { DataSet, DataSetType, monthFormat } from "../../models/Project";
+import Project, { DataSet, DataSetType } from "../../models/Project";
 import { useAppContext } from "../../contexts/api-context";
 import { useConfirmation, useSnackbarOnError } from "../../utils/hooks";
 import { DataSetOpenInfo } from "../../models/ProjectDataSet";
 import { UseValidationResponse } from "./validation-hooks";
 import { ProjectNotification } from "../../models/ProjectNotification";
 import { useSnackbar } from "@eyeseetea/d2-ui-components";
+import { Maybe } from "../../types/utils";
 
 interface DataSetStateButtonProps {
     project: Project;
@@ -17,20 +17,16 @@ interface DataSetStateButtonProps {
     period: string;
     onChange(): void;
     validation: UseValidationResponse;
+    dataSetInfo: Maybe<DataSetOpenInfo>;
 }
 
 const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = props => {
     const [isActive, setActive] = React.useState(false);
-    const { api, currentUser, isTest, appConfig } = useAppContext();
-    const { period, dataSetType, dataSet, project, onChange, validation } = props;
+    const { api, currentUser, isTest } = useAppContext();
+    const { period, dataSetType, dataSet, project, onChange, validation, dataSetInfo } = props;
     const projectDataSet = project.getProjectDataSet(dataSet);
     const showErrorAndSetInactive = useSnackbarOnError(() => setActive(false));
     const snackbar = useSnackbar();
-
-    const [dataSetInfo, setDataSetInfo] = React.useState<DataSetOpenInfo>();
-    React.useEffect(() => {
-        projectDataSet.getOpenInfo(moment(period, monthFormat)).then(setDataSetInfo);
-    }, [projectDataSet, period]);
 
     const notifyOnChange = React.useCallback(() => {
         setActive(false);
@@ -54,13 +50,7 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
 
     const notifyUsers = React.useCallback(async () => {
         try {
-            const notificator = new ProjectNotification(
-                api,
-                appConfig,
-                project,
-                currentUser,
-                isTest
-            );
+            const notificator = new ProjectNotification(api, project, currentUser, isTest);
             const emailSent = await notificator.notifyForDataReview(
                 period,
                 dataSet.id,
@@ -74,7 +64,7 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
         } catch (err: any) {
             snackbar.error(err.message);
         }
-    }, [api, project, currentUser, isTest, period, dataSet.id, dataSetType, snackbar, appConfig]);
+    }, [api, project, currentUser, isTest, period, dataSet.id, dataSetType, snackbar]);
 
     const reopenConfirmation = useConfirmation({
         title: i18n.t("Reopen data set"),
