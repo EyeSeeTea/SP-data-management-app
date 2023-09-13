@@ -123,7 +123,7 @@ const ReasonArea: React.FC<{
 };
 
 const styles = {
-    div: { display: "flex", alignItems: "center", margin: 10 },
+    div: { display: "flex", alignItems: "center", margin: 10, whiteSpace: "pre-wrap" as const },
     validationDiv: { width: "66%" },
     reasonDiv: { width: "34%" },
 };

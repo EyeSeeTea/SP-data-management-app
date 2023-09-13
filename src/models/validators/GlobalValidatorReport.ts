@@ -31,6 +31,11 @@ type Periods = { startDate: Moment };
 
 const dataValuesFromDate = "2023-09-01";
 
+type ValidationWithReason = {
+    message: string;
+    reason: string;
+};
+
 export class GlobalValidatorReport {
     format = "YYYY-MM-DD";
 
@@ -265,7 +270,7 @@ export class GlobalValidatorReport {
         const dataValuesById = _.keyBy(getDataValuesFromD2(dataValues), dv => getDataValueId(dv));
 
         return _(groups)
-            .map(([groupId, dataValuesForGroup]): Entry | undefined => {
+            .flatMap(([groupId, dataValuesForGroup]): Entry[] => {
                 const [orgUnitId, aocId, period] = groupId.split(".");
                 const dataSet = dataSetsByOrgUnitId[orgUnitId];
                 const orgUnit = orgUnitsById[orgUnitId];
@@ -273,13 +278,13 @@ export class GlobalValidatorReport {
 
                 if (!dataSetType) {
                     console.error(`Cannot determine data set type for aocId=${aocId}`);
-                    return undefined;
+                    return [];
                 } else if (!dataSet) {
                     console.error(`Dataset not found for orgUnitId=${orgUnitId}`);
-                    return undefined;
+                    return [];
                 } else if (!orgUnit) {
                     console.error(`Org unit not found for orgUnitId=${orgUnitId}`);
-                    return undefined;
+                    return [];
                 }
 
                 const data: BasicData = {
@@ -293,18 +298,16 @@ export class GlobalValidatorReport {
 
                 console.debug(`Get validations ${orgUnitId}/${dataSet.id}/${period}`);
                 const validation = new GlobalPeopleSumGreaterThanSubsSumValidator(data).execute();
-                if (validation.length === 0) return undefined;
+                if (validation.length === 0) return [];
 
-                const messages = this.getMessagesFromValidation({
-                    validation,
-                    dataValuesById,
-                    period,
-                    orgUnitId,
-                    aocId,
+                const opts = { validation, dataValuesById, period, orgUnitId, aocId };
+                const validations = this.getMessagesFromValidation(opts);
+
+                const periodHuman = period.slice(0, 4) + "-" + period.slice(4, 6);
+
+                return validations.map(validation => {
+                    return { orgUnit, dataSetType, period: periodHuman, validation: validation };
                 });
-
-                const period2 = period.slice(0, 4) + "-" + period.slice(4, 6);
-                return { orgUnit, dataSetType, period: period2, messages };
             })
             .compact()
             .value();
@@ -316,10 +319,10 @@ export class GlobalValidatorReport {
         period: string;
         orgUnitId: string;
         aocId: string;
-    }): string[] {
+    }): Array<ValidationWithReason> {
         const { validation, dataValuesById, period, orgUnitId, aocId } = options;
 
-        return validation.map(item => {
+        return validation.map((item): ValidationWithReason => {
             const reason = item.reason;
             const comment = reason
                 ? dataValuesById[
@@ -337,25 +340,25 @@ export class GlobalValidatorReport {
             const index = commentLines.findIndex(line => line === DataEntry.commentSeparator);
             const reasonStr = index >= 0 ? commentLines.slice(0, index).join("\n") : "";
 
-            const parts = [
-                item.message,
-                reasonStr
-                    ? i18n.t("Reason: {{reasonStr}}", { reasonStr, nsSeparator: false })
-                    : null,
-            ];
-
-            return _(parts).compact().join(" - ");
+            return { message: item.message, reason: reasonStr };
         });
     }
 
     private getCsvContents(options: { entries: Entry[] }): Buffer {
-        type Row = { project: string; type: string; period: string; validation: string };
+        type Row = {
+            project: string;
+            type: string;
+            period: string;
+            validation: string;
+            reason: string;
+        };
 
         const headers: Record<keyof Row, { title: string }> = {
             project: { title: "Project" },
             type: { title: "Type" },
             period: { title: "Period" },
             validation: { title: "Validation" },
+            reason: { title: "Reason" },
         };
 
         const formatObj = (obj: { id: string; name: string }) => `${obj.name.trim()} [${obj.id}]`;
@@ -365,7 +368,8 @@ export class GlobalValidatorReport {
                 project: formatObj(entry.orgUnit),
                 type: entry.dataSetType,
                 period: entry.period,
-                validation: entry.messages.join("\n"),
+                validation: entry.validation.message,
+                reason: entry.validation.reason,
             };
         });
 
@@ -382,7 +386,7 @@ type Entry = {
     orgUnit: { id: Id; name: string };
     dataSetType: DataSetType;
     period: string;
-    messages: string[];
+    validation: { message: string; reason: string };
 };
 
 function getMetadataQuery(degCodes: string[]) {

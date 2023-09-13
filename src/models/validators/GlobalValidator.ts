@@ -385,23 +385,20 @@ export class GlobalPeopleSumGreaterThanSubsSumValidator {
             .groupBy(validationData => validationData.reason.dataElementId)
             .toPairs()
             .map(([_globalDataElementId, dataForDataElement]): ValidationItem => {
-                const problems = dataForDataElement
-                    .map(data => {
-                        return i18n.t(
-                            "{{-disaggregation}}: global value ({{globalFormula}}) cannot be less than the sum of its sub-indicators ({{subFormula}})",
-                            {
-                                disaggregation: data.disaggregation,
-                                name: data.globalName,
-                                globalFormula: data.globalFormula,
-                                subFormula: data.subFormula,
-                                nsSeparator: false,
-                            }
-                        );
-                    })
-                    .join(", ");
-
+                const problems = dataForDataElement.map(data => {
+                    return i18n.t(
+                        "- {{-disaggregation}}: global value ({{globalFormula}}) cannot be less than the sum of its sub-indicators ({{subFormula}})",
+                        {
+                            disaggregation: data.disaggregation,
+                            name: data.globalName,
+                            globalFormula: data.globalFormula,
+                            subFormula: data.subFormula,
+                            nsSeparator: false,
+                        }
+                    );
+                });
                 const referenceObj = dataForDataElement[0];
-                const msg = i18n.t("Global indicator {{-name}} - {{-problems}}", {
+                const msg = i18n.t("Global indicator {{-name}}:" + "\n" + problems.join("\n"), {
                     name: referenceObj.globalName,
                     problems: problems,
                     nsSeparator: false,
