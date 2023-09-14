@@ -25,11 +25,19 @@ import {
     MetadataPick,
 } from "../../types/d2-api";
 import { CancelableResponse } from "@eyeseetea/d2-api";
+import { promiseMap } from "../../migrations/utils";
 
-type Periods = { startDate: Moment; endDate: Moment };
+type Periods = { startDate: Moment };
+
+const dataValuesFromDate = "2023-09-01";
+
+type ValidationWithReason = {
+    message: string;
+    reason: string;
+};
 
 export class GlobalValidatorReport {
-    format = "YYYY-MM";
+    format = "YYYY-MM-DD";
 
     constructor(private options: { api: D2Api; config: Config }) {}
 
@@ -57,34 +65,102 @@ export class GlobalValidatorReport {
     }
 
     private getPeriods() {
-        const now = moment();
-        const startDate = now.clone().subtract(1, "month");
-        const endDate = now.clone();
-        return { startDate: startDate, endDate: endDate };
+        const startDate = moment(dataValuesFromDate);
+        return { startDate: startDate };
     }
 
     private async getDataValues(options: {
         parentOrgUnitId?: Id;
         metadata: Metadata;
         periods: Periods;
+    }): Promise<DataValueSetsDataValue[]> {
+        const lastUpdatedDataValues = await this.getLastUpdatedDataValues(options);
+        const groups = this.getDataValueGroups(lastUpdatedDataValues);
+        console.debug(`Grouped requested to perform: ${groups.length}`);
+
+        return _.flatten(
+            await promiseMap(groups, group => {
+                return this.getDataValuesForGroup(group, options.metadata);
+            })
+        );
+    }
+
+    private async getLastUpdatedDataValues(options: {
+        parentOrgUnitId?: Id;
+        metadata: Metadata;
+        periods: Periods;
     }) {
         const { metadata, periods } = options;
+
         const rootOrgUnitId =
             options.parentOrgUnitId || metadata.organisationUnits.find(ou => ou.level === 1)?.id;
         assert(rootOrgUnitId, "Org unit not found");
+
+        const lastUpdated = periods.startDate.format(this.format);
 
         const getSetOptions: DataValueSetsGetRequest = {
             orgUnit: [rootOrgUnitId],
             dataSet: [],
             children: true,
             dataElementGroup: metadata.dataElementGroups.map(deg => deg.id),
-            startDate: periods.startDate.format(this.format),
-            endDate: periods.endDate.clone().add(1, "month").format(this.format),
+            lastUpdated: lastUpdated,
         };
 
-        console.debug(`Get data`);
         const { dataValues } = await this.options.api.dataValues.getSet(getSetOptions).getData();
+        console.debug(`Get data values updated from: ${lastUpdated}: ${dataValues.length}`);
+
         return dataValues;
+    }
+
+    private async getDataValuesForGroup(
+        group: { period: string; aocId: string; orgUnitIds: string[] },
+        metadata: Metadata
+    ): Promise<DataValueSetsDataValue[]> {
+        console.debug(
+            `Get data values: aoc=${group.aocId}, period=${
+                group.period
+            }, orgUnits=${group.orgUnitIds.join(", ")}`
+        );
+
+        return promiseMap(_.chunk(group.orgUnitIds, 100), async orgUnitIdsChunk => {
+            const options: DataValueSetsGetRequest = {
+                attributeOptionCombo: [group.aocId],
+                period: [group.period],
+                orgUnit: orgUnitIdsChunk,
+                dataSet: [],
+                dataElementGroup: metadata.dataElementGroups.map(deg => deg.id),
+            };
+
+            const { dataValues } = await this.options.api.dataValues.getSet(options).getData();
+
+            return dataValues;
+        }).then(_.flatten);
+    }
+
+    private getDataValueGroups(dataValues: DataValueSetsDataValue[]): Array<{
+        period: string;
+        aocId: string;
+        orgUnitIds: string[];
+    }> {
+        return (
+            _(dataValues)
+                // Group by all except orgUnits to minimize requests
+                .groupBy(dv => [dv.period, dv.attributeOptionCombo].join("."))
+                .toPairs()
+                .map(([key, dataValuesForGroup]) => {
+                    const [period, attributeOptionCombo] = key.split(".");
+
+                    return {
+                        period,
+                        aocId: attributeOptionCombo,
+                        orgUnitIds: _(dataValuesForGroup)
+                            .map(dv => dv.orgUnit)
+                            .uniq()
+                            .value(),
+                    };
+                })
+                .value()
+        );
     }
 
     private async sendMessage(options: {
@@ -94,11 +170,6 @@ export class GlobalValidatorReport {
     }) {
         const { api } = this.options;
         const { entries, documentUrl, periods } = options;
-        const periodsStr = [
-            periods.startDate.format(this.format),
-            "->",
-            periods.endDate.format(this.format),
-        ].join(" ");
 
         const projectNames = _(entries)
             .map(entry => entry.orgUnit.name)
@@ -107,8 +178,8 @@ export class GlobalValidatorReport {
             .value();
 
         const body = [
-            i18n.t("Periods considered: {{periods}} ", {
-                periods: periodsStr,
+            i18n.t("Validate changes from: {{periods}} ", {
+                periods: periods.startDate.format(this.format),
                 nsSeparator: false,
             }),
             "",
@@ -199,7 +270,7 @@ export class GlobalValidatorReport {
         const dataValuesById = _.keyBy(getDataValuesFromD2(dataValues), dv => getDataValueId(dv));
 
         return _(groups)
-            .map(([groupId, dataValuesForGroup]): Entry | undefined => {
+            .flatMap(([groupId, dataValuesForGroup]): Entry[] => {
                 const [orgUnitId, aocId, period] = groupId.split(".");
                 const dataSet = dataSetsByOrgUnitId[orgUnitId];
                 const orgUnit = orgUnitsById[orgUnitId];
@@ -207,13 +278,13 @@ export class GlobalValidatorReport {
 
                 if (!dataSetType) {
                     console.error(`Cannot determine data set type for aocId=${aocId}`);
-                    return undefined;
+                    return [];
                 } else if (!dataSet) {
                     console.error(`Dataset not found for orgUnitId=${orgUnitId}`);
-                    return undefined;
+                    return [];
                 } else if (!orgUnit) {
                     console.error(`Org unit not found for orgUnitId=${orgUnitId}`);
-                    return undefined;
+                    return [];
                 }
 
                 const data: BasicData = {
@@ -227,18 +298,16 @@ export class GlobalValidatorReport {
 
                 console.debug(`Get validations ${orgUnitId}/${dataSet.id}/${period}`);
                 const validation = new GlobalPeopleSumGreaterThanSubsSumValidator(data).execute();
-                if (validation.length === 0) return undefined;
+                if (validation.length === 0) return [];
 
-                const messages = this.getMessagesFromValidation({
-                    validation,
-                    dataValuesById,
-                    period,
-                    orgUnitId,
-                    aocId,
+                const opts = { validation, dataValuesById, period, orgUnitId, aocId };
+                const validations = this.getMessagesFromValidation(opts);
+
+                const periodHuman = period.slice(0, 4) + "-" + period.slice(4, 6);
+
+                return validations.map(validation => {
+                    return { orgUnit, dataSetType, period: periodHuman, validation: validation };
                 });
-
-                const period2 = period.slice(0, 4) + "-" + period.slice(4, 6);
-                return { orgUnit, dataSetType, period: period2, messages };
             })
             .compact()
             .value();
@@ -250,10 +319,10 @@ export class GlobalValidatorReport {
         period: string;
         orgUnitId: string;
         aocId: string;
-    }): string[] {
+    }): Array<ValidationWithReason> {
         const { validation, dataValuesById, period, orgUnitId, aocId } = options;
 
-        return validation.map(item => {
+        return validation.map((item): ValidationWithReason => {
             const reason = item.reason;
             const comment = reason
                 ? dataValuesById[
@@ -271,25 +340,25 @@ export class GlobalValidatorReport {
             const index = commentLines.findIndex(line => line === DataEntry.commentSeparator);
             const reasonStr = index >= 0 ? commentLines.slice(0, index).join("\n") : "";
 
-            const parts = [
-                item.message,
-                reasonStr
-                    ? i18n.t("Reason: {{reasonStr}}", { reasonStr, nsSeparator: false })
-                    : null,
-            ];
-
-            return _(parts).compact().join(" - ");
+            return { message: item.message, reason: reasonStr };
         });
     }
 
     private getCsvContents(options: { entries: Entry[] }): Buffer {
-        type Row = { project: string; type: string; period: string; validation: string };
+        type Row = {
+            project: string;
+            type: string;
+            period: string;
+            validation: string;
+            reason: string;
+        };
 
         const headers: Record<keyof Row, { title: string }> = {
             project: { title: "Project" },
             type: { title: "Type" },
             period: { title: "Period" },
             validation: { title: "Validation" },
+            reason: { title: "Reason" },
         };
 
         const formatObj = (obj: { id: string; name: string }) => `${obj.name.trim()} [${obj.id}]`;
@@ -299,7 +368,8 @@ export class GlobalValidatorReport {
                 project: formatObj(entry.orgUnit),
                 type: entry.dataSetType,
                 period: entry.period,
-                validation: entry.messages.join("\n"),
+                validation: entry.validation.message,
+                reason: entry.validation.reason,
             };
         });
 
@@ -316,7 +386,7 @@ type Entry = {
     orgUnit: { id: Id; name: string };
     dataSetType: DataSetType;
     period: string;
-    messages: string[];
+    validation: { message: string; reason: string };
 };
 
 function getMetadataQuery(degCodes: string[]) {

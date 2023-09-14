@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2023-09-07T08:39:21.050Z\n"
-"PO-Revision-Date: 2023-09-07T08:39:21.050Z\n"
+"POT-Creation-Date: 2023-09-13T11:54:43.059Z\n"
+"PO-Revision-Date: 2023-09-13T11:54:43.059Z\n"
 
 msgid "Name"
 msgstr ""
@@ -739,23 +739,17 @@ msgid "Global indicator with sub-indicators values cannot be empty: {{- name}}"
 msgstr ""
 
 msgid ""
-"{{-disaggregation}}: global value ({{globalFormula}}) cannot be less than "
+"- {{-disaggregation}}: global value ({{globalFormula}}) cannot be less than "
 "the sum of its sub-indicators ({{subFormula}})"
 msgstr ""
 
-msgid "Global indicator {{-name}} - {{-problems}}"
-msgstr ""
-
-msgid "Periods considered: {{periods}} "
+msgid "Validate changes from: {{periods}} "
 msgstr ""
 
 msgid "Global data elements reported count: {{dataElementsCount}} "
 msgstr ""
 
 msgid "Projects with global validations reported ({{projectsCount}}): {{-projects}}"
-msgstr ""
-
-msgid "Reason: {{reasonStr}}"
 msgstr ""
 
 msgid ""
