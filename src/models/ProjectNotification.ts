@@ -8,7 +8,7 @@ import { D2Api } from "../types/d2-api";
 import ProjectDb, { ExistingData, getStringDataValue } from "./ProjectDb";
 import { baseConfig } from "./Config";
 import moment from "moment";
-import { AppConfig } from "../components/app/AppConfig";
+import { appConfig } from "../app-config";
 
 type Email = string;
 type Action = "create" | "update";
@@ -16,15 +16,14 @@ type Action = "create" | "update";
 export class ProjectNotification {
     constructor(
         private api: D2Api,
-        private appConfig: AppConfig,
         private project: Project,
         private currentUser: User,
         private isTest: boolean
     ) {}
 
-    private async getRecipients() {
+    static async getRecipients(api: D2Api) {
         const groupCode = "DATA_MANAGEMENT_NOTIFICATION";
-        const { users: usersInGroup } = await this.api.metadata
+        const { users: usersInGroup } = await api.metadata
             .get({
                 users: {
                     fields: { email: true, userCredentials: { disabled: true } },
@@ -37,7 +36,7 @@ export class ProjectNotification {
             .reject(user => user.userCredentials.disabled)
             .value();
 
-        return _(this.appConfig.app.notifyEmailOnProjectSave)
+        return _(appConfig.app.notifyEmailOnProjectSave)
             .concat(users.map(user => user.email))
             .compact()
             .uniq()
@@ -45,7 +44,7 @@ export class ProjectNotification {
     }
 
     async notifyOnProjectSave(action: Action) {
-        const recipients = await this.getRecipients();
+        const recipients = await ProjectNotification.getRecipients(this.api);
         await this.notifySave(recipients, action);
         await this.notifyDanglingDataValues(recipients);
     }
@@ -162,7 +161,7 @@ Go to approval screen: {{- projectUrl}}`,
     }) {
         const { currentUser, message, existingData } = options;
         const { displayName: user, username } = currentUser.data;
-        const recipients = await this.getRecipients();
+        const recipients = await ProjectNotification.getRecipients(this.api);
         const subject = i18n.t("{{username}} has removed indicators with data", { username });
 
         const dataElementsList = existingData.dataElementsWithData

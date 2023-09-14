@@ -132,7 +132,7 @@ export default class ProjectsList {
         const sectorsByCode = _.keyBy(config.sectors, sector => sector.code);
         const orgUnitsByAwardNumber = this.getOrgUnitsCountByAwardNumber(orgUnitAwardNumberGroups);
 
-        const projectsWithSectors = projects.map(orgUnit => {
+        const projectsWithSectors0 = projects.map(orgUnit => {
             const dataSet = _(dataSetByOrgUnitId).get(orgUnit.id, null);
             if (!dataSet || !hasCurrentUserFullAccessToDataSet(dataSet)) return null;
 
@@ -159,9 +159,10 @@ export default class ProjectsList {
             return project;
         });
 
-        const { pager, objects } = paginate(_.compact(projectsWithSectors), pagination);
+        const projectsWithSectors = _.compact(projectsWithSectors0);
+        const { pager, objects } = paginate(projectsWithSectors, pagination);
 
-        const countries: Country[] = _(projects)
+        const countries: Country[] = _(projectsWithSectors)
             .map(project => project.parent)
             .compact()
             .uniqBy(country => country.id)

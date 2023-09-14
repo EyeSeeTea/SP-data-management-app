@@ -64,7 +64,7 @@ const ProjectsList: React.FC = () => {
 
     const tableProps = useObjectsTable(componentConfig, getRows, params, updateState);
 
-    const filterOptions = useFilterOptions();
+    const filterOptions = useFilterOptions(params);
 
     const closeDeleteDialog = useCallback(() => {
         setProjectIdsToDelete(undefined);
@@ -127,35 +127,35 @@ const ObjectsListStyled = styled(ObjectsList)`
     }
 `;
 
-function useFilterOptions() {
+function useFilterOptions(options: { onlyActive: boolean }) {
     const { api, currentUser, config } = useAppContext();
+    const { onlyActive } = options;
 
     const [filterOptions, setFilterOptions] = React.useState<FilterOptions>(() => ({
-        countriesAll: currentUser.getCountries(),
+        countries: currentUser.getCountries(),
         countriesOnlyActive: [],
         sectors: config.sectors,
     }));
 
     React.useEffect(() => {
         async function run() {
-            const countriesFromProjects = await Project.getCountries(api, config);
+            const countriesFromProjects = await Project.getCountries(api, config, { onlyActive });
 
-            const countriesAll = _.intersectionBy(
+            const countriesFromProjectVisibleByUser = _.intersectionBy(
                 countriesFromProjects,
                 currentUser.getCountries(),
                 country => country.id
             );
 
             const newFilterOptions: FilterOptions = {
-                countriesAll: countriesAll,
+                countries: countriesFromProjectVisibleByUser,
                 sectors: config.sectors,
-                countriesOnlyActive: await Project.getCountriesOnlyActive(api, config),
             };
 
             setFilterOptions(newFilterOptions);
         }
         run();
-    }, [api, currentUser, config]);
+    }, [api, currentUser, config, onlyActive]);
 
     return filterOptions;
 }
