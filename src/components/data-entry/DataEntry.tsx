@@ -9,6 +9,7 @@ import { useAppContext } from "../../contexts/api-context";
 import i18n from "../../locales";
 import { ValidationDialog } from "./ValidationDialog";
 import { useValidation } from "./validation-hooks";
+import { DataSetOpenInfo } from "../../models/ProjectDataSet";
 
 const showControls = false;
 
@@ -197,7 +198,17 @@ const DataEntry = (props: DataEntryProps) => {
 
     const period = state.dropdownValue;
 
-    const isValidationEnabled = Boolean(isDataSetOpen) && state.dropdownHasValues;
+    const [dataSetInfo, setDataSetInfo] = React.useState<DataSetOpenInfo>();
+    const projectDataSet = React.useMemo(
+        () => project.getProjectDataSet(dataSet),
+        [project, dataSet]
+    );
+    React.useEffect(() => {
+        projectDataSet.getOpenInfo(moment(period, monthFormat)).then(setDataSetInfo);
+    }, [projectDataSet, period]);
+
+    const isValidationEnabled =
+        Boolean(isDataSetOpen) && state.dropdownHasValues && Boolean(dataSetInfo?.isOpen);
 
     const validation = useValidation({
         iframeRef,
@@ -206,7 +217,7 @@ const DataEntry = (props: DataEntryProps) => {
         period,
         options: validationOptions,
         iframeKey,
-        isValidationEnabled,
+        isValidationEnabled: isValidationEnabled,
     });
 
     useEffect(() => {
@@ -242,7 +253,7 @@ const DataEntry = (props: DataEntryProps) => {
 
     return (
         <React.Fragment>
-            {period && (
+            {period && dataSetInfo?.isOpen && (
                 <ValidationDialog
                     period={period}
                     project={project}
@@ -271,6 +282,7 @@ const DataEntry = (props: DataEntryProps) => {
                 {state.dropdownHasValues && state.dropdownValue && (
                     <div style={styles.buttons}>
                         <DataSetStateButton
+                            dataSetInfo={dataSetInfo}
                             dataSetType={dataSetType}
                             project={project}
                             dataSet={dataSet}

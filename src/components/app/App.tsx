@@ -51,7 +51,7 @@ const App: React.FC<AppProps> = props => {
             const config = await getConfig(api);
             const currentUser = new User(config);
             setUsername(currentUser.data.username);
-            const appContext = {
+            const appContext: AppContext = {
                 d2,
                 api,
                 config,

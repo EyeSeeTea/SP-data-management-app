@@ -1,11 +1,17 @@
-import { D2Api, DataValueSetsGetRequest, Id } from "../../types/d2-api";
+import { D2Api, DataValueSetsDataValue, DataValueSetsGetRequest } from "../../types/d2-api";
 import _ from "lodash";
 
-import Project, { DataSet, DataSetType } from "../Project";
+import { DataSet, DataSetType, ProjectBasic } from "../Project";
 import i18n from "../../locales";
-import { DataValue, toFloat, ValidationItem } from "./validator-common";
+import {
+    DataValue,
+    getReasonId,
+    toFloat,
+    ValidationItem,
+    ValidationResult,
+} from "./validator-common";
 import { Maybe } from "../../types/utils";
-import { baseConfig, Config } from "../Config";
+import { Config } from "../Config";
 import { getId } from "../../utils/dhis2";
 import { DataElementBase, getDataElementName, getGlobal, getSubs } from "../dataElementsSet";
 import { DataEntry } from "../DataEntry";
@@ -19,15 +25,20 @@ import { DataEntry } from "../DataEntry";
 
 type IndexedDataValues = Record<DataValueId, Maybe<DataValue>>;
 
-type DataValueId = string; // `${dataElementId}-${categoryOptionComboId]`
+type DataValueId = string;
 
-interface Data {
-    project: Project;
+export interface BasicData {
     config: Config;
     dataValues: IndexedDataValues;
-    dataSetType: DataSetType;
     globalDataElements: GlobalDataElement[];
     period: string;
+    orgUnitId: Id;
+    attributeOptionComboId: Id;
+}
+
+interface ProjectData extends BasicData {
+    project: ProjectBasic;
+    dataSetType: DataSetType;
 }
 
 interface GlobalDataElement {
@@ -39,11 +50,11 @@ interface GlobalDataElement {
 }
 
 export class GlobalValidator {
-    constructor(private data: Data) {}
+    constructor(private data: ProjectData) {}
 
     static async build(
         api: D2Api,
-        project: Project,
+        project: ProjectBasic,
         dataSetType: DataSetType,
         period: string
     ): Promise<GlobalValidator> {
@@ -52,12 +63,13 @@ export class GlobalValidator {
 
         const { config } = project;
         const categoryOption = config.categoryOptions[dataSetType];
-        const cocIds = categoryOption.categoryOptionCombos.map(coc => coc.id);
+        const aocId = categoryOption.categoryOptionCombos.map(coc => coc.id)[0];
+        const orgUnitId = project.orgUnit.id;
         const getSetOptions: DataValueSetsGetRequest = {
-            orgUnit: [project.orgUnit.id],
+            orgUnit: [orgUnitId],
             dataSet: [project.dataSets.target.id],
             period: [period],
-            attributeOptionCombo: cocIds,
+            attributeOptionCombo: [aocId],
         };
 
         const res = await api.dataValues.getSet(getSetOptions).getData();
@@ -67,7 +79,9 @@ export class GlobalValidator {
             categoryOptionComboId: dv.categoryOptionCombo,
         }));
 
-        const indexedDataValues: Data["dataValues"] = getIndexedDataValues(dataValues);
+        const indexedDataValues: ProjectData["dataValues"] = getIndexedDataValues(
+            getDataValuesFromD2(dataValues)
+        );
         const dataSet = project.dataSets[dataSetType];
         const globalDataElements = this.getGlobalDataElements(config, dataSet);
 
@@ -78,10 +92,12 @@ export class GlobalValidator {
             globalDataElements,
             dataValues: indexedDataValues,
             period,
+            orgUnitId: orgUnitId,
+            attributeOptionComboId: aocId,
         });
     }
 
-    private static getGlobalDataElements(config: Config, dataSet: DataSet): GlobalDataElement[] {
+    static getGlobalDataElements(config: Config, dataSet: DataSet): GlobalDataElement[] {
         const dataElementsById = _.keyBy(config.dataElements, de => de.id);
 
         const projectDataElements = _(dataSet.dataSetElements)
@@ -108,6 +124,7 @@ export class GlobalValidator {
             })
             .compact()
             .value();
+
         return globalDataElements;
     }
 
@@ -138,122 +155,26 @@ export class GlobalValidator {
 
     async validateThatGlobalsAreLessThanSumOfSubsForNewAndReturning(): Promise<ValidationItem[]> {
         const { period, project, dataSetType } = this.data;
-        const items = this.getItemsForValidateThatGlobalsAreLessThanSumOfSubsForNewAndReturning();
+        const items = new GlobalPeopleSumGreaterThanSubsSumValidator(this.data).execute();
         const dataEntry = new DataEntry(project.api, project, dataSetType, period);
-        const pendingReasonIds = _.keys(await dataEntry.getReasons(items));
-
-        return items.filter(item => !item.reason || pendingReasonIds.includes(item.reason.id));
-    }
-
-    private getItemsForValidateThatGlobalsAreLessThanSumOfSubsForNewAndReturning() {
-        const { period, globalDataElements } = this.data;
-        const cocIdsMapping = this.getCocIdsMapping();
-
-        return _(globalDataElements)
-            .filter(de => de.dataElement.peopleOrBenefit === "people")
-            .flatMap(globalDataElement => {
-                return _.flatMap(
-                    globalDataElement.categoryOptionComboIds,
-                    (cocId): ValidationItem[] => {
-                        const globalDataValue: DataValue = {
-                            dataElementId: globalDataElement.id,
-                            categoryOptionComboId: cocId,
-                            period: period,
-                            value: this.getValue(globalDataElement.id, cocId) || "",
-                        };
-                        const { value: strValue } = globalDataValue;
-                        if (!strValue) return [];
-
-                        const subDataElements = getSubs(
-                            this.data.config,
-                            globalDataValue.dataElementId
-                        );
-                        const globalValue = toFloat(strValue);
-                        const relatedCocIds = _.compact(cocIdsMapping[cocId] || []);
-
-                        const subData = _(subDataElements)
-                            .flatMap(subDataElement => {
-                                return relatedCocIds.map(cocId => {
-                                    const key = getKey(subDataElement.id, cocId);
-                                    const dv = this.data.dataValues[key];
-                                    return dv
-                                        ? { dataElement: subDataElement, value: toFloat(dv.value) }
-                                        : null;
-                                });
-                            })
-                            .compact()
-                            .value();
-
-                        const subValuesSum = _.sum(subData.map(obj => obj.value));
-
-                        const dataElementId = globalDataElement.dataElement.id;
-
-                        const reason: ValidationItem["reason"] = {
-                            id: [period, dataElementId, cocId].join("."),
-                            project: this.data.project,
-                            dataElementId: dataElementId,
-                            period: period,
-                            cocId: cocId,
-                        };
-
-                        if (subValuesSum >= 0 && !globalValue) {
-                            const msg = i18n.t(
-                                "Global indicator {{-name}} must have a value (as some sub-indicator has a value)",
-                                { name: globalDataElement.name }
-                            );
-                            return [{ level: "error", message: msg, reason: reason }];
-                        } else if (subValuesSum && globalValue > subValuesSum) {
-                            const msg = i18n.t(
-                                "Global indicator {{-name}} value ({{value}}) must be inferior to the sum of new+returning of its sub-indicators ({{subFormula}})",
-                                {
-                                    name: globalDataElement.name,
-                                    value: globalValue,
-                                    subFormula: `${subData
-                                        .map(o => o.value)
-                                        .join(" + ")} = ${subValuesSum}`,
-                                    nsSeparator: false,
-                                }
-                            );
-                            return [{ level: "error", message: msg, reason: reason }];
-                        } else {
-                            return [];
-                        }
-                    }
-                );
-            })
+        const reasons = await dataEntry.getReasons(items);
+        const upToDateReasonIds = _(reasons)
+            .toPairs()
+            .map(([reasonId, reason]) => (reason.upToDate ? reasonId : null))
+            .compact()
             .value();
-    }
 
-    private getCocIdsMapping() {
-        const { config } = this.data;
-        const cos = baseConfig.categoryOptions;
-        const newMale = getCocId(config, [cos.new, cos.male]);
-        const newFemale = getCocId(config, [cos.new, cos.female]);
-        const returningMale = getCocId(config, [cos.recurring, cos.male]);
-        const returningFemale = getCocId(config, [cos.recurring, cos.female]);
-
-        const cocIdsMapping = {
-            [newMale]: [newMale, returningMale],
-            [newFemale]: [newFemale, returningFemale],
-            [returningMale]: [newMale, returningMale],
-            [returningFemale]: [newFemale, returningFemale],
-        };
-        return cocIdsMapping;
+        return items.filter(item => !item.reason || !upToDateReasonIds.includes(item.reason.id));
     }
 
     validateAllGlobalsAreEqualOrGreaterThanMaxSub(): ValidationItem[] {
-        const { period, globalDataElements } = this.data;
-
-        return _(globalDataElements)
+        return _(this.data.globalDataElements)
             .flatMap(globalDataElement => {
                 return _.flatMap(globalDataElement.categoryOptionComboIds, cocId => {
-                    const dataValue: DataValue = {
-                        dataElementId: globalDataElement.id,
-                        categoryOptionComboId: cocId,
-                        period,
-                        value: this.getValue(globalDataElement.id, cocId) || "",
-                    };
-                    return this.validateGlobalIsEqualOrGreaterThanMaxSub(dataValue);
+                    const dataValue = this.getDataValue(globalDataElement.id, cocId);
+                    return dataValue
+                        ? this.validateGlobalIsEqualOrGreaterThanMaxSub(dataValue)
+                        : [];
                 });
             })
             .value();
@@ -267,11 +188,9 @@ export class GlobalValidator {
         if (!globalDataElement) return [];
 
         const subValue = toFloat(strValue);
-        const key = getKey(globalDataElement.id, cocId);
-        const dv = this.data.dataValues[key];
-        const globalValue = dv ? parseFloat(dv.value) : undefined;
+        const globalValue = this.getValue(globalDataElement.id, cocId);
 
-        if (globalValue !== undefined && subValue > globalValue) {
+        if (globalValue && subValue > globalValue) {
             const msg = i18n.t(
                 "A sub-indicator should be equal to or less than its global indicator: {{-name}} ({{value}})",
                 {
@@ -295,14 +214,13 @@ export class GlobalValidator {
 
         const maxSubItem = _(subDataElements)
             .map(subDataElement => {
-                const key = getKey(subDataElement.id, cocId);
-                const dv = this.data.dataValues[key];
-                return dv ? { dataElement: subDataElement, value: toFloat(dv.value) } : null;
+                const value = this.getValue(subDataElement.id, cocId);
+                return value !== undefined ? { dataElement: subDataElement, value: value } : null;
             })
             .compact()
             .maxBy(({ value }) => value);
 
-        if (maxSubItem && globalValue < maxSubItem.value) {
+        if (maxSubItem && globalValue && globalValue < maxSubItem.value) {
             const msg = i18n.t(
                 "A global indicator should be equal to or greater than its maximum sub-indicator: {{-name}} ({{value}})",
                 {
@@ -346,41 +264,213 @@ export class GlobalValidator {
                     }
                 );
 
-                return isValid ? null : { level: "error", message: msg };
+                const isPeople = globalDataElement.dataElement.peopleOrBenefit === "people";
+
+                return isValid ? null : { level: isPeople ? "warning" : "error", message: msg };
             })
             .compact()
             .value();
     }
 
-    private getValue(dataElementId: string, categoryOptionComboId: string): string | undefined {
-        const key = getKey(dataElementId, categoryOptionComboId);
-        const dataValue = this.data.dataValues[key];
-        return dataValue?.value;
+    private getDataValue(dataElementId: string, categoryOptionComboId: string): Maybe<DataValue> {
+        const key = getKey(this.data, dataElementId, categoryOptionComboId);
+        return this.data.dataValues[key];
+    }
+
+    private getValue(dataElementId: string, categoryOptionComboId: string): number | undefined {
+        const dataValue = this.getDataValue(dataElementId, categoryOptionComboId);
+        return dataValue ? parseFloat(dataValue.value) : undefined;
     }
 }
 
-function getKey(dataElementId: string, categoryOptionComboId: string): DataValueId {
-    return [dataElementId, categoryOptionComboId].join("-");
+/*
+    For global people data elements, validated that:
+        - New Global + Returning Global >= New Sub + Returning Sub
+    Separate validations for Male and Female, but group the messages by data element.
+*/
+
+export class GlobalPeopleSumGreaterThanSubsSumValidator {
+    constructor(private data: BasicData) {}
+
+    execute(): ValidationResult {
+        return _(this.data.globalDataElements)
+            .filter(de => de.dataElement.peopleOrBenefit === "people")
+            .thru(globalDataElements => {
+                return this.getGlobalSubValidationData({ globalDataElements });
+            })
+            .thru(objs => this.getGlobalValidatorValidationsGroupedByDataElement(objs))
+            .value();
+    }
+
+    private getGlobalSubValidationData(options: {
+        globalDataElements: GlobalDataElement[];
+    }): GlobalSubValidationData[] {
+        const { period, config } = this.data;
+        const cocs = config.categoryOptionCombos;
+
+        const cocGroups = [
+            { name: "New/Male", relatedCocs: [cocs.newMale] },
+            { name: "New/Female", relatedCocs: [cocs.newFemale] },
+            { name: "Returning/Male", relatedCocs: [cocs.returningMale] },
+            { name: "Returning/Female", relatedCocs: [cocs.returningFemale] },
+            // Grouped by gender
+            { name: "Male", relatedCocs: [cocs.newMale, cocs.returningMale] },
+            { name: "Female", relatedCocs: [cocs.newFemale, cocs.returningFemale] },
+        ];
+
+        return _(options.globalDataElements)
+            .flatMap(globalDataElement => {
+                return cocGroups.map((cocGroup): GlobalSubValidationData | undefined => {
+                    const globalOperands = _(cocGroup.relatedCocs)
+                        .map(coc => this.getValue(globalDataElement.id, coc.id))
+                        .compact()
+                        .value();
+
+                    const subOperands = _(getSubs(config, globalDataElement.id))
+                        .flatMap(subDataElement => {
+                            return cocGroup.relatedCocs.map(coc => {
+                                return this.getValue(subDataElement.id, coc.id);
+                            });
+                        })
+                        .compact()
+                        .value();
+
+                    const globalValuesSum = _.sum(globalOperands);
+                    const subValuesSum = _.sum(subOperands);
+
+                    if (globalValuesSum < subValuesSum) {
+                        const globalParts =
+                            globalOperands.length > 1 ? globalOperands.join(" + ") : null;
+                        const subParts = subOperands.length > 1 ? subOperands.join(" + ") : null;
+                        const dataElementId = globalDataElement.dataElement.id;
+                        const reason: GlobalSubValidationData["reason"] = {
+                            id: getReasonId({ period, dataElementId }),
+                            project: { id: this.data.orgUnitId },
+                            dataElementId: dataElementId,
+                            period: period,
+                        };
+
+                        return {
+                            globalName: globalDataElement.name,
+                            disaggregation: cocGroup.name,
+                            globalFormula: [globalParts, globalValuesSum]
+                                .filter(x => x !== null)
+                                .join(" = "),
+                            subFormula: [subParts, subValuesSum]
+                                .filter(x => x !== null)
+                                .join(" = "),
+                            reason: reason,
+                        };
+                    } else {
+                        return undefined;
+                    }
+                });
+            })
+            .compact()
+            .value();
+    }
+
+    private getValue(dataElementId: string, categoryOptionComboId: string): number {
+        const key = getKey(this.data, dataElementId, categoryOptionComboId);
+        const dataValue = this.data.dataValues[key];
+        const value = dataValue?.value;
+        return value ? parseFloat(value) : 0;
+    }
+
+    private getGlobalValidatorValidationsGroupedByDataElement(
+        globalSubValidationDataItems: GlobalSubValidationData[]
+    ): ValidationItem[] {
+        return _(globalSubValidationDataItems)
+            .compact()
+            .groupBy(validationData => validationData.reason.dataElementId)
+            .toPairs()
+            .map(([_globalDataElementId, dataForDataElement]): ValidationItem => {
+                const problems = dataForDataElement.map(data => {
+                    return i18n.t(
+                        "- {{-disaggregation}}: global value ({{globalFormula}}) cannot be less than the sum of its sub-indicators ({{subFormula}})",
+                        {
+                            disaggregation: data.disaggregation,
+                            name: data.globalName,
+                            globalFormula: data.globalFormula,
+                            subFormula: data.subFormula,
+                            nsSeparator: false,
+                        }
+                    );
+                });
+                const referenceObj = dataForDataElement[0];
+                const msg = i18n.t("Global indicator {{-name}}:" + "\n" + problems.join("\n"), {
+                    name: referenceObj.globalName,
+                    problems: problems,
+                    nsSeparator: false,
+                });
+
+                return { level: "error", message: msg, reason: referenceObj.reason };
+            })
+            .value();
+    }
 }
 
-function getIndexedDataValues(dataValues: DataValue[]): IndexedDataValues {
+export function getIndexedDataValues(dataValues: DataValue[]): IndexedDataValues {
     return _(dataValues)
         .map(dataValue => {
-            const key = getKey(dataValue.dataElementId, dataValue.categoryOptionComboId);
+            const key = getDataValueId(dataValue);
             return [key, dataValue] as [string, DataValue];
         })
         .fromPairs()
         .value();
 }
 
-function getCocId(config: Config, codes: string[]): string {
-    return (
-        config.categoryCombos.genderNewRecurring.categoryOptionCombos.find(
-            coc =>
-                _(coc.categoryOptions)
-                    .map(co => co.code)
-                    .difference(codes)
-                    .size() === 0
-        )?.id || ""
+function getKey(
+    data: BasicData,
+    dataElementId: string,
+    categoryOptionComboId: string
+): DataValueId {
+    return getDataValueId({
+        orgUnitId: data.orgUnitId,
+        period: data.period,
+        dataElementId: dataElementId,
+        categoryOptionComboId: categoryOptionComboId,
+        attributeOptionComboId: data.attributeOptionComboId,
+    });
+}
+
+export type Id = string;
+
+type DataValueIdFields =
+    | "orgUnitId"
+    | "period"
+    | "dataElementId"
+    | "categoryOptionComboId"
+    | "attributeOptionComboId";
+
+export function getDataValueId(dataValue: Pick<DataValue, DataValueIdFields>): string {
+    return [
+        dataValue.orgUnitId,
+        dataValue.period,
+        dataValue.dataElementId,
+        dataValue.categoryOptionComboId,
+        dataValue.attributeOptionComboId,
+    ].join(".");
+}
+
+type GlobalSubValidationData = {
+    globalName: string;
+    disaggregation: string;
+    globalFormula: string;
+    subFormula: string;
+    reason: NonNullable<ValidationItem["reason"]>;
+};
+
+export function getDataValuesFromD2(dataValues: DataValueSetsDataValue[]) {
+    return dataValues.map(
+        (dv): DataValue => ({
+            period: dv.period,
+            orgUnitId: dv.orgUnit,
+            dataElementId: dv.dataElement,
+            categoryOptionComboId: dv.categoryOptionCombo,
+            attributeOptionComboId: dv.attributeOptionCombo,
+            value: dv.value,
+            comment: dv.comment,
+        })
     );
 }

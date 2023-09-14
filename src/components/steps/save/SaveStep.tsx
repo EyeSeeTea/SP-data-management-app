@@ -30,7 +30,7 @@ const useStyles = makeStyles({
 });
 
 const SaveStep: React.FC<StepProps> = ({ project, onCancel, action }) => {
-    const { appConfig, api, currentUser, isTest } = useAppContext();
+    const { api, currentUser, isTest } = useAppContext();
     const snackbar = useSnackbar();
     const classes = useStyles();
     const loading = useLoading();
@@ -48,20 +48,14 @@ const SaveStep: React.FC<StepProps> = ({ project, onCancel, action }) => {
             await save();
             if (!existingData) return;
 
-            const notificator = new ProjectNotification(
-                api,
-                appConfig,
-                project,
-                currentUser,
-                isTest
-            );
+            const notificator = new ProjectNotification(api, project, currentUser, isTest);
             await notificator.sendMessageForIndicatorsRemoval({
                 message,
                 currentUser,
                 existingData,
             });
         },
-        [appConfig, api, currentUser, closeExistingDataDialog, existingData, isTest, project, save]
+        [api, currentUser, closeExistingDataDialog, existingData, isTest, project, save]
     );
 
     const checkExistingDataAndSave = React.useCallback(async () => {
@@ -190,7 +184,7 @@ const LiEntry: React.FC<LiEntryProps> = props => {
 };
 
 function useSave(project: Project, action: StepProps["action"]) {
-    const { api, isDev, isTest, appConfig, currentUser } = useAppContext();
+    const { api, isDev, isTest, currentUser } = useAppContext();
     const [isSaving, setSaving] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const snackbar = useSnackbar();
@@ -205,13 +199,7 @@ function useSave(project: Project, action: StepProps["action"]) {
             setSaving(false);
 
             if (response && response.status === "OK") {
-                const notificator = new ProjectNotification(
-                    api,
-                    appConfig,
-                    projectSaved,
-                    currentUser,
-                    isTest
-                );
+                const notificator = new ProjectNotification(api, projectSaved, currentUser, isTest);
                 notificator.notifyOnProjectSave(action);
                 const baseMsg =
                     action === "create" ? i18n.t("Project created") : i18n.t("Project updated");
@@ -229,19 +217,7 @@ function useSave(project: Project, action: StepProps["action"]) {
             console.error(err);
             snackbar.error(err.message || err.toString());
         }
-    }, [
-        project,
-        setSaving,
-        history,
-        snackbar,
-        action,
-        api,
-        appConfig,
-        isDev,
-        currentUser,
-        isTest,
-        loading,
-    ]);
+    }, [project, setSaving, history, snackbar, action, api, isDev, currentUser, isTest, loading]);
 
     return { isSaving, errorMessage, save };
 }
