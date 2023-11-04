@@ -82,6 +82,7 @@ type CodedObject = { id: Id; code: string };
 export type Sector = NamedObject & CodedObject;
 export type Funder = NamedObject;
 export type Location = NamedObject;
+export type DartApplicable = NamedObject;
 
 export interface ProjectData {
     id: Id;
@@ -105,6 +106,7 @@ export interface ProjectData {
     dashboard: Partial<Dashboards>;
     initialData: Omit<ProjectData, "initialData"> | undefined;
     sharing: Sharing;
+    isDartApplicable: boolean;
 }
 
 export interface Dashboard {
@@ -228,6 +230,7 @@ class Project {
         dashboard: i18n.t("Dashboard"),
         initialData: i18n.t("Initial Data"),
         sharing: i18n.t("Sharing"),
+        isDartApplicable: i18n.t("Is this DART applicable?"),
     };
 
     static getFieldName(field: ProjectField): string {
@@ -451,6 +454,7 @@ class Project {
             disaggregation: Disaggregation.buildFromDataSetElements(config, []),
             sharing: ProjectSharing.getInitialSharing(config),
             initialData: undefined,
+            isDartApplicable: false,
         };
         return new Project(api, config, projectData);
     }
