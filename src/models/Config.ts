@@ -99,6 +99,7 @@ export const baseConfig = {
         custom: "CUSTOM",
         people: "PEOPLE",
         benefit: "BENEFIT",
+        subreportable: "SUB_REPORTABLE",
     },
     legendSets: {
         achieved: "ACTUAL_TARGET_ACHIEVED",

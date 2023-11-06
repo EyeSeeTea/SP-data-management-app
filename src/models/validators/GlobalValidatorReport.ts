@@ -53,7 +53,11 @@ export class GlobalValidatorReport {
     private async getMetadata(): Promise<Metadata> {
         const { api, config } = this.options;
         const { dataElementGroups } = config.base;
-        const degCodes = [dataElementGroups.global, dataElementGroups.sub];
+        const degCodes = [
+            dataElementGroups.global,
+            dataElementGroups.sub,
+            dataElementGroups.subreportable,
+        ];
 
         console.debug(`Get metadata`);
         const metadata = await api.metadata.get(getMetadataQuery(degCodes)).getData();
