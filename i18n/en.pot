@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2023-09-13T11:54:43.059Z\n"
-"PO-Revision-Date: 2023-09-13T11:54:43.059Z\n"
+"POT-Creation-Date: 2023-11-10T01:11:32.873Z\n"
+"PO-Revision-Date: 2023-11-10T01:11:32.873Z\n"
 
 msgid "Name"
 msgstr ""
@@ -703,6 +703,11 @@ msgid ""
 msgstr ""
 
 msgid "[only for admin users]"
+msgstr ""
+
+msgid ""
+"Indicators {{deCode}} and {{pairedCode}} cannot be selected because they "
+"are selected in another sector ({{pairedName}})"
 msgstr ""
 
 msgid "Global indicators with selected sub-indicators cannot be unselected"
