@@ -26,6 +26,7 @@ import DataElementsSelectionStep from "../../components/steps/data-elements-sele
 import MerSelectionStep from "../../components/steps/mer-selection/MerSelectionStep";
 import { useAppHistory } from "../../utils/use-app-history";
 import { Maybe } from "../../types/utils";
+import { AttachFilesStep } from "../../components/steps/attach-files/AttachFilesStep";
 
 type Action = { type: "create" } | { type: "edit"; id: string };
 
@@ -163,6 +164,12 @@ class ProjectWizardImpl extends React.Component<Props, State> {
                 label: i18n.t("Username Access"),
                 component: SharingStep,
                 description: i18n.t("Define Sharing settings for project data."),
+            },
+            {
+                key: "attach",
+                label: i18n.t("Attach Files"),
+                component: AttachFilesStep,
+                description: i18n.t("Attach files for the project"),
             },
             {
                 key: "save",
