@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2023-09-13T11:54:43.059Z\n"
-"PO-Revision-Date: 2023-09-13T11:54:43.059Z\n"
+"POT-Creation-Date: 2023-11-17T15:59:58.244Z\n"
+"PO-Revision-Date: 2023-11-17T15:59:58.244Z\n"
 
 msgid "Name"
 msgstr ""
@@ -51,6 +51,13 @@ msgstr ""
 msgid "Data Entry"
 msgstr ""
 
+msgid ""
+"This action is going to unaproved all the periods. You will have to approve "
+"the data again on the Data Approval section. Are you sure you want to apply "
+"the current values to all months? The existing data in other months will be "
+"overwritten."
+msgstr ""
+
 msgid "An email has been sent to the data reviewers"
 msgstr ""
 
@@ -72,6 +79,15 @@ msgstr ""
 msgid ""
 "Are you sure you want to send an email to Data Reviewers asking for "
 "approval?"
+msgstr ""
+
+msgid "Apply to all months"
+msgstr ""
+
+msgid "Applying values to all months..."
+msgstr ""
+
+msgid "Values applied to all months"
 msgstr ""
 
 msgid "Project closed for this period, please contact the administrators"
