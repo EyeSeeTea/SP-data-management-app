@@ -33,11 +33,10 @@ async function main() {
     const { api } = await getApp({ baseUrl: opts.url });
     const metadata = await getMetadata(api);
     const dataValuesFromCsv = await readCsv(opts.filePath);
-    const { orgUnitCodes, periods } = extractOrgUnitsAndPeriods(dataValuesFromCsv);
+    const { orgUnitIds, periods } = extractOrgUnitsAndPeriods(dataValuesFromCsv);
 
     console.debug("Fetching Org Units...");
-    const orgUnits = await getOrgUnitFromCodes(api, orgUnitCodes);
-    const orgUnitIds = orgUnits.map(getId);
+    const orgUnits = await getOrgUnitByIds(api, orgUnitIds);
 
     console.debug("Fetching DataValues...");
     const dataValues = await getDataValues(api, orgUnitIds, periods);
@@ -82,18 +81,18 @@ async function readCsv(filePath: string): Promise<DataValueCsv[]> {
 }
 
 function extractOrgUnitsAndPeriods(dataValues: DataValueCsv[]): {
-    orgUnitCodes: Id[];
+    orgUnitIds: Id[];
     periods: Id[];
 } {
-    const orgUnitCodes = _(dataValues)
+    const orgUnitIds = _(dataValues)
         .map(dv => dv.orgUnit)
         .uniq()
         .value();
     const periods = _(dataValues)
-        .map(dv => dv.period.replace("-", ""))
+        .map(dv => dv.period)
         .uniq()
         .value();
-    return { orgUnitCodes, periods };
+    return { orgUnitIds, periods };
 }
 
 async function getDataValues(api: D2Api, orgUnitIds: Id[], periods: Period[]) {
@@ -125,18 +124,13 @@ function buildDataValue(d2DataValue: DataValueSetsDataValue): DataValue {
     };
 }
 
-async function getOrgUnitFromCodes(api: D2Api, orgUnitCodes: Code[]): Promise<OrgUnit[]> {
+async function getOrgUnitByIds(api: D2Api, ids: Id[]): Promise<OrgUnit[]> {
     const response = await api.metadata
         .get({
             organisationUnits: {
-                fields: {
-                    id: true,
-                    code: true,
-                },
+                fields: { id: true, code: true },
                 filter: {
-                    code: {
-                        in: orgUnitCodes,
-                    },
+                    id: { in: ids },
                 },
             },
         })
