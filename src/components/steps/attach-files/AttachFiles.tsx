@@ -32,6 +32,7 @@ export const AttachFiles: React.FC<AttachFilesProps> = props => {
             href: base64,
             url: undefined,
             sharing: undefined,
+            markAsDeleted: false,
         });
         const prevDocuments = [...documents];
         const newDocuments = [...prevDocuments, { ...newFile, base64 }];
@@ -40,7 +41,12 @@ export const AttachFiles: React.FC<AttachFilesProps> = props => {
     };
 
     const onDeleteDocument = (index: number) => {
-        const documentsWithoutDeleted = documents.filter((_, docIndex) => docIndex !== index);
+        const documentsWithoutDeleted = documents.map((document, docIndex) => {
+            return ProjectDocument.create({
+                ...document,
+                markAsDeleted: document.markAsDeleted ? document.markAsDeleted : docIndex === index,
+            });
+        });
         onChange(documentsWithoutDeleted);
         setDocuments(documentsWithoutDeleted);
     };
@@ -52,15 +58,14 @@ export const AttachFiles: React.FC<AttachFilesProps> = props => {
         const newDocuments = documents.map((document, docIndex) => {
             return docIndex !== index
                 ? document
-                : {
-                      ...ProjectDocument.create({
-                          ...document,
-                          name: file.name,
-                          blob: file,
-                          sizeInBytes: file.size,
-                          href: base64,
-                      }),
-                  };
+                : ProjectDocument.create({
+                      ...document,
+                      name: file.name,
+                      blob: file,
+                      sizeInBytes: file.size,
+                      href: base64,
+                      markAsDeleted: false,
+                  });
         });
         onChange(newDocuments);
         setDocuments(newDocuments);
@@ -81,7 +86,7 @@ export const AttachFiles: React.FC<AttachFilesProps> = props => {
                 )}
                 {documents.map((document, index) => {
                     return (
-                        <DocumentItemContainer key={index}>
+                        <DocumentItemContainer key={index} deleted={document.markAsDeleted}>
                             <DocumentDropZoneContainer>
                                 <DropFiles
                                     onDrop={files => updateDocument(files, index)}
@@ -133,9 +138,9 @@ const DocumentsItemsContainer = styled.div`
     gap: 1em;
 `;
 
-const DocumentItemContainer = styled.div`
+const DocumentItemContainer = styled.div<{ deleted: boolean }>`
     align-items: center;
-    display: flex;
+    display: ${props => (props.deleted ? "none" : "flex")};
     gap: 2em;
 `;
 

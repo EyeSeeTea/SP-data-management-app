@@ -83,7 +83,9 @@ export class ProjectInfo {
             };
         });
 
-        const newDocuments = project.documents.filter(document => !document.url);
+        const newDocuments = project.documents.filter(
+            document => !document.url && !document.markAsDeleted
+        );
 
         const newActions = newDocuments.map((document): ProjectInfoNode => {
             return {
@@ -99,7 +101,7 @@ export class ProjectInfo {
     }
 
     private getDocumentAction(newDocument: Maybe<ProjectDocument>, isUpdated: boolean): Action {
-        if (!newDocument) {
+        if (!newDocument || newDocument.markAsDeleted) {
             return "removed";
         } else if (newDocument.url && isUpdated) {
             return "updated";

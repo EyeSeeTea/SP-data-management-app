@@ -18,6 +18,7 @@ export type ProjectAttrs = {
     href: DocumentUrl | undefined;
     blob: Maybe<Blob>;
     sharing: Maybe<Sharing>;
+    markAsDeleted: boolean;
 };
 
 export class ProjectDocument {
@@ -28,6 +29,7 @@ export class ProjectDocument {
     public readonly sizeInBytes: number;
     public readonly blob: Maybe<Blob>;
     public readonly sharing: Maybe<Sharing>;
+    public readonly markAsDeleted: boolean;
 
     private constructor(data: ProjectAttrs) {
         this.id = data.id;
@@ -37,6 +39,7 @@ export class ProjectDocument {
         this.sizeInBytes = data.sizeInBytes;
         this.blob = data.blob;
         this.sharing = data.sharing;
+        this.markAsDeleted = data.markAsDeleted;
     }
 
     static create(data: ProjectDocument): ProjectDocument {

@@ -363,7 +363,10 @@ export default class ProjectDb {
             projectDocumentsWithSharing
         );
 
-        await this.saveMERData(orgUnit.id, projectDocumentsSaved).getData();
+        await this.saveMERData(
+            orgUnit.id,
+            projectDocumentsSaved.filter(document => !document.markAsDeleted)
+        ).getData();
 
         const response = await postPayload(this.api, payload, this.project);
         const savedProject = response && response.status === "OK" ? projectUpdated : this.project;
