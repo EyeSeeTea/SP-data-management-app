@@ -409,17 +409,17 @@ export default class DataElementsSet {
                         de => de.id === dataElementId
                     );
                     if (!dataElement) return undefined;
-                    const pairedDe = _(dataElement.pairedDataElements).first();
-                    if (!pairedDe) return undefined;
+                    const sector =
+                        this.config.sectors.find(sector => sector.id === currentSectorId)
+                            ?.displayName || "";
 
                     return {
                         dataElementId,
                         selectionMessage: i18n.t(
-                            "Indicators {{deCode}} and {{pairedCode}} cannot be selected because they are selected in another sector ({{pairedName}})",
+                            "Indicator {{deCode}} cannot be selected because is selected in another sector ({{sector}})",
                             {
                                 deCode: dataElement.code,
-                                pairedCode: pairedDe.code,
-                                pairedName: pairedDe.sector.name,
+                                sector,
                             }
                         ),
                     };
