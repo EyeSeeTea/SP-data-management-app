@@ -724,7 +724,7 @@ export default class ProjectDb {
         const codeInfo = ProjectDb.getCodeInfo(code);
         const { displayName } = getProjectFromOrgUnit(orgUnit);
 
-        const isInDartApplicableGroup = orgUnit.organisationUnitGroups.find(
+        const isInDartApplicableGroup = orgUnit.organisationUnitGroups.some(
             group => group.id === config.organisationUnitGroups.isDartApplicable.id
         );
 
@@ -747,7 +747,7 @@ export default class ProjectDb {
             dataElementsMER,
             disaggregation,
             sharing: getSharing(projectDataSets.target),
-            isDartApplicable: Boolean(isInDartApplicableGroup),
+            isDartApplicable: isInDartApplicableGroup,
         };
 
         const project = new Project(api, config, { ...projectData, initialData: projectData });
