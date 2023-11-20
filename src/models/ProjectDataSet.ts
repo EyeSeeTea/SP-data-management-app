@@ -183,12 +183,11 @@ export default class ProjectDataSet {
         dataValues: DataValueSetsGetResponse
     ): DataValueSetsDataValue[] {
         return _(periodsToSearch)
-            .map(dataSetPeriod => {
+            .flatMap(dataSetPeriod => {
                 return dataValues.dataValues.map(d2DataValue => {
                     return { ...d2DataValue, period: dataSetPeriod };
                 });
             })
-            .flatMap()
             .value();
     }
 

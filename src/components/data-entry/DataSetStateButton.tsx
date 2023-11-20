@@ -20,10 +20,6 @@ interface DataSetStateButtonProps {
     dataSetInfo: Maybe<DataSetOpenInfo>;
 }
 
-const applyToAllMonthsMessage = i18n.t(
-    "This action is going to unaproved all the periods. You will have to approve the data again on the Data Approval section. Are you sure you want to apply the current values to all months? The existing data in other months will be overwritten."
-);
-
 const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = props => {
     const [isActive, setActive] = React.useState(false);
     const { api, currentUser, isTest } = useAppContext();
@@ -89,7 +85,9 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
 
     const openApplyToAllMonthsConfirmation = useConfirmation({
         title: i18n.t("Apply to all months"),
-        text: applyToAllMonthsMessage,
+        text: i18n.t(
+            "This action is going to unapprove all the periods. You will have to approve the data again on the Data Approval section. Are you sure you want to apply the current values to all months? The existing data in other months will be overwritten."
+        ),
         onConfirm: () => {
             loading.show(true, i18n.t("Applying values to all months..."));
             projectDataSet
