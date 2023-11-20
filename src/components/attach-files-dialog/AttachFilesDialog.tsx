@@ -46,7 +46,10 @@ export const AttachFilesDialog: React.FC<AttachFilesDialogProps> = props => {
     };
 
     const onSaveProject = async () => {
-        if (!documents) return;
+        if (!documents) {
+            onClose();
+            return;
+        }
         loading.show(true, i18n.t("Validating Project"));
         const newProject = projectDetails.setObj({ documents });
         const validation = await newProject.validate();
@@ -72,12 +75,7 @@ export const AttachFilesDialog: React.FC<AttachFilesDialogProps> = props => {
                 <AttachFiles onChange={onChangeProject} project={projectDetails} />
                 <DialogActions>
                     <Button onClick={onClose}>{i18n.t("Cancel")}</Button>
-                    <Button
-                        color="primary"
-                        variant="contained"
-                        onClick={onSaveProject}
-                        disabled={!documents || documents?.length === 0}
-                    >
+                    <Button color="primary" variant="contained" onClick={onSaveProject}>
                         {i18n.t("Save")}
                     </Button>
                 </DialogActions>
