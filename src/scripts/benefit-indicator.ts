@@ -3,9 +3,8 @@ import _ from "lodash";
 import csvToJson from "csvtojson";
 import { createObjectCsvWriter } from "csv-writer";
 
-import { D2Api, DataValueSetsDataValue } from "../types/d2-api";
+import { D2Api, DataValueSetsDataValue, D2DataSet } from "../types/d2-api";
 import { getApp } from "./common";
-import { getId } from "../utils/dhis2";
 import { promiseMap } from "../migrations/utils";
 
 const DE_MINISTRY_VISIT_ID = "WUMjtbgofs2";
@@ -15,6 +14,7 @@ const TARGET_COC_ID = "I8cbuxMTjjs";
 const ACTUAL_COC_ID = "oJXO2VVYWZa";
 const NEW_COC_ID = "Wj7wjri7dUs";
 const RETURNING_COC_ID = "bALUpFAqhLq";
+const DEFAULT_CATEGORY_COMBO_NAME = "default";
 
 async function main() {
     const parser = parse({
@@ -32,6 +32,12 @@ async function main() {
 
     const { api } = await getApp({ baseUrl: opts.url });
     const metadata = await getMetadata(api);
+
+    const defaultCategoryCombo = metadata.categoryCombos.find(
+        categoryCombo => categoryCombo.name === DEFAULT_CATEGORY_COMBO_NAME
+    );
+    if (!defaultCategoryCombo) throw Error(`Cannot found default categoryCombo`);
+
     const dataValuesFromCsv = await readCsv(opts.filePath);
     const { orgUnitIds, periods } = extractOrgUnitsAndPeriods(dataValuesFromCsv);
 
@@ -67,10 +73,97 @@ async function main() {
 
     const stats = combineStats(resultStats);
 
-    console.log("Stats", JSON.stringify(stats, null, 4));
+    console.debug("DataValue Stats", JSON.stringify(stats, null, 4));
+
+    console.debug(`${metadata.dataSets.length} dataSets found`);
+    const dataSetsToUpdate = updateCategoryComboInDataSets(metadata, defaultCategoryCombo);
+
+    console.debug("Saving DataSets...");
+    const dataSetResponse = await saveDataSets(dataSetsToUpdate, api);
+    const dataSetStats = combineStats(dataSetResponse);
+
+    console.debug("DataSet Stats", JSON.stringify(dataSetStats, null, 4));
 
     await generateReport(dataValuesToSave, orgUnits, metadata, opts.csvPath);
     console.debug(`Report generated: ${opts.csvPath}`);
+}
+
+function updateCategoryComboInDataSets(
+    metadata: Metadata,
+    defaultCategoryCombo: CategoryCombo
+): DataSet[] {
+    return metadata.dataSets.map(dataSet => {
+        const dataSetElements = dataSet.dataSetElements.map(dse => {
+            return {
+                ...dse,
+                categoryCombo: {
+                    id:
+                        dse.dataElement.id === DE_MINISTRY_VISIT_ID
+                            ? defaultCategoryCombo.id
+                            : dse.categoryCombo.id,
+                },
+            };
+        });
+        return { ...dataSet, dataSetElements };
+    });
+}
+
+async function saveDataSets(dataSets: DataSet[], api: D2Api): Promise<Stats[]> {
+    const dataSetIdsToSave = dataSets.map(dataSet => dataSet.id);
+    const stats = await promiseMap(_.chunk(dataSetIdsToSave, 1), async dataSetsIds => {
+        const dataSetResponse = await api.metadata
+            .get({
+                dataSets: {
+                    fields: {
+                        $owner: true,
+                    },
+                    filter: {
+                        id: {
+                            in: dataSetsIds,
+                        },
+                    },
+                    paging: false,
+                },
+            })
+            .getData();
+
+        const dataSetsToSave = dataSetsIds.map(dataSetId => {
+            const existingD2DataSet = dataSetResponse.dataSets.find(
+                d2DataSet => d2DataSet.id === dataSetId
+            );
+            const currentDataSet = dataSets.find(dataSet => dataSet.id === dataSetId);
+            if (!currentDataSet) {
+                throw Error(`Cannot find dataSet ${dataSetId}`);
+            }
+
+            return {
+                ...(existingD2DataSet || {}),
+                dataSetElements: currentDataSet.dataSetElements,
+            };
+        });
+
+        const d2Response = await api.metadata
+            .post(
+                {
+                    dataSets: dataSetsToSave,
+                },
+                { importStrategy: "UPDATE" }
+            )
+            .getData();
+
+        if (d2Response.status === "ERROR") {
+            console.error(d2Response.status);
+            throw Error(JSON.stringify(d2Response, null, 4));
+        }
+
+        return {
+            imported: d2Response.stats.created,
+            updated: d2Response.stats.updated,
+            deleted: d2Response.stats.deleted,
+            ignored: d2Response.stats.ignored,
+        };
+    });
+    return stats;
 }
 
 async function readCsv(filePath: string): Promise<DataValueCsv[]> {
@@ -227,11 +320,37 @@ async function getMetadata(api: D2Api): Promise<Metadata> {
                 },
                 filter: { id: { eq: DE_MINISTRY_VISIT_ID } },
             },
+            categoryCombos: {
+                fields: {
+                    id: true,
+                    name: true,
+                },
+                filter: {
+                    code: {
+                        eq: DEFAULT_CATEGORY_COMBO_NAME,
+                    },
+                },
+            },
         })
         .getData();
+
+    const d2DataSetResponse = await api
+        .request<{ dataSets: D2DataSet[] }>({
+            method: "get",
+            url: "/dataSets",
+            params: {
+                fields: "id,dataSetElements",
+                filter: `dataSetElements.dataElement.id:eq:${DE_MINISTRY_VISIT_ID}`,
+                paging: false,
+            },
+        })
+        .getData();
+
     return {
         dataElements: d2Response.dataElements,
         categoryOptionCombos: d2Response.categoryOptionCombos,
+        dataSets: d2DataSetResponse.dataSets,
+        categoryCombos: d2Response.categoryCombos,
     };
 }
 
@@ -390,7 +509,33 @@ type CategoryOptionCombo = {
     name: string;
 };
 
+type DataSet = {
+    id: Id;
+    dataSetElements: {
+        dataElement: {
+            id: Id;
+        };
+        categoryCombo: {
+            id: Id;
+        };
+    }[];
+};
+
+type CategoryCombo = {
+    id: Id;
+    name: string;
+};
+
 type Metadata = {
     dataElements: DataElement[];
     categoryOptionCombos: CategoryOptionCombo[];
+    dataSets: DataSet[];
+    categoryCombos: CategoryCombo[];
+};
+
+type Stats = {
+    imported: number;
+    updated: number;
+    deleted: number;
+    ignored: number;
 };
