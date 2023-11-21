@@ -361,7 +361,11 @@ export default class DataElementsSet {
         const res = this.getSelectionInfo(selectedIds, sectorId);
         const { selected, unselectable, selectionInfo } = res;
 
-        const finalSelected = _(selectedIds)
+        const deInOtherSectors = this.getDataElementsInOtherSectors(selectedIds, sectorId);
+        const deIdsToRemove = deInOtherSectors.map(r => r.dataElementId);
+        const selectedWithOutDeInOtherSectors = _(selectedIds).difference(deIdsToRemove).value();
+
+        const finalSelected = _(selectedWithOutDeInOtherSectors)
             .map(deId => ({ id: deId, sector: { id: sectorId } }))
             .union(selected.map(de => de))
             .union(unselectable.map(de => de))
@@ -382,7 +386,48 @@ export default class DataElementsSet {
             .value();
         const dataElementsUpdated = this.updateSelected(newSelected);
 
-        return { selectionInfo, dataElements: dataElementsUpdated };
+        const selectionInfoInOtherSectors = deInOtherSectors.map(r => r.selectionMessage);
+
+        return {
+            selectionInfo: {
+                messages: selectionInfo.messages?.concat(selectionInfoInOtherSectors),
+            },
+            dataElements: dataElementsUpdated,
+        };
+    }
+
+    private getDataElementsInOtherSectors(selectedIds: string[], sectorId: string) {
+        return selectedIds.flatMap(dataElementId => {
+            const sectorsIds = Object.keys(this.data.selected);
+            const deInOtherSectors = _(sectorsIds)
+                .map(currentSectorId => {
+                    if (currentSectorId === sectorId) return undefined;
+                    const deIds = this.data.selected[currentSectorId];
+                    const isInOtherSector = deIds.includes(dataElementId);
+                    if (!isInOtherSector) return undefined;
+                    const dataElement = this.data.dataElementsBySector[currentSectorId].find(
+                        de => de.id === dataElementId
+                    );
+                    if (!dataElement) return undefined;
+                    const sector =
+                        this.config.sectors.find(sector => sector.id === currentSectorId)
+                            ?.displayName || "";
+
+                    return {
+                        dataElementId,
+                        selectionMessage: i18n.t(
+                            "Indicator {{deCode}} cannot be selected because is selected in another sector ({{sector}})",
+                            {
+                                deCode: dataElement.code,
+                                sector,
+                            }
+                        ),
+                    };
+                })
+                .compact()
+                .value();
+            return deInOtherSectors;
+        });
     }
 
     /*

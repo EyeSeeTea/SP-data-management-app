@@ -708,6 +708,11 @@ msgstr ""
 msgid "[only for admin users]"
 msgstr ""
 
+msgid ""
+"Indicator {{deCode}} cannot be selected because is selected in another "
+"sector ({{sector}})"
+msgstr ""
+
 msgid "Global indicators with selected sub-indicators cannot be unselected"
 msgstr ""
 
