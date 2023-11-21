@@ -1,10 +1,16 @@
 import moment, { Moment } from "moment";
 import _ from "lodash";
-import { D2Api, D2DataInputPeriod } from "../types/d2-api";
+import {
+    D2Api,
+    D2DataInputPeriod,
+    DataValueSetsGetResponse,
+    DataValueSetsDataValue,
+} from "../types/d2-api";
 import { Config } from "./Config";
 import Project, { OrganisationUnit, DataSet, DataSetType } from "./Project";
 import ProjectDb, { DataSetOpenAttributes } from "./ProjectDb";
 import { toISOString } from "../utils/date";
+import { promiseMap } from "../migrations/utils";
 
 const monthFormat = "YYYYMM";
 
@@ -131,6 +137,75 @@ export default class ProjectDataSet {
             .get<DataApprovalCategoryOptionCombosResponse>(path, params)
             .getData();
         return dataApprovalsAll.find(da => da.ou === orgUnit.id && da.id === aoc.id);
+    }
+
+    async applyToAllMonths(period: string) {
+        const dataSet = this.getDataSet();
+        const currentDataSetInfo = await this.getOpenInfo(moment(period, monthFormat));
+        await this.reopen({
+            unapprovePeriod: !currentDataSetInfo.isOpenByData ? period : undefined,
+        });
+        const periodsToSearch = this.getOtherPeriods(dataSet, period);
+        const dataValues = await this.getTargetDataValues(dataSet, period);
+        const dataValuesToOverride = this.generateDataValuesForOtherPeriods(
+            periodsToSearch,
+            dataValues
+        );
+        await this.reOpenOtherPeriods(periodsToSearch);
+        await this.saveDataValuesForOtherPeriods(dataValuesToOverride, dataSet);
+    }
+
+    private async saveDataValuesForOtherPeriods(
+        dataValuesToOverride: DataValueSetsDataValue[],
+        dataSet: DataSet
+    ): Promise<void> {
+        await promiseMap(_.chunk(dataValuesToOverride, 100), async dataValuesToSave => {
+            const response = await this.api.dataValues
+                .postSet({}, { dataSet: dataSet.id, dataValues: dataValuesToSave })
+                .getData();
+            if (response.status === "ERROR") {
+                throw Error(response.description);
+            }
+        });
+    }
+
+    private async reOpenOtherPeriods(periodsToSearch: string[]): Promise<void> {
+        await promiseMap(periodsToSearch, async unapprovePeriod => {
+            const dataSetInfo = await this.getOpenInfo(moment(unapprovePeriod, monthFormat));
+            if (!dataSetInfo.isOpenByData) {
+                await this.setApprovalState(unapprovePeriod, false);
+            }
+        });
+    }
+
+    private generateDataValuesForOtherPeriods(
+        periodsToSearch: string[],
+        dataValues: DataValueSetsGetResponse
+    ): DataValueSetsDataValue[] {
+        return _(periodsToSearch)
+            .flatMap(dataSetPeriod => {
+                return dataValues.dataValues.map(d2DataValue => {
+                    return { ...d2DataValue, period: dataSetPeriod };
+                });
+            })
+            .value();
+    }
+
+    private async getTargetDataValues(dataSet: DataSet, period: string) {
+        return await this.api.dataValues
+            .getSet({
+                dataSet: [dataSet.id],
+                period: [period],
+                orgUnit: [this.project.id],
+                attributeOptionCombo: [this.getAttributeOptionCombo().id],
+            })
+            .getData();
+    }
+
+    private getOtherPeriods(dataSet: DataSet, period: string): string[] {
+        return dataSet.dataInputPeriods
+            .filter(inputPeriod => inputPeriod.period.id !== period)
+            .map(inputPeriod => inputPeriod.period.id);
     }
 
     getApprovalForm(period: string) {

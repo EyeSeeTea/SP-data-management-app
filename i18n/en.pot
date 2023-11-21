@@ -74,6 +74,22 @@ msgid ""
 "approval?"
 msgstr ""
 
+msgid "Apply to all months"
+msgstr ""
+
+msgid ""
+"This action is going to unapprove all the periods. You will have to approve "
+"the data again on the Data Approval section. Are you sure you want to apply "
+"the current values to all months? The existing data in other months will be "
+"overwritten."
+msgstr ""
+
+msgid "Applying values to all months..."
+msgstr ""
+
+msgid "Values applied to all months"
+msgstr ""
+
 msgid "Project closed for this period, please contact the administrators"
 msgstr ""
 
