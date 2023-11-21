@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2023-11-20T13:28:37.376Z\n"
-"PO-Revision-Date: 2023-11-20T13:28:37.376Z\n"
+"POT-Creation-Date: 2023-11-04T01:56:11.315Z\n"
+"PO-Revision-Date: 2023-11-04T01:56:11.315Z\n"
 
 msgid "Name"
 msgstr ""
@@ -487,6 +487,9 @@ msgstr ""
 msgid "Sharing"
 msgstr ""
 
+msgid "Is this DART applicable?"
+msgstr ""
+
 msgid "Award Number should be a number of 5 digits"
 msgstr ""
 
@@ -719,6 +722,11 @@ msgid ""
 msgstr ""
 
 msgid "[only for admin users]"
+msgstr ""
+
+msgid ""
+"Indicator {{deCode}} cannot be selected because is selected in another "
+"sector ({{sector}})"
 msgstr ""
 
 msgid "Global indicators with selected sub-indicators cannot be unselected"
