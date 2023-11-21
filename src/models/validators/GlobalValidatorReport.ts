@@ -56,7 +56,7 @@ export class GlobalValidatorReport {
         const degCodes = [
             dataElementGroups.global,
             dataElementGroups.sub,
-            dataElementGroups.subreportable,
+            dataElementGroups["reportable sub"],
         ];
 
         console.debug(`Get metadata`);

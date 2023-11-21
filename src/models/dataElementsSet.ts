@@ -18,7 +18,7 @@ import { ValidationError } from "../utils/validations";
     # [... Array of data elements ...]
 */
 
-export const indicatorTypes = ["global", "sub", "custom", "subreportable"] as const;
+export const indicatorTypes = ["global", "sub", "custom", "reportable sub"] as const;
 export const peopleOrBenefitList = ["people", "benefit"] as const;
 export const benefitDisaggregationList = ["", "new-returning"] as const;
 export const internalKey = "__internal";
