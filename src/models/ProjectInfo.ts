@@ -45,6 +45,9 @@ export class ProjectInfo {
             field(fields.subsequentLettering, project => project.subsequentLettering),
             field(fields.additional, project => project.additional),
             field(i18n.t("Period dates"), project => project.getPeriodInterval()),
+            field(fields.isDartApplicable, project =>
+                project.isDartApplicable ? i18n.t("Yes") : i18n.t("No")
+            ),
             field(fields.funders, project => displayNames(project.funders)),
             field(i18n.t("Selected country"), project =>
                 project.parentOrgUnit ? project.parentOrgUnit.displayName : "-"

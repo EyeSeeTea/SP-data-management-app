@@ -11,14 +11,16 @@ import Funders from "./Funders";
 import { getProjectFieldName } from "../../../utils/form";
 
 /* eslint-disable @typescript-eslint/no-var-requires */
-const { TextField } = require("@dhis2/d2-ui-core");
+const { TextField, CheckBox } = require("@dhis2/d2-ui-core");
 const { FormBuilder, Validators } = require("@dhis2/d2-ui-forms");
 
 type StringField = "name" | "description" | "awardNumber" | "subsequentLettering" | "additional";
 
 type DateField = "startDate" | "endDate";
 
-type ProjectData = Pick<Project, StringField | DateField /* | NumberField */>;
+type BooleanField = "isDartApplicable";
+
+type ProjectData = Pick<Project, StringField | DateField | BooleanField>;
 
 class GeneralInfoStep extends React.Component<StepProps> {
     onUpdateField = <K extends keyof ProjectData>(fieldName: K, newValue: ProjectData[K]) => {
@@ -68,6 +70,12 @@ class GeneralInfoStep extends React.Component<StepProps> {
             getDateField("endDate", project.endDate, {
                 onUpdateField: this.onUpdateField,
                 process: (date: Moment) => date.endOf("month"),
+            }),
+            getCheckBoxField("isDartApplicable", project.isDartApplicable, {
+                onUpdateField: this.onUpdateField,
+                props: {
+                    checked: project.isDartApplicable,
+                },
             }),
         ];
         return (
@@ -150,6 +158,31 @@ function getDateField(
             format: "MMMM YYYY",
             views: ["year", "month"],
             className: "date-picker",
+            ...(props || {}),
+        },
+    };
+}
+
+function getCheckBoxField(
+    name: BooleanField,
+    value: boolean,
+    {
+        onUpdateField,
+        props,
+    }: {
+        onUpdateField: (name: BooleanField, value: boolean) => void;
+        props?: _.Dictionary<any>;
+    }
+) {
+    const humanName = getProjectFieldName(name);
+    return {
+        name,
+        value,
+        component: CheckBox,
+        props: {
+            label: humanName,
+            onChange: (event: React.ChangeEvent<HTMLInputElement>) =>
+                onUpdateField(name, event.target.checked),
             ...(props || {}),
         },
     };

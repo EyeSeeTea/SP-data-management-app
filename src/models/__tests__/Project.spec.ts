@@ -74,6 +74,7 @@ describe("Project", () => {
             expect(project.dataSets).toEqual(undefined);
             expect(project.dashboard).toEqual({});
             expect(project.initialData).toEqual(undefined);
+            expect(project.isDartApplicable).toEqual(false);
         });
 
         it("has data element sets", () => {
@@ -97,6 +98,7 @@ describe("Project", () => {
             expect(project.endDate && project.endDate.format("L")).toEqual(
                 moment("2020-03-31").format("L")
             );
+            expect(project.isDartApplicable).toEqual(true);
             expect(project.sectors.map(sector => sector.code)).toEqual(["SECTOR_LIVELIHOODS"]);
             expect(project.funders.map(funder => funder.displayName)).toEqual([]);
             expect(project.locations.map(location => location.displayName)).toEqual([
@@ -511,6 +513,9 @@ const metadataForGet = {
                 },
                 {
                     id: "GG0k0oNhgS7",
+                },
+                {
+                    id: "q0u5u6Of0Wm",
                 },
             ],
         },
