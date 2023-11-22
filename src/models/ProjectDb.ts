@@ -745,6 +745,9 @@ export default class ProjectDb {
         const existingProjectDocuments = await projectDocumentRepository.getByIds(
             projectDocumentsIds
         );
+        const isInDartApplicableGroup = orgUnit.organisationUnitGroups.some(
+            group => group.id === config.organisationUnitGroups.isDartApplicable.id
+        );
 
         const projectData = {
             id: orgUnit.id,
@@ -768,6 +771,7 @@ export default class ProjectDb {
             documents: existingProjectDocuments.map(projectDocument => {
                 return ProjectDocument.create(projectDocument);
             }),
+            isDartApplicable: isInDartApplicableGroup,
         };
         const project = new Project(api, config, { ...projectData, initialData: projectData });
         return project;
@@ -909,13 +913,18 @@ async function getOrgUnitGroupsMetadata(
         id: getUid("awardNumber", project.awardNumber),
         name: name,
         shortName: name,
-        code: config.base.organisationUnitGroups.awardNumberPrefix + project.awardNumber,
+        code: config.base.organisationUnitGroupsPrefixes.awardNumberPrefix + project.awardNumber,
         organisationUnits: [],
         attributeValues: [],
     };
 
     const orgUnitGroupIds = new Set(
-        getIds([...project.funders, ...project.locations, awardNumberOrgUnitGroupBase])
+        getIds([
+            ...project.funders,
+            ...project.locations,
+            awardNumberOrgUnitGroupBase,
+            { id: config.organisationUnitGroups.isDartApplicable.id },
+        ])
     );
 
     const { organisationUnitGroups: newOrgUnitGroups } = await api.metadata
@@ -932,23 +941,34 @@ async function getOrgUnitGroupsMetadata(
         .concat([awardNumberOrgUnitGroupBase])
         .uniqBy(oug => oug.id)
         .map(setDefaultShortName)
-        .map(oug =>
-            oug.id === awardNumberOrgUnitGroupBase.id && dashboards.awardNumber // Set dashboard ID to awardNumber group
+        .map(oug => {
+            return oug.id === awardNumberOrgUnitGroupBase.id && dashboards.awardNumber // Set dashboard ID to awardNumber group
                 ? addAttributeValueToObj(oug, {
                       attribute: config.attributes.awardNumberDashboard,
                       value: dashboards.awardNumber.id,
                   })
-                : oug
-        )
+                : oug;
+        })
         .value();
 
     const organisationUnitGroups = orgUnitGroupsToSave.map(orgUnitGroup => {
-        const organisationUnits = _(orgUnitGroup.organisationUnits || [])
-            .filter(ou => ou.id !== orgUnitId)
-            .map(ou => ({ id: ou.id }))
-            .concat(orgUnitGroupIds.has(orgUnitGroup.id) ? [{ id: orgUnitId }] : [])
-            .value();
-        return { ...orgUnitGroup, organisationUnits };
+        if (orgUnitGroup.id === config.organisationUnitGroups.isDartApplicable.id) {
+            const currentOrgUnits = orgUnitGroup.organisationUnits || [];
+            const orgUnitsDartApplicable = project.isDartApplicable
+                ? _([...currentOrgUnits, { id: project.id }])
+                      .uniqBy(ou => ou.id)
+                      .value()
+                : currentOrgUnits.filter(ou => ou.id !== project.id);
+
+            return { ...orgUnitGroup, organisationUnits: orgUnitsDartApplicable };
+        } else {
+            const organisationUnits = _(orgUnitGroup.organisationUnits || [])
+                .filter(ou => ou.id !== orgUnitId)
+                .map(ou => ({ id: ou.id }))
+                .concat(orgUnitGroupIds.has(orgUnitGroup.id) ? [{ id: orgUnitId }] : [])
+                .value();
+            return { ...orgUnitGroup, organisationUnits };
+        }
     });
 
     const organisationUnitGroupSets = prevOrganisationUnitGroupSets.map(oug => ({

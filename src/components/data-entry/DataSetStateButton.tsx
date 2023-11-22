@@ -7,7 +7,7 @@ import { useConfirmation, useSnackbarOnError } from "../../utils/hooks";
 import { DataSetOpenInfo } from "../../models/ProjectDataSet";
 import { UseValidationResponse } from "./validation-hooks";
 import { ProjectNotification } from "../../models/ProjectNotification";
-import { useSnackbar } from "@eyeseetea/d2-ui-components";
+import { useLoading, useSnackbar } from "@eyeseetea/d2-ui-components";
 import { Maybe } from "../../types/utils";
 
 interface DataSetStateButtonProps {
@@ -23,6 +23,7 @@ interface DataSetStateButtonProps {
 const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = props => {
     const [isActive, setActive] = React.useState(false);
     const { api, currentUser, isTest } = useAppContext();
+    const loading = useLoading();
     const { period, dataSetType, dataSet, project, onChange, validation, dataSetInfo } = props;
     const projectDataSet = project.getProjectDataSet(dataSet);
     const showErrorAndSetInactive = useSnackbarOnError(() => setActive(false));
@@ -82,6 +83,30 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
         onConfirm: notifyUsers,
     });
 
+    const openApplyToAllMonthsConfirmation = useConfirmation({
+        title: i18n.t("Apply to all months"),
+        text: i18n.t(
+            "This action is going to unapprove all the periods. You will have to approve the data again on the Data Approval section. Are you sure you want to apply the current values to all months? The existing data in other months will be overwritten."
+        ),
+        onConfirm: () => {
+            loading.show(true, i18n.t("Applying values to all months..."));
+            projectDataSet
+                .applyToAllMonths(period)
+                .then(() => {
+                    snackbar.success(i18n.t("Values applied to all months"));
+                    notifyOnChange();
+                })
+                .catch(snackbar.error)
+                .finally(() => {
+                    loading.hide();
+                });
+        },
+    });
+
+    const onApplyToAllMonths = () => {
+        openApplyToAllMonthsConfirmation.open();
+    };
+
     const { validate } = validation;
 
     const askForDataReview = React.useCallback(async () => {
@@ -96,6 +121,7 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
         <React.Fragment>
             {reopenConfirmation.render()}
             {openDataReviewConfirmation.render()}
+            {openApplyToAllMonthsConfirmation.render()}
 
             {!dataSetInfo.isOpen && !userCanReopen
                 ? i18n.t("Project closed for this period, please contact the administrators")
@@ -133,6 +159,12 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
             >
                 {i18n.t("Ask for Data Review")}
             </Button>
+
+            {dataSetType === "target" && (
+                <Button style={styles.button} onClick={onApplyToAllMonths} variant="contained">
+                    {i18n.t("Apply to all months")}
+                </Button>
+            )}
 
             {isActive && <LinearProgress style={{ marginTop: 20 }} />}
         </React.Fragment>

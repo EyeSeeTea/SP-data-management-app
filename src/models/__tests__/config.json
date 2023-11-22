@@ -66,8 +66,11 @@
         "legendSets": {
             "achieved": "ACTUAL_TARGET_ACHIEVED"
         },
-        "organisationUnitGroups": {
+        "organisationUnitGroupsPrefixes": {
             "awardNumberPrefix": "AWARD_NUMBER_"
+        },
+        "organisationUnitGroups": {
+            "isDartApplicable": "IS_DART_APPLICABLE"
         },
         "organisationUnitGroupSets": {
             "funder": "FUNDER",
@@ -62937,6 +62940,12 @@
                     ]
                 }
             ]
+        }
+    },
+    "organisationUnitGroups": {
+        "isDartApplicable": {
+            "id": "q0u5u6Of0Wm",
+            "code": "IS_DART_APPLICABLE"
         }
     }
 }
