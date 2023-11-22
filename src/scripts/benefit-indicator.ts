@@ -110,7 +110,7 @@ function updateCategoryComboInDataSets(
 
 async function saveDataSets(dataSets: DataSet[], api: D2Api): Promise<Stats[]> {
     const dataSetIdsToSave = dataSets.map(dataSet => dataSet.id);
-    const stats = await promiseMap(_.chunk(dataSetIdsToSave, 1), async dataSetsIds => {
+    const stats = await promiseMap(_.chunk(dataSetIdsToSave, 50), async dataSetsIds => {
         const dataSetResponse = await api.metadata
             .get({
                 dataSets: {
