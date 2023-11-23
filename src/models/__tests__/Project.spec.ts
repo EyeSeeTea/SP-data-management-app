@@ -652,6 +652,10 @@ async function getProject(): Promise<Project> {
         params: { fields: "id,name", filter: ["id:in:[yk6HaCRtmEL]"] },
     }).replyOnce(200, { dashboards: [{ id: "yk6HaCRtmEL", name: "dashboard-yk6HaCRtmEL" }] });
 
+    mock.onGet("/documents", {
+        params: { fields: "id,name,url", filter: ["id:in:[]"] },
+    }).replyOnce(200, { documents: [] });
+
     mock.onGet("/dataStore/data-management-app/project-R3rGhxWbAI9").replyOnce(200, {
         merDataElementIds: ["u24zk6wAgFE"],
     });

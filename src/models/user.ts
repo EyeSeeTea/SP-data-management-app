@@ -16,7 +16,8 @@ export type Action =
     | "edit"
     | "dataApproval"
     | "reopen"
-    | "delete";
+    | "delete"
+    | "attachFiles";
 
 const actionsByRole: Record<Role, Action[]> = {
     admin: [
@@ -32,6 +33,7 @@ const actionsByRole: Record<Role, Action[]> = {
         "dataApproval",
         "accessMER",
         "reopen",
+        "attachFiles",
     ],
     dataReviewer: [
         "create",

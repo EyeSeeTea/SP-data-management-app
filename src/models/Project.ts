@@ -27,6 +27,7 @@ import { Sharing } from "./Sharing";
 import { getIds } from "../utils/dhis2";
 import { ProjectInfo } from "./ProjectInfo";
 import { isTest } from "../utils/testing";
+import { MAX_SIZE_PROJECT_IN_MB, ProjectDocument } from "./ProjectDocument";
 
 /*
 Project model.
@@ -106,6 +107,7 @@ export interface ProjectData {
     dashboard: Partial<Dashboards>;
     initialData: Omit<ProjectData, "initialData"> | undefined;
     sharing: Sharing;
+    documents: ProjectDocument[];
     isDartApplicable: boolean;
 }
 
@@ -163,6 +165,7 @@ const defaultProjectData = {
     parentOrgUnit: undefined,
     dataSets: undefined,
     dashboard: {},
+    documents: [],
 };
 
 function defineGetters(sourceObject: any, targetObject: any) {
@@ -230,6 +233,7 @@ class Project {
         dashboard: i18n.t("Dashboard"),
         initialData: i18n.t("Initial Data"),
         sharing: i18n.t("Sharing"),
+        documents: i18n.t("Documents"),
         isDartApplicable: i18n.t("Is this DART applicable?"),
     };
 
@@ -273,6 +277,15 @@ class Project {
         dataElementsSelection: () =>
             this.dataElementsSelection.validateAtLeastOneItemPerSector(this.sectors),
         dataElementsMER: () => this.validateMER(),
+        documents: () => {
+            return ProjectDocument.isProjectSizeValid(this.documents)
+                ? []
+                : [
+                      i18n.t("Files cannot be bigger than {{maxSizeProjectInMb}}MB", {
+                          maxSizeProjectInMb: MAX_SIZE_PROJECT_IN_MB,
+                      }),
+                  ];
+        },
     };
 
     validateMER(): ValidationError {

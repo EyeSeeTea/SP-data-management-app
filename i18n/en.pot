@@ -5,8 +5,26 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2023-11-04T01:56:11.315Z\n"
-"PO-Revision-Date: 2023-11-04T01:56:11.315Z\n"
+"POT-Creation-Date: 2023-11-20T16:55:46.581Z\n"
+"PO-Revision-Date: 2023-11-20T16:55:46.581Z\n"
+
+msgid "Validating Project"
+msgstr ""
+
+msgid "Saving Project"
+msgstr ""
+
+msgid "Project updated"
+msgstr ""
+
+msgid "Attach Files"
+msgstr ""
+
+msgid "Cancel"
+msgstr ""
+
+msgid "Save"
+msgstr ""
 
 msgid "Name"
 msgstr ""
@@ -108,9 +126,6 @@ msgstr ""
 msgid "Close"
 msgstr ""
 
-msgid "Save"
-msgstr ""
-
 msgid "Comments saved"
 msgstr ""
 
@@ -133,9 +148,6 @@ msgid "Deleting..."
 msgstr ""
 
 msgid "Proceed"
-msgstr ""
-
-msgid "Cancel"
 msgstr ""
 
 msgid "<No value>"
@@ -198,6 +210,21 @@ msgid "Executive Summary"
 msgstr ""
 
 msgid "{{n}} matches"
+msgstr ""
+
+msgid "Drag and drop a file (no more than 5MB)"
+msgstr ""
+
+msgid "Attached Files"
+msgstr ""
+
+msgid "Download"
+msgstr ""
+
+msgid "Delete"
+msgstr ""
+
+msgid "File is larger than {{maxSizeInMb}}MB"
 msgstr ""
 
 msgid "Indicator Type"
@@ -281,19 +308,10 @@ msgstr ""
 msgid "Before saving, please explain why these indicators have been removed"
 msgstr ""
 
-msgid "Validating Project"
-msgstr ""
-
 msgid "Checking Existing Data"
 msgstr ""
 
-msgid "Saving Project"
-msgstr ""
-
 msgid "Project created"
-msgstr ""
-
-msgid "Project updated"
 msgstr ""
 
 msgid ""
@@ -487,6 +505,9 @@ msgstr ""
 msgid "Sharing"
 msgstr ""
 
+msgid "Documents"
+msgstr ""
+
 msgid "Is this DART applicable?"
 msgstr ""
 
@@ -494,6 +515,9 @@ msgid "Award Number should be a number of 5 digits"
 msgstr ""
 
 msgid "One Organisation Unit should be selected"
+msgstr ""
+
+msgid "Files cannot be bigger than {{maxSizeProjectInMb}}MB"
 msgstr ""
 
 msgid "There is a project with the same code '{{code}}' -> {{orgUnit}}"
@@ -902,6 +926,9 @@ msgstr ""
 msgid "Define Sharing settings for project data."
 msgstr ""
 
+msgid "Attach files for the project"
+msgstr ""
+
 msgid "Summary and Save"
 msgstr ""
 
@@ -1000,9 +1027,6 @@ msgstr ""
 msgid "Edit"
 msgstr ""
 
-msgid "Delete"
-msgstr ""
-
 msgid "User groups"
 msgstr ""
 
@@ -1049,9 +1073,6 @@ msgid "No open projects in the selected date and organisation unit"
 msgstr ""
 
 msgid "Projected Activities for the next month"
-msgstr ""
-
-msgid "Download"
 msgstr ""
 
 msgid ""
