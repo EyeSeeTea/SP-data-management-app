@@ -1,6 +1,6 @@
 import _ from "lodash";
 import { TableSorting } from "@eyeseetea/d2-ui-components";
-import React, { useCallback, useState } from "react";
+import React, { useCallback } from "react";
 import styled from "styled-components";
 import ActionButton from "../../components/action-button/ActionButton";
 import DeleteDialog from "../../components/delete-dialog/DeleteDialog";
@@ -18,18 +18,31 @@ import Project from "../../models/Project";
 import { FiltersForList, ProjectForList } from "../../models/ProjectsList";
 import { useGoTo } from "../../router";
 import { Id } from "../../types/d2-api";
-import { getComponentConfig, UrlState } from "./ProjectsListConfig";
+import { ActionName, getComponentConfig, UrlState } from "./ProjectsListConfig";
 import ProjectsListFilters, { FilterOptions } from "./ProjectsListFilters";
 import { useUrlParams } from "../../utils/use-url-params";
 import { useQueryStringParams } from "./ProjectsListParams";
+import { AttachFilesDialog } from "../../components/attach-files-dialog/AttachFilesDialog";
+
+type ActionSelected = {
+    ids: Id[];
+    actionName: ActionName;
+};
 
 const ProjectsList: React.FC = () => {
     const goTo = useGoTo();
     const { api, config, currentUser } = useAppContext();
-    const [projectIdsToDelete, setProjectIdsToDelete] = useState<Id[] | undefined>(undefined);
+    const [actionSelected, setActionSelected] = React.useState<ActionSelected>();
+
+    const onClickAction = (ids: Id[], actionName: ActionName) => {
+        setActionSelected({
+            ids,
+            actionName,
+        });
+    };
 
     const componentConfig = React.useMemo(() => {
-        return getComponentConfig(api, config, goTo, setProjectIdsToDelete, currentUser);
+        return getComponentConfig(api, config, goTo, onClickAction, currentUser);
     }, [api, config, currentUser, goTo]);
 
     const onViewChange = useListSelector("projects");
@@ -67,9 +80,9 @@ const ProjectsList: React.FC = () => {
     const filterOptions = useFilterOptions(params);
 
     const closeDeleteDialog = useCallback(() => {
-        setProjectIdsToDelete(undefined);
+        setActionSelected(undefined);
         tableProps.reload();
-    }, [setProjectIdsToDelete, tableProps]);
+    }, [setActionSelected, tableProps]);
 
     const goToMerReports = React.useCallback(() => goTo("report"), [goTo]);
     const canAccessReports = currentUser.can("accessMER");
@@ -77,10 +90,18 @@ const ProjectsList: React.FC = () => {
     const goToNewProject = React.useCallback(() => goTo("projects.new"), [goTo]);
     const newProjectPageHandler = canCreateProjects ? goToNewProject : undefined;
 
+    const onAttachModalClose = () => {
+        setActionSelected(undefined);
+    };
+
     return (
         <React.Fragment>
-            {projectIdsToDelete && (
-                <DeleteDialog projectIds={projectIdsToDelete} onClose={closeDeleteDialog} />
+            {actionSelected?.actionName === "delete" && actionSelected.ids && (
+                <DeleteDialog projectIds={actionSelected.ids} onClose={closeDeleteDialog} />
+            )}
+
+            {actionSelected?.actionName === "attachFiles" && actionSelected.ids && (
+                <AttachFilesDialog onClose={onAttachModalClose} projectId={actionSelected.ids[0]} />
             )}
 
             <ObjectsListStyled<React.FC<ObjectsListProps<ProjectForList>>> {...tableProps}>

@@ -39,12 +39,13 @@ const paginationOptions: PaginationOptions = {
 const initialSorting = { field: "displayName" as const, order: "asc" as const };
 
 export type ComponentConfig = ReturnType<typeof getComponentConfig>;
+export type ActionName = "delete" | "attachFiles";
 
 export function getComponentConfig(
     api: D2Api,
     config: Config,
     goTo: GoTo,
-    setProjectIdsToDelete: (state: React.SetStateAction<Id[] | undefined>) => void,
+    onClickAction: (state: Id[], action: ActionName) => void,
     currentUser: CurrentUser
 ) {
     const columns: TableColumn<ProjectForList>[] = [
@@ -172,7 +173,7 @@ export function getComponentConfig(
             icon: <Icon>delete</Icon>,
             text: i18n.t("Delete"),
             multiple: true,
-            onClick: setProjectIdsToDelete,
+            onClick: (ids: Id[]) => onClickAction(ids, "delete"),
         },
 
         dataApproval: {
@@ -181,6 +182,13 @@ export function getComponentConfig(
             text: i18n.t("Data Approval"),
             multiple: false,
             onClick: (ids: Id[]) => onFirst(ids, id => goTo("dataApproval", { id })),
+        },
+        attachFiles: {
+            name: "attach-files",
+            icon: <Icon>attach_file</Icon>,
+            text: i18n.t("Attach Files"),
+            multiple: false,
+            onClick: (ids: Id[]) => onClickAction(ids, "attachFiles"),
         },
     };
 

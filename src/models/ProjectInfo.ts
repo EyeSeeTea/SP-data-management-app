@@ -3,6 +3,7 @@ import i18n from "../locales";
 import Project, { DataElementInfo, SectorsInfo } from "./Project";
 import { Maybe } from "../types/utils";
 import { Sector } from "./Config";
+import { ProjectDocument } from "./ProjectDocument";
 
 export class ProjectInfo {
     private actionNames: Record<Action, string>;
@@ -45,6 +46,9 @@ export class ProjectInfo {
             field(fields.subsequentLettering, project => project.subsequentLettering),
             field(fields.additional, project => project.additional),
             field(i18n.t("Period dates"), project => project.getPeriodInterval()),
+            field(fields.isDartApplicable, project =>
+                project.isDartApplicable ? i18n.t("Yes") : i18n.t("No")
+            ),
             field(fields.funders, project => displayNames(project.funders)),
             field(i18n.t("Selected country"), project =>
                 project.parentOrgUnit ? project.parentOrgUnit.displayName : "-"
@@ -57,10 +61,57 @@ export class ProjectInfo {
                 field(i18n.t("User Groups"), project => names(project.sharing.userGroupAccesses)),
             ]),
             section("Sectors", this.getSectorsNodes()),
+            section("Attached Files", this.getDocumentsNodes(prevProject)),
         ];
     }
 
     /* Private interface */
+
+    private getDocumentsNodes(prevProject: Maybe<Project>): ProjectInfoNode[] {
+        const { project } = this;
+        const prevDocuments = prevProject ? prevProject.documents : [];
+
+        const updatedAndDeletedActions = prevDocuments.map((prevDocument): ProjectInfoNode => {
+            const newDocument = project.documents.find(doc => doc.id === prevDocument.id);
+            const prevValue = newDocument ? newDocument.name : undefined;
+            const isUpdated = prevValue !== undefined && prevValue !== prevDocument.name;
+            const action = this.getDocumentAction(newDocument, isUpdated);
+
+            return {
+                action,
+                type: "field",
+                name: "File",
+                prevValue,
+                value: prevDocument.name,
+            };
+        });
+
+        const newDocuments = project.documents.filter(
+            document => !document.url && !document.markAsDeleted
+        );
+
+        const newActions = newDocuments.map((document): ProjectInfoNode => {
+            return {
+                action: "added",
+                type: "field",
+                name: "File",
+                prevValue: undefined,
+                value: document.name,
+            };
+        });
+
+        return newActions.concat(updatedAndDeletedActions);
+    }
+
+    private getDocumentAction(newDocument: Maybe<ProjectDocument>, isUpdated: boolean): Action {
+        if (!newDocument || newDocument.markAsDeleted) {
+            return "removed";
+        } else if (newDocument.url && isUpdated) {
+            return "updated";
+        } else {
+            return "none";
+        }
+    }
 
     private getSectorsNodes(): ProjectInfoNode[] {
         const { project } = this;

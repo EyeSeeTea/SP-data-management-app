@@ -31,6 +31,7 @@ export type Config = {
         returningMale: Ref;
         returningFemale: Ref;
     };
+    organisationUnitGroups: IndexedObjs<"organisationUnitGroups", CodedObject>;
 };
 
 const yes = true as const;
@@ -104,8 +105,11 @@ export const baseConfig = {
     legendSets: {
         achieved: "ACTUAL_TARGET_ACHIEVED",
     },
-    organisationUnitGroups: {
+    organisationUnitGroupsPrefixes: {
         awardNumberPrefix: "AWARD_NUMBER_",
+    },
+    organisationUnitGroups: {
+        isDartApplicable: "IS_DART_APPLICABLE",
     },
     organisationUnitGroupSets: {
         funder: "FUNDER",
@@ -240,6 +244,17 @@ const metadataParams = {
             code: { like: "ADMIN" },
         },
     },
+    organisationUnitGroups: {
+        fields: {
+            id: yes,
+            code: yes,
+        },
+        filter: {
+            code: {
+                in: [baseConfig.organisationUnitGroups.isDartApplicable],
+            },
+        },
+    },
 };
 
 type OptionalName = { name: string | undefined };
@@ -324,6 +339,7 @@ class ConfigLoader {
             userGroups: _.keyBy(metadata.userGroups, ug => ug.code),
             organisationUnitGroupSets: indexObjects(metadata, "organisationUnitGroupSets"),
             categoryOptionCombos: categoryOptionCombos,
+            organisationUnitGroups: indexObjects(metadata, "organisationUnitGroups"),
         };
     }
 
@@ -374,6 +390,7 @@ interface IndexableTypes {
     dataApprovalWorkflows: DataApprovalWorkflow;
     dataApprovalLevels: DataApprovalLevel;
     organisationUnitGroupSets: CodedObject;
+    organisationUnitGroups: CodedObject;
 }
 
 type IndexableKeys = keyof IndexableTypes;

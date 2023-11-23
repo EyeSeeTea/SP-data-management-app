@@ -27,6 +27,7 @@ import { Sharing } from "./Sharing";
 import { getIds } from "../utils/dhis2";
 import { ProjectInfo } from "./ProjectInfo";
 import { isTest } from "../utils/testing";
+import { MAX_SIZE_PROJECT_IN_MB, ProjectDocument } from "./ProjectDocument";
 
 /*
 Project model.
@@ -82,6 +83,7 @@ type CodedObject = { id: Id; code: string };
 export type Sector = NamedObject & CodedObject;
 export type Funder = NamedObject;
 export type Location = NamedObject;
+export type DartApplicable = NamedObject;
 
 export interface ProjectData {
     id: Id;
@@ -105,6 +107,8 @@ export interface ProjectData {
     dashboard: Partial<Dashboards>;
     initialData: Omit<ProjectData, "initialData"> | undefined;
     sharing: Sharing;
+    documents: ProjectDocument[];
+    isDartApplicable: boolean;
 }
 
 export interface Dashboard {
@@ -161,6 +165,7 @@ const defaultProjectData = {
     parentOrgUnit: undefined,
     dataSets: undefined,
     dashboard: {},
+    documents: [],
 };
 
 function defineGetters(sourceObject: any, targetObject: any) {
@@ -228,6 +233,8 @@ class Project {
         dashboard: i18n.t("Dashboard"),
         initialData: i18n.t("Initial Data"),
         sharing: i18n.t("Sharing"),
+        documents: i18n.t("Documents"),
+        isDartApplicable: i18n.t("Is this DART applicable?"),
     };
 
     static getFieldName(field: ProjectField): string {
@@ -270,6 +277,15 @@ class Project {
         dataElementsSelection: () =>
             this.dataElementsSelection.validateAtLeastOneItemPerSector(this.sectors),
         dataElementsMER: () => this.validateMER(),
+        documents: () => {
+            return ProjectDocument.isProjectSizeValid(this.documents)
+                ? []
+                : [
+                      i18n.t("Files cannot be bigger than {{maxSizeProjectInMb}}MB", {
+                          maxSizeProjectInMb: MAX_SIZE_PROJECT_IN_MB,
+                      }),
+                  ];
+        },
     };
 
     validateMER(): ValidationError {
@@ -451,6 +467,7 @@ class Project {
             disaggregation: Disaggregation.buildFromDataSetElements(config, []),
             sharing: ProjectSharing.getInitialSharing(config),
             initialData: undefined,
+            isDartApplicable: false,
         };
         return new Project(api, config, projectData);
     }
