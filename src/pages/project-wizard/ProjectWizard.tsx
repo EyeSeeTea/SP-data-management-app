@@ -167,7 +167,7 @@ class ProjectWizardImpl extends React.Component<Props, State> {
             },
             {
                 key: "attach",
-                label: i18n.t("Attach Files"),
+                label: i18n.t("Files"),
                 component: AttachFilesStep,
                 description: i18n.t("Attach files for the project"),
             },

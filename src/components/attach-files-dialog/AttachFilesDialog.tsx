@@ -69,7 +69,7 @@ export const AttachFilesDialog: React.FC<AttachFilesDialogProps> = props => {
     return (
         <Dialog onClose={onClose} open maxWidth={"lg"}>
             <DialogTitle>
-                {i18n.t("Attach Files")} - {`${projectDetails.name} (${projectDetails.code})`}
+                {i18n.t("Files")} - {`${projectDetails.name} (${projectDetails.code})`}
             </DialogTitle>
             <DialogContent>
                 <AttachFiles onChange={onChangeProject} project={projectDetails} />

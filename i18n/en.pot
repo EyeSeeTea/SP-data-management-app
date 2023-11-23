@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2023-11-23T13:08:09.683Z\n"
-"PO-Revision-Date: 2023-11-23T13:08:09.683Z\n"
+"POT-Creation-Date: 2023-11-23T17:19:43.583Z\n"
+"PO-Revision-Date: 2023-11-23T17:19:43.583Z\n"
 
 msgid "Validating Project"
 msgstr ""
@@ -17,7 +17,7 @@ msgstr ""
 msgid "Project updated"
 msgstr ""
 
-msgid "Attach Files"
+msgid "Files"
 msgstr ""
 
 msgid "Cancel"
@@ -212,9 +212,6 @@ msgstr ""
 msgid "{{n}} matches"
 msgstr ""
 
-msgid "reportable sub"
-msgstr ""
-
 msgid "Drag and drop a file (no more than 5MB)"
 msgstr ""
 
@@ -228,6 +225,9 @@ msgid "Delete"
 msgstr ""
 
 msgid "File is larger than {{maxSizeInMb}}MB"
+msgstr ""
+
+msgid "reportable sub"
 msgstr ""
 
 msgid "Indicator Type"

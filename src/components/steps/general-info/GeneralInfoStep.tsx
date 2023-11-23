@@ -1,7 +1,7 @@
 import React from "react";
 import _ from "lodash";
 import { Moment } from "moment";
-import { Card, CardContent } from "@material-ui/core";
+import { Card, CardContent, Checkbox, FormControlLabel } from "@material-ui/core";
 import { DatePicker, DatePickerProps } from "@eyeseetea/d2-ui-components";
 
 import i18n from "../../../locales";
@@ -11,7 +11,7 @@ import Funders from "./Funders";
 import { getProjectFieldName } from "../../../utils/form";
 
 /* eslint-disable @typescript-eslint/no-var-requires */
-const { TextField, CheckBox } = require("@dhis2/d2-ui-core");
+const { TextField } = require("@dhis2/d2-ui-core");
 const { FormBuilder, Validators } = require("@dhis2/d2-ui-forms");
 
 type StringField = "name" | "description" | "awardNumber" | "subsequentLettering" | "additional";
@@ -178,7 +178,7 @@ function getCheckBoxField(
     return {
         name,
         value,
-        component: CheckBox,
+        component: CheckBoxWithLabel,
         props: {
             label: humanName,
             onChange: (event: React.ChangeEvent<HTMLInputElement>) =>
@@ -187,5 +187,20 @@ function getCheckBoxField(
         },
     };
 }
+
+function CheckBoxWithLabel(props: CheckBoxWithLabelProps) {
+    return (
+        <FormControlLabel
+            control={<Checkbox checked={props.checked} onChange={props.onChange} />}
+            label={props.label}
+        />
+    );
+}
+
+type CheckBoxWithLabelProps = {
+    label: string;
+    onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+    checked: boolean;
+};
 
 export default React.memo(GeneralInfoStep);
