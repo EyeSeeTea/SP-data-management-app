@@ -71,6 +71,10 @@ export default class ProjectDb {
         return await this.saveMetadata();
     }
 
+    async saveFiles() {
+        return await this.saveDocuments();
+    }
+
     private async getDataValues() {
         const { api, project } = this;
         const dataSetIds = _.compact([project.dataSets?.actual.id, project.dataSets?.target.id]);
@@ -352,21 +356,26 @@ export default class ProjectDb {
         return { payload, orgUnit: projectOrgUnit, project: projectUpdated };
     }
 
-    async saveMetadata() {
-        const { payload, orgUnit, project: projectUpdated } = await this.getMetadata();
-
+    private async saveDocuments() {
         const projectDocumentRepository = new ProjectDocumentRepository(this.api);
-        const projectDocumentsWithSharing = projectUpdated.documents.map(document => {
-            return { ...document, sharing: projectUpdated.sharing };
+        const { project } = this;
+        const projectDocumentsWithSharing = project.documents.map(document => {
+            return { ...document, sharing: project.sharing };
         });
         const projectDocumentsSaved = await projectDocumentRepository.saveAll(
             projectDocumentsWithSharing
         );
 
         await this.saveMERData(
-            orgUnit.id,
+            project.id,
             projectDocumentsSaved.filter(document => !document.markAsDeleted)
         ).getData();
+    }
+
+    async saveMetadata() {
+        const { payload, orgUnit, project: projectUpdated } = await this.getMetadata();
+
+        await this.saveDocuments();
 
         const response = await postPayload(this.api, payload, this.project);
         const savedProject = response && response.status === "OK" ? projectUpdated : this.project;

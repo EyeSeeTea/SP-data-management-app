@@ -52,16 +52,17 @@ export const AttachFilesDialog: React.FC<AttachFilesDialogProps> = props => {
         }
         loading.show(true, i18n.t("Validating Project"));
         const newProject = projectDetails.setObj({ documents });
-        const validation = await newProject.validate();
+        const validation = await newProject.validate(["documents"]);
         const error = _(validation).values().flatten().join("\n");
         if (error) {
             snackbar.error(error);
             loading.hide();
             return;
         }
+
         loading.show(true, i18n.t("Saving Project"));
         try {
-            await newProject.save();
+            await newProject.saveFiles();
             snackbar.success(i18n.t("Project updated"));
             onClose();
         } catch (err: any) {

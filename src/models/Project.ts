@@ -488,6 +488,10 @@ class Project {
         return new ProjectDb(this).save();
     }
 
+    saveFiles() {
+        return new ProjectDb(this).saveFiles();
+    }
+
     checkExistingDataForDataElementsToBeRemoved() {
         return new ProjectDb(this).checkExistingDataForRemovedDataElements();
     }
