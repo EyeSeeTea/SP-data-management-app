@@ -18,7 +18,7 @@ import { ValidationError } from "../utils/validations";
     # [... Array of data elements ...]
 */
 
-export const indicatorTypes = ["global", "sub", "custom"] as const;
+export const indicatorTypes = ["global", "sub", "custom", "reportableSub"] as const;
 export const peopleOrBenefitList = ["people", "benefit"] as const;
 export const benefitDisaggregationList = ["", "new-returning"] as const;
 export const internalKey = "__internal";
@@ -788,7 +788,10 @@ export function getGlobal(config: Config, dataElementId: Id): DataElementBase | 
 
     if (!dataElement) {
         return;
-    } else if (dataElement.indicatorType !== "sub") {
+    } else if (
+        dataElement.indicatorType !== "sub" &&
+        dataElement.indicatorType !== "reportableSub"
+    ) {
         return;
     } else {
         const globalCode = getGlobalCode(dataElement.code);
@@ -807,11 +810,17 @@ export function getSubs(config: Config, dataElementId: Id): DataElementBase[] {
         return [];
     } else {
         return config.dataElements.filter(
-            de => de.indicatorType === "sub" && getGlobalCode(de.code) === dataElement.code
+            de =>
+                isSubOrReportableIndicator(de.indicatorType) &&
+                getGlobalCode(de.code) === dataElement.code
         );
     }
 }
 
 export function getDataElementName(dataElement: DataElementBase): string {
     return `[${dataElement.code}] ${dataElement.name}`;
+}
+
+export function isSubOrReportableIndicator(indicatorType: IndicatorType): Boolean {
+    return indicatorType === "sub" || indicatorType === "reportableSub";
 }

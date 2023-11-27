@@ -42,11 +42,18 @@ const DataElementsFilters: React.FC<DataElementsFiltersProps> = props => {
         );
     }, [visibleFilters]);
 
+    const indicatorTypesItems = indicatorTypes.map(indicator => {
+        return {
+            text: indicator === "reportableSub" ? i18n.t("reportable sub") : indicator,
+            value: indicator,
+        };
+    });
+
     return (
         <div>
             {isFilterVisible.indicatorType && (
                 <Dropdown
-                    items={indicatorTypes.map(name => ({ value: name, text: name }))}
+                    items={indicatorTypesItems}
                     value={filter.indicatorType}
                     onChange={value =>
                         onChange({ ...filter, indicatorType: value as IndicatorType })
