@@ -186,7 +186,7 @@ export function getComponentConfig(
         attachFiles: {
             name: "attach-files",
             icon: <Icon>attach_file</Icon>,
-            text: i18n.t("Attach Files"),
+            text: i18n.t("Files"),
             multiple: false,
             onClick: (ids: Id[]) => onClickAction(ids, "attachFiles"),
         },

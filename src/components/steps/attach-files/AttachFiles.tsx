@@ -1,7 +1,7 @@
 import React from "react";
 import _ from "lodash";
 import styled from "styled-components";
-import { IconButton, Typography } from "@material-ui/core";
+import { IconButton, makeStyles, Typography } from "@material-ui/core";
 import CloudDownload from "@material-ui/icons/CloudDownload";
 import DeleteIcon from "@material-ui/icons/DeleteRounded";
 
@@ -17,6 +17,7 @@ type AttachFilesProps = {
 };
 
 export const AttachFiles: React.FC<AttachFilesProps> = props => {
+    const classes = useStyles();
     const { onChange, project } = props;
     const [documents, setDocuments] = React.useState<ProjectDocument[]>(project.documents);
 
@@ -82,7 +83,9 @@ export const AttachFiles: React.FC<AttachFilesProps> = props => {
 
             <DocumentsItemsContainer>
                 {documents.length > 0 && (
-                    <Typography variant="body1">{i18n.t("Attached Files")}:</Typography>
+                    <Typography className={classes.title} variant="body1">
+                        {i18n.t("Attached Files")}:
+                    </Typography>
                 )}
                 {documents.map((document, index) => {
                     return (
@@ -147,5 +150,11 @@ const DocumentItemContainer = styled.div<{ deleted: boolean }>`
 const DocumentDropZoneContainer = styled.div`
     width: 600px;
 `;
+
+const useStyles = makeStyles({
+    title: {
+        fontSize: "1.5rem",
+    },
+});
 
 type Base64 = string;

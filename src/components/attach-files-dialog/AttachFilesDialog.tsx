@@ -52,24 +52,31 @@ export const AttachFilesDialog: React.FC<AttachFilesDialogProps> = props => {
         }
         loading.show(true, i18n.t("Validating Project"));
         const newProject = projectDetails.setObj({ documents });
-        const validation = await newProject.validate();
+        const validation = await newProject.validate(["documents"]);
         const error = _(validation).values().flatten().join("\n");
         if (error) {
             snackbar.error(error);
             loading.hide();
             return;
         }
+
         loading.show(true, i18n.t("Saving Project"));
-        await newProject.save();
-        loading.hide();
-        snackbar.success(i18n.t("Project updated"));
-        onClose();
+        try {
+            await newProject.saveFiles();
+            snackbar.success(i18n.t("Project updated"));
+            onClose();
+        } catch (err: any) {
+            const message = err?.response?.data?.message || i18n.t("Unknown error");
+            snackbar.error(i18n.t("Error uploading files: {{message}}", { message }));
+        } finally {
+            loading.hide();
+        }
     };
 
     return (
         <Dialog onClose={onClose} open maxWidth={"lg"}>
             <DialogTitle>
-                {i18n.t("Attach Files")} - {`${projectDetails.name} (${projectDetails.code})`}
+                {i18n.t("Files")} - {`${projectDetails.name} (${projectDetails.code})`}
             </DialogTitle>
             <DialogContent>
                 <AttachFiles onChange={onChangeProject} project={projectDetails} />
