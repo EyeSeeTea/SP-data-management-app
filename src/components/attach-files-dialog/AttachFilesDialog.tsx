@@ -60,10 +60,16 @@ export const AttachFilesDialog: React.FC<AttachFilesDialogProps> = props => {
             return;
         }
         loading.show(true, i18n.t("Saving Project"));
-        await newProject.save();
-        loading.hide();
-        snackbar.success(i18n.t("Project updated"));
-        onClose();
+        try {
+            await newProject.save();
+            snackbar.success(i18n.t("Project updated"));
+            onClose();
+        } catch (err: any) {
+            const message = err?.response?.data?.message || i18n.t("Unknown error");
+            snackbar.error(i18n.t("Error uploading files: {{message}}", { message }));
+        } finally {
+            loading.hide();
+        }
     };
 
     return (
