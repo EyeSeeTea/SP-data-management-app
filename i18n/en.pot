@@ -5,8 +5,29 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2023-09-13T11:54:43.059Z\n"
-"PO-Revision-Date: 2023-09-13T11:54:43.059Z\n"
+"POT-Creation-Date: 2023-11-27T10:33:09.454Z\n"
+"PO-Revision-Date: 2023-11-27T10:33:09.455Z\n"
+
+msgid "Validating Project"
+msgstr ""
+
+msgid "Saving Project"
+msgstr ""
+
+msgid "Project updated"
+msgstr ""
+
+msgid "Unknown error"
+msgstr ""
+
+msgid "Files"
+msgstr ""
+
+msgid "Cancel"
+msgstr ""
+
+msgid "Save"
+msgstr ""
 
 msgid "Name"
 msgstr ""
@@ -74,6 +95,22 @@ msgid ""
 "approval?"
 msgstr ""
 
+msgid "Apply to all months"
+msgstr ""
+
+msgid ""
+"This action is going to unapprove all the periods. You will have to approve "
+"the data again on the Data Approval section. Are you sure you want to apply "
+"the current values to all months? The existing data in other months will be "
+"overwritten."
+msgstr ""
+
+msgid "Applying values to all months..."
+msgstr ""
+
+msgid "Values applied to all months"
+msgstr ""
+
 msgid "Project closed for this period, please contact the administrators"
 msgstr ""
 
@@ -90,9 +127,6 @@ msgid "Validation results"
 msgstr ""
 
 msgid "Close"
-msgstr ""
-
-msgid "Save"
 msgstr ""
 
 msgid "Comments saved"
@@ -117,9 +151,6 @@ msgid "Deleting..."
 msgstr ""
 
 msgid "Proceed"
-msgstr ""
-
-msgid "Cancel"
 msgstr ""
 
 msgid "<No value>"
@@ -182,6 +213,24 @@ msgid "Executive Summary"
 msgstr ""
 
 msgid "{{n}} matches"
+msgstr ""
+
+msgid "Drag and drop a file (no more than 5MB)"
+msgstr ""
+
+msgid "Attached Files"
+msgstr ""
+
+msgid "Download"
+msgstr ""
+
+msgid "Delete"
+msgstr ""
+
+msgid "File is larger than {{maxSizeInMb}}MB"
+msgstr ""
+
+msgid "reportable sub"
 msgstr ""
 
 msgid "Indicator Type"
@@ -265,19 +314,10 @@ msgstr ""
 msgid "Before saving, please explain why these indicators have been removed"
 msgstr ""
 
-msgid "Validating Project"
-msgstr ""
-
 msgid "Checking Existing Data"
 msgstr ""
 
-msgid "Saving Project"
-msgstr ""
-
 msgid "Project created"
-msgstr ""
-
-msgid "Project updated"
 msgstr ""
 
 msgid ""
@@ -471,10 +511,19 @@ msgstr ""
 msgid "Sharing"
 msgstr ""
 
+msgid "Documents"
+msgstr ""
+
+msgid "Is this DART applicable?"
+msgstr ""
+
 msgid "Award Number should be a number of 5 digits"
 msgstr ""
 
 msgid "One Organisation Unit should be selected"
+msgstr ""
+
+msgid "Files cannot be bigger than {{maxSizeProjectInMb}}MB"
 msgstr ""
 
 msgid "There is a project with the same code '{{code}}' -> {{orgUnit}}"
@@ -705,6 +754,11 @@ msgstr ""
 msgid "[only for admin users]"
 msgstr ""
 
+msgid ""
+"Indicator {{deCode}} cannot be selected because is selected in another "
+"sector ({{sector}})"
+msgstr ""
+
 msgid "Global indicators with selected sub-indicators cannot be unselected"
 msgstr ""
 
@@ -878,6 +932,9 @@ msgstr ""
 msgid "Define Sharing settings for project data."
 msgstr ""
 
+msgid "Attach files for the project"
+msgstr ""
+
 msgid "Summary and Save"
 msgstr ""
 
@@ -976,9 +1033,6 @@ msgstr ""
 msgid "Edit"
 msgstr ""
 
-msgid "Delete"
-msgstr ""
-
 msgid "User groups"
 msgstr ""
 
@@ -989,9 +1043,6 @@ msgid "Active"
 msgstr ""
 
 msgid "[COVID-19]"
-msgstr ""
-
-msgid "Unknown error"
 msgstr ""
 
 msgid "Error saving report"
@@ -1025,9 +1076,6 @@ msgid "No open projects in the selected date and organisation unit"
 msgstr ""
 
 msgid "Projected Activities for the next month"
-msgstr ""
-
-msgid "Download"
 msgstr ""
 
 msgid ""

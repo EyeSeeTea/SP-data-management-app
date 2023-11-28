@@ -133,7 +133,7 @@ describe("ProjectDb", () => {
                 params: {
                     "organisationUnitGroups:fields": ":owner",
                     "organisationUnitGroups:filter": [
-                        "id:in:[aOYJkeWdv2t,yQKIZzBl22A,GsGG8967YDU,WIEp6vpQw6n]",
+                        "id:in:[aOYJkeWdv2t,yQKIZzBl22A,GsGG8967YDU,WIEp6vpQw6n,q0u5u6Of0Wm]",
                     ],
                 },
             }).replyOnce(200, orgUnitsMetadata);
@@ -222,6 +222,7 @@ const orgUnitsMetadata = {
 
 const expectedDataStoreMer = {
     merDataElementIds: ["yMqK9DKbA3X"],
+    documents: [],
 };
 
 const expectedOrgUnitPut = {

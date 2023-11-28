@@ -93,6 +93,7 @@ interface OrgUnit {
 
 export interface ProjectInfo {
     merDataElementIds: string[];
+    documents: string[];
 }
 
 interface ReportInfo {

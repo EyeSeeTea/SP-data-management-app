@@ -7,6 +7,7 @@ exports[`getAsString 1`] = `
 - Subsequent Lettering: en
 - Additional Designation (Funder, Location, Sector, etc): -
 - Period dates: October 2018 - March 2019
+- Is this DART applicable?: No
 - Funders: funder-aOYJkeWdv2t, funder-yQKIZzBl22A
 - Selected country: Bahamas
 - Locations: loc-GsGG8967YDU
@@ -21,7 +22,8 @@ exports[`getAsString 1`] = `
   - [ADDED] Education:
   - [REMOVED] Livelihoods:
     - de-B020200 - B020200 [MER]
-    - de-P020300 - P020300"
+    - de-P020300 - P020300
+- Attached Files:"
 `;
 
 exports[`getAsString on new project 1`] = `
@@ -31,6 +33,7 @@ exports[`getAsString on new project 1`] = `
 - Subsequent Lettering: en
 - Additional Designation (Funder, Location, Sector, etc): -
 - Period dates: October 2018 - March 2019
+- Is this DART applicable?: No
 - Funders: funder-aOYJkeWdv2t, funder-yQKIZzBl22A
 - Selected country: Bahamas
 - Locations: loc-GsGG8967YDU
@@ -44,7 +47,8 @@ exports[`getAsString on new project 1`] = `
     - de-P010101 - P010101
   - Livelihoods:
     - de-B020200 - B020200 [MER]
-    - de-P020300 - P020300"
+    - de-P020300 - P020300
+- Attached Files:"
 `;
 
 exports[`getNodes 1`] = `
@@ -90,6 +94,13 @@ Array [
     "prevValue": "October 2018 - March 2019",
     "type": "field",
     "value": "October 2018 - March 2019",
+  },
+  Object {
+    "action": "none",
+    "name": "Is this DART applicable?",
+    "prevValue": "No",
+    "type": "field",
+    "value": "No",
   },
   Object {
     "action": "none",
@@ -188,6 +199,12 @@ Array [
       },
     ],
     "title": "Sectors",
+    "type": "section",
+  },
+  Object {
+    "action": "none",
+    "children": Array [],
+    "title": "Attached Files",
     "type": "section",
   },
 ]

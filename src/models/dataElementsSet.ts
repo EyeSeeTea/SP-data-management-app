@@ -18,7 +18,7 @@ import { ValidationError } from "../utils/validations";
     # [... Array of data elements ...]
 */
 
-export const indicatorTypes = ["global", "sub", "custom"] as const;
+export const indicatorTypes = ["global", "sub", "custom", "reportableSub"] as const;
 export const peopleOrBenefitList = ["people", "benefit"] as const;
 export const benefitDisaggregationList = ["", "new-returning"] as const;
 export const internalKey = "__internal";
@@ -361,7 +361,11 @@ export default class DataElementsSet {
         const res = this.getSelectionInfo(selectedIds, sectorId);
         const { selected, unselectable, selectionInfo } = res;
 
-        const finalSelected = _(selectedIds)
+        const deInOtherSectors = this.getDataElementsInOtherSectors(selectedIds, sectorId);
+        const deIdsToRemove = deInOtherSectors.map(r => r.dataElementId);
+        const selectedWithOutDeInOtherSectors = _(selectedIds).difference(deIdsToRemove).value();
+
+        const finalSelected = _(selectedWithOutDeInOtherSectors)
             .map(deId => ({ id: deId, sector: { id: sectorId } }))
             .union(selected.map(de => de))
             .union(unselectable.map(de => de))
@@ -382,7 +386,48 @@ export default class DataElementsSet {
             .value();
         const dataElementsUpdated = this.updateSelected(newSelected);
 
-        return { selectionInfo, dataElements: dataElementsUpdated };
+        const selectionInfoInOtherSectors = deInOtherSectors.map(r => r.selectionMessage);
+
+        return {
+            selectionInfo: {
+                messages: selectionInfo.messages?.concat(selectionInfoInOtherSectors),
+            },
+            dataElements: dataElementsUpdated,
+        };
+    }
+
+    private getDataElementsInOtherSectors(selectedIds: string[], sectorId: string) {
+        return selectedIds.flatMap(dataElementId => {
+            const sectorsIds = Object.keys(this.data.selected);
+            const deInOtherSectors = _(sectorsIds)
+                .map(currentSectorId => {
+                    if (currentSectorId === sectorId) return undefined;
+                    const deIds = this.data.selected[currentSectorId];
+                    const isInOtherSector = deIds.includes(dataElementId);
+                    if (!isInOtherSector) return undefined;
+                    const dataElement = this.data.dataElementsBySector[currentSectorId].find(
+                        de => de.id === dataElementId
+                    );
+                    if (!dataElement) return undefined;
+                    const sector =
+                        this.config.sectors.find(sector => sector.id === currentSectorId)
+                            ?.displayName || "";
+
+                    return {
+                        dataElementId,
+                        selectionMessage: i18n.t(
+                            "Indicator {{deCode}} cannot be selected because is selected in another sector ({{sector}})",
+                            {
+                                deCode: dataElement.code,
+                                sector,
+                            }
+                        ),
+                    };
+                })
+                .compact()
+                .value();
+            return deInOtherSectors;
+        });
     }
 
     /*
@@ -743,7 +788,10 @@ export function getGlobal(config: Config, dataElementId: Id): DataElementBase | 
 
     if (!dataElement) {
         return;
-    } else if (dataElement.indicatorType !== "sub") {
+    } else if (
+        dataElement.indicatorType !== "sub" &&
+        dataElement.indicatorType !== "reportableSub"
+    ) {
         return;
     } else {
         const globalCode = getGlobalCode(dataElement.code);
@@ -762,11 +810,17 @@ export function getSubs(config: Config, dataElementId: Id): DataElementBase[] {
         return [];
     } else {
         return config.dataElements.filter(
-            de => de.indicatorType === "sub" && getGlobalCode(de.code) === dataElement.code
+            de =>
+                isSubOrReportableIndicator(de.indicatorType) &&
+                getGlobalCode(de.code) === dataElement.code
         );
     }
 }
 
 export function getDataElementName(dataElement: DataElementBase): string {
     return `[${dataElement.code}] ${dataElement.name}`;
+}
+
+export function isSubOrReportableIndicator(indicatorType: IndicatorType): Boolean {
+    return indicatorType === "sub" || indicatorType === "reportableSub";
 }
