@@ -35,6 +35,8 @@ import { addAttributeValueToObj, addAttributeValue } from "./Attributes";
 import { getSharing } from "./Sharing";
 import { DashboardSourceMetadata } from "./ProjectsListDashboard";
 import { promiseMap } from "../migrations/utils";
+import { ProjectDocument } from "./ProjectDocument";
+import { ProjectDocumentRepository } from "./ProjectDocumentRepository";
 
 const expiryDaysInMonthActual = 10;
 
@@ -67,6 +69,10 @@ export default class ProjectDb {
 
     async save() {
         return await this.saveMetadata();
+    }
+
+    async saveFiles() {
+        return await this.saveDocuments();
     }
 
     private async getDataValues() {
@@ -350,10 +356,26 @@ export default class ProjectDb {
         return { payload, orgUnit: projectOrgUnit, project: projectUpdated };
     }
 
+    private async saveDocuments() {
+        const projectDocumentRepository = new ProjectDocumentRepository(this.api);
+        const { project } = this;
+        const projectDocumentsWithSharing = project.documents.map(document => {
+            return { ...document, sharing: project.sharing };
+        });
+        const projectDocumentsSaved = await projectDocumentRepository.saveAll(
+            projectDocumentsWithSharing
+        );
+
+        await this.saveMERData(
+            project.id,
+            projectDocumentsSaved.filter(document => !document.markAsDeleted)
+        ).getData();
+    }
+
     async saveMetadata() {
         const { payload, orgUnit, project: projectUpdated } = await this.getMetadata();
 
-        await this.saveMERData(orgUnit.id).getData();
+        await this.saveDocuments();
 
         const response = await postPayload(this.api, payload, this.project);
         const savedProject = response && response.status === "OK" ? projectUpdated : this.project;
@@ -479,11 +501,14 @@ export default class ProjectDb {
         }
     }
 
-    saveMERData(orgUnitId: Id): D2ApiResponse<void> {
+    saveMERData(orgUnitId: Id, projectDocuments: ProjectDocument[]): D2ApiResponse<void> {
         const dataStore = getDataStore(this.project.api);
         const dataElementsForMER = this.project.dataElementsMER.get({ onlySelected: true });
         const ids = _.sortBy(_.uniq(dataElementsForMER.map(de => de.id)));
-        const value: ProjectInfo = { merDataElementIds: ids };
+        const value: ProjectInfo = {
+            merDataElementIds: ids,
+            documents: projectDocuments.map(document => document.id),
+        };
         return dataStore.save(getProjectStorageKey({ id: orgUnitId }), value);
     }
 
@@ -689,7 +714,7 @@ export default class ProjectDb {
 
         const projectDataSets = { actual: getDataSet("actual"), target: getDataSet("target") };
 
-        const dataElementIdsForMer = await getDataElementIdsForMer(api, id);
+        const projectInfo = await getDataElementIdsForMer(api, id);
 
         const code = orgUnit.code || "";
         const { startDate, endDate } = getDatesFromOrgUnit(orgUnit);
@@ -700,7 +725,7 @@ export default class ProjectDb {
                 const sectorCode = getSectorCodeFromSectionCode(section.code);
                 const sector = _(sectorsByCode).get(sectorCode);
                 const selectedIds = section.dataElements.map(de => de.id);
-                const selectedMERIds = _.intersection(selectedIds, dataElementIdsForMer);
+                const selectedMERIds = _.intersection(selectedIds, projectInfo.merDataElementIds);
                 const value = { selectedIds, selectedMERIds };
                 type Value = { selectedIds: Id[]; selectedMERIds: Id[] };
                 return sector ? ([sector.id, value] as [string, Value]) : null;
@@ -724,6 +749,15 @@ export default class ProjectDb {
         const codeInfo = ProjectDb.getCodeInfo(code);
         const { displayName } = getProjectFromOrgUnit(orgUnit);
 
+        const projectDocumentRepository = new ProjectDocumentRepository(api);
+        const projectDocumentsIds = projectInfo.documents.map(documentId => documentId);
+        const existingProjectDocuments = await projectDocumentRepository.getByIds(
+            projectDocumentsIds
+        );
+        const isInDartApplicableGroup = orgUnit.organisationUnitGroups.some(
+            group => group.id === config.organisationUnitGroups.isDartApplicable.id
+        );
+
         const projectData = {
             id: orgUnit.id,
             name: displayName,
@@ -743,8 +777,11 @@ export default class ProjectDb {
             dataElementsMER,
             disaggregation,
             sharing: getSharing(projectDataSets.target),
+            documents: existingProjectDocuments.map(projectDocument => {
+                return ProjectDocument.create(projectDocument);
+            }),
+            isDartApplicable: isInDartApplicableGroup,
         };
-
         const project = new Project(api, config, { ...projectData, initialData: projectData });
         return project;
     }
@@ -836,7 +873,7 @@ async function getDataElementIdsForMer(api: D2Api, id: string) {
         .get<ProjectInfo | undefined>(getProjectStorageKey({ id }))
         .getData();
     if (!value) console.error("Cannot get MER selections");
-    return value ? value.merDataElementIds : [];
+    return { documents: value?.documents || [], merDataElementIds: value?.merDataElementIds || [] };
 }
 
 export function getSectorCodeFromSectionCode(code: string | undefined) {
@@ -885,13 +922,18 @@ async function getOrgUnitGroupsMetadata(
         id: getUid("awardNumber", project.awardNumber),
         name: name,
         shortName: name,
-        code: config.base.organisationUnitGroups.awardNumberPrefix + project.awardNumber,
+        code: config.base.organisationUnitGroupsPrefixes.awardNumberPrefix + project.awardNumber,
         organisationUnits: [],
         attributeValues: [],
     };
 
     const orgUnitGroupIds = new Set(
-        getIds([...project.funders, ...project.locations, awardNumberOrgUnitGroupBase])
+        getIds([
+            ...project.funders,
+            ...project.locations,
+            awardNumberOrgUnitGroupBase,
+            { id: config.organisationUnitGroups.isDartApplicable.id },
+        ])
     );
 
     const { organisationUnitGroups: newOrgUnitGroups } = await api.metadata
@@ -908,23 +950,34 @@ async function getOrgUnitGroupsMetadata(
         .concat([awardNumberOrgUnitGroupBase])
         .uniqBy(oug => oug.id)
         .map(setDefaultShortName)
-        .map(oug =>
-            oug.id === awardNumberOrgUnitGroupBase.id && dashboards.awardNumber // Set dashboard ID to awardNumber group
+        .map(oug => {
+            return oug.id === awardNumberOrgUnitGroupBase.id && dashboards.awardNumber // Set dashboard ID to awardNumber group
                 ? addAttributeValueToObj(oug, {
                       attribute: config.attributes.awardNumberDashboard,
                       value: dashboards.awardNumber.id,
                   })
-                : oug
-        )
+                : oug;
+        })
         .value();
 
     const organisationUnitGroups = orgUnitGroupsToSave.map(orgUnitGroup => {
-        const organisationUnits = _(orgUnitGroup.organisationUnits || [])
-            .filter(ou => ou.id !== orgUnitId)
-            .map(ou => ({ id: ou.id }))
-            .concat(orgUnitGroupIds.has(orgUnitGroup.id) ? [{ id: orgUnitId }] : [])
-            .value();
-        return { ...orgUnitGroup, organisationUnits };
+        if (orgUnitGroup.id === config.organisationUnitGroups.isDartApplicable.id) {
+            const currentOrgUnits = orgUnitGroup.organisationUnits || [];
+            const orgUnitsDartApplicable = project.isDartApplicable
+                ? _([...currentOrgUnits, { id: project.id }])
+                      .uniqBy(ou => ou.id)
+                      .value()
+                : currentOrgUnits.filter(ou => ou.id !== project.id);
+
+            return { ...orgUnitGroup, organisationUnits: orgUnitsDartApplicable };
+        } else {
+            const organisationUnits = _(orgUnitGroup.organisationUnits || [])
+                .filter(ou => ou.id !== orgUnitId)
+                .map(ou => ({ id: ou.id }))
+                .concat(orgUnitGroupIds.has(orgUnitGroup.id) ? [{ id: orgUnitId }] : [])
+                .value();
+            return { ...orgUnitGroup, organisationUnits };
+        }
     });
 
     const organisationUnitGroupSets = prevOrganisationUnitGroupSets.map(oug => ({

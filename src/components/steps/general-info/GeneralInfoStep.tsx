@@ -1,7 +1,7 @@
 import React from "react";
 import _ from "lodash";
 import { Moment } from "moment";
-import { Card, CardContent } from "@material-ui/core";
+import { Card, CardContent, Checkbox, FormControlLabel } from "@material-ui/core";
 import { DatePicker, DatePickerProps } from "@eyeseetea/d2-ui-components";
 
 import i18n from "../../../locales";
@@ -18,7 +18,9 @@ type StringField = "name" | "description" | "awardNumber" | "subsequentLettering
 
 type DateField = "startDate" | "endDate";
 
-type ProjectData = Pick<Project, StringField | DateField /* | NumberField */>;
+type BooleanField = "isDartApplicable";
+
+type ProjectData = Pick<Project, StringField | DateField | BooleanField>;
 
 class GeneralInfoStep extends React.Component<StepProps> {
     onUpdateField = <K extends keyof ProjectData>(fieldName: K, newValue: ProjectData[K]) => {
@@ -68,6 +70,12 @@ class GeneralInfoStep extends React.Component<StepProps> {
             getDateField("endDate", project.endDate, {
                 onUpdateField: this.onUpdateField,
                 process: (date: Moment) => date.endOf("month"),
+            }),
+            getCheckBoxField("isDartApplicable", project.isDartApplicable, {
+                onUpdateField: this.onUpdateField,
+                props: {
+                    checked: project.isDartApplicable,
+                },
             }),
         ];
         return (
@@ -154,5 +162,45 @@ function getDateField(
         },
     };
 }
+
+function getCheckBoxField(
+    name: BooleanField,
+    value: boolean,
+    {
+        onUpdateField,
+        props,
+    }: {
+        onUpdateField: (name: BooleanField, value: boolean) => void;
+        props?: _.Dictionary<any>;
+    }
+) {
+    const humanName = getProjectFieldName(name);
+    return {
+        name,
+        value,
+        component: CheckBoxWithLabel,
+        props: {
+            label: humanName,
+            onChange: (event: React.ChangeEvent<HTMLInputElement>) =>
+                onUpdateField(name, event.target.checked),
+            ...(props || {}),
+        },
+    };
+}
+
+function CheckBoxWithLabel(props: CheckBoxWithLabelProps) {
+    return (
+        <FormControlLabel
+            control={<Checkbox checked={props.checked} onChange={props.onChange} />}
+            label={props.label}
+        />
+    );
+}
+
+type CheckBoxWithLabelProps = {
+    label: string;
+    onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+    checked: boolean;
+};
 
 export default React.memo(GeneralInfoStep);

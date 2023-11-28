@@ -157,7 +157,16 @@ const DataElementsTable: React.FC<DataElementsTableProps> = props => {
                 sortable: true,
                 getValue: withPaired(paired, "code"),
             },
-            { name: "indicatorType" as const, text: i18n.t("Indicator Type"), sortable: true },
+            {
+                name: "indicatorType" as const,
+                text: i18n.t("Indicator Type"),
+                sortable: true,
+                getValue: dataElement => {
+                    return dataElement.indicatorType === "reportableSub"
+                        ? i18n.t("reportable sub")
+                        : dataElement.indicatorType;
+                },
+            },
             {
                 name: "peopleOrBenefit" as const,
                 text: i18n.t("People / Benefit"),
