@@ -43,6 +43,6 @@ export function fromPairs<Key extends string, Value>(
     return pairs.reduce((acc, [key, value]) => ({ ...acc, [key]: value }), empty);
 }
 
-export function getKeys<T>(obj: T): Array<keyof T> {
+export function getKeys<T extends object>(obj: T): Array<keyof T> {
     return Object.keys(obj) as Array<keyof T>;
 }
