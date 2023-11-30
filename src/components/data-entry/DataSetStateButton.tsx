@@ -93,7 +93,7 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
             projectDataSet
                 .applyToAllMonths(period)
                 .then(() => {
-                    snackbar.success(i18n.t("Values applied to all months"));
+                    snackbar.success(i18n.t("Values applied to future months"));
                     notifyOnChange();
                 })
                 .catch(snackbar.error)
