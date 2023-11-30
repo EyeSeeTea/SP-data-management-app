@@ -84,12 +84,12 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
     });
 
     const openApplyToAllMonthsConfirmation = useConfirmation({
-        title: i18n.t("Apply to all months"),
+        title: i18n.t("Apply to future months"),
         text: i18n.t(
-            "This action is going to unapprove all the periods. You will have to approve the data again on the Data Approval section. Are you sure you want to apply the current values to all months? The existing data in other months will be overwritten."
+            "This action is going to unapprove the current and future months. You will have to approve the data again on the Data Approval section. Are you sure you want to apply the current values to future months? The existing data in other months will be overwritten."
         ),
         onConfirm: () => {
-            loading.show(true, i18n.t("Applying values to all months..."));
+            loading.show(true, i18n.t("Applying values to future months..."));
             projectDataSet
                 .applyToAllMonths(period)
                 .then(() => {
@@ -162,7 +162,7 @@ const DataSetStateButton: React.FunctionComponent<DataSetStateButtonProps> = pro
 
             {dataSetType === "target" && (
                 <Button style={styles.button} onClick={onApplyToAllMonths} variant="contained">
-                    {i18n.t("Apply to all months")}
+                    {i18n.t("Apply to future months")}
                 </Button>
             )}
 
