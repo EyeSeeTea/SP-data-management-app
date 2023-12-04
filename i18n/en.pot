@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2023-11-30T21:50:54.611Z\n"
-"PO-Revision-Date: 2023-11-30T21:50:54.611Z\n"
+"POT-Creation-Date: 2023-12-04T20:29:35.235Z\n"
+"PO-Revision-Date: 2023-12-04T20:29:35.235Z\n"
 
 msgid "Validating Project"
 msgstr ""
@@ -514,7 +514,10 @@ msgstr ""
 msgid "Documents"
 msgstr ""
 
-msgid "Is this DART applicable?"
+msgid "DART"
+msgstr ""
+
+msgid "PARTNER"
 msgstr ""
 
 msgid "Award Number should be a number of 5 digits"

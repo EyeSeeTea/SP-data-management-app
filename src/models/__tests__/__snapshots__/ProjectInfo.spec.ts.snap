@@ -7,7 +7,8 @@ exports[`getAsString 1`] = `
 - Subsequent Lettering: en
 - Additional Designation (Funder, Location, Sector, etc): -
 - Period dates: October 2018 - March 2019
-- Is this DART applicable?: No
+- DART: No
+- PARTNER: No
 - Funders: funder-aOYJkeWdv2t, funder-yQKIZzBl22A
 - Selected country: Bahamas
 - Locations: loc-GsGG8967YDU
@@ -33,7 +34,8 @@ exports[`getAsString on new project 1`] = `
 - Subsequent Lettering: en
 - Additional Designation (Funder, Location, Sector, etc): -
 - Period dates: October 2018 - March 2019
-- Is this DART applicable?: No
+- DART: No
+- PARTNER: No
 - Funders: funder-aOYJkeWdv2t, funder-yQKIZzBl22A
 - Selected country: Bahamas
 - Locations: loc-GsGG8967YDU
@@ -97,7 +99,14 @@ Array [
   },
   Object {
     "action": "none",
-    "name": "Is this DART applicable?",
+    "name": "DART",
+    "prevValue": "No",
+    "type": "field",
+    "value": "No",
+  },
+  Object {
+    "action": "none",
+    "name": "PARTNER",
     "prevValue": "No",
     "type": "field",
     "value": "No",

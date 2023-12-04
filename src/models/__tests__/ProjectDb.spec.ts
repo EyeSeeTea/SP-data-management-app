@@ -133,7 +133,7 @@ describe("ProjectDb", () => {
                 params: {
                     "organisationUnitGroups:fields": ":owner",
                     "organisationUnitGroups:filter": [
-                        "id:in:[aOYJkeWdv2t,yQKIZzBl22A,GsGG8967YDU,WIEp6vpQw6n,q0u5u6Of0Wm]",
+                        "id:in:[aOYJkeWdv2t,yQKIZzBl22A,GsGG8967YDU,WIEp6vpQw6n,q0u5u6Of0Wm,VnvEdFSucIW]",
                     ],
                 },
             }).replyOnce(200, orgUnitsMetadata);
