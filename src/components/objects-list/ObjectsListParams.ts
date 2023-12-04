@@ -102,7 +102,7 @@ export function getObjectsListParams<Obj extends ReferenceObject>(state: UrlStat
         search: state.search ? encodeURIComponent(state.search) : undefined,
         page: state.pagination.page.toString(),
         pageSize: state.pagination.pageSize.toString(),
-        sorting: state.sorting.field + ":" + state.sorting.order,
+        sorting: state.sorting.field.toString() + ":" + state.sorting.order,
     };
 }
 
