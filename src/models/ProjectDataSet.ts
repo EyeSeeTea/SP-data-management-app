@@ -204,7 +204,11 @@ export default class ProjectDataSet {
 
     private getOtherPeriods(dataSet: DataSet, period: string): string[] {
         return dataSet.dataInputPeriods
-            .filter(inputPeriod => inputPeriod.period.id !== period)
+            .filter(
+                inputPeriod =>
+                    inputPeriod.period.id !== period &&
+                    Number(period) <= Number(inputPeriod.period.id)
+            )
             .map(inputPeriod => inputPeriod.period.id);
     }
 
