@@ -257,8 +257,6 @@ const metadataParams = {
     },
 };
 
-type OptionalName = { name: string | undefined };
-
 export type Metadata = MetadataPick<typeof metadataParams>;
 export type BaseConfig = typeof baseConfig;
 
@@ -402,10 +400,10 @@ function indexObjects<Key extends IndexableKeys, RetValue = IndexedObjs<Key, Ind
     const keyByCodes = _.invert(baseConfig[key]) as Record<string, keyof BaseConfig[Key]>;
     const objects = metadata[key];
     const indexedObjects = _(objects)
-        .keyBy(obj =>
-            // Key by obj.code or obj.name (add type as virtual field)
-            _(keyByCodes).get(obj.code || (obj as typeof obj & OptionalName).name || "")
-        )
+        .keyBy(obj0 => {
+            const obj = obj0 as { name?: string; code?: string };
+            return _(keyByCodes).get(obj.code || obj.name || "");
+        })
         .pickBy()
         .value() as RetValue;
     const missingKeys = _.difference(_.values(keyByCodes) as string[], _.keys(indexedObjects));

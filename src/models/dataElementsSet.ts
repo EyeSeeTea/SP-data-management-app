@@ -594,7 +594,9 @@ function getBy<T, K extends keyof T>(objs: T[], key: K, value: T[K]): T {
     const matchingObj = objs.find(obj => obj[key] === value);
     if (!matchingObj) {
         throw new Error(
-            `Cannot get object: ${key}=${value} (${objs.map(obj => obj[key]).join(", ")})`
+            `Cannot get object: ${key.toString()}=${value} (${objs
+                .map(obj => obj[key])
+                .join(", ")})`
         );
     } else {
         return matchingObj;

@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { D2Api, Id } from "../../types/d2-api";
+import { D2Api, D2Payload, Id } from "../../types/d2-api";
 import { Debug, Migration } from "../types";
 import { getUid, getRefs } from "../../utils/dhis2";
 import { post } from "./common";
@@ -14,7 +14,7 @@ class AwardNumberMigration {
         await this.addExistingProjectsToOrgUnitGroupAwardNumber();
     }
 
-    private async post<Payload>(payload: Payload) {
+    private async post<Payload extends D2Payload>(payload: Payload) {
         post(this.api, this.debug, payload);
     }
 

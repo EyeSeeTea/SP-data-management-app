@@ -387,35 +387,30 @@ function generateDataValuesToSave(
 
     const keys = Object.keys(dataValuesByKeys);
     return _(keys)
-        .flatMap((key): DataValue[] | undefined => {
+        .flatMap((key): DataValue[] => {
             const currentDv = dataValuesByKeys[key];
-            if (!currentDv) return undefined;
+            if (!currentDv) return [];
             const [orgUnitId, period, dataElementId] = key.split(".");
+
+            const targetValue = getValuesAndSum(currentDv, targetCocId);
             const defaultTargetDv = {
                 dataElementId,
                 period,
                 orgUnitId,
                 categoryOptionComboId: defaultCocId,
                 attributeOptionComboId: targetCocId,
-                value: String(
-                    _(currentDv).sumBy(dv =>
-                        dv.attributeOptionComboId === targetCocId ? Number(dv.value) : 0
-                    )
-                ),
+                value: targetValue,
                 deleted: false,
             };
 
+            const actualValue = getValuesAndSum(currentDv, actualCocId);
             const defaultActualDv = {
                 dataElementId,
                 period,
                 orgUnitId,
                 categoryOptionComboId: defaultCocId,
                 attributeOptionComboId: actualCocId,
-                value: String(
-                    _(currentDv).sumBy(dv =>
-                        dv.attributeOptionComboId === actualCocId ? Number(dv.value) : 0
-                    )
-                ),
+                value: actualValue,
                 deleted: false,
             };
 
@@ -425,8 +420,27 @@ function generateDataValuesToSave(
 
             return [defaultActualDv, defaultTargetDv, ...markDvAsDeleted];
         })
+        .map(dataValue => {
+            return dataValue.value !== "" ? dataValue : undefined;
+        })
         .compact()
         .value();
+}
+
+function getValuesAndSum(currentDv: DataValue[], optionComboId: string): string {
+    const values = _(currentDv)
+        .map(dv => dv.value && optionComboId === dv.attributeOptionComboId)
+        .compact()
+        .value();
+
+    const currentValue =
+        values.length > 0
+            ? _(currentDv).sumBy(dv =>
+                  dv.attributeOptionComboId === optionComboId ? Number(dv.value) : 0
+              )
+            : "";
+
+    return String(currentValue);
 }
 
 async function saveDataValues(dataValuesToSave: DataValue[], api: D2Api) {

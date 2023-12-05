@@ -1,4 +1,4 @@
-import { D2Api, Id } from "../../types/d2-api";
+import { D2Api, D2Payload, Id } from "../../types/d2-api";
 import { Debug, Migration } from "../types";
 import { post } from "./common";
 import { getUid } from "../../utils/dhis2";
@@ -6,7 +6,7 @@ import { getUid } from "../../utils/dhis2";
 class AddLastUpdatedDataMigration {
     constructor(private api: D2Api, private debug: Debug) {}
 
-    private async post<Payload>(payload: Payload) {
+    private async post<Payload extends D2Payload>(payload: Payload) {
         await post(this.api, this.debug, payload);
     }
 

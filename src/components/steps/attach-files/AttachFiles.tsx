@@ -77,7 +77,7 @@ export const AttachFiles: React.FC<AttachFilesProps> = props => {
             <DropNewFileContainer>
                 <DropFiles
                     onDrop={addFile}
-                    label={i18n.t("Drag and drop a file (no more than 5MB)")}
+                    label={i18n.t("Drag and Drop Files (Maximum 5MB per file)")}
                 />
             </DropNewFileContainer>
 
