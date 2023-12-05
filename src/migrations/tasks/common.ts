@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { D2Api, Id } from "../../types/d2-api";
+import { D2Api, D2Payload, Id } from "../../types/d2-api";
 import { Debug } from "../types";
 import { Config } from "../../models/Config";
 import ProjectsList from "../../models/ProjectsList";
@@ -23,7 +23,7 @@ export function error(msg: string) {
     throw Error(msg);
 }
 
-export async function post<Payload>(api: D2Api, debug: Debug, payload: Payload) {
+export async function post<Payload extends D2Payload>(api: D2Api, debug: Debug, payload: Payload) {
     const res = await api.metadata.post(payload).getData();
     if (res.status !== "OK") {
         debug(JSON.stringify(res));
