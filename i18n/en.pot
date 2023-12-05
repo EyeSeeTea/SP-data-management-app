@@ -5,8 +5,8 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
-"POT-Creation-Date: 2023-12-04T20:29:35.235Z\n"
-"PO-Revision-Date: 2023-12-04T20:29:35.235Z\n"
+"POT-Creation-Date: 2023-12-05T11:01:02.938Z\n"
+"PO-Revision-Date: 2023-12-05T11:01:02.938Z\n"
 
 msgid "Validating Project"
 msgstr ""
@@ -18,6 +18,9 @@ msgid "Project updated"
 msgstr ""
 
 msgid "Unknown error"
+msgstr ""
+
+msgid "Error uploading files: {{message}}"
 msgstr ""
 
 msgid "Files"
@@ -517,7 +520,7 @@ msgstr ""
 msgid "DART"
 msgstr ""
 
-msgid "PARTNER"
+msgid "Partner"
 msgstr ""
 
 msgid "Award Number should be a number of 5 digits"

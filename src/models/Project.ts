@@ -236,7 +236,7 @@ class Project {
         sharing: i18n.t("Sharing"),
         documents: i18n.t("Documents"),
         isDartApplicable: i18n.t("DART"),
-        partner: i18n.t("PARTNER"),
+        partner: i18n.t("Partner"),
     };
 
     static getFieldName(field: ProjectField): string {

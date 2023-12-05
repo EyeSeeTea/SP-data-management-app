@@ -67,7 +67,9 @@ export const AttachFilesDialog: React.FC<AttachFilesDialogProps> = props => {
             onClose();
         } catch (err: any) {
             const message = err?.response?.data?.message || i18n.t("Unknown error");
-            snackbar.error(i18n.t("Error uploading files: {{message}}", { message }));
+            snackbar.error(
+                i18n.t("Error uploading files: {{message}}", { message, nsSeparator: false })
+            );
         } finally {
             loading.hide();
         }
