@@ -8,7 +8,7 @@ exports[`getAsString 1`] = `
 - Additional Designation (Funder, Location, Sector, etc): -
 - Period dates: October 2018 - March 2019
 - DART: No
-- PARTNER: No
+- Partner: No
 - Funders: funder-aOYJkeWdv2t, funder-yQKIZzBl22A
 - Selected country: Bahamas
 - Locations: loc-GsGG8967YDU
@@ -35,7 +35,7 @@ exports[`getAsString on new project 1`] = `
 - Additional Designation (Funder, Location, Sector, etc): -
 - Period dates: October 2018 - March 2019
 - DART: No
-- PARTNER: No
+- Partner: No
 - Funders: funder-aOYJkeWdv2t, funder-yQKIZzBl22A
 - Selected country: Bahamas
 - Locations: loc-GsGG8967YDU
@@ -106,7 +106,7 @@ Array [
   },
   Object {
     "action": "none",
-    "name": "PARTNER",
+    "name": "Partner",
     "prevValue": "No",
     "type": "field",
     "value": "No",
