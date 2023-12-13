@@ -109,7 +109,8 @@ export const baseConfig = {
         awardNumberPrefix: "AWARD_NUMBER_",
     },
     organisationUnitGroups: {
-        isDartApplicable: "IS_DART_APPLICABLE",
+        isDartApplicable: "DART",
+        partner: "PARTNER",
     },
     organisationUnitGroupSets: {
         funder: "FUNDER",
@@ -251,7 +252,10 @@ const metadataParams = {
         },
         filter: {
             code: {
-                in: [baseConfig.organisationUnitGroups.isDartApplicable],
+                in: [
+                    baseConfig.organisationUnitGroups.isDartApplicable,
+                    baseConfig.organisationUnitGroups.partner,
+                ],
             },
         },
     },

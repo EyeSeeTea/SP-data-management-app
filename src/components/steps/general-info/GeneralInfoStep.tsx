@@ -18,7 +18,7 @@ type StringField = "name" | "description" | "awardNumber" | "subsequentLettering
 
 type DateField = "startDate" | "endDate";
 
-type BooleanField = "isDartApplicable";
+type BooleanField = "isDartApplicable" | "partner";
 
 type ProjectData = Pick<Project, StringField | DateField | BooleanField>;
 
@@ -75,6 +75,12 @@ class GeneralInfoStep extends React.Component<StepProps> {
                 onUpdateField: this.onUpdateField,
                 props: {
                     checked: project.isDartApplicable,
+                },
+            }),
+            getCheckBoxField("partner", project.partner, {
+                onUpdateField: this.onUpdateField,
+                props: {
+                    checked: project.partner,
                 },
             }),
         ];
