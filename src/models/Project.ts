@@ -109,6 +109,7 @@ export interface ProjectData {
     sharing: Sharing;
     documents: ProjectDocument[];
     isDartApplicable: boolean;
+    partner: boolean;
 }
 
 export interface Dashboard {
@@ -234,7 +235,8 @@ class Project {
         initialData: i18n.t("Initial Data"),
         sharing: i18n.t("Sharing"),
         documents: i18n.t("Documents"),
-        isDartApplicable: i18n.t("Is this DART applicable?"),
+        isDartApplicable: i18n.t("DART"),
+        partner: i18n.t("Partner"),
     };
 
     static getFieldName(field: ProjectField): string {
@@ -468,6 +470,7 @@ class Project {
             sharing: ProjectSharing.getInitialSharing(config),
             initialData: undefined,
             isDartApplicable: false,
+            partner: false,
         };
         return new Project(api, config, projectData);
     }
