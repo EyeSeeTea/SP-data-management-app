@@ -70,7 +70,8 @@
             "awardNumberPrefix": "AWARD_NUMBER_"
         },
         "organisationUnitGroups": {
-            "isDartApplicable": "IS_DART_APPLICABLE"
+            "isDartApplicable": "DART",
+            "partner": "PARTNER"
         },
         "organisationUnitGroupSets": {
             "funder": "FUNDER",
@@ -62945,7 +62946,11 @@
     "organisationUnitGroups": {
         "isDartApplicable": {
             "id": "q0u5u6Of0Wm",
-            "code": "IS_DART_APPLICABLE"
+            "code": "DART"
+        },
+        "partner": {
+            "id": "VnvEdFSucIW",
+            "code": "PARTNER"
         }
     }
 }

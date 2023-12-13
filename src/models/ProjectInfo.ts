@@ -49,6 +49,7 @@ export class ProjectInfo {
             field(fields.isDartApplicable, project =>
                 project.isDartApplicable ? i18n.t("Yes") : i18n.t("No")
             ),
+            field(fields.partner, project => (project.partner ? i18n.t("Yes") : i18n.t("No"))),
             field(fields.funders, project => displayNames(project.funders)),
             field(i18n.t("Selected country"), project =>
                 project.parentOrgUnit ? project.parentOrgUnit.displayName : "-"

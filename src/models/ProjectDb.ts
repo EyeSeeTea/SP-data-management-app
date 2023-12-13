@@ -758,6 +758,10 @@ export default class ProjectDb {
             group => group.id === config.organisationUnitGroups.isDartApplicable.id
         );
 
+        const partnerGroup = orgUnit.organisationUnitGroups.some(
+            group => group.id === config.organisationUnitGroups.partner.id
+        );
+
         const projectData = {
             id: orgUnit.id,
             name: displayName,
@@ -781,6 +785,7 @@ export default class ProjectDb {
                 return ProjectDocument.create(projectDocument);
             }),
             isDartApplicable: isInDartApplicableGroup,
+            partner: partnerGroup,
         };
         const project = new Project(api, config, { ...projectData, initialData: projectData });
         return project;
@@ -933,6 +938,7 @@ async function getOrgUnitGroupsMetadata(
             ...project.locations,
             awardNumberOrgUnitGroupBase,
             { id: config.organisationUnitGroups.isDartApplicable.id },
+            { id: config.organisationUnitGroups.partner.id },
         ])
     );
 
@@ -962,14 +968,15 @@ async function getOrgUnitGroupsMetadata(
 
     const organisationUnitGroups = orgUnitGroupsToSave.map(orgUnitGroup => {
         if (orgUnitGroup.id === config.organisationUnitGroups.isDartApplicable.id) {
-            const currentOrgUnits = orgUnitGroup.organisationUnits || [];
-            const orgUnitsDartApplicable = project.isDartApplicable
-                ? _([...currentOrgUnits, { id: project.id }])
-                      .uniqBy(ou => ou.id)
-                      .value()
-                : currentOrgUnits.filter(ou => ou.id !== project.id);
-
-            return { ...orgUnitGroup, organisationUnits: orgUnitsDartApplicable };
+            return checkIfProjectIsInGroup(orgUnitGroup, {
+                projectId: project.id,
+                condition: project.isDartApplicable,
+            });
+        } else if (orgUnitGroup.id === config.organisationUnitGroups.partner.id) {
+            return checkIfProjectIsInGroup(orgUnitGroup, {
+                projectId: project.id,
+                condition: project.partner,
+            });
         } else {
             const organisationUnits = _(orgUnitGroup.organisationUnits || [])
                 .filter(ou => ou.id !== orgUnitId)
@@ -989,6 +996,20 @@ async function getOrgUnitGroupsMetadata(
     }));
 
     return { organisationUnitGroups, organisationUnitGroupSets };
+}
+
+function checkIfProjectIsInGroup(
+    orgUnitGroup: OrgUnitGroup,
+    { projectId, condition }: { projectId: string; condition: boolean }
+) {
+    const currentOrgUnits = orgUnitGroup.organisationUnits || [];
+    const orgUnitsDartApplicable = condition
+        ? _([...currentOrgUnits, { id: projectId }])
+              .uniqBy(ou => ou.id)
+              .value()
+        : currentOrgUnits.filter(ou => ou.id !== projectId);
+
+    return { ...orgUnitGroup, organisationUnits: orgUnitsDartApplicable };
 }
 
 function getOrgUnitId(orgUnit: { path: string }): string {
