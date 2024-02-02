@@ -26,6 +26,8 @@ export type Config = {
     dataApprovalWorkflows: IndexedObjs<"dataApprovalWorkflows", DataApprovalWorkflow>;
     userGroups: Record<string, UserGroup>;
     categoryOptionCombos: {
+        actual: Ref & { displayName: string };
+        target: Ref & { displayName: string };
         newMale: Ref;
         newFemale: Ref;
         returningMale: Ref;
@@ -348,10 +350,15 @@ class ConfigLoader {
     private getCategoryOptionCombos(categoryCombos: IndexedObjs<"categoryCombos", CategoryCombo>) {
         const cos = baseConfig.categoryOptions;
         return {
-            newMale: getCocRef(categoryCombos, [cos.new, cos.male]),
-            newFemale: getCocRef(categoryCombos, [cos.new, cos.female]),
-            returningMale: getCocRef(categoryCombos, [cos.recurring, cos.male]),
-            returningFemale: getCocRef(categoryCombos, [cos.recurring, cos.female]),
+            actual: getCocRef(categoryCombos.targetActual, [cos.actual]),
+            target: getCocRef(categoryCombos.targetActual, [cos.target]),
+            newMale: getCocRef(categoryCombos.genderNewRecurring, [cos.new, cos.male]),
+            newFemale: getCocRef(categoryCombos.genderNewRecurring, [cos.new, cos.female]),
+            returningMale: getCocRef(categoryCombos.genderNewRecurring, [cos.recurring, cos.male]),
+            returningFemale: getCocRef(categoryCombos.genderNewRecurring, [
+                cos.recurring,
+                cos.female,
+            ]),
         };
     }
 
@@ -485,8 +492,8 @@ function getFundersAndLocations(metadata: Metadata) {
     return { funders, locations };
 }
 
-function getCocRef(categoryCombos: Config["categoryCombos"], codes: string[]): Ref {
-    const coc = categoryCombos.genderNewRecurring.categoryOptionCombos.find(
+function getCocRef(categoryCombos: CategoryCombo, codes: string[]): Ref & { displayName: string } {
+    const coc = categoryCombos.categoryOptionCombos.find(
         coc =>
             _(coc.categoryOptions)
                 .map(co => co.code)
