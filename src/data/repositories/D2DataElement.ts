@@ -2,12 +2,16 @@ import _ from "lodash";
 
 import { AttributeValue } from "../../domain/entities/AttributeValue";
 import { DataElement } from "../../domain/entities/DataElement";
-import { DataElementGroup } from "../../domain/entities/DataElementGroup";
+import { DataElementGroup } from "../DataElementGroup";
 import { Indicator } from "../../domain/entities/Indicator";
 import { Id, Ref } from "../../domain/entities/Ref";
 import { promiseMap } from "../../migrations/utils";
 import { Config } from "../../models/Config";
-import { D2Api } from "../../types/d2-api";
+import {
+    D2Api,
+    PartialPersistedModel,
+    D2DataElement as D2ApiDataElement,
+} from "../../types/d2-api";
 import { Maybe } from "../../types/utils";
 import { getId } from "../../utils/dhis2";
 import { getImportModeFromOptions, SaveOptions } from "../SaveOptions";
@@ -25,39 +29,43 @@ export class D2DataElement {
                 })
                 .getData();
 
-            const postDataElements = dataElementIds.map(dataElementId => {
-                const existingD2DataElement = response.objects.find(
-                    d2DataElement => d2DataElement.id === dataElementId
-                );
-                const dataElement = dataElements.find(
-                    dataElement => dataElement.id === dataElementId
-                );
-                if (!dataElement) {
-                    throw Error(`Cannot find dataElement ${dataElementId}`);
+            const postDataElements = dataElementIds.map(
+                (dataElementId): PartialPersistedModel<D2ApiDataElement> => {
+                    const existingD2DataElement = response.objects.find(
+                        d2DataElement => d2DataElement.id === dataElementId
+                    );
+                    const dataElement = dataElements.find(
+                        dataElement => dataElement.id === dataElementId
+                    );
+                    if (!dataElement) {
+                        throw Error(`Cannot find dataElement ${dataElementId}`);
+                    }
+
+                    const defaultAggregationType: D2ApiDataElement["aggregationType"] = "SUM";
+                    const defaultDomainType: "AGGREGATE" | "TRACKER" = "AGGREGATE";
+                    const valueType: "INTEGER_ZERO_OR_POSITIVE" | "NUMBER" =
+                        dataElement.mainType.name === "benefit"
+                            ? "NUMBER"
+                            : "INTEGER_ZERO_OR_POSITIVE";
+
+                    return {
+                        ...(existingD2DataElement || {}),
+                        aggregationType: defaultAggregationType,
+                        attributeValues: this.buildAttributes(dataElement, this.config),
+                        categoryCombo: dataElement.disaggregation
+                            ? { id: dataElement.disaggregation.id }
+                            : undefined,
+                        code: dataElement.code,
+                        description: dataElement.description,
+                        domainType: defaultDomainType,
+                        formName: dataElement.formName,
+                        id: dataElement.id,
+                        name: dataElement.name,
+                        shortName: dataElement.shortName,
+                        valueType: valueType,
+                    };
                 }
-
-                const defaultAggregationType = "SUM" as const;
-                const defaultDomainType: "AGGREGATE" | "TRACKER" = "AGGREGATE";
-                const valueType: "INTEGER_ZERO_OR_POSITIVE" | "NUMBER" =
-                    dataElement.mainType.name === "benefit" ? "NUMBER" : "INTEGER_ZERO_OR_POSITIVE";
-
-                return {
-                    ...(existingD2DataElement || {}),
-                    aggregationType: defaultAggregationType,
-                    attributeValues: this.buildAttributes(dataElement, this.config),
-                    categoryCombo: dataElement.disaggregation
-                        ? { id: dataElement.disaggregation.id }
-                        : undefined,
-                    code: dataElement.code,
-                    description: dataElement.description,
-                    domainType: defaultDomainType,
-                    formName: dataElement.formName,
-                    id: dataElement.id,
-                    name: dataElement.name,
-                    shortName: dataElement.shortName,
-                    valueType: valueType,
-                };
-            });
+            );
 
             const d2Response = await this.api.metadata
                 .post(
@@ -93,23 +101,24 @@ export class D2DataElement {
     }
 
     private buildAttributes(dataElement: DataElement, metadataConfig: Config): AttributeValue[] {
+        const attributes = metadataConfig.attributes;
         const pairedDataElementAttribute = this.generateAttributeValue(
-            metadataConfig.attributes.pairedDataElement.id,
+            attributes.pairedDataElement.id,
             dataElement.pairedPeople?.code
         );
 
         const sectorAttribute = this.generateAttributeValue(
-            metadataConfig.attributes.mainSector.id,
+            attributes.mainSector.id,
             dataElement.mainSector.code
         );
 
         const extraInfoAttribute = this.generateAttributeValue(
-            metadataConfig.attributes.extraDataElement.id,
+            attributes.extraDataElement.id,
             dataElement.extraInfo
         );
 
         const countingMethodAttribute = this.generateAttributeValue(
-            metadataConfig.attributes.countingMethod.id,
+            attributes.countingMethod.id,
             dataElement.countingMethod
         );
 

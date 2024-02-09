@@ -25,7 +25,7 @@ export class Indicator extends Struct<IndicatorAttrs>() {
         config: Config,
         allIndicatorsTypes: IndicatorType[]
     ): Indicator[] {
-        const isPeopleType = dataElement.mainType.name === "people";
+        const isBenefitType = dataElement.mainType.name === "benefit";
 
         const actualIndicator = this.create({
             id: actualIndicatorId,
@@ -52,7 +52,7 @@ export class Indicator extends Struct<IndicatorAttrs>() {
         });
 
         const benefitIndicator =
-            dataElement.pairedPeople && !isPeopleType
+            dataElement.pairedPeople && isBenefitType
                 ? this.create({
                       id: costBenefitIndicatorId,
                       name: this.generateName(
@@ -99,11 +99,24 @@ export class Indicator extends Struct<IndicatorAttrs>() {
     ): IndicatorFormula {
         return {
             description: typeFormula === "numerator" ? "Benefits" : "Number of people",
-            formula:
-                typeFormula === "numerator"
-                    ? `#{${dataElement.id}.*.${targetComboId}}`
-                    : `#{${dataElement.pairedPeople?.id}.${newMale}.${targetComboId}} + #{${dataElement.pairedPeople?.id}.${newFemale}.${targetComboId}}`,
+            formula: this.buildFormula(typeFormula, dataElement, targetComboId, newMale, newFemale),
         };
+    }
+
+    private static buildFormula(
+        typeFormula: IndicatorFormulaPosition,
+        dataElement: IndicatorDataElement,
+        targetComboId: Id,
+        newMale: Id,
+        newFemale: Id
+    ): string {
+        if (typeFormula === "numerator") {
+            return `#{${dataElement.id}.*.${targetComboId}}`;
+        } else if (typeFormula === "denominator" && dataElement.pairedPeople) {
+            return `#{${dataElement.pairedPeople.id}.${newMale}.${targetComboId}} + #{${dataElement.pairedPeople.id}.${newFemale}.${targetComboId}}`;
+        } else {
+            throw Error(`Cannot build formula for ${typeFormula} in ${dataElement.id}`);
+        }
     }
 
     private static buildActualIndicatorFormula(

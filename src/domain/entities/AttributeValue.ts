@@ -1,3 +1,3 @@
-import { Ref } from "@eyeseetea/d2-api";
+import { Ref } from "./Ref";
 
 export type AttributeValue = { attribute: Ref; value: string };

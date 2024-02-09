@@ -1,10 +1,10 @@
 import _ from "lodash";
 
-import { D2Api, MetadataPick } from "../../types/d2-api";
+import { D2Api } from "../../types/d2-api";
 import { Id, Identifiable } from "../../domain/entities/Ref";
 import { Sector } from "../../domain/entities/Sector";
 import { promiseMap } from "../../migrations/utils";
-import { DataElementGroup } from "../../domain/entities/DataElementGroup";
+import { DataElementGroup } from "../DataElementGroup";
 import { getId } from "../../utils/dhis2";
 import { getImportModeFromOptions, SaveOptions } from "../SaveOptions";
 
@@ -17,9 +17,7 @@ export class D2DataElementGroup {
                 .get({ fields: fields, filter: { identifiable: { in: codesToFilter } } })
                 .getData();
 
-            return data.objects.map((d2DataElementGroup): Sector => {
-                return this.buildSector(d2DataElementGroup);
-            });
+            return data.objects.map(d2DataElementGroup => d2DataElementGroup);
         });
 
         return _(sectors).flatten().value();
@@ -77,18 +75,6 @@ export class D2DataElementGroup {
 
         return _(dataElementGroupsImported).flatten().value();
     }
-
-    private buildSector(d2DataElementGroup: Dhis2DataElementGroup): Sector {
-        return {
-            id: d2DataElementGroup.id,
-            name: d2DataElementGroup.displayName,
-            code: d2DataElementGroup.code,
-        };
-    }
 }
 
-const fields = { id: true, displayName: true, code: true } as const;
-
-type Dhis2DataElementGroup = MetadataPick<{
-    dataElementGroups: { fields: typeof fields };
-}>["dataElementGroups"][number];
+const fields = { id: true, name: true, code: true } as const;

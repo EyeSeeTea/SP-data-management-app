@@ -1,17 +1,18 @@
 import { DataElementRepository } from "../repositories/DataElementRepository";
-import { ImportDataElementSpreadSheetRepository } from "../../data/repositories/ImportDataElementSpreadSheetRepository";
 import { ExportDataElementRepository } from "../repositories/ExportDataElementRepository";
+import { ImportDataElementRepository } from "../repositories/ImportDataElementRepository";
 
 export class ImportDataElementsUseCase {
     constructor(
-        private importDataElementSpreadSheetRepository: ImportDataElementSpreadSheetRepository,
+        private importDataElementSheetRepository: ImportDataElementRepository,
         private dataElementRepository: DataElementRepository,
         private exportDataElementRepository: ExportDataElementRepository
     ) {}
 
     async execute(options: ImportDataElementsUseCaseOptions): Promise<void> {
-        const { newRecords, existingRecords } =
-            await this.importDataElementSpreadSheetRepository.import(options.excelPath);
+        const { newRecords, existingRecords } = await this.importDataElementSheetRepository.import(
+            options.excelPath
+        );
 
         if (options.post) {
             console.info("Importing existing data elements...\n");
