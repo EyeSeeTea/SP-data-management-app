@@ -1,5 +1,5 @@
 import _ from "lodash";
-import excelToJson from "convert-excel-to-json";
+import xlsx from "xlsx";
 
 import { D2Api } from "../../types/d2-api";
 import { Config } from "../../models/Config";
@@ -15,6 +15,7 @@ import { Code, Ref, Identifiable } from "../../domain/entities/Ref";
 import { Sector } from "../../domain/entities/Sector";
 import { D2IndicatorType } from "./D2IndicatorType";
 import { IndicatorType } from "../../domain/entities/IndicatorType";
+import { getUid } from "../../utils/dhis2";
 
 export class ImportDataElementSpreadSheetRepository implements ImportDataElementRepository {
     private d2DataElementGroup: D2DataElementGroup;
@@ -33,15 +34,15 @@ export class ImportDataElementSpreadSheetRepository implements ImportDataElement
         const sectorCodes = this.getSectorIdentifiables(dataElementsFromExcel, this.config);
 
         console.info("Fetching sectors information...");
-        const allSectors = await this.d2DataElementGroup.getByIdentifiables(sectorCodes);
-        console.info(`${allSectors.length} sectors found`);
+        const allSectorsSeries = await this.d2DataElementGroup.getByIdentifiables(sectorCodes);
+        console.info(`${allSectorsSeries.length} sectors found`);
 
         console.info("Fetching indicators type...");
         const allIndicatorsTypes = await this.d2IndicatorType.get();
 
         const existingDataElements = this.generateDataElementsToImport(
             dataElementsFromExcel.filter(record => record.oldCode),
-            allSectors,
+            allSectorsSeries,
             this.config,
             allIndicatorsTypes
         );
@@ -49,7 +50,7 @@ export class ImportDataElementSpreadSheetRepository implements ImportDataElement
 
         const newDataElements = this.generateDataElementsToImport(
             dataElementsFromExcel.filter(record => !record.oldCode),
-            allSectors,
+            allSectorsSeries,
             this.config,
             allIndicatorsTypes
         );
@@ -60,7 +61,7 @@ export class ImportDataElementSpreadSheetRepository implements ImportDataElement
 
     private generateDataElementsToImport(
         dataElementsFromExcel: DataElementExcel[],
-        allSectors: Sector[],
+        allSectorsSeries: Sector[],
         config: Config,
         indicatorsTypes: IndicatorType[]
     ): DataElement[] {
@@ -72,17 +73,16 @@ export class ImportDataElementSpreadSheetRepository implements ImportDataElement
             .map((excelRecord, index): DataElement => {
                 const type = this.getDataElementType(excelRecord, index);
 
-                const mainSector = this.getMainSector(allSectors, excelRecord, index);
+                const mainSector = this.getMainSector(allSectorsSeries, excelRecord, index);
 
                 const series = this.getSeriesSector(
-                    allSectors,
-                    `Series ${excelRecord.series}`,
-                    "Series",
-                    index
+                    allSectorsSeries,
+                    excelRecord.series,
+                    excelRecord.sector
                 );
 
                 const crossSectorSeriesCodes = excelRecord.crossSectorSeries
-                    ? DataElement.getCrossSectorsCodes(excelRecord.crossSectorSeries, true)
+                    ? DataElement.getCrossSectorsCodes(excelRecord.crossSectorSeries, false)
                     : [];
 
                 const crossSectorCodes = excelRecord.crossSectors
@@ -90,28 +90,29 @@ export class ImportDataElementSpreadSheetRepository implements ImportDataElement
                     : [];
 
                 const crossSeries = _(crossSectorSeriesCodes)
-                    .map(crossSectorSerieCode => {
+                    .map((crossSectorSerieCode, index) => {
                         return this.getSeriesSector(
-                            allSectors,
+                            allSectorsSeries,
                             crossSectorSerieCode,
-                            "Cross Sector Series",
-                            index
+                            crossSectorCodes[index]
                         );
                     })
                     .value();
 
                 const crossSectors = _(crossSectorCodes)
-                    .map(crossSectorSerieCode => {
-                        return this.getSeriesSector(
-                            allSectors,
-                            crossSectorSerieCode,
-                            "Cross Sector",
-                            index
+                    .map(crossSectorCode => {
+                        const crossSector = allSectorsSeries.find(
+                            sector => sector.name.toLowerCase() === crossSectorCode.toLowerCase()
                         );
+                        if (!crossSector)
+                            throw Error(
+                                `Row ${index + 1}: Cannot find cross sector: ${crossSectorCode}`
+                            );
+                        return crossSector;
                     })
                     .value();
 
-                const mainTypeSectorInfo = allSectors.find(
+                const mainTypeSectorInfo = allSectorsSeries.find(
                     sector => sector.code.toLowerCase() === type.toLowerCase()
                 );
                 if (!mainTypeSectorInfo)
@@ -122,15 +123,17 @@ export class ImportDataElementSpreadSheetRepository implements ImportDataElement
                     sector: mainTypeSectorInfo,
                 };
 
-                const indicatorType: DataElement["indicatorType"] = {
-                    name: excelRecord.globalSub,
-                    id:
-                        allSectors.find(
-                            sector =>
-                                sector.code.toLowerCase() ===
-                                excelRecord.globalSub.toLocaleLowerCase()
-                        )?.id || "",
-                };
+                const indicatorTypeGroup = allSectorsSeries.find(
+                    sector =>
+                        sector.code.toLowerCase() === excelRecord.globalSub.toLocaleLowerCase()
+                );
+                if (!indicatorTypeGroup) {
+                    throw Error(
+                        `Error in row ${index + 1}: Invalid value in column Global/Sub = ${
+                            excelRecord.globalSub
+                        }`
+                    );
+                }
 
                 const pairedPeople = this.buildPairedPeople(excelRecord, pairedDataElements);
                 const description = DataElement.buildDescription(
@@ -153,7 +156,7 @@ export class ImportDataElementSpreadSheetRepository implements ImportDataElement
                         excelRecord.benefitDisaggregation,
                         config
                     ),
-                    indicatorType: indicatorType,
+                    indicatorType: indicatorTypeGroup,
                     pairedPeople: pairedPeople,
                     extraInfo: DataElement.buildExtraInfo(
                         excelRecord.description,
@@ -209,19 +212,18 @@ export class ImportDataElementSpreadSheetRepository implements ImportDataElement
         return type;
     }
 
-    private getSeriesSector(
-        allSectors: Sector[],
-        seriesName: string,
-        columnName: string,
-        index: number
-    ) {
-        const series = allSectors.find(
-            sector => sector.name.toLowerCase() === seriesName.toLowerCase()
-        );
+    private getSeriesSector(allSectors: Sector[], seriesName: string, sectorCode: Maybe<string>) {
+        const name = `Series ${seriesName}`;
+        const series = allSectors.find(sector => sector.name.toLowerCase() === name.toLowerCase());
         if (!series) {
-            throw Error(
-                `Error in row ${index + 1}: Invalid value in column ${columnName} = ${seriesName}`
-            );
+            const serieId = getUid("series", name);
+            if (!sectorCode) throw Error(`Invalid sector code for series ${seriesName}`);
+            return {
+                id: serieId,
+                name: name,
+                shortName: name,
+                code: `SERIES_${sectorCode.toUpperCase()}_${seriesName}`,
+            };
         }
         return series;
     }
@@ -268,32 +270,36 @@ export class ImportDataElementSpreadSheetRepository implements ImportDataElement
     }
 
     private getDataElementFromSheet(path: string): DataElementExcel[] {
-        const result = excelToJson({
-            sourceFile: path,
-            header: { rows: 1 },
-            columnToKey: {
-                A: "sector",
-                B: "oldCode",
-                C: "code",
-                D: "id",
-                E: "actualTargetIndicatorId",
-                F: "costBenefitIndicatorId",
-                G: "name",
-                H: "description",
-                I: "globalSub",
-                J: "peopleBenefit",
-                K: "benefitDisaggregation",
-                L: "series",
-                M: "pairedPeople",
-                N: "external",
-                O: "countingMethod",
-                P: "crossSectorSeries",
-                Q: "crossSectors",
-            },
-            sheets: ["CreateUpdate"],
-        });
+        const excelFile = xlsx.readFile(path);
+        const excelSheetName = excelFile.SheetNames.find(sn => sn === "CreateUpdate") || "";
+        const sheet = excelFile.Sheets[excelSheetName];
+        if (!sheet) throw Error("Sheet not found");
+        const seasonsExcel = xlsx.utils.sheet_to_json<SpreadSheetRecord>(sheet);
+        return this.parseRecords(seasonsExcel);
+    }
 
-        return result["CreateUpdate"] as unknown as DataElementExcel[];
+    private parseRecords(records: SpreadSheetRecord[]): DataElementExcel[] {
+        return records.map(record => {
+            return {
+                sector: record.Sector,
+                oldCode: record["Old code"],
+                code: record.Code,
+                id: record.Id,
+                actualTargetIndicatorId: record["Actual/Target Indicator ID"],
+                costBenefitIndicatorId: record["Cost/Benefit Indicator ID"],
+                name: record.Name,
+                description: record.Description,
+                globalSub: record["Global/Sub"],
+                peopleBenefit: record["People/Benefit"],
+                benefitDisaggregation: record["Benefit disaggregation"],
+                series: record.Series,
+                pairedPeople: record["Paired People (only for benefit ind)"],
+                external: record.External,
+                countingMethod: record["Counting Method"],
+                crossSectorSeries: record["Cross Sector Series"],
+                crossSectors: record["Cross Sectors"],
+            };
+        });
     }
 }
 
@@ -315,4 +321,24 @@ type DataElementExcel = {
     countingMethod: string;
     crossSectorSeries: string;
     crossSectors: string;
+};
+
+type SpreadSheetRecord = {
+    Sector: string;
+    "Old code": string;
+    Code: string;
+    Id: string;
+    "Actual/Target Indicator ID": string;
+    "Cost/Benefit Indicator ID": string;
+    Name: string;
+    Description: string;
+    "Global/Sub": string;
+    "People/Benefit": string;
+    "Benefit disaggregation": string;
+    Series: string;
+    "Paired People (only for benefit ind)": string;
+    External: string;
+    "Counting Method": string;
+    "Cross Sector Series": string;
+    "Cross Sectors": string;
 };

@@ -18,7 +18,7 @@ export interface DataElementAttrs extends NamedRef {
     extraSectors: Sector[];
     formName: string;
     indicators: Indicator[];
-    indicatorType: { name: string; id: Id };
+    indicatorType: NamedRef & { shortName: string; code: Code };
     mainSector: Sector;
     mainType: MainType;
     pairedPeople: Maybe<Ref & { code: Code }>;
@@ -94,7 +94,12 @@ export class DataElement extends Struct<DataElementAttrs>() {
             sector => sector.displayName.toLowerCase() === sectorName.toLowerCase()
         );
         if (!sector) throw Error(`Cannot find sector with name: ${sectorName}`);
-        return { ...sector, name: sector.displayName };
+        return {
+            ...sector,
+            name: sector.displayName,
+            code: sector.code,
+            shortName: sector.shortName,
+        };
     }
 
     static getCrossSectorsCodes(crossSector: StringSeparatedByComma, isSerie: boolean): Code[] {

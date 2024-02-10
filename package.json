@@ -28,7 +28,6 @@
         "axios": "0.21.1",
         "axios-retry": "^3.1.9",
         "classnames": "2.3.2",
-        "convert-excel-to-json": "^1.7.0",
         "csv-writer": "1.6.0",
         "csvtojson": "2.0.10",
         "d2": "31.9.0",
@@ -52,7 +51,8 @@
         "striptags": "3.2.0",
         "styled-components": "^5.2.1",
         "styled-jsx": "3.4.1",
-        "word-wrap": "1.2.5"
+        "word-wrap": "1.2.5",
+        "xlsx": "^0.18.5"
     },
     "scripts": {
         "prestart": "yarn localize && d2-manifest package.json manifest.webapp",
@@ -91,7 +91,6 @@
         "@babel/preset-typescript": "7.12.7",
         "@types/axios-mock-adapter": "^1.10.0",
         "@types/classnames": "^2.2.9",
-        "@types/convert-excel-to-json": "^1.7.4",
         "@types/cryptr": "^4.0.0",
         "@types/file-saver": "^2.0.1",
         "@types/jest": "26.0.20",

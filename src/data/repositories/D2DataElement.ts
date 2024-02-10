@@ -2,7 +2,7 @@ import _ from "lodash";
 
 import { AttributeValue } from "../../domain/entities/AttributeValue";
 import { DataElement } from "../../domain/entities/DataElement";
-import { DataElementGroup } from "../DataElementGroup";
+import { DataElementGroup } from "../../data/DataElementGroup";
 import { Indicator } from "../../domain/entities/Indicator";
 import { Id, Ref } from "../../domain/entities/Ref";
 import { promiseMap } from "../../migrations/utils";
@@ -174,26 +174,46 @@ export class D2DataElement {
     }
 
     private buildDataElementGroups(dataElements: DataElement[]): DataElementGroup[] {
-        const mainSectorGroup = _(dataElements)
-            .groupBy(dataElement => dataElement.mainSector.id)
+        const mainSectorGroups = this.buildSectorsGroups(dataElements);
+
+        const mainTypeGroups = this.buildMainTypes(dataElements);
+
+        const extraSectorsGroups = this.buildExtraSectorsGroups(dataElements);
+
+        const allIndicatorTypeGroups = _(dataElements)
+            .map(dataElement => dataElement.indicatorType)
+            .uniqBy(indicator => indicator.id)
+            .keyBy(indicator => indicator.id)
+            .value();
+
+        const indicatorTypeGroup = _(dataElements)
+            .groupBy(dataElement => dataElement.indicatorType.id)
             .toPairs()
             .map(([dataElementGroupId, dataElements]) => {
+                const indicatorTypeInfo = allIndicatorTypeGroups[dataElementGroupId];
                 return {
-                    id: dataElementGroupId,
+                    ...indicatorTypeInfo,
                     dataElements: dataElements.map(dataElement => ({ id: dataElement.id })),
                 };
             })
             .value();
 
-        const mainTypeGroup = _(dataElements)
-            .groupBy(dataElement => dataElement.mainType.sector.id)
-            .toPairs()
-            .map(([dataElementGroupId, dataElements]) => {
-                return {
-                    id: dataElementGroupId,
-                    dataElements: dataElements.map(dataElement => ({ id: dataElement.id })),
-                };
+        return [
+            ...mainSectorGroups,
+            ...mainTypeGroups,
+            ...extraSectorsGroups,
+            ...indicatorTypeGroup,
+        ];
+    }
+
+    private buildExtraSectorsGroups(dataElements: DataElement[]) {
+        const allExtraSectorGroups = _(dataElements)
+            .flatMap(dataElement => {
+                const extraSector = dataElement.extraSectors.map(extraSector => extraSector);
+                return extraSector;
             })
+            .uniqBy(extraSector => extraSector.id)
+            .keyBy(extraSector => extraSector.id)
             .value();
 
         const extraSectorGroup = _(dataElements)
@@ -206,24 +226,57 @@ export class D2DataElement {
             .groupBy(dataElement => dataElement.extraSectorId)
             .toPairs()
             .map(([dataElementGroupId, dataElements]) => {
+                const extraSectorDetails = allExtraSectorGroups[dataElementGroupId];
                 return {
-                    id: dataElementGroupId,
+                    ...extraSectorDetails,
                     dataElements: dataElements.map(dataElement => ({ id: dataElement.id })),
                 };
             })
             .value();
+        return extraSectorGroup;
+    }
 
-        const indicatorTypeGroup = _(dataElements)
-            .groupBy(dataElement => dataElement.indicatorType.id)
+    private buildMainTypes(dataElements: DataElement[]) {
+        const allMainTypes = _(dataElements)
+            .map(dataElement => dataElement.mainType.sector)
+            .uniqBy(mainType => mainType.id)
+            .keyBy(mainType => mainType.id)
+            .value();
+
+        const mainTypeGroup = _(dataElements)
+            .groupBy(dataElement => dataElement.mainType.sector.id)
             .toPairs()
             .map(([dataElementGroupId, dataElements]) => {
+                const mainTypeInfo = allMainTypes[dataElementGroupId];
                 return {
-                    id: dataElementGroupId,
+                    ...mainTypeInfo,
                     dataElements: dataElements.map(dataElement => ({ id: dataElement.id })),
                 };
             })
             .value();
 
-        return [...mainSectorGroup, ...mainTypeGroup, ...extraSectorGroup, ...indicatorTypeGroup];
+        return mainTypeGroup;
+    }
+
+    private buildSectorsGroups(dataElements: DataElement[]) {
+        const allMainSectors = _(dataElements)
+            .map(dataElement => dataElement.mainSector)
+            .uniqBy(getId)
+            .keyBy(sector => sector.id)
+            .value();
+
+        const mainSectorGroup = _(dataElements)
+            .groupBy(dataElement => dataElement.mainSector.id)
+            .toPairs()
+            .map(([dataElementGroupId, dataElements]) => {
+                const mainSectorDetails = allMainSectors[dataElementGroupId];
+                return {
+                    ...mainSectorDetails,
+                    dataElements: dataElements.map(dataElement => ({ id: dataElement.id })),
+                };
+            })
+            .value();
+
+        return mainSectorGroup;
     }
 }

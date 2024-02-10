@@ -190,6 +190,7 @@ const metadataParams = {
         fields: {
             code: yes,
             dataElementGroups: {
+                shortName: true,
                 id: yes,
                 displayName: yes,
                 code: yes,
@@ -286,7 +287,7 @@ export type DataElementGroupSet = GetItemType<Metadata["dataElementGroupSets"]>;
 type NamedObject = { id: Id; displayName: string };
 type CodedObject = { id: Id; code: string };
 
-export type Sector = NamedObject & CodedObject;
+export type Sector = NamedObject & CodedObject & { shortName: string };
 export type Funder = NamedObject & { shortName: string; code: string };
 export type Country = NamedObject & CodedObject;
 export type Location = NamedObject & { countries: Ref[] };

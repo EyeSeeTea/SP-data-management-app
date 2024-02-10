@@ -30,8 +30,11 @@ export class ImportDataElementsUseCase {
 
         if (options.export) {
             console.info("Exporting metadata files...");
-            await this.exportDataElementRepository.export("metadata_new.json", existingRecords);
-            await this.exportDataElementRepository.export("metadata_existing.json", newRecords);
+            await this.exportDataElementRepository.export("metadata_new.json", newRecords);
+            await this.exportDataElementRepository.export(
+                "metadata_existing.json",
+                existingRecords
+            );
             console.info("Metadata files exported");
         } else {
             console.info("Add --export to generate metadata");

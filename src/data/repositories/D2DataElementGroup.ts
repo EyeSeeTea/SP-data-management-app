@@ -5,8 +5,8 @@ import { Id, Identifiable } from "../../domain/entities/Ref";
 import { Sector } from "../../domain/entities/Sector";
 import { promiseMap } from "../../migrations/utils";
 import { DataElementGroup } from "../DataElementGroup";
-import { getId } from "../../utils/dhis2";
 import { getImportModeFromOptions, SaveOptions } from "../SaveOptions";
+import { getId } from "../../utils/dhis2";
 
 export class D2DataElementGroup {
     constructor(private api: D2Api) {}
@@ -52,7 +52,10 @@ export class D2DataElementGroup {
 
                     return {
                         ...(existingRecord || {}),
-                        dataElements: _(existingRecord?.dataElements)
+                        id: dataElementGroup.id,
+                        name: dataElementGroup.name,
+                        code: dataElementGroup.code,
+                        dataElements: _(existingRecord?.dataElements || [])
                             .concat(dataElementGroup.dataElements)
                             .uniqBy(getId)
                             .value(),
@@ -77,4 +80,4 @@ export class D2DataElementGroup {
     }
 }
 
-const fields = { id: true, name: true, code: true } as const;
+const fields = { id: true, name: true, code: true, shortName: true } as const;
