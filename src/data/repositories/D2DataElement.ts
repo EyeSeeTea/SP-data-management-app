@@ -11,13 +11,56 @@ import {
     D2Api,
     PartialPersistedModel,
     D2DataElement as D2ApiDataElement,
+    MetadataPick,
 } from "../../types/d2-api";
 import { Maybe } from "../../types/utils";
 import { getId } from "../../utils/dhis2";
 import { getImportModeFromOptions, SaveOptions } from "../SaveOptions";
+import { indicatorTypes, peopleOrBenefitList } from "../../models/dataElementsSet";
+import { IndicatorType } from "../../domain/entities/IndicatorType";
+import { D2Indicator, D2IndicatorFields } from "./D2Indicator";
 
 export class D2DataElement {
-    constructor(private api: D2Api, private config: Config) {}
+    d2Indicator: D2Indicator;
+    constructor(private api: D2Api, private config: Config) {
+        this.d2Indicator = new D2Indicator(api);
+    }
+
+    async getByIds(ids: Id[]): Promise<DataElement[]> {
+        const dataElementsImported = await promiseMap(_.chunk(ids, 100), async dataElementIds => {
+            const response = await this.api.models.dataElements
+                .get({
+                    fields: dataElementFields,
+                    filter: { id: { in: dataElementIds } },
+                    paging: false,
+                })
+                .getData();
+
+            const actualTargetCodes = response.objects.map(d2DataElement => {
+                return `${this.config.base.indicators.actualTargetPrefix}${d2DataElement.code}`;
+            });
+
+            const benefitCodes = response.objects.map(d2DataElement => {
+                return `${this.config.base.indicators.costBenefitPrefix}${d2DataElement.code}`;
+            });
+
+            const indicatorResponse = await this.d2Indicator.getByCodes([
+                ...actualTargetCodes,
+                ...benefitCodes,
+            ]);
+
+            const indicatorsByKeys = _.keyBy(indicatorResponse, indicator => indicator.code);
+
+            const dataElements = _(response.objects)
+                .map(d2DataElement => this.buildDataElement(d2DataElement, indicatorsByKeys))
+                .compact()
+                .value();
+
+            return dataElements;
+        });
+
+        return _(dataElementsImported).flatten().value();
+    }
 
     async save(ids: Id[], dataElements: DataElement[], options: SaveOptions): Promise<object> {
         const dataElementsImported = await promiseMap(_.chunk(ids, 100), async dataElementIds => {
@@ -83,12 +126,15 @@ export class D2DataElement {
         return _(dataElementsImported).flatten().value();
     }
 
-    extractMetadata(dataElements: DataElement[]) {
+    extractMetadata(dataElements: DataElement[], ignoreGroups: boolean) {
         const ids = dataElements.map(getId);
-        const dataElementGroups = this.buildDataElementGroups(dataElements);
+        const dataElementGroups = ignoreGroups ? [] : this.buildDataElementGroups(dataElements);
         const dataElementGroupsIds = dataElementGroups.map(getId);
         const { indicatorsIds, indicators } = this.buildIndicators(dataElements);
-        const { indicatorsGroupsIds, indicatorsGroups } = this.buildIndicatorsGroups(dataElements);
+        const { indicatorsGroupsIds, indicatorsGroups } = this.buildIndicatorsGroups(
+            dataElements,
+            ignoreGroups
+        );
         return {
             ids,
             dataElementGroups,
@@ -136,10 +182,14 @@ export class D2DataElement {
         return value ? { attribute: { id: id }, value: value } : undefined;
     }
 
-    private buildIndicatorsGroups(dataElements: DataElement[]): {
+    private buildIndicatorsGroups(
+        dataElements: DataElement[],
+        ignoreGroups: boolean
+    ): {
         indicatorsGroupsIds: Id[];
         indicatorsGroups: { id: Id; indicators: Ref[] }[];
     } {
+        if (ignoreGroups) return { indicatorsGroups: [], indicatorsGroupsIds: [] };
         const allIndicators = dataElements.flatMap(dataElement => dataElement.indicators);
         const indicatorsGroups = _(allIndicators)
             .groupBy(indicator => indicator.groupName)
@@ -181,22 +231,27 @@ export class D2DataElement {
         const extraSectorsGroups = this.buildExtraSectorsGroups(dataElements);
 
         const allIndicatorTypeGroups = _(dataElements)
-            .map(dataElement => dataElement.indicatorType)
+            .map(dataElement =>
+                dataElement.indicatorType.id ? dataElement.indicatorType : undefined
+            )
+            .compact()
             .uniqBy(indicator => indicator.id)
             .keyBy(indicator => indicator.id)
             .value();
 
-        const indicatorTypeGroup = _(dataElements)
-            .groupBy(dataElement => dataElement.indicatorType.id)
-            .toPairs()
-            .map(([dataElementGroupId, dataElements]) => {
-                const indicatorTypeInfo = allIndicatorTypeGroups[dataElementGroupId];
-                return {
-                    ...indicatorTypeInfo,
-                    dataElements: dataElements.map(dataElement => ({ id: dataElement.id })),
-                };
-            })
-            .value();
+        const indicatorTypeGroup = _.isEmpty(allIndicatorTypeGroups)
+            ? []
+            : _(dataElements)
+                  .groupBy(dataElement => dataElement.indicatorType.id)
+                  .toPairs()
+                  .map(([dataElementGroupId, dataElements]) => {
+                      const indicatorTypeInfo = allIndicatorTypeGroups[dataElementGroupId];
+                      return {
+                          ...indicatorTypeInfo,
+                          dataElements: dataElements.map(dataElement => ({ id: dataElement.id })),
+                      };
+                  })
+                  .value();
 
         return [
             ...mainSectorGroups,
@@ -215,6 +270,8 @@ export class D2DataElement {
             .uniqBy(extraSector => extraSector.id)
             .keyBy(extraSector => extraSector.id)
             .value();
+
+        if (_.isEmpty(allExtraSectorGroups)) return [];
 
         const extraSectorGroup = _(dataElements)
             .flatMap(dataElement => {
@@ -238,10 +295,15 @@ export class D2DataElement {
 
     private buildMainTypes(dataElements: DataElement[]) {
         const allMainTypes = _(dataElements)
-            .map(dataElement => dataElement.mainType.sector)
+            .map(dataElement =>
+                dataElement.mainType.sector.id ? dataElement.mainType.sector : undefined
+            )
+            .compact()
             .uniqBy(mainType => mainType.id)
             .keyBy(mainType => mainType.id)
             .value();
+
+        if (_.isEmpty(allMainTypes)) return [];
 
         const mainTypeGroup = _(dataElements)
             .groupBy(dataElement => dataElement.mainType.sector.id)
@@ -260,10 +322,13 @@ export class D2DataElement {
 
     private buildSectorsGroups(dataElements: DataElement[]) {
         const allMainSectors = _(dataElements)
-            .map(dataElement => dataElement.mainSector)
+            .map(dataElement => (dataElement.mainSector.id ? dataElement.mainSector : undefined))
+            .compact()
             .uniqBy(getId)
             .keyBy(sector => sector.id)
             .value();
+
+        if (_.isEmpty(allMainSectors)) return [];
 
         const mainSectorGroup = _(dataElements)
             .groupBy(dataElement => dataElement.mainSector.id)
@@ -279,4 +344,159 @@ export class D2DataElement {
 
         return mainSectorGroup;
     }
+
+    private buildDataElement(
+        d2DataElement: D2DataElementFields,
+        indicators: Record<string, D2IndicatorFields>
+    ): Maybe<DataElement> {
+        const targetIndicator = indicators[`ACTUAL_TARGET_${d2DataElement.code}`];
+        const costBenefitIndicator = indicators[`COST_BENEFIT_${d2DataElement.code}`];
+
+        const attributes = this.config.attributes;
+        const extraInfo = this.getAttributeValue(d2DataElement, attributes.extraDataElement.id);
+        const pairedDataElement = this.getAttributeValue(
+            d2DataElement,
+            attributes.pairedDataElement.id
+        );
+        const countingMethod = this.getAttributeValue(d2DataElement, attributes.countingMethod.id);
+        const mainSector = this.getMainSector(d2DataElement, this.config);
+        const mainType = this.getMainType(d2DataElement);
+        const indicatorType = this.getIndicatorType(d2DataElement);
+
+        const extraSectors = _(d2DataElement.dataElementGroups)
+            .map(dataElementGroup => {
+                if (dataElementGroup.id === indicatorType.id) return undefined;
+                if (dataElementGroup.id === mainSector.id) return undefined;
+                if (dataElementGroup.id === mainType.sector.id) return undefined;
+                return dataElementGroup;
+            })
+            .compact()
+            .value();
+
+        const actualIndicator = this.createIndicator(targetIndicator, "People Target / Actual");
+        const benefitIndicator = this.createIndicator(costBenefitIndicator, "Cost / Benefit");
+
+        const dataElementIndicators = _([actualIndicator, benefitIndicator]).compact().value();
+
+        return new DataElement({
+            id: d2DataElement.id,
+            code: d2DataElement.code,
+            countingMethod: countingMethod,
+            description: d2DataElement.description,
+            disaggregation: d2DataElement.categoryCombo
+                ? { id: d2DataElement.categoryCombo.id }
+                : undefined,
+            extraInfo: extraInfo,
+            extraSectors: extraSectors,
+            formName: d2DataElement.formName,
+            indicators: dataElementIndicators,
+            indicatorType: indicatorType,
+            mainSector: { ...mainSector, name: mainSector.displayName },
+            mainType: { name: mainType.name, sector: mainType.sector },
+            pairedPeople: pairedDataElement ? { id: "", code: pairedDataElement } : undefined,
+            shortName: d2DataElement.shortName,
+            name: d2DataElement.name,
+        });
+    }
+
+    private createIndicator(targetIndicator: Maybe<D2IndicatorFields>, groupName: string) {
+        if (!targetIndicator) return undefined;
+        return Indicator.create({
+            code: targetIndicator.code,
+            id: targetIndicator.id,
+            denominator: {
+                description: targetIndicator.denominatorDescription,
+                formula: targetIndicator.denominator,
+            },
+            numerator: {
+                description: targetIndicator.numeratorDescription,
+                formula: targetIndicator.numerator,
+            },
+            groupName: groupName,
+            name: targetIndicator.name,
+            shortName: targetIndicator.shortName,
+            type: IndicatorType.create({
+                category: IndicatorType.getCategoryFromName(targetIndicator.indicatorType.name),
+                id: targetIndicator.indicatorType.id,
+                name: targetIndicator.indicatorType.name,
+                symbol: IndicatorType.getSymbolFromName(targetIndicator.indicatorType.name),
+            }),
+        });
+    }
+
+    private getIndicatorType(d2DataElement: D2DataElementFields) {
+        const indicatorTypeDetails = _(indicatorTypes)
+            .map(indicatorType => {
+                const indicatorTypeCode =
+                    indicatorType === "reportableSub" ? "REPORTABLE_SUB" : indicatorType;
+                const dataElementGroup = d2DataElement.dataElementGroups.find(
+                    dataElementGroup =>
+                        dataElementGroup.code.toLowerCase() === indicatorTypeCode.toLowerCase()
+                );
+                if (!dataElementGroup) return undefined;
+                return dataElementGroup;
+            })
+            .compact()
+            .first();
+
+        if (!indicatorTypeDetails) {
+            throw Error(`Cannot find indicatorType for dataElement: ${d2DataElement.id}`);
+        }
+
+        return indicatorTypeDetails;
+    }
+
+    private getMainType(d2DataElement: D2DataElementFields) {
+        const mainTypeDetails = _(peopleOrBenefitList)
+            .map(mainType => {
+                const dataElementGroup = d2DataElement.dataElementGroups.find(
+                    dataElementGroup =>
+                        dataElementGroup.code.toLowerCase() === mainType.toLowerCase()
+                );
+                if (!dataElementGroup) return undefined;
+                return { name: mainType, sector: dataElementGroup };
+            })
+            .compact()
+            .first();
+
+        if (!mainTypeDetails || !mainTypeDetails.sector) {
+            throw Error(`Cannot find mainType for dataElement: ${d2DataElement.id}`);
+        }
+        return mainTypeDetails;
+    }
+
+    private getAttributeValue(d2DataElement: D2DataElementFields, attributeId: Id): string {
+        const attribute = d2DataElement.attributeValues.find(
+            attribute => attributeId === attribute.attribute.id
+        );
+        return attribute?.value || "";
+    }
+
+    private getMainSector(d2DataElement: D2DataElementFields, config: Config) {
+        const mainSectorCode = this.getAttributeValue(
+            d2DataElement,
+            config.attributes.mainSector.id
+        );
+        const mainSector = this.config.sectors.find(sector => sector.code === mainSectorCode);
+        if (!mainSector) {
+            throw Error(`Cannot find mainSector for dataElement: ${d2DataElement.id}`);
+        }
+        return mainSector;
+    }
 }
+
+const dataElementFields = {
+    attributeValues: { value: true, attribute: { id: true } },
+    code: true,
+    dataElementGroups: { id: true, code: true, name: true, shortName: true },
+    description: true,
+    id: true,
+    name: true,
+    categoryCombo: true,
+    formName: true,
+    shortName: true,
+} as const;
+
+type D2DataElementFields = MetadataPick<{
+    dataElements: { fields: typeof dataElementFields };
+}>["dataElements"][number];

@@ -11,7 +11,7 @@ import {
 } from "../../domain/repositories/ImportDataElementRepository";
 import { DataElement } from "../../domain/entities/DataElement";
 import { D2DataElementGroup } from "./D2DataElementGroup";
-import { Code, Ref, Identifiable } from "../../domain/entities/Ref";
+import { Code, Ref, Identifiable, Id } from "../../domain/entities/Ref";
 import { Sector } from "../../domain/entities/Sector";
 import { D2IndicatorType } from "./D2IndicatorType";
 import { IndicatorType } from "../../domain/entities/IndicatorType";
@@ -56,7 +56,14 @@ export class ImportDataElementSpreadSheetRepository implements ImportDataElement
         );
         console.info(`${newDataElements.length} new data elements`);
 
-        return { newRecords: newDataElements, existingRecords: existingDataElements };
+        const dataElementsToRemove = this.getDataElementToRemoveFromSheet(path);
+        console.info(`${dataElementsToRemove.length} records to be deleted`);
+
+        return {
+            newRecords: newDataElements,
+            existingRecords: existingDataElements,
+            removedRecords: dataElementsToRemove,
+        };
     }
 
     private generateDataElementsToImport(
@@ -270,12 +277,27 @@ export class ImportDataElementSpreadSheetRepository implements ImportDataElement
     }
 
     private getDataElementFromSheet(path: string): DataElementExcel[] {
+        const sheet = this.getSheetOrThrow(path, "CreateUpdate");
+        const excelRows = xlsx.utils.sheet_to_json<SpreadSheetRecord>(sheet);
+        return this.parseRecords(excelRows);
+    }
+
+    private getDataElementToRemoveFromSheet(path: string): Id[] {
+        const sheet = this.getSheetOrThrow(path, "Delete");
+        const excelRows = xlsx.utils.sheet_to_json<SpreadSheetRecordRemove>(sheet);
+        return this.parseRecordsToRemove(excelRows);
+    }
+
+    private parseRecordsToRemove(rows: SpreadSheetRecordRemove[]): Id[] {
+        return rows.map(row => row.Id);
+    }
+
+    private getSheetOrThrow(path: string, sheetName: string) {
         const excelFile = xlsx.readFile(path);
-        const excelSheetName = excelFile.SheetNames.find(sn => sn === "CreateUpdate") || "";
+        const excelSheetName = excelFile.SheetNames.find(sn => sn === sheetName);
+        if (!excelSheetName) throw Error(`Sheet not found: ${sheetName}`);
         const sheet = excelFile.Sheets[excelSheetName];
-        if (!sheet) throw Error("Sheet not found");
-        const seasonsExcel = xlsx.utils.sheet_to_json<SpreadSheetRecord>(sheet);
-        return this.parseRecords(seasonsExcel);
+        return sheet;
     }
 
     private parseRecords(records: SpreadSheetRecord[]): DataElementExcel[] {
@@ -342,3 +364,5 @@ type SpreadSheetRecord = {
     "Cross Sector Series": string;
     "Cross Sectors": string;
 };
+
+type SpreadSheetRecordRemove = Pick<SpreadSheetRecord, "Code" | "Id">;

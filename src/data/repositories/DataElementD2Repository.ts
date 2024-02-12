@@ -6,7 +6,7 @@ import { D2DataElement } from "./D2DataElement";
 import { D2DataElementGroup } from "./D2DataElementGroup";
 import { D2Indicator } from "./D2Indicator";
 import { D2IndicatorType } from "./D2IndicatorType";
-import { SaveOptions } from "../SaveOptions";
+import { getImportModeFromOptions, SaveOptions } from "../SaveOptions";
 
 export class DataElementD2Repository implements DataElementRepository {
     d2DataElement: D2DataElement;
@@ -21,6 +21,10 @@ export class DataElementD2Repository implements DataElementRepository {
         this.d2IndicatorType = new D2IndicatorType(this.api);
     }
 
+    async getByIds(ids: string[]): Promise<DataElement[]> {
+        return this.d2DataElement.getByIds(ids);
+    }
+
     async save(dataElements: DataElement[], options: SaveOptions): Promise<void> {
         const {
             ids,
@@ -30,11 +34,33 @@ export class DataElementD2Repository implements DataElementRepository {
             indicatorsIds,
             indicatorsGroups,
             indicatorsGroupsIds,
-        } = this.d2DataElement.extractMetadata(dataElements);
+        } = this.d2DataElement.extractMetadata(dataElements, false);
 
         await this.d2DataElement.save(ids, dataElements, options);
         await this.d2DataElementGroup.save(dataElementGroupsIds, dataElementGroups, options);
         await this.d2Indicator.save(indicatorsIds, indicators, options);
         await this.d2IndicatorType.save(indicatorsGroupsIds, indicatorsGroups, options);
+    }
+
+    async remove(dataElements: DataElement[], options: SaveOptions): Promise<void> {
+        const allIndicatorsIds = dataElements.flatMap(dataElement =>
+            dataElement.indicators.map(indicator => indicator.id)
+        );
+        const response = await this.api.metadata
+            .post(
+                {
+                    indicators: allIndicatorsIds.map(indicatorId => ({ id: indicatorId })),
+                    dataElements: dataElements.map(dataElement => ({ id: dataElement.id })),
+                },
+                {
+                    importMode: getImportModeFromOptions(options.post),
+                    importStrategy: "DELETE",
+                }
+            )
+            .getData();
+
+        if (options.post) {
+            console.info("dataElements removed: ", response.stats);
+        }
     }
 }

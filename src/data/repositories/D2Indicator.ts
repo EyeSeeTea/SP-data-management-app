@@ -1,7 +1,7 @@
 import _ from "lodash";
 
-import { D2Api } from "../../types/d2-api";
-import { Id } from "../../domain/entities/Ref";
+import { D2Api, MetadataPick } from "../../types/d2-api";
+import { Code, Id } from "../../domain/entities/Ref";
 import { promiseMap } from "../../migrations/utils";
 import { Indicator } from "../../domain/entities/Indicator";
 import { getImportModeFromOptions, SaveOptions } from "../SaveOptions";
@@ -62,4 +62,28 @@ export class D2Indicator {
         );
         return _(indicatorsImported).flatten().value();
     }
+
+    async getByCodes(codes: Code[]): Promise<D2IndicatorFields[]> {
+        const indicatorResponse = await this.api.models.indicators
+            .get({ fields: indicatorFields, filter: { code: { in: codes } }, paging: false })
+            .getData();
+
+        return indicatorResponse.objects;
+    }
 }
+
+const indicatorFields = {
+    code: true,
+    denominator: true,
+    denominatorDescription: true,
+    id: true,
+    name: true,
+    numerator: true,
+    numeratorDescription: true,
+    shortName: true,
+    indicatorType: { id: true, name: true },
+} as const;
+
+export type D2IndicatorFields = MetadataPick<{
+    indicators: { fields: typeof indicatorFields };
+}>["indicators"][number];

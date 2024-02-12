@@ -1,4 +1,7 @@
-import { ExportDataElementRepository } from "../../domain/repositories/ExportDataElementRepository";
+import {
+    ExportDataElementRepository,
+    ExportOptions,
+} from "../../domain/repositories/ExportDataElementRepository";
 import { D2Api } from "../../types/d2-api";
 import { DataElement } from "../../domain/entities/DataElement";
 import { Config } from "../../models/Config";
@@ -21,7 +24,7 @@ export class ExportDataElementJsonRepository implements ExportDataElementReposit
         this.d2IndicatorType = new D2IndicatorType(this.api);
     }
 
-    async export(path: string, dataElements: DataElement[]): Promise<void> {
+    async export(path: string, dataElements: DataElement[], options: ExportOptions): Promise<void> {
         const {
             ids,
             dataElementGroups,
@@ -30,7 +33,7 @@ export class ExportDataElementJsonRepository implements ExportDataElementReposit
             indicatorsIds,
             indicatorsGroups,
             indicatorsGroupsIds,
-        } = this.d2DataElement.extractMetadata(dataElements);
+        } = this.d2DataElement.extractMetadata(dataElements, options.ignoreGroups);
 
         const d2DataElements = await this.d2DataElement.save(ids, dataElements, { post: false });
         const d2DataElementGroups = await this.d2DataElementGroup.save(

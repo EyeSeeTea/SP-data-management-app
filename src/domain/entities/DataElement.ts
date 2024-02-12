@@ -1,12 +1,12 @@
-import { Id } from "@eyeseetea/d2-api";
 import _ from "lodash";
+
 import { Config } from "../../models/Config";
 import { PeopleOrBenefit } from "../../models/dataElementsSet";
 import { Maybe } from "../../types/utils";
 import { Struct } from "./generic/Struct";
 import { Indicator, IndicatorDataElement } from "./Indicator";
 import { IndicatorType } from "./IndicatorType";
-import { Code, NamedRef, Ref } from "./Ref";
+import { Code, Id, NamedRef, Ref } from "./Ref";
 import { Sector } from "./Sector";
 
 export interface DataElementAttrs extends NamedRef {

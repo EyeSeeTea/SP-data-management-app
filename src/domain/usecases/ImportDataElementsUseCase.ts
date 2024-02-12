@@ -10,11 +10,16 @@ export class ImportDataElementsUseCase {
     ) {}
 
     async execute(options: ImportDataElementsUseCaseOptions): Promise<void> {
-        const { newRecords, existingRecords } = await this.importDataElementSheetRepository.import(
-            options.excelPath
-        );
+        const { newRecords, existingRecords, removedRecords } =
+            await this.importDataElementSheetRepository.import(options.excelPath);
+
+        const dataElementsToRemove = await this.dataElementRepository.getByIds(removedRecords);
 
         if (options.post) {
+            console.info("Deleting existing data elements...\n");
+            await this.dataElementRepository.remove(dataElementsToRemove, options);
+            console.info("Existing data elements removed\n");
+
             console.info("Importing existing data elements...\n");
             await this.dataElementRepository.save(existingRecords, options);
             console.info("Existing data elements imported\n");
@@ -30,10 +35,18 @@ export class ImportDataElementsUseCase {
 
         if (options.export) {
             console.info("Exporting metadata files...");
-            await this.exportDataElementRepository.export("metadata_new.json", newRecords);
+            await this.exportDataElementRepository.export(
+                "metadata_deleted.json",
+                dataElementsToRemove,
+                { ignoreGroups: true }
+            );
+            await this.exportDataElementRepository.export("metadata_new.json", newRecords, {
+                ignoreGroups: false,
+            });
             await this.exportDataElementRepository.export(
                 "metadata_existing.json",
-                existingRecords
+                existingRecords,
+                { ignoreGroups: false }
             );
             console.info("Metadata files exported");
         } else {
