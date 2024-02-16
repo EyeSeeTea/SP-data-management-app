@@ -1,24 +1,39 @@
+import { AuditDataElementSqlExportRepository } from "./data/repositories/AuditDataElementSqlExportRepository";
+import { DataElementD2GroupRepository } from "./data/repositories/DataElementD2GroupRepository";
 import { DataElementD2Repository } from "./data/repositories/DataElementD2Repository";
+import { DataValueD2Repository } from "./data/repositories/DataValueD2Repository";
+import { DataValueExportJsonRepository } from "./data/repositories/DataValueExportJsonRepository";
 import { ExportDataElementJsonRepository } from "./data/repositories/ExportDataElementJsonRepository";
 import { ImportDataElementSpreadSheetRepository } from "./data/repositories/ImportDataElementSpreadSheetRepository";
+import { OrgUnitD2Repository } from "./data/repositories/OrgUnitD2Repository";
 import { ImportDataElementsUseCase } from "./domain/usecases/ImportDataElementsUseCase";
 import { Config } from "./models/Config";
 import { D2Api } from "./types/d2-api";
 
 export function getCompositionRoot(api: D2Api, config: Config) {
+    const dataValueRepository = new DataValueD2Repository(api);
     const dataElementRepository = new DataElementD2Repository(api, config);
     const importDataElementSpreadSheetRepository = new ImportDataElementSpreadSheetRepository(
         api,
         config
     );
     const exportDataElementJsonRepository = new ExportDataElementJsonRepository(api, config);
+    const dataElementGroupRepository = new DataElementD2GroupRepository(api);
+    const dataValueExportRepository = new DataValueExportJsonRepository();
+    const auditDataElementExportRepository = new AuditDataElementSqlExportRepository();
+    const orgUnitRepository = new OrgUnitD2Repository(api);
 
     return {
         dataElements: {
             import: new ImportDataElementsUseCase(
                 importDataElementSpreadSheetRepository,
                 dataElementRepository,
-                exportDataElementJsonRepository
+                exportDataElementJsonRepository,
+                dataElementGroupRepository,
+                dataValueRepository,
+                dataValueExportRepository,
+                auditDataElementExportRepository,
+                orgUnitRepository
             ),
         },
     };

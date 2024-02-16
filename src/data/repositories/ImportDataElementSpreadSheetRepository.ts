@@ -11,11 +11,12 @@ import {
 } from "../../domain/repositories/ImportDataElementRepository";
 import { DataElement } from "../../domain/entities/DataElement";
 import { D2DataElementGroup } from "./D2DataElementGroup";
-import { Code, Ref, Identifiable, Id } from "../../domain/entities/Ref";
+import { Code, Ref, Id } from "../../domain/entities/Ref";
 import { Sector } from "../../domain/entities/Sector";
 import { D2IndicatorType } from "./D2IndicatorType";
 import { IndicatorType } from "../../domain/entities/IndicatorType";
 import { getUid } from "../../utils/dhis2";
+import { Identifiable } from "../Ref";
 
 export class ImportDataElementSpreadSheetRepository implements ImportDataElementRepository {
     private d2DataElementGroup: D2DataElementGroup;

@@ -11,6 +11,7 @@ async function main() {
             excelPath: {},
             post: { switch: true },
             export: { switch: true },
+            deleteDataValues: { switch: true },
         },
     });
     const { opts } = parser(process.argv);
@@ -25,7 +26,8 @@ async function main() {
     await compositionRoot.dataElements.import.execute({
         excelPath: opts.excelPath,
         post: opts.post || false,
-        export: opts.export || true,
+        export: opts.export || false,
+        deleteDataValues: opts.deleteDataValues || false,
     });
 }
 

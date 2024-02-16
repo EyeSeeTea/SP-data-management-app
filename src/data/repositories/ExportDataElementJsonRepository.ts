@@ -6,7 +6,7 @@ import { D2Api } from "../../types/d2-api";
 import { DataElement } from "../../domain/entities/DataElement";
 import { Config } from "../../models/Config";
 import { D2DataElement } from "./D2DataElement";
-import { writeToDisk } from "../../scripts/utils/logger";
+import { writeJsonToDisk } from "../../scripts/utils/logger";
 import { D2DataElementGroup } from "./D2DataElementGroup";
 import { D2Indicator } from "./D2Indicator";
 import { D2IndicatorType } from "./D2IndicatorType";
@@ -49,7 +49,7 @@ export class ExportDataElementJsonRepository implements ExportDataElementReposit
             indicatorsGroups,
             { post: false }
         );
-        writeToDisk(path, {
+        writeJsonToDisk(path, {
             dataElements: d2DataElements,
             dataElementGroups: d2DataElementGroups,
             indicators: d2Indicators,

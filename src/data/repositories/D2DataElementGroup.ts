@@ -1,17 +1,17 @@
 import _ from "lodash";
 
 import { D2Api } from "../../types/d2-api";
-import { Id, Identifiable } from "../../domain/entities/Ref";
-import { Sector } from "../../domain/entities/Sector";
+import { Id } from "../../domain/entities/Ref";
 import { promiseMap } from "../../migrations/utils";
 import { DataElementGroup } from "../DataElementGroup";
 import { getImportModeFromOptions, SaveOptions } from "../SaveOptions";
 import { getId } from "../../utils/dhis2";
+import { Identifiable } from "../Ref";
 
 export class D2DataElementGroup {
     constructor(private api: D2Api) {}
 
-    async getByIdentifiables(identifiables: Identifiable[]): Promise<Sector[]> {
+    async getByIdentifiables(identifiables: Identifiable[]): Promise<DataElementGroup[]> {
         const sectors = await promiseMap(_.chunk(identifiables, 50), async codesToFilter => {
             const data = await this.api.models.dataElementGroups
                 .get({ fields: fields, filter: { identifiable: { in: codesToFilter } } })
@@ -80,4 +80,4 @@ export class D2DataElementGroup {
     }
 }
 
-const fields = { id: true, name: true, code: true, shortName: true } as const;
+const fields = { id: true, name: true, code: true, shortName: true, dataElements: true } as const;

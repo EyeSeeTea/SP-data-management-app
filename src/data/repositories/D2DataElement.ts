@@ -3,7 +3,7 @@ import _ from "lodash";
 import { AttributeValue } from "../../domain/entities/AttributeValue";
 import { DataElement } from "../../domain/entities/DataElement";
 import { DataElementGroup } from "../../data/DataElementGroup";
-import { Indicator } from "../../domain/entities/Indicator";
+import { COST_BENEFIT_NAME, Indicator, TARGET_ACTUAL_NAME } from "../../domain/entities/Indicator";
 import { Id, Ref } from "../../domain/entities/Ref";
 import { promiseMap } from "../../migrations/utils";
 import { Config } from "../../models/Config";
@@ -373,8 +373,8 @@ export class D2DataElement {
             .compact()
             .value();
 
-        const actualIndicator = this.createIndicator(targetIndicator, "People Target / Actual");
-        const benefitIndicator = this.createIndicator(costBenefitIndicator, "Cost / Benefit");
+        const actualIndicator = this.createIndicator(targetIndicator, TARGET_ACTUAL_NAME);
+        const benefitIndicator = this.createIndicator(costBenefitIndicator, COST_BENEFIT_NAME);
 
         const dataElementIndicators = _([actualIndicator, benefitIndicator]).compact().value();
 

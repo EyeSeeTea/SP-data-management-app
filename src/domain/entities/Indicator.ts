@@ -14,8 +14,8 @@ interface IndicatorAttrs extends NamedRef {
     groupName: string;
 }
 
-const COST_BENEFIT_NAME = "Cost / Benefit";
-const TARGET_ACTUAL_NAME = "Actual / Target";
+export const COST_BENEFIT_NAME = "Cost / Benefit";
+export const TARGET_ACTUAL_NAME = "Actual / Target";
 
 export class Indicator extends Struct<IndicatorAttrs>() {
     static buildIndicatorsByType(
