@@ -25,7 +25,7 @@
         "@material-ui/icons": "4.11.3",
         "@material-ui/styles": "4.11.4",
         "async-promise-pool": "^1.0.2",
-        "axios": "0.21.1",
+        "axios": "0.28.0",
         "axios-retry": "^3.1.9",
         "classnames": "2.3.2",
         "csv-writer": "1.6.0",
