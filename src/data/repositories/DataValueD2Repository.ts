@@ -11,6 +11,8 @@ import { getUid } from "../../utils/dhis2";
 import { Maybe } from "../../types/utils";
 import { writeToDisk } from "../../scripts/utils/logger";
 
+const DE_DELETE_GROUP_CODE = "DEG_TEMP_REMOVE_DATAELEMENTS";
+
 export class DataValueD2Repository implements DataValueRepository {
     d2DataElementGroup: D2DataElementGroup;
     constructor(private api: D2Api) {
@@ -53,14 +55,13 @@ export class DataValueD2Repository implements DataValueRepository {
     private async createTempDataElementGroup(
         options: GetDataValueOptions
     ): Promise<Maybe<DataElementGroup>> {
-        if (!options.tempDataElementGroup) return undefined;
-        const { code, dataElements } = options.tempDataElementGroup;
+        if (!options.dataElementsIds) return undefined;
         const tempDataElementGroup: DataElementGroup = {
-            id: getUid("dataElementGroups", code),
-            code: code,
-            name: code,
-            shortName: code,
-            dataElements: dataElements.map(dataElement => ({ id: dataElement.id })),
+            id: getUid("dataElementGroups", DE_DELETE_GROUP_CODE),
+            code: DE_DELETE_GROUP_CODE,
+            name: DE_DELETE_GROUP_CODE,
+            shortName: DE_DELETE_GROUP_CODE,
+            dataElements: options.dataElementsIds.map(dataElementId => ({ id: dataElementId })),
         };
         const ids = [tempDataElementGroup.id];
         await this.d2DataElementGroup.save(ids, [tempDataElementGroup], { post: true });

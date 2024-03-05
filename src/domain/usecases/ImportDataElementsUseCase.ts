@@ -8,8 +8,6 @@ import { ExportDataElementRepository } from "../repositories/ExportDataElementRe
 import { ImportDataElementRepository } from "../repositories/ImportDataElementRepository";
 import { OrgUnitRepository } from "../repositories/OrgUnitRepository";
 
-const DE_DELETE_GROUP_CODE = "DEG_TEMP_REMOVE_DATAELEMENTS";
-
 export class ImportDataElementsUseCase {
     constructor(
         private importDataElementSheetRepository: ImportDataElementRepository,
@@ -95,10 +93,7 @@ export class ImportDataElementsUseCase {
             children: true,
             endDate: "2050",
             startDate: "1950",
-            tempDataElementGroup: {
-                code: DE_DELETE_GROUP_CODE,
-                dataElements: dataElementsToRemove.map(dataElement => ({ id: dataElement.id })),
-            },
+            dataElementsIds: dataElementsToRemove.map(dataElement => dataElement.id),
         });
 
         await this.exportDataValues(dataValues);
