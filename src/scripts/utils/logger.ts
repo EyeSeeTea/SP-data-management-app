@@ -5,5 +5,9 @@ export function writeJsonToDisk(path: string, content: unknown) {
 }
 
 export function writeToDisk(path: string, content: string) {
-    writeFileSync(path, content);
+    writeFileSync(path, addNewLineToEnd(content));
+}
+
+export function addNewLineToEnd(content: string): string {
+    return content.endsWith("\n") ? content : (content += "\n");
 }

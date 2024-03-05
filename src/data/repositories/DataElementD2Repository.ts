@@ -34,7 +34,7 @@ export class DataElementD2Repository implements DataElementRepository {
             indicatorsIds,
             indicatorsGroups,
             indicatorsGroupsIds,
-        } = this.d2DataElement.extractMetadata(dataElements, false);
+        } = this.d2DataElement.extractMetadata(dataElements, { ignoreGroups: false });
 
         await this.d2DataElement.save(ids, dataElements, options);
         await this.d2DataElementGroup.save(dataElementGroupsIds, dataElementGroups, options);

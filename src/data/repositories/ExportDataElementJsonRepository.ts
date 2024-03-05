@@ -33,7 +33,7 @@ export class ExportDataElementJsonRepository implements ExportDataElementReposit
             indicatorsIds,
             indicatorsGroups,
             indicatorsGroupsIds,
-        } = this.d2DataElement.extractMetadata(dataElements, options.ignoreGroups);
+        } = this.d2DataElement.extractMetadata(dataElements, options);
 
         const d2DataElements = await this.d2DataElement.save(ids, dataElements, { post: false });
         const d2DataElementGroups = await this.d2DataElementGroup.save(

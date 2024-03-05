@@ -1,5 +1,3 @@
-import { AuditDataElementSqlExportRepository } from "./data/repositories/AuditDataElementSqlExportRepository";
-import { DataElementD2GroupRepository } from "./data/repositories/DataElementD2GroupRepository";
 import { DataElementD2Repository } from "./data/repositories/DataElementD2Repository";
 import { DataValueD2Repository } from "./data/repositories/DataValueD2Repository";
 import { DataValueExportJsonRepository } from "./data/repositories/DataValueExportJsonRepository";
@@ -18,9 +16,7 @@ export function getCompositionRoot(api: D2Api, config: Config) {
         config
     );
     const exportDataElementJsonRepository = new ExportDataElementJsonRepository(api, config);
-    const dataElementGroupRepository = new DataElementD2GroupRepository(api);
     const dataValueExportRepository = new DataValueExportJsonRepository();
-    const auditDataElementExportRepository = new AuditDataElementSqlExportRepository();
     const orgUnitRepository = new OrgUnitD2Repository(api);
 
     return {
@@ -29,10 +25,8 @@ export function getCompositionRoot(api: D2Api, config: Config) {
                 importDataElementSpreadSheetRepository,
                 dataElementRepository,
                 exportDataElementJsonRepository,
-                dataElementGroupRepository,
                 dataValueRepository,
                 dataValueExportRepository,
-                auditDataElementExportRepository,
                 orgUnitRepository
             ),
         },

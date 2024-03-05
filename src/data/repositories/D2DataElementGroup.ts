@@ -1,7 +1,7 @@
 import _ from "lodash";
 
 import { D2Api } from "../../types/d2-api";
-import { Id } from "../../domain/entities/Ref";
+import { Code, Id } from "../../domain/entities/Ref";
 import { promiseMap } from "../../migrations/utils";
 import { DataElementGroup } from "../DataElementGroup";
 import { getImportModeFromOptions, SaveOptions } from "../SaveOptions";
@@ -77,6 +77,28 @@ export class D2DataElementGroup {
         );
 
         return _(dataElementGroupsImported).flatten().value();
+    }
+
+    async getByCode(code: Code): Promise<DataElementGroup> {
+        const response = await this.getByIdentifiables([code]);
+        const dataElementGroup = response[0];
+        if (!dataElementGroup) throw Error(`Cannot find DataElementGroup: ${code}`);
+        return dataElementGroup;
+    }
+
+    async remove(dataElementGroups: DataElementGroup[]): Promise<void> {
+        await this.api.metadata
+            .post(
+                {
+                    dataElementGroups: dataElementGroups.map(dataElementGroup => {
+                        return { id: dataElementGroup.id };
+                    }),
+                },
+                {
+                    importStrategy: "DELETE",
+                }
+            )
+            .getData();
     }
 }
 

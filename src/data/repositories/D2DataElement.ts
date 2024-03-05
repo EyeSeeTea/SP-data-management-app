@@ -1,6 +1,6 @@
 import _ from "lodash";
 
-import { AttributeValue } from "../../domain/entities/AttributeValue";
+import { AttributeValue } from "../AttributeValue";
 import { DataElement } from "../../domain/entities/DataElement";
 import { DataElementGroup } from "../../data/DataElementGroup";
 import { COST_BENEFIT_NAME, Indicator, TARGET_ACTUAL_NAME } from "../../domain/entities/Indicator";
@@ -19,6 +19,7 @@ import { getImportModeFromOptions, SaveOptions } from "../SaveOptions";
 import { indicatorTypes, peopleOrBenefitList } from "../../models/dataElementsSet";
 import { IndicatorType } from "../../domain/entities/IndicatorType";
 import { D2Indicator, D2IndicatorFields } from "./D2Indicator";
+import { ExportOptions } from "../../domain/repositories/ExportDataElementRepository";
 
 export class D2DataElement {
     d2Indicator: D2Indicator;
@@ -106,6 +107,7 @@ export class D2DataElement {
                         name: dataElement.name,
                         shortName: dataElement.shortName,
                         valueType: valueType,
+                        zeroIsSignificant: true,
                     };
                 }
             );
@@ -126,7 +128,8 @@ export class D2DataElement {
         return _(dataElementsImported).flatten().value();
     }
 
-    extractMetadata(dataElements: DataElement[], ignoreGroups: boolean) {
+    extractMetadata(dataElements: DataElement[], options: ExportOptions) {
+        const { ignoreGroups } = options;
         const ids = dataElements.map(getId);
         const dataElementGroups = ignoreGroups ? [] : this.buildDataElementGroups(dataElements);
         const dataElementGroupsIds = dataElementGroups.map(getId);

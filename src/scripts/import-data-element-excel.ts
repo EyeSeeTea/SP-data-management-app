@@ -25,9 +25,9 @@ async function main() {
     const compositionRoot = getCompositionRoot(api, config);
     await compositionRoot.dataElements.import.execute({
         excelPath: opts.excelPath,
-        post: opts.post || false,
-        export: opts.export || false,
-        deleteDataValues: opts.deleteDataValues || false,
+        post: opts.post ?? false,
+        export: opts.export ?? false,
+        deleteDataValues: opts.deleteDataValues ?? false,
     });
 }
 

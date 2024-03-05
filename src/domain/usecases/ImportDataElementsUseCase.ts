@@ -1,11 +1,6 @@
-import { DataElementGroup } from "../../data/DataElementGroup";
-import { Maybe } from "../../types/utils";
-import { getUid } from "../../utils/dhis2";
 import { DataElement } from "../entities/DataElement";
 import { DataValue } from "../entities/DataValue";
 import { OrgUnit } from "../entities/OrgUnit";
-import { AuditDataElementExportRepository } from "../repositories/AuditDataElementExportRepository";
-import { DataElementGroupRepository } from "../repositories/DataElementGroupRepository";
 import { DataElementRepository } from "../repositories/DataElementRepository";
 import { DataValueExportRepository } from "../repositories/DataValueExportRepository";
 import { DataValueRepository } from "../repositories/DataValueRepository";
@@ -20,10 +15,8 @@ export class ImportDataElementsUseCase {
         private importDataElementSheetRepository: ImportDataElementRepository,
         private dataElementRepository: DataElementRepository,
         private exportDataElementRepository: ExportDataElementRepository,
-        private dataElementGroupRepository: DataElementGroupRepository,
         private dataValueRepository: DataValueRepository,
         private dataValueExportRepository: DataValueExportRepository,
-        private auditDataElementExportRepository: AuditDataElementExportRepository,
         private orgUnitRepository: OrgUnitRepository
     ) {}
 
@@ -32,13 +25,7 @@ export class ImportDataElementsUseCase {
             await this.importDataElementSheetRepository.import(options.excelPath);
 
         const dataElementsToRemove = await this.dataElementRepository.getByIds(removedRecords);
-        const dataElementGroup = await this.getOrCreateTempDataElementGroup(dataElementsToRemove);
-        if (dataElementsToRemove.length > 0 && !dataElementGroup) {
-            throw Error(
-                `There are dataElements to remove but cannot find temp. dataElementGroup: ${DE_DELETE_GROUP_CODE}`
-            );
-        }
-        const dataValuesBackup = await this.getDataValues(dataElementGroup, dataElementsToRemove);
+        const dataValuesBackup = await this.getDataValues(dataElementsToRemove);
 
         if (options.export) {
             console.info("Exporting metadata files...");
@@ -78,10 +65,6 @@ export class ImportDataElementsUseCase {
         } else {
             console.info("Add --post flag to save changes");
         }
-
-        if (dataElementGroup) {
-            await this.dataElementGroupRepository.remove([dataElementGroup]);
-        }
     }
 
     private async removeDataValues(
@@ -102,30 +85,8 @@ export class ImportDataElementsUseCase {
         }
     }
 
-    private async getOrCreateTempDataElementGroup(
-        dataElements: DataElement[]
-    ): Promise<Maybe<DataElementGroup>> {
-        if (dataElements.length === 0) return undefined;
-        const dataElementGroup = await this.dataElementGroupRepository.getByCode(
-            DE_DELETE_GROUP_CODE
-        );
-        if (dataElementGroup) return dataElementGroup;
-        const tempDataElementGroup = {
-            id: getUid("dataElementGroups", DE_DELETE_GROUP_CODE),
-            code: DE_DELETE_GROUP_CODE,
-            name: DE_DELETE_GROUP_CODE,
-            shortName: DE_DELETE_GROUP_CODE,
-            dataElements: dataElements.map(dataElement => ({ id: dataElement.id })),
-        };
-        await this.dataElementGroupRepository.save([tempDataElementGroup]);
-        return tempDataElementGroup;
-    }
-
-    private async getDataValues(
-        dataElementGroup: Maybe<DataElementGroup>,
-        dataElementsToRemove: DataElement[]
-    ): Promise<DataValue[]> {
-        if (dataElementsToRemove.length === 0 || !dataElementGroup) return [];
+    private async getDataValues(dataElementsToRemove: DataElement[]): Promise<DataValue[]> {
+        if (dataElementsToRemove.length === 0) return [];
         const orgUnit = await this.getOrgUnitId();
         console.info("Looking for data values in dataElements to be removed...");
         const dataValues = await this.dataValueRepository.get({
@@ -134,19 +95,15 @@ export class ImportDataElementsUseCase {
             children: true,
             endDate: "2050",
             startDate: "1950",
-            dataElementGroupIds: [dataElementGroup.id],
+            tempDataElementGroup: {
+                code: DE_DELETE_GROUP_CODE,
+                dataElements: dataElementsToRemove.map(dataElement => ({ id: dataElement.id })),
+            },
         });
 
         await this.exportDataValues(dataValues);
-        await this.exportSqlAuditValues(dataElementsToRemove);
 
         return dataValues;
-    }
-
-    private async exportSqlAuditValues(dataElementsToRemove: DataElement[]) {
-        console.info("Generating sql file for deleting audit entries...");
-        await this.auditDataElementExportRepository.export(dataElementsToRemove);
-        console.info("Sql file generated: audit_data_element.sql");
     }
 
     private async exportDataValues(dataValues: DataValue[]) {
