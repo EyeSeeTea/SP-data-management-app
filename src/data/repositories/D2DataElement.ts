@@ -4,7 +4,7 @@ import { AttributeValue } from "../AttributeValue";
 import { DataElement } from "../../domain/entities/DataElement";
 import { DataElementGroup } from "../../data/DataElementGroup";
 import { COST_BENEFIT_NAME, Indicator, TARGET_ACTUAL_NAME } from "../../domain/entities/Indicator";
-import { Id, Ref } from "../../domain/entities/Ref";
+import { Code, Id, Ref } from "../../domain/entities/Ref";
 import { promiseMap } from "../../migrations/utils";
 import { Config } from "../../models/Config";
 import {
@@ -27,40 +27,54 @@ export class D2DataElement {
         this.d2Indicator = new D2Indicator(api);
     }
 
-    async getByIds(ids: Id[]): Promise<DataElement[]> {
-        const dataElementsImported = await promiseMap(_.chunk(ids, 100), async dataElementIds => {
-            const response = await this.api.models.dataElements
-                .get({
-                    fields: dataElementFields,
-                    filter: { id: { in: dataElementIds } },
-                    paging: false,
-                })
-                .getData();
+    async getByCodes(codes: Code[]): Promise<DataElement[]> {
+        return this.getDataElementsInChunks(codes, "code");
+    }
 
-            const actualTargetCodes = response.objects.map(d2DataElement => {
-                return `${this.config.base.indicators.actualTargetPrefix}${d2DataElement.code}`;
-            });
+    private async getDataElementsInChunks(
+        values: string[],
+        fieldName: string
+    ): Promise<DataElement[]> {
+        const dataElementsImported = await promiseMap(
+            _.chunk(values, 100),
+            async dataElementIds => {
+                const response = await this.api.models.dataElements
+                    .get({
+                        fields: dataElementFields,
+                        filter: { [fieldName]: { in: dataElementIds } },
+                        paging: false,
+                    })
+                    .getData();
 
-            const benefitCodes = response.objects.map(d2DataElement => {
-                return `${this.config.base.indicators.costBenefitPrefix}${d2DataElement.code}`;
-            });
+                const actualTargetCodes = response.objects.map(d2DataElement => {
+                    return `${this.config.base.indicators.actualTargetPrefix}${d2DataElement.code}`;
+                });
 
-            const indicatorResponse = await this.d2Indicator.getByCodes([
-                ...actualTargetCodes,
-                ...benefitCodes,
-            ]);
+                const benefitCodes = response.objects.map(d2DataElement => {
+                    return `${this.config.base.indicators.costBenefitPrefix}${d2DataElement.code}`;
+                });
 
-            const indicatorsByKeys = _.keyBy(indicatorResponse, indicator => indicator.code);
+                const indicatorResponse = await this.d2Indicator.getByCodes([
+                    ...actualTargetCodes,
+                    ...benefitCodes,
+                ]);
 
-            const dataElements = _(response.objects)
-                .map(d2DataElement => this.buildDataElement(d2DataElement, indicatorsByKeys))
-                .compact()
-                .value();
+                const indicatorsByKeys = _.keyBy(indicatorResponse, indicator => indicator.code);
 
-            return dataElements;
-        });
+                const dataElements = _(response.objects)
+                    .map(d2DataElement => this.buildDataElement(d2DataElement, indicatorsByKeys))
+                    .compact()
+                    .value();
+
+                return dataElements;
+            }
+        );
 
         return _(dataElementsImported).flatten().value();
+    }
+
+    async getByIds(ids: Id[]): Promise<DataElement[]> {
+        return this.getDataElementsInChunks(ids, "id");
     }
 
     async save(ids: Id[], dataElements: DataElement[], options: SaveOptions): Promise<object> {
@@ -133,7 +147,8 @@ export class D2DataElement {
         const ids = dataElements.map(getId);
         const dataElementGroups = ignoreGroups ? [] : this.buildDataElementGroups(dataElements);
         const dataElementGroupsIds = dataElementGroups.map(getId);
-        const { indicatorsIds, indicators } = this.buildIndicators(dataElements);
+        const existingIndicators = this.buildIndicators(dataElements.filter(de => de.existing));
+        const newIndicators = this.buildIndicators(dataElements.filter(de => !de.existing));
         const { indicatorsGroupsIds, indicatorsGroups } = this.buildIndicatorsGroups(
             dataElements,
             ignoreGroups
@@ -142,8 +157,8 @@ export class D2DataElement {
             ids,
             dataElementGroups,
             dataElementGroupsIds,
-            indicatorsIds,
-            indicators,
+            existingIndicators,
+            newIndicators,
             indicatorsGroupsIds,
             indicatorsGroups,
         };
@@ -399,6 +414,7 @@ export class D2DataElement {
             pairedPeople: pairedDataElement ? { id: "", code: pairedDataElement } : undefined,
             shortName: d2DataElement.shortName,
             name: d2DataElement.name,
+            existing: true,
         });
     }
 

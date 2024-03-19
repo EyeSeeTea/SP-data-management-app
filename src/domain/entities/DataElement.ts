@@ -23,6 +23,7 @@ export interface DataElementAttrs extends NamedRef {
     mainType: MainType;
     pairedPeople: Maybe<Ref & { code: Code }>;
     shortName: string;
+    existing: boolean;
 }
 
 export class DataElement extends Struct<DataElementAttrs>() {

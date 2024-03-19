@@ -7,6 +7,7 @@ import { D2DataElementGroup } from "./D2DataElementGroup";
 import { D2Indicator } from "./D2Indicator";
 import { D2IndicatorType } from "./D2IndicatorType";
 import { getImportModeFromOptions, SaveOptions } from "../SaveOptions";
+import { getExistingAndNewDataElements } from "../common";
 
 export class DataElementD2Repository implements DataElementRepository {
     d2DataElement: D2DataElement;
@@ -27,18 +28,44 @@ export class DataElementD2Repository implements DataElementRepository {
 
     async save(dataElements: DataElement[], options: SaveOptions): Promise<void> {
         const {
+            existingDataElements,
+            existingDataElementsKeys,
+            newDataElements,
+            newDataElementsKeys,
+        } = getExistingAndNewDataElements(dataElements);
+
+        const {
             ids,
             dataElementGroups,
             dataElementGroupsIds,
-            indicators,
-            indicatorsIds,
+            newIndicators,
+            existingIndicators,
             indicatorsGroups,
             indicatorsGroupsIds,
         } = this.d2DataElement.extractMetadata(dataElements, { ignoreGroups: false });
 
-        await this.d2DataElement.save(ids, dataElements, options);
+        await this.d2DataElement.save(
+            ids.filter(id => Boolean(existingDataElementsKeys[id])),
+            existingDataElements,
+            options
+        );
+
+        await this.d2DataElement.save(
+            ids.filter(id => Boolean(newDataElementsKeys[id])),
+            newDataElements,
+            options
+        );
+
         await this.d2DataElementGroup.save(dataElementGroupsIds, dataElementGroups, options);
-        await this.d2Indicator.save(indicatorsIds, indicators, options);
+
+        await this.d2Indicator.save(
+            existingIndicators.indicatorsIds,
+            existingIndicators.indicators,
+            options
+        );
+
+        await this.d2Indicator.save(newIndicators.indicatorsIds, newIndicators.indicators, options);
+
         await this.d2IndicatorType.save(indicatorsGroupsIds, indicatorsGroups, options);
     }
 

@@ -17,14 +17,17 @@ import { D2IndicatorType } from "./D2IndicatorType";
 import { IndicatorType } from "../../domain/entities/IndicatorType";
 import { getUid } from "../../utils/dhis2";
 import { Identifiable } from "../Ref";
+import { D2DataElement } from "./D2DataElement";
 
 export class ImportDataElementSpreadSheetRepository implements ImportDataElementRepository {
     private d2DataElementGroup: D2DataElementGroup;
     private d2IndicatorType: D2IndicatorType;
+    private d2DataElement: D2DataElement;
 
     constructor(private api: D2Api, private config: Config) {
         this.d2DataElementGroup = new D2DataElementGroup(this.api);
         this.d2IndicatorType = new D2IndicatorType(this.api);
+        this.d2DataElement = new D2DataElement(this.api, this.config);
     }
 
     async import(path: string): Promise<ImportDataElement> {
@@ -41,11 +44,21 @@ export class ImportDataElementSpreadSheetRepository implements ImportDataElement
         console.info("Fetching indicators type...");
         const allIndicatorsTypes = await this.d2IndicatorType.get();
 
+        const allPairedPeopleCodes = _(dataElementsFromExcel)
+            .map(dataElement => dataElement.pairedPeople)
+            .compact()
+            .uniq()
+            .value();
+
+        const dataElementsPaired = await this.d2DataElement.getByCodes(allPairedPeopleCodes);
+
         const existingDataElements = this.generateDataElementsToImport(
             dataElementsFromExcel.filter(record => record.oldCode),
             allSectorsSeries,
             this.config,
-            allIndicatorsTypes
+            allIndicatorsTypes,
+            dataElementsPaired,
+            true
         );
         console.info(`${existingDataElements.length} existing data elements`);
 
@@ -53,7 +66,9 @@ export class ImportDataElementSpreadSheetRepository implements ImportDataElement
             dataElementsFromExcel.filter(record => !record.oldCode),
             allSectorsSeries,
             this.config,
-            allIndicatorsTypes
+            allIndicatorsTypes,
+            dataElementsPaired,
+            false
         );
         console.info(`${newDataElements.length} new data elements`);
 
@@ -71,7 +86,9 @@ export class ImportDataElementSpreadSheetRepository implements ImportDataElement
         dataElementsFromExcel: DataElementExcel[],
         allSectorsSeries: Sector[],
         config: Config,
-        indicatorsTypes: IndicatorType[]
+        indicatorsTypes: IndicatorType[],
+        existingDataElementsPaired: DataElement[],
+        isExistingDataElement: boolean
     ): DataElement[] {
         const pairedDataElements = _(dataElementsFromExcel)
             .keyBy(record => record.code)
@@ -143,7 +160,11 @@ export class ImportDataElementSpreadSheetRepository implements ImportDataElement
                     );
                 }
 
-                const pairedPeople = this.buildPairedPeople(excelRecord, pairedDataElements);
+                const pairedPeople = this.buildPairedPeople(
+                    excelRecord,
+                    pairedDataElements,
+                    existingDataElementsPaired
+                );
                 const description = DataElement.buildDescription(
                     excelRecord.code,
                     excelRecord.name
@@ -185,6 +206,7 @@ export class ImportDataElementSpreadSheetRepository implements ImportDataElement
                     ),
                     shortName: DataElement.buildShortName(excelRecord.code, excelRecord.name),
                     countingMethod: excelRecord.countingMethod,
+                    existing: isExistingDataElement,
                 });
                 return dataElement;
             })
@@ -193,17 +215,33 @@ export class ImportDataElementSpreadSheetRepository implements ImportDataElement
 
     private buildPairedPeople(
         excelRecord: DataElementExcel,
-        pairedDataElements: Record<Code, DataElementExcel>
+        pairedDataElements: Record<Code, DataElementExcel>,
+        existingDataElementsPaired: DataElement[]
     ): Maybe<Ref & { code: string }> {
-        if (!excelRecord.pairedPeople || !pairedDataElements[excelRecord.pairedPeople]) {
+        const pairedDetails = this.getPairedPeopleDetails(
+            excelRecord.pairedPeople,
+            pairedDataElements,
+            existingDataElementsPaired
+        );
+        return pairedDetails ? pairedDetails : undefined;
+    }
+
+    private getPairedPeopleDetails(
+        code: Code,
+        pairedDataElements: Record<Code, DataElementExcel>,
+        existingDataElementsPaired: DataElement[]
+    ): Maybe<Ref & { code: string }> {
+        const pairedPeopleExisting = existingDataElementsPaired.find(
+            dataElement => dataElement.code === code
+        );
+        const pairedPeopleFromExcel = pairedDataElements[code];
+        if (pairedPeopleExisting) {
+            return { code: code, id: pairedPeopleExisting.id };
+        } else if (pairedPeopleFromExcel) {
+            return { code: code, id: pairedPeopleFromExcel.id };
+        } else {
             return undefined;
         }
-        return excelRecord.pairedPeople
-            ? {
-                  code: excelRecord.pairedPeople,
-                  id: pairedDataElements[excelRecord.pairedPeople].id,
-              }
-            : undefined;
     }
 
     private getDataElementType(excelRecord: DataElementExcel, index: number): PeopleOrBenefit {

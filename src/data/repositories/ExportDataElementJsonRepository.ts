@@ -10,6 +10,7 @@ import { writeJsonToDisk } from "../../scripts/utils/logger";
 import { D2DataElementGroup } from "./D2DataElementGroup";
 import { D2Indicator } from "./D2Indicator";
 import { D2IndicatorType } from "./D2IndicatorType";
+import { getExistingAndNewDataElements } from "../common";
 
 export class ExportDataElementJsonRepository implements ExportDataElementRepository {
     d2DataElement: D2DataElement;
@@ -26,33 +27,88 @@ export class ExportDataElementJsonRepository implements ExportDataElementReposit
 
     async export(path: string, dataElements: DataElement[], options: ExportOptions): Promise<void> {
         const {
+            existingDataElements,
+            existingDataElementsKeys,
+            newDataElements,
+            newDataElementsKeys,
+        } = getExistingAndNewDataElements(dataElements);
+
+        const {
             ids,
             dataElementGroups,
             dataElementGroupsIds,
-            indicators,
-            indicatorsIds,
+            newIndicators,
+            existingIndicators,
             indicatorsGroups,
             indicatorsGroupsIds,
         } = this.d2DataElement.extractMetadata(dataElements, options);
 
-        const d2DataElements = await this.d2DataElement.save(ids, dataElements, { post: false });
+        if (existingDataElements.length > 0) {
+            const d2DataElementsExisting = await this.d2DataElement.save(
+                ids.filter(id => Boolean(existingDataElementsKeys[id])),
+                existingDataElements,
+                {
+                    post: false,
+                }
+            );
+            writeJsonToDisk("dataElements_existing.json", {
+                dataElements: d2DataElementsExisting,
+            });
+        }
+
+        if (newDataElements.length > 0) {
+            const d2DataElementsNew = await this.d2DataElement.save(
+                ids.filter(id => Boolean(newDataElementsKeys[id])),
+                newDataElements,
+                {
+                    post: false,
+                }
+            );
+            writeJsonToDisk("dataElements_new.json", {
+                dataElements: d2DataElementsNew,
+            });
+        }
+
         const d2DataElementGroups = await this.d2DataElementGroup.save(
             dataElementGroupsIds,
             dataElementGroups,
             { post: false }
         );
-        const d2Indicators = await this.d2Indicator.save(indicatorsIds, indicators, {
-            post: false,
-        });
+
+        if (existingIndicators.indicators.length > 0) {
+            const d2Indicators = await this.d2Indicator.save(
+                existingIndicators.indicatorsIds,
+                existingIndicators.indicators,
+                {
+                    post: false,
+                }
+            );
+            writeJsonToDisk("indicators_existing.json", {
+                indicators: d2Indicators,
+            });
+        }
+
+        if (newIndicators.indicators.length > 0) {
+            const d2IndicatorsNew = await this.d2Indicator.save(
+                newIndicators.indicatorsIds,
+                newIndicators.indicators,
+                {
+                    post: false,
+                }
+            );
+            writeJsonToDisk("indicators_new.json", {
+                indicators: d2IndicatorsNew,
+            });
+        }
+
         const d2IndicatorsGroups = await this.d2IndicatorType.save(
             indicatorsGroupsIds,
             indicatorsGroups,
             { post: false }
         );
+
         writeJsonToDisk(path, {
-            dataElements: d2DataElements,
             dataElementGroups: d2DataElementGroups,
-            indicators: d2Indicators,
             indicatorGroups: d2IndicatorsGroups,
         });
     }

@@ -32,13 +32,12 @@ export class ImportDataElementsUseCase {
                 dataElementsToRemove,
                 { ignoreGroups: true }
             );
-            await this.exportDataElementRepository.export("metadata_new.json", newRecords, {
-                ignoreGroups: false,
-            });
             await this.exportDataElementRepository.export(
-                "metadata_existing.json",
-                existingRecords,
-                { ignoreGroups: false }
+                "dataElement_groups_and_indicators_groups.json",
+                [...existingRecords, ...newRecords],
+                {
+                    ignoreGroups: false,
+                }
             );
             console.info("Metadata files exported");
         } else {
@@ -52,14 +51,11 @@ export class ImportDataElementsUseCase {
             console.info("Existing data elements removed\n");
 
             console.info("Importing existing data elements...\n");
-            await this.dataElementRepository.save(existingRecords, options);
+
+            await this.dataElementRepository.save([...existingRecords, ...newRecords], options);
             console.info("Existing data elements imported\n");
 
             console.info("-------------------------------------\n");
-
-            console.info("Importing new data elements...\n");
-            await this.dataElementRepository.save(newRecords, options);
-            console.info("New data elements imported\n");
         } else {
             console.info("Add --post flag to save changes");
         }
