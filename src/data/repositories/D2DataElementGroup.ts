@@ -58,12 +58,10 @@ export class D2DataElementGroup {
                         id: dataElementGroup.id,
                         name: dataElementGroup.name,
                         code: dataElementGroup.code,
-                        dataElements: dataElementGroup.isSerie
-                            ? _(dataElementGroup.dataElements).uniqBy(getId).value()
-                            : _(existingRecord?.dataElements || [])
-                                  .concat(dataElementGroup.dataElements)
-                                  .uniqBy(getId)
-                                  .value(),
+                        dataElements: _(existingRecord?.dataElements || [])
+                            .concat(dataElementGroup.dataElements)
+                            .uniqBy(getId)
+                            .value(),
                     };
                 });
 
