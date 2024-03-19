@@ -17,7 +17,10 @@ export class D2DataElementGroup {
                 .get({ fields: fields, filter: { identifiable: { in: codesToFilter } } })
                 .getData();
 
-            return data.objects.map(d2DataElementGroup => d2DataElementGroup);
+            return data.objects.map(d2DataElementGroup => ({
+                ...d2DataElementGroup,
+                isSerie: d2DataElementGroup.name.startsWith("Series "),
+            }));
         });
 
         return _(sectors).flatten().value();
@@ -55,10 +58,12 @@ export class D2DataElementGroup {
                         id: dataElementGroup.id,
                         name: dataElementGroup.name,
                         code: dataElementGroup.code,
-                        dataElements: _(existingRecord?.dataElements || [])
-                            .concat(dataElementGroup.dataElements)
-                            .uniqBy(getId)
-                            .value(),
+                        dataElements: dataElementGroup.isSerie
+                            ? _(dataElementGroup.dataElements).uniqBy(getId).value()
+                            : _(existingRecord?.dataElements || [])
+                                  .concat(dataElementGroup.dataElements)
+                                  .uniqBy(getId)
+                                  .value(),
                     };
                 });
 

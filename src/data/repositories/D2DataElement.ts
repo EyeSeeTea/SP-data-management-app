@@ -266,6 +266,7 @@ export class D2DataElement {
                       const indicatorTypeInfo = allIndicatorTypeGroups[dataElementGroupId];
                       return {
                           ...indicatorTypeInfo,
+                          isSerie: false,
                           dataElements: dataElements.map(dataElement => ({ id: dataElement.id })),
                       };
                   })
@@ -302,8 +303,10 @@ export class D2DataElement {
             .toPairs()
             .map(([dataElementGroupId, dataElements]) => {
                 const extraSectorDetails = allExtraSectorGroups[dataElementGroupId];
+                const replaceExisting = extraSectorDetails.name.startsWith("Series ");
                 return {
                     ...extraSectorDetails,
+                    isSerie: replaceExisting,
                     dataElements: dataElements.map(dataElement => ({ id: dataElement.id })),
                 };
             })
@@ -330,6 +333,7 @@ export class D2DataElement {
                 const mainTypeInfo = allMainTypes[dataElementGroupId];
                 return {
                     ...mainTypeInfo,
+                    isSerie: false,
                     dataElements: dataElements.map(dataElement => ({ id: dataElement.id })),
                 };
             })
@@ -355,6 +359,7 @@ export class D2DataElement {
                 const mainSectorDetails = allMainSectors[dataElementGroupId];
                 return {
                     ...mainSectorDetails,
+                    isSerie: false,
                     dataElements: dataElements.map(dataElement => ({ id: dataElement.id })),
                 };
             })
