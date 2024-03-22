@@ -62,10 +62,9 @@ export class DataValueD2Repository implements DataValueRepository {
             name: DE_DELETE_GROUP_CODE,
             shortName: DE_DELETE_GROUP_CODE,
             dataElements: options.dataElementsIds.map(dataElementId => ({ id: dataElementId })),
-            isSerie: false,
         };
         const ids = [tempDataElementGroup.id];
-        await this.d2DataElementGroup.save(ids, [tempDataElementGroup], { post: true });
+        await this.d2DataElementGroup.save(ids, [tempDataElementGroup], [], { post: true });
         return tempDataElementGroup;
     }
 

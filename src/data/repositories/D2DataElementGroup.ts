@@ -1,12 +1,13 @@
 import _ from "lodash";
 
 import { D2Api } from "../../types/d2-api";
-import { Code, Id } from "../../domain/entities/Ref";
+import { Code, Id, Ref } from "../../domain/entities/Ref";
 import { promiseMap } from "../../migrations/utils";
 import { DataElementGroup } from "../DataElementGroup";
 import { getImportModeFromOptions, SaveOptions } from "../SaveOptions";
 import { getId } from "../../utils/dhis2";
 import { Identifiable } from "../Ref";
+import { DataElement } from "../../domain/entities/DataElement";
 
 export class D2DataElementGroup {
     constructor(private api: D2Api) {}
@@ -17,10 +18,7 @@ export class D2DataElementGroup {
                 .get({ fields: fields, filter: { identifiable: { in: codesToFilter } } })
                 .getData();
 
-            return data.objects.map(d2DataElementGroup => ({
-                ...d2DataElementGroup,
-                isSerie: d2DataElementGroup.name.startsWith("Series "),
-            }));
+            return data.objects.map(d2DataElementGroup => ({ ...d2DataElementGroup }));
         });
 
         return _(sectors).flatten().value();
@@ -29,6 +27,7 @@ export class D2DataElementGroup {
     async save(
         dataElementGroupsIds: Id[],
         dataElementGroups: DataElementGroup[],
+        dataElements: DataElement[],
         options: SaveOptions
     ): Promise<object> {
         const dataElementGroupsImported = await promiseMap(
@@ -53,15 +52,32 @@ export class D2DataElementGroup {
                         throw Error(`Cannot find dataElementGroup ${dataElementGroupId}`);
                     }
 
+                    const idsToDelete = existingRecord
+                        ? this.getDataElementsToDeleteFromSeries(
+                              {
+                                  name: existingRecord.name,
+                                  dataElements: existingRecord.dataElements,
+                              },
+                              dataElements
+                          )
+                        : [];
+
+                    const mergeDataElements = _(existingRecord?.dataElements || [])
+                        .concat(dataElementGroup.dataElements)
+                        .uniqBy(getId)
+                        .value();
+
                     return {
                         ...(existingRecord || {}),
                         id: dataElementGroup.id,
                         name: dataElementGroup.name,
                         code: dataElementGroup.code,
-                        dataElements: _(existingRecord?.dataElements || [])
-                            .concat(dataElementGroup.dataElements)
-                            .uniqBy(getId)
-                            .value(),
+                        dataElements:
+                            idsToDelete.length > 0
+                                ? mergeDataElements.filter(
+                                      dataElement => !idsToDelete.includes(dataElement.id)
+                                  )
+                                : mergeDataElements,
                     };
                 });
 
@@ -80,6 +96,48 @@ export class D2DataElementGroup {
         );
 
         return _(dataElementGroupsImported).flatten().value();
+    }
+
+    private getDataElementsToDeleteFromSeries(
+        dataElementGroup: { name: string; dataElements: Ref[] },
+        dataElements: DataElement[]
+    ): Id[] {
+        // if (dataElementGroup.name === "Series 817") {
+        //     writeJsonToDisk("test_dataElementGroup", dataElementGroup);
+        //     writeJsonToDisk("test_dataElements", dataElements);
+        //     throw Error("stop");
+        // }
+        // return [];
+        if (!dataElementGroup.name.startsWith("Series ")) return [];
+        const allSeries = dataElements.flatMap(dataElement => dataElement.extraSectors);
+        const currentSerie = allSeries.find(serie => serie.name === dataElementGroup.name);
+        if (!currentSerie) return [];
+        const dataElementsInSerie = _(dataElements)
+            .map(dataElement => {
+                const isCurrentSerie = dataElement.extraSectors.find(
+                    es => es.name === currentSerie.name
+                );
+
+                if (isCurrentSerie) return undefined;
+                return dataElement;
+            })
+            .compact()
+            .value();
+
+        const deTomRemove = _(dataElementsInSerie)
+            .map(dataElement => {
+                const isInOtherSerie = dataElementGroup.dataElements.find(
+                    deInGroup => deInGroup.id === dataElement.id
+                );
+                if (!isInOtherSerie) return undefined;
+                return dataElement.id;
+            })
+            .compact()
+            .value();
+        // if (dataElementGroup.name === "Series 817") {
+        //     console.log("dataElementGroupToRemove", deTomRemove);
+        // }
+        return deTomRemove;
     }
 
     async getByCode(code: Code): Promise<DataElementGroup> {

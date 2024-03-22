@@ -72,6 +72,7 @@ export class ExportDataElementJsonRepository implements ExportDataElementReposit
         const d2DataElementGroups = await this.d2DataElementGroup.save(
             dataElementGroupsIds,
             dataElementGroups,
+            dataElements,
             { post: false }
         );
 

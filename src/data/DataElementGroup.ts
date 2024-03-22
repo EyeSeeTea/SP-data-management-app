@@ -4,5 +4,4 @@ export interface DataElementGroup extends NamedRef {
     code: Code;
     shortName: string;
     dataElements: Ref[];
-    isSerie: boolean;
 }

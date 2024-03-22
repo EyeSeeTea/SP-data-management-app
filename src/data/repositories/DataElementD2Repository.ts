@@ -56,7 +56,12 @@ export class DataElementD2Repository implements DataElementRepository {
             options
         );
 
-        await this.d2DataElementGroup.save(dataElementGroupsIds, dataElementGroups, options);
+        await this.d2DataElementGroup.save(
+            dataElementGroupsIds,
+            dataElementGroups,
+            dataElements,
+            options
+        );
 
         await this.d2Indicator.save(
             existingIndicators.indicatorsIds,
