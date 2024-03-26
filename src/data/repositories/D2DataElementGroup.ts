@@ -102,12 +102,6 @@ export class D2DataElementGroup {
         dataElementGroup: { name: string; dataElements: Ref[] },
         dataElements: DataElement[]
     ): Id[] {
-        // if (dataElementGroup.name === "Series 817") {
-        //     writeJsonToDisk("test_dataElementGroup", dataElementGroup);
-        //     writeJsonToDisk("test_dataElements", dataElements);
-        //     throw Error("stop");
-        // }
-        // return [];
         if (!dataElementGroup.name.startsWith("Series ")) return [];
         const allSeries = dataElements.flatMap(dataElement => dataElement.extraSectors);
         const currentSerie = allSeries.find(serie => serie.name === dataElementGroup.name);
@@ -134,9 +128,6 @@ export class D2DataElementGroup {
             })
             .compact()
             .value();
-        // if (dataElementGroup.name === "Series 817") {
-        //     console.log("dataElementGroupToRemove", deTomRemove);
-        // }
         return deTomRemove;
     }
 
