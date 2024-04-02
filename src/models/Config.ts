@@ -43,11 +43,11 @@ export const baseConfig = {
     },
     userRoles: {
         feedback: ["DM Feedback"],
-        dataReviewer: ["Data Reviewer"],
-        dataViewer: ["Data Viewer"],
+        dataReviewer: ["DM Data Reviewer"],
+        dataViewer: ["DM Data Viewer"],
         admin: ["DM Admin"],
-        dataEntry: ["Data Entry"],
-        merApprover: ["MER Approver"],
+        dataEntry: ["DM Data Entry"],
+        merApprover: ["DM MER Approver"],
     },
     dataElementGroupSets: {
         sector: "SECTOR",
