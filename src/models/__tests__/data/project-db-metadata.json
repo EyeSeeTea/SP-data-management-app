@@ -1080,7 +1080,7 @@
                 {
                     "id": "ys0CVedHirZ",
                     "type": "CHART",
-                    "chart": {
+                    "visualization": {
                         "id": "uG9C9z46CNK"
                     },
                     "width": 58,
@@ -1091,7 +1091,7 @@
                 {
                     "id": "KI0C90Ol10x",
                     "type": "CHART",
-                    "chart": {
+                    "visualization": {
                         "id": "qmsj4FqnVPX"
                     },
                     "width": 29,
@@ -1102,7 +1102,7 @@
                 {
                     "id": "uYY7v977Ubm",
                     "type": "CHART",
-                    "chart": {
+                    "visualization": {
                         "id": "uiyYMLiDaK2"
                     },
                     "width": 29,
@@ -1113,7 +1113,7 @@
                 {
                     "id": "qUqsDmtiBLF",
                     "type": "CHART",
-                    "chart": {
+                    "visualization": {
                         "id": "u6Sin4Fy1Wt"
                     },
                     "width": 29,
@@ -1124,7 +1124,7 @@
                 {
                     "id": "mwMpIdPdu8H",
                     "type": "CHART",
-                    "chart": {
+                    "visualization": {
                         "id": "ukewRkZsyCI"
                     },
                     "width": 29,
@@ -1162,7 +1162,7 @@
                 {
                     "id": "e6UAresDcfM",
                     "type": "CHART",
-                    "chart": {
+                    "visualization": {
                         "id": "GqYJDh6asM8"
                     },
                     "width": 58,
@@ -1173,7 +1173,7 @@
                 {
                     "id": "CQuufxhy672",
                     "type": "CHART",
-                    "chart": {
+                    "visualization": {
                         "id": "me6p7L8VHXl"
                     },
                     "width": 58,
@@ -1301,7 +1301,7 @@
                 {
                     "id": "CkcoElgGMuu",
                     "type": "CHART",
-                    "chart": {
+                    "visualization": {
                         "id": "CYYNLjxd96q"
                     },
                     "width": 58,
@@ -1312,7 +1312,7 @@
                 {
                     "id": "GqqyIiwIxog",
                     "type": "CHART",
-                    "chart": {
+                    "visualization": {
                         "id": "Gi2PegQJhbu"
                     },
                     "width": 29,
@@ -1323,7 +1323,7 @@
                 {
                     "id": "mCeCHYX6DOG",
                     "type": "CHART",
-                    "chart": {
+                    "visualization": {
                         "id": "Ww2X5s48uQx"
                     },
                     "width": 29,
@@ -1334,7 +1334,7 @@
                 {
                     "id": "O8EPBVIg4zK",
                     "type": "CHART",
-                    "chart": {
+                    "visualization": {
                         "id": "CMqisHj7sP9"
                     },
                     "width": 29,
@@ -1345,7 +1345,7 @@
                 {
                     "id": "OI8TXjJJwfS",
                     "type": "CHART",
-                    "chart": {
+                    "visualization": {
                         "id": "WGWGaYtwJzp"
                     },
                     "width": 29,
