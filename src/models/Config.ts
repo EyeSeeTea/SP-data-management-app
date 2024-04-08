@@ -26,6 +26,8 @@ export type Config = {
     dataApprovalWorkflows: IndexedObjs<"dataApprovalWorkflows", DataApprovalWorkflow>;
     userGroups: Record<string, UserGroup>;
     categoryOptionCombos: {
+        actual: Ref & { displayName: string };
+        target: Ref & { displayName: string };
         newMale: Ref;
         newFemale: Ref;
         returningMale: Ref;
@@ -43,11 +45,11 @@ export const baseConfig = {
     },
     userRoles: {
         feedback: ["DM Feedback"],
-        dataReviewer: ["Data Reviewer"],
-        dataViewer: ["Data Viewer"],
+        dataReviewer: ["DM Data Reviewer"],
+        dataViewer: ["DM Data Viewer"],
         admin: ["DM Admin"],
-        dataEntry: ["Data Entry"],
-        merApprover: ["MER Approver"],
+        dataEntry: ["DM Data Entry"],
+        merApprover: ["DM MER Approver"],
     },
     dataElementGroupSets: {
         sector: "SECTOR",
@@ -188,6 +190,7 @@ const metadataParams = {
         fields: {
             code: yes,
             dataElementGroups: {
+                shortName: true,
                 id: yes,
                 displayName: yes,
                 code: yes,
@@ -284,7 +287,7 @@ export type DataElementGroupSet = GetItemType<Metadata["dataElementGroupSets"]>;
 type NamedObject = { id: Id; displayName: string };
 type CodedObject = { id: Id; code: string };
 
-export type Sector = NamedObject & CodedObject;
+export type Sector = NamedObject & CodedObject & { shortName: string };
 export type Funder = NamedObject & { shortName: string; code: string };
 export type Country = NamedObject & CodedObject;
 export type Location = NamedObject & { countries: Ref[] };
@@ -348,10 +351,15 @@ class ConfigLoader {
     private getCategoryOptionCombos(categoryCombos: IndexedObjs<"categoryCombos", CategoryCombo>) {
         const cos = baseConfig.categoryOptions;
         return {
-            newMale: getCocRef(categoryCombos, [cos.new, cos.male]),
-            newFemale: getCocRef(categoryCombos, [cos.new, cos.female]),
-            returningMale: getCocRef(categoryCombos, [cos.recurring, cos.male]),
-            returningFemale: getCocRef(categoryCombos, [cos.recurring, cos.female]),
+            actual: getCocRef(categoryCombos.targetActual, [cos.actual]),
+            target: getCocRef(categoryCombos.targetActual, [cos.target]),
+            newMale: getCocRef(categoryCombos.genderNewRecurring, [cos.new, cos.male]),
+            newFemale: getCocRef(categoryCombos.genderNewRecurring, [cos.new, cos.female]),
+            returningMale: getCocRef(categoryCombos.genderNewRecurring, [cos.recurring, cos.male]),
+            returningFemale: getCocRef(categoryCombos.genderNewRecurring, [
+                cos.recurring,
+                cos.female,
+            ]),
         };
     }
 
@@ -485,8 +493,8 @@ function getFundersAndLocations(metadata: Metadata) {
     return { funders, locations };
 }
 
-function getCocRef(categoryCombos: Config["categoryCombos"], codes: string[]): Ref {
-    const coc = categoryCombos.genderNewRecurring.categoryOptionCombos.find(
+function getCocRef(categoryCombos: CategoryCombo, codes: string[]): Ref & { displayName: string } {
+    const coc = categoryCombos.categoryOptionCombos.find(
         coc =>
             _(coc.categoryOptions)
                 .map(co => co.code)

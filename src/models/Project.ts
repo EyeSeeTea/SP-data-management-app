@@ -80,7 +80,7 @@ Project model.
 type NamedObject = { id: Id; displayName: string; code?: string };
 type CodedObject = { id: Id; code: string };
 
-export type Sector = NamedObject & CodedObject;
+export type Sector = NamedObject & CodedObject & { shortName: string };
 export type Funder = NamedObject;
 export type Location = NamedObject;
 export type DartApplicable = NamedObject;

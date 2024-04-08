@@ -277,8 +277,18 @@ describe("Project", () => {
         it("requires at least one data element by sector", async () => {
             const project = (await getNewProject()).setObj({
                 sectors: [
-                    { id: "ieyBABjYyHO", displayName: "Agriculture", code: "SECTOR_AGRICULTURE" },
-                    { id: "GkiSljtLcOI", displayName: "Livelihoods", code: "SECTOR_LIVELIHOODS" },
+                    {
+                        id: "ieyBABjYyHO",
+                        displayName: "Agriculture",
+                        code: "SECTOR_AGRICULTURE",
+                        shortName: "",
+                    },
+                    {
+                        id: "GkiSljtLcOI",
+                        displayName: "Livelihoods",
+                        code: "SECTOR_LIVELIHOODS",
+                        shortName: "",
+                    },
                 ],
             });
             const errors = await project.validate(["dataElementsSelection"]);
