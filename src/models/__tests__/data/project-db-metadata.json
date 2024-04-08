@@ -46,7 +46,6 @@
             "created": "2020-01-02T12:32:30.449",
             "lastUpdated": "2020-01-02T14:28:43.045",
             "name": "Abaco",
-            "shortName": "Abaco",
             "id": "GG0k0oNhgS7",
             "publicAccess": "rw------",
             "lastUpdatedBy": {
@@ -63,14 +62,14 @@
                 {
                     "id": "eu2XF73JOzl"
                 }
-            ]
+            ],
+            "shortName": "Abaco"
         },
         {
             "code": "FUNDER_AGRIDIUS",
             "created": "2020-01-02T11:55:10.244",
             "lastUpdated": "2020-01-02T14:28:43.050",
             "name": "Agridius Foundation",
-            "shortName": "Agridius Foundation",
             "id": "em8NIwi0KvM",
             "publicAccess": "rw------",
             "lastUpdatedBy": {
@@ -83,7 +82,8 @@
             "attributeValues": [],
             "translations": [],
             "userAccesses": [],
-            "organisationUnits": []
+            "organisationUnits": [],
+            "shortName": "Agridius Foundation"
         },
         {
             "code": "FUNDER_AC",
@@ -158,6 +158,7 @@
             "timelyDays": 0,
             "formType": "DEFAULT",
             "name": "MyProject Target",
+            "shortName": "MyProject [WGC0DJ0YSis] Target",
             "code": "WGC0DJ0YSis_TARGET",
             "attributeValues": [
                 {
@@ -578,6 +579,7 @@
             "timelyDays": 0,
             "formType": "DEFAULT",
             "name": "MyProject Actual",
+            "shortName": "MyProject [WGC0DJ0YSis] Actual",
             "code": "WGC0DJ0YSis_ACTUAL",
             "attributeValues": [
                 {

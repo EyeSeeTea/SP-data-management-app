@@ -297,6 +297,7 @@ export default class ProjectDb {
 
         const dataSetTargetMetadata = this.getDataSetMetadata(orgUnit, {
             name: `${project.name} Target`,
+            shortName: `${project.name.slice(0, 25)} [${project.id}] Target`,
             code: "TARGET",
             attributeValues: dataSetAttributeValues,
             workflow: { id: config.dataApprovalWorkflows.project.id },
@@ -306,6 +307,7 @@ export default class ProjectDb {
 
         const dataSetActualMetadata = this.getDataSetMetadata(orgUnit, {
             name: `${project.name} Actual`,
+            shortName: `${project.name.slice(0, 25)} [${project.id}] Actual`,
             code: "ACTUAL",
             attributeValues: dataSetAttributeValues,
             workflow: { id: config.dataApprovalWorkflows.project.id },
