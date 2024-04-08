@@ -23,8 +23,18 @@ export function getDevProject(initialProject: Project, enabled: boolean) {
             displayName: "Bahamas",
         })
         .set("sectors", [
-            { id: "ieyBABjYyHO", displayName: "Agriculture", code: "SECTOR_AGRICULTURE" },
-            { id: "GkiSljtLcOI", displayName: "Livelihood", code: "SECTOR_LIVELIHOOD" },
+            {
+                id: "ieyBABjYyHO",
+                displayName: "Agriculture",
+                code: "SECTOR_AGRICULTURE",
+                shortName: "Agriculture",
+            },
+            {
+                id: "GkiSljtLcOI",
+                displayName: "Livelihood",
+                code: "SECTOR_LIVELIHOOD",
+                shortName: "Livelihood",
+            },
         ])
         .set(
             "dataElementsSelection",
