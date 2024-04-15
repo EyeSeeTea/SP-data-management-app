@@ -164,6 +164,12 @@ export interface Options {
     getOnSaveEvent?: boolean;
 }
 
+declare global {
+    interface Window {
+        jQuery: any;
+    }
+}
+
 /* Function to eval within the iframe to send/receive events to/from the parent page */
 function setupDataEntryInterceptors(options: Options = {}) {
     const iframeWindow = window as unknown as DataEntryWindow;
