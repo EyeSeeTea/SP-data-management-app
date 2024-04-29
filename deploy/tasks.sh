@@ -42,7 +42,7 @@ enable_users() {
 }
 
 set_email_password() {
-    local url=$url
+    local url=$1
     echo "Set email password"
     curl -sS -H 'Content-Type: text/plain' -u "$auth" \
         "$url/api/systemSettings/keyEmailPassword" \
