@@ -199,7 +199,7 @@ export class GlobalValidator {
                     nsSeparator: false,
                 }
             );
-            return [{ level: "error", message: msg }];
+            return [{ level: "warning", message: msg }];
         } else {
             return [];
         }
