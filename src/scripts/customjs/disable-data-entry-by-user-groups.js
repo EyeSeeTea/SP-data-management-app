@@ -1,13 +1,15 @@
 /*
     Script to be used in the "Custom JS/CSS" App.
 
-    Hide the main page of Data Entry App if the current user belongs to a blacklisted user group.
+    Hide the main page of Data Entry App if the current user
+    belongs only to some specific list user group but allow to
+    use it as iframe in the Data Management App.
 */
 
 const message = "You should use the data management app to entry or analyse data";
 
-const userGroupsBlacklistedPatterns = [
-    // regular expressions, name or codes.
+const userGroupsForbiddenFromUsingStandardDataEntryApp = [
+    // Names or codes (regular expression)
     "Data Management Admin",
     "Data Management Notification",
     "Data Management User",
@@ -15,7 +17,7 @@ const userGroupsBlacklistedPatterns = [
 ];
 
 async function disablePageForNotAllowedUsers() {
-    if (await currentUserBelongsToSomeBlacklistedUserGroup()) {
+    if (isStandardDataEntryApp() && !(await currentUserCanUseStandardDataEntryApp())) {
         disablePage();
     }
 }
@@ -26,6 +28,18 @@ disablePageForNotAllowedUsers();
 
 function log(...args) {
     console.debug(`[Custom JS/CSS]`, ...args);
+}
+
+function isIframe() {
+    try {
+        return window.self !== window.top;
+    } catch (e) {
+        return true;
+    }
+}
+
+function isStandardDataEntryApp() {
+    return !isIframe();
 }
 
 function disablePage() {
@@ -48,21 +62,22 @@ function getBaseUrl() {
     const path = new URL(window.location.href).pathname;
     const parts = path.split("/");
     const baseName = parts.slice(0, parts.length - 2).join("/");
-    log(`baseName=${baseName}`);
+    log(`baseName=${JSON.stringify(baseName)}`);
     return baseName;
 }
 
-async function currentUserBelongsToSomeBlacklistedUserGroup() {
+async function currentUserCanUseStandardDataEntryApp() {
     const baseName = getBaseUrl();
     const meUrl = `${baseName}/api/me.json?fields=userGroups[id,name,code]`;
     const res = await fetch(meUrl).then(res => res.json());
     log("Response", res);
+    log("currentUser:userGroups", res.userGroups.map(ug => `${ug.name}[${ug.code}]`).join(", "));
 
-    return res.userGroups.some(userGroup => userGroupMatches(userGroup));
+    return res.userGroups.some(userGroup => !userGroupMatches(userGroup));
 }
 
 function userGroupMatches(userGroup) {
-    return userGroupsBlacklistedPatterns.some(pattern => {
+    return userGroupsForbiddenFromUsingStandardDataEntryApp.some(pattern => {
         return userGroup.name.match(pattern) || userGroup.code.match(pattern);
     });
 }
