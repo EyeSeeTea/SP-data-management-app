@@ -3,7 +3,6 @@ script_dir="$(dirname "$(readlink -f "${BASH_SOURCE[0]:-$0}")")"
 source "$script_dir/auth.sh"
 
 export image_pro="docker.eyeseetea.com/eyeseetea/dhis2-data:2.36.11.1-sp-ip-pro"
-export image_test="docker.eyeseetea.com/samaritans/dhis2-data:2.36.11.1-sp-ip-test"
 export image_dev="docker.eyeseetea.com/samaritans/dhis2-data:2.36.11.1-sp-ip-dev"
 export image_training="docker.eyeseetea.com/samaritans/dhis2-data:2.36.11.1-sp-ip-training"
 
@@ -59,6 +58,7 @@ get_user_role_ids() {
 
 change_server_name() {
     local url=$1 title=$2
+
     debug "Change server name: $title"
     curl -sS -X POST "$url/api/systemSettings/applicationTitle" \
         -d "$title" -H "Content-Type: application/json"
@@ -66,6 +66,7 @@ change_server_name() {
 
 join_by() {
     local IFS="$1"
+
     shift
     echo "$*"
 }

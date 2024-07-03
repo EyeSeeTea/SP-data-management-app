@@ -3,13 +3,13 @@ set -e -u -o pipefail
 
 # Actions:
 #
-#   - Clone instance in proj-dhis-prod to localhost.
-#   - Setup of the local docker
+#   - In PRO: Create docker image and push to Harbor.
+#   - In TEST: Pull docker from Harbor and start.
 
-# Requirements: Open vendorlink (ip-pro + ip-tst) before running the script:
+# Requirements: Open vendorlink (spintldhis01, stintldhis01)
 
 cd "$(dirname "$0")"
 source "./lib.sh"
 
-#run boone-ip-pro bash push-pro-docker.sh
-run boone-ip-test bash deploy-test-from-pro.sh
+run spintldhis01 bash push-pro-docker.sh
+run stintldhis01 bash deploy-test-from-pro.sh
