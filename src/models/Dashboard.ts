@@ -146,7 +146,7 @@ export function getChartDashboardItem(
     return {
         id: getUid("dashboardItem", chart.id),
         type: "CHART" as const,
-        chart: { id: chart.id },
+        visualization: { id: chart.id },
         ...(dashboardItemAttributes || {}),
     };
 }

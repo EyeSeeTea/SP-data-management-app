@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import moment from "moment";
 import { useRouteMatch } from "react-router";
 import { makeStyles } from "@material-ui/core/styles";
@@ -17,14 +17,7 @@ import { useDialog } from "./data-approval-hooks";
 import { DataApprovalMessage } from "./DataApprovalMessage";
 import { useGoTo } from "../../router";
 import { useHistory } from "react-router-dom";
-
-declare global {
-    interface Window {
-        jQuery: any;
-    }
-}
-
-const jQuery = window.jQuery || {};
+import DataApprovalTable from "./DataApprovalTable";
 
 const monthFormat = "YYYYMM";
 
@@ -34,7 +27,6 @@ type State = {
     loading: boolean;
     error?: string;
     project?: Project;
-    report?: string;
     showApproveButton: boolean;
     showUnapproveButton: boolean;
 };
@@ -53,7 +45,7 @@ const DataApproval: React.FC = () => {
         showApproveButton: false,
         showUnapproveButton: false,
     });
-    const { project, report, error } = state;
+    const { project, error } = state;
     const classes = useStyles();
 
     const projectDataSet = React.useMemo(() => {
@@ -106,14 +98,10 @@ const DataApproval: React.FC = () => {
 
     useEffect(() => loadData(projectId, api, config, setState), [api, config, projectId]);
     useEffect(() => {
-        getReport(projectDataSet, projectPeriod, setState);
+        setApprovalStatus(projectDataSet, projectPeriod, setState);
     }, [projectDataSet, projectPeriod]);
 
     useDebugValuesOnDev(project, setState);
-
-    const reportHtml = useMemo(() => {
-        return { __html: report || "" };
-    }, [report]);
 
     const dataApprovalDialog = useDialog();
 
@@ -138,6 +126,13 @@ const DataApproval: React.FC = () => {
         },
         [goTo, projectDataSetType, projectId, projectPeriod]
     );
+
+    const periodStartEnd = React.useMemo(() => {
+        return {
+            startDate: moment(projectPeriod, monthFormat).format("YYYY-MM"),
+            endDate: moment(projectPeriod, monthFormat).add(1, "month").format("YYYY-MM"),
+        };
+    }, [projectPeriod]);
 
     if (!projectPeriod || !projectDataSetType) return null;
 
@@ -172,7 +167,7 @@ const DataApproval: React.FC = () => {
 
             {error && <p>{error}</p>}
 
-            {report && (
+            {projectDataSet && (
                 <Paper style={{ marginBottom: 20, padding: 20 }}>
                     <link
                         rel="stylesheet"
@@ -185,7 +180,12 @@ const DataApproval: React.FC = () => {
                         href={api.baseUrl + "/dhis-web-commons/css/light_blue/light_blue.css"}
                     />
 
-                    <div className="page" dangerouslySetInnerHTML={reportHtml}></div>
+                    <DataApprovalTable
+                        dataSetId={projectDataSet.getDataSet().id}
+                        orgUnitId={projectDataSet.getOrgUnit().id}
+                        attributeOptionComboId={projectDataSet.getAttributeOptionCombo().id}
+                        period={periodStartEnd}
+                    />
 
                     {state.showApproveButton && (
                         <Button
@@ -260,7 +260,7 @@ async function approve(
     }
 }
 
-function getReport(
+function setApprovalStatus(
     projectDataSet: ProjectDataSet | undefined,
     date: string | undefined,
     setState: React.Dispatch<React.SetStateAction<State>>
@@ -288,27 +288,12 @@ function getReport(
                 catOptComboDataApprovals.permissions.mayUnapprove &&
                 catOptComboDataApprovals.accepted;
 
-            return projectDataSet.getApprovalForm(date).then(reportData => {
-                // Parse report
-                const htmlReport = jQuery(jQuery("<div/>").html(reportData));
-                htmlReport.find("table.listTable tbody tr:odd").addClass("listAlternateRow");
-                htmlReport.find("table.listTable tbody tr:even").addClass("listRow");
-                htmlReport.find("#shareForm").hide();
-                htmlReport.find("table.listTable tbody tr").mouseover((element: any) => {
-                    jQuery(element).addClass("listHoverRow");
-                });
-                htmlReport.find("table.listTable tbody tr").mouseout((element: any) => {
-                    jQuery(element).removeClass("listHoverRow");
-                });
-
-                setState(state => ({
-                    ...state,
-                    report: htmlReport.html(),
-                    loading: false,
-                    showApproveButton: showApproveButton,
-                    showUnapproveButton: showUnapproveButton,
-                }));
-            });
+            setState(state => ({
+                ...state,
+                loading: false,
+                showApproveButton: showApproveButton,
+                showUnapproveButton: showUnapproveButton,
+            }));
         })
         .catch(err =>
             setState({

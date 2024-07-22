@@ -124,13 +124,16 @@ function autoResizeIframeByContent(
     iframe: HTMLIFrameElement,
     setHeight: (height: number) => void
 ): IntervalId {
-    const resize = () => {
-        // Get the first element that has the real height of the full dashboard (and not the forced large value).
+    function resize() {
+        // Get element with real height of the dashboard (not the initially forced large value).
         const document = iframe?.contentWindow?.document;
         const height = document?.querySelector(".dashboard-scroll-container > div")?.scrollHeight;
 
-        if (height && height > 0) setHeight(height);
-    };
+        if (height && height > 1000) {
+            setHeight(height);
+        }
+    }
+
     return window.setInterval(resize, 1000);
 }
 
