@@ -11,7 +11,11 @@ import "./utils/lodash-mixins";
 import { D2Api } from "./types/d2-api";
 import i18n from "./locales";
 
+import { Config } from "@dhis2/app-service-config/build/types/types";
+
 import whyDidYouRender from "@welldone-software/why-did-you-render";
+
+const apiVersion = 40;
 
 async function getBaseUrl(): Promise<string> {
     if (process.env.NODE_ENV === "development") {
@@ -43,7 +47,12 @@ async function main() {
     const api = new D2Api({ baseUrl, backend: "fetch", timeout: 60 * 1000 });
     const userSettings = (await api.get("/userSettings").getData()) as UserSettings;
     configI18n(userSettings);
-    const config = { baseUrl, apiVersion: 30 };
+
+    const config: Config = {
+        baseUrl: baseUrl,
+        apiVersion: apiVersion,
+        systemInfo: d2.system.systemInfo,
+    };
 
     try {
         ReactDOM.render(

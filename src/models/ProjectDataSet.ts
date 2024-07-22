@@ -223,7 +223,7 @@ export default class ProjectDataSet {
             .getData();
     }
 
-    private getAttributeOptionCombo() {
+    getAttributeOptionCombo() {
         const categoryOption = this.config.categoryOptions[this.dataSetType];
         const aoc = categoryOption.categoryOptionCombos[0];
         if (!aoc) throw new Error("Cannot get attribute option combo");
